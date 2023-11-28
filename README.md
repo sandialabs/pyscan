@@ -38,12 +38,9 @@ Pyscan can be installed by downloading this repository and following the instruc
 
 1. Use git to clone this repository into your computer.
 
-```
-https://gitlab-ex.sandia.gov/qsnmr/pyscan
-```
 2. Open a terminal or anaconda prompt window. Navigate to the pyscan folder, which contains the file "setup.py".
 
-3. Install pyscan
+3. Install pyscan with
 
 ```
 pip install ./
