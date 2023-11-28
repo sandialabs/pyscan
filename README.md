@@ -1,10 +1,10 @@
 # Pyscan
 
-Python measurement toolbox
+Python scientific measurement toolbox
 
 ## Intro
 
-Pyscan was developed to streamline the collection and live-assessment of data from laboratory instruments.
+Pyscan is an instrument control and measurement tool box for scientific laboratory instruments.
 
 It provides tools to create "experiments," in which you can interface with devices, define a measurement function with which to collect data from the devices, and run an experiment to "loop" over multiple variables or properties. The data can be plotted live so the experimenter can observe data collection during the experiment, and once complete, the data and metadata with all experimental parameters are automatically saved to a h5py file. Such files can be loaded and the data can be plotted again at a later time.
 
@@ -26,7 +26,7 @@ A selection of instrument drivers are included, but drivers from other libraries
 
 ## Getting Started
 
-Pyscan can be installed by downloading this repository and folloiwng the instructions below.
+Pyscan can be installed by downloading this repository and following the instructions below.
 
 ### Requirements
 
@@ -43,38 +43,10 @@ https://gitlab-ex.sandia.gov/qsnmr/pyscan
 ```
 2. Open a terminal or anaconda prompt window. Navigate to the pyscan folder, which contains the file "setup.py".
 
-3. Recommended - Setup a new conda environment for pyscan and other data science tools:
+3. Install pyscan
 
 ```
-conda create -n <environment-name>
-```
-
-Activate the virtual environment
-
-```
-conda activate <environment-name>
-```
-4. Ensure setuptools is installed and up to date
-
-```
-python -m pip install --upgrade setuptools
-```
-
-5. Install pyscan
-
-```
-pip install .
-```
-
-### Make your virtual environment accessible in Jupyter Lab
-
-If you are using a conda virtual environment, run these steps to make your environment accessible as a kernel when you use Jupyter Lab (either activated from the Anaconda GUI or launched from the terminal in the conda base environment).
-
-```
-$ conda activate cenv          
-(cenv)$ conda install ipykernel
-(cenv)$ ipython kernel install --user --name=<any_name_for_kernel>
-(cenv)$ conda deactivate
+pip install ./
 ```
 
 ### Usage
