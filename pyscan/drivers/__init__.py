@@ -32,11 +32,6 @@ from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
 try:
-    from .baslercamera import BaslerCamera
-except ModuleNotFoundError:
-    print('Basler Camera software not found, BaserCamera not loaded')
-
-try:
     from .helios import HeliosCamera
 except ModuleNotFoundError:
     print('Helios Camera not installed')

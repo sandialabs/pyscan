@@ -11,19 +11,18 @@ from .instrumentdriver import InstrumentDriver
 
 class AgilentDSO900Series(InstrumentDriver):
     '''
-    Class to control Agilent DSO900 Series Oscilloscopes. Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
-    
+    Class to control Agilent DSO900 Series Oscilloscopes. Inherits from `.InstrumentDriver`.
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from `.new_instrument`)
 
     Yields
     ------
     Properties which can be get and set :
         sample_rate : float
             sets/queries sample rate of data. Values:
-            
                 [1e2, 2e2, 2.5e2, 4e2, 5e2,
                 1e3, 2e3, 2.5e3, 4e3, 5e3,
                 1e4, 2e4, 2.5e4, 4e4, 5e4,
@@ -74,9 +73,7 @@ class AgilentDSO900Series(InstrumentDriver):
 
     '''
 
-
     def __init__(self, instrument):
-
         super().__init__(instrument)
 
         self.debug = False
@@ -146,7 +143,7 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'acquire_type',
             'write_string': 'ACQ:TYPE {}',
             'query_string': 'ACQ:TYPE?',
-            'values': ['NORM','AVER','HRES','PEAK'],
+            'values': ['NORM', 'AVER', 'HRES', 'PEAK'],
             'return_type': str})
 
         self.add_device_property({
@@ -266,13 +263,11 @@ class AgilentDSO900Series(InstrumentDriver):
         Get the waveform data
 
         Args:
-            channel - 1, 2, 3, 4 
-            data_type('word') - return type of data 
+            channel - 1, 2, 3, 4
+            data_type('word') - return type of data
 
         returns array
-
         '''
-
 
         if data_type == 'word':
             self.waveform_format = 'WORD'
@@ -285,7 +280,7 @@ class AgilentDSO900Series(InstrumentDriver):
                                                          datatype='H',
                                                          is_big_endian=True)
             y_data = np.array(y_data).astype(float)
-            y_data = (y_data-self._y_reference) * self._y_increment + self._y_origin
+            y_data = (y_data - self._y_reference) * self._y_increment + self._y_origin
 
             return y_data
 
@@ -314,7 +309,7 @@ class AgilentDSO900Series(InstrumentDriver):
                                                          datatype='H',
                                                          is_big_endian=True)
             y_data = np.array(y_data).astype(float)
-            y_data = (y_data-self._y_reference) * self._y_increment + self._y_origin
+            y_data = (y_data - self._y_reference) * self._y_increment + self._y_origin
 
             return y_data
 
@@ -355,12 +350,12 @@ class AgilentDSO900Series(InstrumentDriver):
         self.acquire_mode = 'HRES'
 
         self.run()
-    
+
     def set_buffer_mode_avg(self,
-                        sample_rate,
-                        points,
-                        trigger_level=2.5,
-                        trigger_source='CHAN1'):
+                            sample_rate,
+                            points,
+                            trigger_level=2.5,
+                            trigger_source='CHAN1'):
         '''
         Set the device to buffer data points based on a trigger
 

@@ -5,9 +5,7 @@ Meta Sweep
 """
 
 
-import os
 import h5py
-import pickle
 import json
 from pathlib import Path
 import numpy as np
@@ -21,7 +19,7 @@ from pyscan.measurement.scans import PropertyScan
 
 class MetaSweep(ItemAttribute):
     '''The base class for sweep experiments.
-    
+
     Parameters
     ----------
     runinfo : :class:`~pyscan.measurement.runinfo.RunInfo`
@@ -49,7 +47,6 @@ class MetaSweep(ItemAttribute):
         self.devices = devices
         self.setup_data_dir(data_dir)
 
-
     def setup_data_dir(self, data_dir):
         '''Creates save directory if it does not exist
 
@@ -73,7 +70,7 @@ class MetaSweep(ItemAttribute):
 
         Parameters
         ----------
-        data : :class:`~pyscan.general.itemattribute.ItemAttribute` 
+        data : `.ItemAttribute`
             ItemAttribute containing data
         '''
 
@@ -89,7 +86,7 @@ class MetaSweep(ItemAttribute):
 
         # Create arrays in self and make hdf5 version
         # Possibilies 1. data is a list, dims are list
-        #             2. data is a float, dims are list, 
+        #             2. data is a float, dims are list,
         #             3. data is list , dims are 0
         #             4. datais a float, dims are 0
         if self.runinfo.average_d == -1:
@@ -114,12 +111,12 @@ class MetaSweep(ItemAttribute):
                     self[name] = np.zeros(dims) * np.nan
                     f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
                 else:
-                    self[name] =  np.nan
+                    self[name] = np.nan
                     f.create_dataset(name, shape=[1,], fillvalue=np.nan, dtype='float64')
 
     def preallocate_line(self, data):
         '''Preallocate line data based on the first value of the measurement function
-        
+
         Parameters
         ----------
         data : :class:`~pyscan.general.itemattribute.ItemAttribute`
@@ -138,11 +135,10 @@ class MetaSweep(ItemAttribute):
 
         # Create arrays in self and make hdf5 version
         # Possibilies 1. data is a list, dims are list
-        #             2. data is a float, dims are list, 
+        #             2. data is a float, dims are list,
         #             3. data is list , dims are 0
         #             4. datais a float, dims are 0
         loop_dims = self.runinfo.dims
-        ndim = self.runinfo.ndim
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
@@ -151,8 +147,9 @@ class MetaSweep(ItemAttribute):
                 f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
 
     def check_runinfo(self):
-        '''Function that is run at the beginning of experiment to ensure runinfo is 
-        property formatted
+        '''
+        Function that is run at the beginning of experiment to ensure runinfo is
+        property formatted.
         '''
 
         for loop in self.runinfo.loops:
@@ -160,8 +157,7 @@ class MetaSweep(ItemAttribute):
             if isinstance(loop, PropertyScan):
                 for dev in loop.device_names:
                     prop = loop.prop
-                    # print(dev, prop)
-                    # assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
+                    assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
 
         self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
         self.runinfo.short_name = self.runinfo.long_name[8:]
@@ -177,9 +173,9 @@ class MetaSweep(ItemAttribute):
 
         pass
 
-
     def save_point(self):
-        '''Saves single point of data for current loop indicies. Does not return anything.
+        '''
+        Saves single point of data for current loop indicies. Does not return anything.
         '''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
@@ -245,19 +241,24 @@ class MetaSweep(ItemAttribute):
         print('Stopping Experiment')
 
     def run(self):
-        '''Meta function the runs the experiment. It is not implemented in MetaSweep, but must be implemented by its inheriting classes such as AverageSweep.
+        '''Meta function the runs the experiment. It is not implemented in MetaSweep,
+        but must be implemented by its inheriting classes such as AverageSweep.
         '''
 
         pass
 
     def setup_runinfo(self):
-        '''Meta function that setups runinfo based on experiment type. It is not implemented in MetaSweep, but must be implemented by its inheriting classes such as AverageSweep.
+        '''Meta function that setups runinfo based on experiment type.
+        It is not implemented in MetaSweep, but must be implemented
+        by its inheriting classes such as AverageSweep.
         '''
 
         pass
 
     def setup_instruments(self):
-        '''Meta Function that sets up devices based on experiment type. It is not implemented in MetaSweep, but must be implemented by its inheriting classes such as AverageSweep.
+        '''Meta Function that sets up devices based on experiment type.
+        It is not implemented in MetaSweep, but must be implemented
+        by its inheriting classes such as AverageSweep.
         '''
 
         pass
@@ -267,6 +268,5 @@ class MetaSweep(ItemAttribute):
         '''
 
         devices = self.devices
-        runinfo = self.runinfo
 
         devices.trigger.trigger()

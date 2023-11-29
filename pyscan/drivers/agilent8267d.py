@@ -10,12 +10,12 @@ from .instrumentdriver import InstrumentDriver
 
 class AgilentE8267D(InstrumentDriver):
     '''
-    Class to control Agilent E8267D frequency source. Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
-    
+    Class to control Agilent E8267D frequency source. Inherits from `.InstrumentDriver`.
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from `.new_instrument`)
 
 
     Yields
@@ -24,7 +24,7 @@ class AgilentE8267D(InstrumentDriver):
         frequency : float
             Sets/queries frequency. Range: [1e6, 2e10]
         frequency_mode : str
-            Set/queries frequency output mode. Values: ['CW', 'LIST']  
+            Set/queries frequency output mode. Values: ['CW', 'LIST']
         amplitude : float
             Sets/queries amplitude of output in dBm. Range: [-130, 25]
         output : int
@@ -75,9 +75,8 @@ class AgilentE8267D(InstrumentDriver):
             'return_type': int})
 
         self.add_device_property({
-            'name':'modulation',
-            'write_string':':OUTP:MOD:STAT {}',
-            'query_string':':OUTP:MOD:STAT?',
-            'values': [0,1],
-            'return_type':int})
-
+            'name': 'modulation',
+            'write_string': ':OUTP:MOD:STAT {}',
+            'query_string': ':OUTP:MOD:STAT?',
+            'values': [0, 1],
+            'return_type': int})
