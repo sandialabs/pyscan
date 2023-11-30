@@ -150,7 +150,7 @@ class RepeatScan(MetaScan):
             self.scan_dict['repeat'] = list(range(nrepeat))
         
         else:
-            self.scan_dict['repeat'] = [] # represents infinity
+            self.scan_dict['repeat'] = []  # represents infinity
 
         self.device_names = ['repeat']
         self.dt = dt
@@ -160,7 +160,7 @@ class RepeatScan(MetaScan):
             self.nrange = range(self.n)
 
         else:
-            self.n = 0 # represents infinity?
+            self.n = 0  # represents infinity?
             self.nrange = 0
 
         self.i = 0
@@ -168,18 +168,19 @@ class RepeatScan(MetaScan):
     def iterate(self, index, devices):
         '''Iterates repeat loop
         '''
-        if self.n is np.inf: #bug? when would self.n be np.inf?
-            self.scan_dict['repeat'].append(self.n+1)
+        if self.n is np.inf:  # bug? when would self.n be np.inf?
+            self.scan_dict['repeat'].append(self.n + 1)
             self.nrange += 1
             self.n += 1
         else:
-            pass #? if not np.inf then the loop doesn't run?
+            pass  # ? if not np.inf then the loop doesn't run?
 
     def check_same_length(self):
         '''
         Not used
         '''
         return 1
+
 
 class AverageScan(MetaScan):
     '''Class for averaging inner loops.
@@ -196,7 +197,7 @@ class AverageScan(MetaScan):
         self.scan_dict = {}
         self.n = n_average
         self.nrange = range(self.n) 
-        self.scan_dict['average'] = list(nrange)
+        self.scan_dict['average'] = list(self.nrange)
         self.device_names = ['average']
         self.i = 0
         self.dt = dt
@@ -212,7 +213,3 @@ class AverageScan(MetaScan):
         Not used
         ''' 
         return 1
-
-
-if __name__ == "__main__":
-    unittest.main()  # pragma: no cover

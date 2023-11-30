@@ -6,8 +6,6 @@ Chart Recorder
 
 import numpy as np
 from time import sleep
-from pyscan.general.drange import drange
-from pyscan.general.islisttype import is_list_type
 from pyscan.general.stackorappend import stack_or_append
 from pyscan.measurement.metasweep import MetaSweep
 
@@ -53,7 +51,7 @@ class ChartRecorder(MetaSweep):
 
         # Use for loop, but break if self.runinfo.running=False
 
-        i =0
+        i = 0
 
         if self.runinfo.loop0.n == 0:
             niter = np.inf
@@ -73,7 +71,7 @@ class ChartRecorder(MetaSweep):
                     self.runinfo.measured.append(key)
                     self[key] = []
 
-                if self.runinfo.save == True:
+                if self.runinfo.save is True:
                     self.preallocate(data)
 
             for key, value in data.items():
@@ -82,7 +80,7 @@ class ChartRecorder(MetaSweep):
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
-            i+=1
+            i += 1
 
         self.runinfo.running = False
 
