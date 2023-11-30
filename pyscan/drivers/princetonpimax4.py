@@ -4,30 +4,26 @@ PrincetonPiMax4
 ===============
 """
 
+from pyscan.general.itemattribute import ItemAttribute
+
 import clr
 import sys
 import os
-import glob
 import spe_loader as sl
 from time import sleep
 from System.IO import *
 from System import String
 from System.Collections.Generic import List
 sys.path.append(os.environ['LIGHTFIELD_ROOT'])
-sys.path.append(os.environ['LIGHTFIELD_ROOT']+"\\AddInViews")
+sys.path.append(os.environ['LIGHTFIELD_ROOT'] + "\\AddInViews")
 clr.AddReference('PrincetonInstruments.LightFieldViewV5')
 clr.AddReference('PrincetonInstruments.LightField.AutomationV5')
 clr.AddReference('PrincetonInstruments.LightFieldAddInSupportServices')
 
-from pyscan.general.itemattribute import ItemAttribute
-
 from PrincetonInstruments.LightField.Automation import Automation
 from PrincetonInstruments.LightField.AddIns import CameraSettings
-from PrincetonInstruments.LightField.AddIns import DeviceType
-from PrincetonInstruments.LightField.AddIns import AdcQuality
 from PrincetonInstruments.LightField.AddIns import ExperimentSettings
 from PrincetonInstruments.LightField.AddIns import Pulse
-from PrincetonInstruments.LightField.AddIns import GatingMode
 
 
 class PrincetonPiMax4(ItemAttribute):
@@ -43,10 +39,10 @@ class PrincetonPiMax4(ItemAttribute):
         self.application = self.auto.LightFieldApplication
         self.file_manager = self.application.FileManager
 
-        self.verbose=False
+        self.verbose = False
     
     def print_device_information(self):
-        print ("Experiment Device Information:")
+        print("Experiment Device Information:")
         # Print model and serial number of current device
         for device in self.experiment.ExperimentDevices:
             print(String.Format(
@@ -67,7 +63,7 @@ class PrincetonPiMax4(ItemAttribute):
     def print_current_capabilities(self, setting):
         # Get current ADC rates that correspond
         # with the current quality setting
-        print (String.Format(
+        print(String.Format(
             "{0} {1} {2}", "Current",
             setting, "Capabilities:"))
         
@@ -91,7 +87,7 @@ class PrincetonPiMax4(ItemAttribute):
         # gain, adc rate, or adc quality
         if self.experiment.Exists(setting):
             if self.verbose:
-                print (String.Format(
+                print(String.Format(
                     "{0}{1} to {2}", "Setting ",
                     setting, value))
             
@@ -109,7 +105,7 @@ class PrincetonPiMax4(ItemAttribute):
         
     @property
     def gate_width(self):
-        self._gate_width = self.get_settings(CameraSettings.GatingRepetitiveGate).Width/1e6
+        self._gate_width = self.get_settings(CameraSettings.GatingRepetitiveGate).Width / 1e6
         return self._gate_width
         
     @gate_width.setter
@@ -191,18 +187,20 @@ class PrincetonPiMax4(ItemAttribute):
 
 
 class NoStdStreams(object):
-    def __init__(self,stdout = None, stderr = None):
-        self.devnull = open(os.devnull,'w')
+    def __init__(self, stdout=None, stderr=None):
+        self.devnull = open(os.devnull, 'w')
         self._stdout = stdout or self.devnull or sys.stdout
         self._stderr = stderr or self.devnull or sys.stderr
 
     def __enter__(self):
         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush(); self.old_stderr.flush()
+        self.old_stdout.flush()
+        self.old_stderr.flush()
         sys.stdout, sys.stderr = self._stdout, self._stderr
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush(); self._stderr.flush()
+        self._stdout.flush()
+        self._stderr.flush()
         sys.stdout = self.old_stdout
         sys.stderr = self.old_stderr
         self.devnull.close()

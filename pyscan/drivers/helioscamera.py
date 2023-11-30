@@ -4,19 +4,22 @@ Created on Oct 1, 2020
 @author: amounce
 """
 
-import sys, os
+import sys
+import os
 from time import sleep
+import numpy as np
+import ctypes as ct
 
 try:
     if sys.platform == "win32":
-        prgPath=os.environ["PROGRAMFILES"]
-        sys.path.insert(0,prgPath+r'\Heliotis\heliCam\Python\wrapper')
-    else: # "linux"
-        sys.path.insert(0,r'/usr/share/libhelic/python/wrapper')
-except BaseException  as err:
-    print('Path Error'+str(err))
+        prgPath = os.environ["PROGRAMFILES"]
+        sys.path.insert(0, prgPath + r'\Heliotis\heliCam\Python\wrapper')
+    else:  # "linux"
+        sys.path.insert(0, r'/usr/share/libhelic/python/wrapper')
+except BaseException as err:
+    print('Path Error' + str(err))
 
-from libHeLIC import *
+from libHeLIC import LibHeLIC
 from pyscan.general.itemattribute import ItemAttribute
 
 
@@ -34,7 +37,6 @@ class HeliosSDK(ItemAttribute):
         
         Returns function that generates the property of the class
         '''
-
 
         if 'values' in settings:
             set_function = self.set_values_property
@@ -98,8 +100,8 @@ class HeliosSDK(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            print('Value Error: ')
+            print('{} must be one of: '.format(settings['name']))
             for string in values:
                 print('{}'.format(string))
 
@@ -126,7 +128,7 @@ class HeliosSDK(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Range error:')
+            print('Range error: ')
             print('{} must be between {} and {}'.format(
                 settings['name'], rng[0], rng[1]))
 
@@ -153,10 +155,9 @@ class HeliosSDK(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Integer Range error:')
+            print('Integer Range error: ')
             print('{} must be an integer between {} and {}'.format(
                 settings['name'], rng[0], rng[1]))
-
 
     def set_range_properties(self, obj, new_value, settings):
         '''
@@ -171,19 +172,19 @@ class HeliosSDK(ItemAttribute):
         returns None
         '''
 
-        rngs=settings['ranges']
+        rngs = settings['ranges']
 
-        if len(rngs)!=len(new_value):
-            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'],len(rngs),len(new_value)))
-        elif all(rngi[0]<=new_valuei<=rngi[1] for new_valuei,rngi in zip(new_value,rngs)):
+        if len(rngs) != len(new_value):
+            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
+        elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
             if not self.debug:
                 obj.write(settings['write_string'].format(*new_value))
-                setattr(self,'_'+settings['name'],new_value)
+                setattr(self, '_' + settings['name'], new_value)
             else:
-                setattr(self,'_'+settings['name'],settings['write_string'].format(*new_value))
+                setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
-            print('Range error:')
-            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs,new_value))
+            print('Range error: ')
+            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs, new_value))
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -212,17 +213,20 @@ class HeliosSDK(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(index))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            print('Value Error: ')
+            print('{} must be one of: '.format(settings['name']))
             for string in values:
                 print('{}'.format(string))
 
+
 def SensTqp_to_frequency(SensTqp):
-    return 70e6/8/(SensTqp+30)
-    
+    return 70e6 / 8 / (SensTqp + 30)
+
+
 def frequency_to_SenseTqp(frequency):
     
-    return 70*1e6/8/frequency - 30
+    return 70 * 1e6 / 8 / frequency - 30
+
 
 class HeliosCamera(HeliosSDK):
 
@@ -235,96 +239,97 @@ class HeliosCamera(HeliosSDK):
 
     def initialize_properties(self):
         
-        self.add_device_property({'name':'internal_trigger',
-                                  'get_command': lambda : getattr(self.instrument.map, 'TrigFreeExtN'),
+        self.add_device_property({'name': 'internal_trigger',
+                                  'get_command': lambda: getattr(self.instrument.map, 'TrigFreeExtN'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'TrigFreeExtN', x),
                                   'int_range': [0, 1]})
 
-        self.add_device_property({'name':'external_tqp',
-                                  'get_command': lambda : getattr(self.instrument.map, 'ExtTqp'),
+        self.add_device_property({'name': 'external_tqp',
+                                  'get_command': lambda: getattr(self.instrument.map, 'ExtTqp'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'ExtTqp', x),
                                   'int_range': [0, 1]})
 
-        self.add_device_property({'name':'internal_tqp',
-                                  'get_command': lambda : getattr(self.instrument.map, 'SensTqp'),
+        self.add_device_property({'name': 'internal_tqp',
+                                  'get_command': lambda: getattr(self.instrument.map, 'SensTqp'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'SensTqp', x),
                                   'int_range': [0, 4095]})
 
-        self.add_device_property({'name':'cycles_per_frame',
-                                  'get_command': lambda : getattr(self.instrument.map, 'SensNavM2'),
+        self.add_device_property({'name': 'cycles_per_frame',
+                                  'get_command': lambda: getattr(self.instrument.map, 'SensNavM2'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'SensNavM2', x),
                                   'int_range': [0, 255]})
 
-        self.add_device_property({'name':'acquisition_is_stopped',
-                                  'get_command': lambda : getattr(self.instrument.map, 'AcqStop'),
+        self.add_device_property({'name': 'acquisition_is_stopped',
+                                  'get_command': lambda: getattr(self.instrument.map, 'AcqStop'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'AcqStop', x),
                                   'int_range': [0, 1]})
 
-        self.add_device_property({'name':'sync_out',
-                                  'get_command': lambda : getattr(self.instrument.map, 'EnSynFOut'),
+        self.add_device_property({'name': 'sync_out',
+                                  'get_command': lambda: getattr(self.instrument.map, 'EnSynFOut'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'EnSynFOut', x),
                                   'int_range': [0, 1]})
         
-        self.add_device_property({'name':'internal_trigger_on_position',
-                                  'get_command': lambda : getattr(self.instrument.map, 'EnTrigOnPos'),
+        self.add_device_property({'name': 'internal_trigger_on_position',
+                                  'get_command': lambda: getattr(self.instrument.map, 'EnTrigOnPos'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'EnTrigOnPos', x),
                                   'int_range': [0, 1]})
         
-        self.add_device_property({'name':'acquisition_mode',
-                                  'get_command': lambda : getattr(self.instrument.map, 'CamMode'),
+        self.add_device_property({'name': 'acquisition_mode',
+                                  'get_command': lambda: getattr(self.instrument.map, 'CamMode'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'CamMode', x),
                                   'int_range': [0, 7]})
 
-        self.add_device_property({'name':'offset_method',
-                                  'get_command': lambda : getattr(self.instrument.map, 'OffsetMethod'),
+        self.add_device_property({'name': 'offset_method',
+                                  'get_command': lambda: getattr(self.instrument.map, 'OffsetMethod'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'OffsetMethod', x),
                                   'int_range': [0, 1]})
 
-        self.add_device_property({'name':'compress_amplitude',
-                                  'get_command': lambda : getattr(self.instrument.map, 'Comp11to8'),
+        self.add_device_property({'name': 'compress_amplitude',
+                                  'get_command': lambda: getattr(self.instrument.map, 'Comp11to8'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'Comp11to8', x),
                                   'int_range': [0, 1]})
 
-        self.add_device_property({'name':'n_frames',
-                                  'get_command': lambda : getattr(self.instrument.map, 'SensNFrames'),
+        self.add_device_property({'name': 'n_frames',
+                                  'get_command': lambda: getattr(self.instrument.map, 'SensNFrames'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'SensNFrames', x),
                                   'int_range': [10, 511]})
 
-        self.add_device_property({'name':'background_suppression',
-                              'get_command': lambda : getattr(self.instrument.map, 'BSEnable'),
-                              'return_type': int,
-                              'set_command': lambda x: setattr(self.instrument.map, 'BSEnable', x),
-                              'int_range': [0, 1]})
+        self.add_device_property({'name': 'background_suppression',
+                                  'get_command': lambda: getattr(self.instrument.map, 'BSEnable'),
+                                  'return_type': int,
+                                  'set_command': lambda x: setattr(self.instrument.map, 'BSEnable', x),
+                                  'int_range': [0, 1]})
 
-        self.add_device_property({'name':'gain',
-                              'get_command': lambda : getattr(self.instrument.map, 'DdsGain'),
-                              'return_type': int,
-                              'set_command': lambda x: setattr(self.instrument.map, 'DdsGain', x),
-                              'int_range': [0, 3]})
+        self.add_device_property({'name': 'gain',
+                                  'get_command': lambda: getattr(self.instrument.map, 'DdsGain'),
+                                  'return_type': int,
+                                  'set_command': lambda x: setattr(self.instrument.map, 'DdsGain', x),
+                                  'int_range': [0, 3]})
 
-        self.add_device_property({'name':'external_trigger_port',
-                              'get_command': lambda : getattr(self.instrument.map, 'TrigExtSrcSel'),
-                              'return_type': int,
-                              'set_command': lambda x: setattr(self.instrument.map, 'TrigExtSrcSel', x),
-                              'int_range': [0, 1]})
+        self.add_device_property({
+            'name': 'external_trigger_port',
+            'get_command': lambda: getattr(self.instrument.map, 'TrigExtSrcSel'),
+            'return_type': int,
+            'set_command': lambda x: setattr(self.instrument.map, 'TrigExtSrcSel', x),
+            'int_range': [0, 1]})
 
-        self.add_device_property({'name':'exposure_time',
-                              'get_command': lambda : getattr(self.instrument.map, 'SensExpTime'),
-                              'return_type': int,
-                              'set_command': lambda x: setattr(self.instrument.map, 'SensExpTime', x),
-                              'int_range': [1, 4095]})
-
+        self.add_device_property({
+            'name': 'exposure_time',
+            'get_command': lambda: getattr(self.instrument.map, 'SensExpTime'),
+            'return_type': int,
+            'set_command': lambda x: setattr(self.instrument.map, 'SensExpTime', x),
+            'int_range': [1, 4095]})
 
     @property
     def frequency(self):
@@ -340,7 +345,6 @@ class HeliosCamera(HeliosSDK):
             self._frequency = frequency_to_SenseTqp(self.internal_tqp)
         else:
             print("Bad frequency, must be 2121Hz < f < 291,666 Hz")
-
 
     def internal_trigger_mode(self, sync_out=1):        
         '''
@@ -358,7 +362,6 @@ class HeliosCamera(HeliosSDK):
 
         self.sync_out = sync_out
 
-        
     def acquire_IQ_mode(self, compressed=0): 
         
         self.acquisition_mode = 0
@@ -367,26 +370,25 @@ class HeliosCamera(HeliosSDK):
         
         self.acquisition_mode = 1
         self.offset_method = offset_method
-        self.compress_amplitude=compressed
+        self.compress_amplitude = compressed
         
     def acquire_intensity_mode(self):
         
         self.acquisition_mode = 3
         
-
     def print_register_descriptions(self):
 
         rd = self.instrument.GetRegDesc()
 
         for idx in range(rd.contents.numMap):
-            m=rd.contents.maps[idx]
+            m = rd.contents.maps[idx]
             name = m.id.decode('ascii')
             level = m.level
             def_value = m.defValue
             min_value = m.minValue
             max_value = m.maxValue
             try:
-                comment= m.cmt.decode('ascii')
+                comment = m.cmt.decode('ascii')
             except:
                 comment = m.cmt
             print('{}, {}'.format(name, comment))
@@ -398,7 +400,7 @@ class HeliosCamera(HeliosSDK):
         rd = self.instrument.GetRegDesc()
 
         for idx in range(rd.contents.numMap):
-            m=rd.contents.maps[idx]
+            m = rd.contents.maps[idx]
             name = m.id.decode('ascii')
             if name == register:
                 level = m.level
@@ -406,47 +408,47 @@ class HeliosCamera(HeliosSDK):
                 min_value = m.minValue
                 max_value = m.maxValue
                 try:
-                    comment= m.cmt.decode('ascii')
+                    comment = m.cmt.decode('ascii')
                 except:
                     comment = m.cmt
                 print('{}, {}'.format(name, comment))
                 print('cam_mode,value, min, max')
                 print('{}, {}, {}, {},\r\n'.format(level, def_value, min_value, max_value))
                 return
-        print ('Register {} not found'.format(register))
+        print('Register {} not found'.format(register))
 
     def allocate_camera_data(self):
-        self.instrument.AllocCamData(1,LibHeLIC.CamDataFmt['DF_I16Q16'],0,0,0);
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
     def get_IQ_data(self):
-        self.instrument.AllocCamData(1,LibHeLIC.CamDataFmt['DF_I16Q16'],0,0,0);
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
-        res=self.instrument.Acquire()
-        cd=self.instrument.ProcessCamData(1,0,0);
+        res = self.instrument.Acquire()
+        # cd = self.instrument.ProcessCamData(1, 0, 0)
         meta = self.instrument.CamDataMeta()
-        img=self.instrument.GetCamData(1,0,ct.byref(meta))
-        raw_data=img.contents.data
-        data=np.copy(LibHeLIC.Ptr2Arr(raw_data, (self._n_frames,300,300,2), ct.c_ushort))
+        img = self.instrument.GetCamData(1, 0, ct.byref(meta))
+        raw_data = img.contents.data
+        data = np.copy(LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_ushort))
         x = data[:, :, :, 0].astype(float)
         y = data[:, :, :, 0].astype(float)
 
         return x, y, res
 
     def get_intensity_data(self, initial_skip=1):
-        self.instrument.AllocCamData(1,LibHeLIC.CamDataFmt['DF_I16Q16'],0,0,0);
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
-        res=self.instrument.Acquire()
-        cd=self.instrument.ProcessCamData(1,0,0);
-        img=self.instrument.GetCamData(1,0,0)
-        raw_data=img.contents.data
-        data=LibHeLIC.Ptr2Arr(raw_data,(self._n_frames,300,300,2),ct.c_int16)
+        res = self.instrument.Acquire()
+        # cd = self.instrument.ProcessCamData(1, 0, 0)
+        img = self.instrument.GetCamData(1, 0, 0)
+        raw_data = img.contents.data
+        data = LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_int16)
         # mod_data = data[:, :, :, 1] - data[:, :, :, 0]
         # mod_data = np.uint8(mod_data+128)
         return data, res
 
     @property
     def actual_cycles_per_frame(self):
-        self._actual_cycles_per_frame = self.cycles_per_frame*2 + 2 
+        self._actual_cycles_per_frame = self.cycles_per_frame * 2 + 2 
         return self._actual_cycles_per_frame
 
     @property
@@ -459,6 +461,5 @@ class HeliosCamera(HeliosSDK):
     
     @property
     def frame_time(self):
-        self._frame_time = self.actual_cycles_per_frame/self.frequency + self._t_offset
+        self._frame_time = self.actual_cycles_per_frame / self.frequency + self._t_offset
         return self._frame_time
-    

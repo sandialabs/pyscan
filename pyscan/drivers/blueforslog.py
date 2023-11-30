@@ -72,9 +72,8 @@ def get_all_temperature_values(path, name):
     returns pd.DataFrame
     '''
 
-
     df = get_df(path, name)
-    df['date'] = pd.to_datetime(df['date']+ ' ' + df['time'])
+    df['date'] = pd.to_datetime(df['date'] + ' ' + df['time'])
     df = df.drop(['time'], axis=1)
     
     return df
@@ -105,13 +104,12 @@ class BlueForsLog(object):
         self.path = Path(path)
         self.date = date
         
-        
     def get_path(self, file):
         
         if self.date == 'now':
             pass
         else:
-            path = str(self.path / self.date/ file.format(self.date))
+            path = str(self.path / self.date / file.format(self.date))
             
         return path
         

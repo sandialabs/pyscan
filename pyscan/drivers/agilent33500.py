@@ -9,6 +9,7 @@ import re
 from pyscan.general.drange import drange
 import numpy as np
 
+
 class Agilent33500(InstrumentDriver):
     '''
     Class to control Agilent33500 Arbitrary waveform generator
@@ -16,7 +17,8 @@ class Agilent33500(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     channel : 
         channel of instrument, 1 or 2
     
@@ -65,7 +67,6 @@ class Agilent33500(InstrumentDriver):
 
 
     '''
-
 
     def __init__(self, instrument, channel):
 
@@ -122,7 +123,6 @@ class Agilent33500(InstrumentDriver):
             'range': [-10, 10],
             'return_type': float})
 
-
         self.add_device_property({
             'name': 'voltage_autorange_chan1',
             'write_string': 'SOUR1:VOLT:RANG:AUTO {}',
@@ -141,34 +141,33 @@ class Agilent33500(InstrumentDriver):
             'name': 'function_chan1',
             'write_string': 'SOUR1:FUNC {}',
             'query_string': 'SOUR1:FUNC?',
-            'values':  [
-            "SIN",
-            "SQU",
-            "TRI",
-            "RAMP",
-            "PULS",
-            "PRBS",
-            "NOIS",
-            "ARB",
-            "DC",],
+            'values': [
+                "SIN",
+                "SQU",
+                "TRI",
+                "RAMP",
+                "PULS",
+                "PRBS",
+                "NOIS",
+                "ARB",
+                "DC",],
             'return_type': str})
 
         self.add_device_property({
             'name': 'function_chan2',
             'write_string': 'SOUR2:FUNC {}',
             'query_string': 'SOUR2:FUNC?',
-            'values':  [
-            "SIN",
-            "SQU",
-            "TRI",
-            "RAMP",
-            "PULS",
-            "PRBS",
-            "NOIS",
-            "ARB",
-            "DC",],
+            'values': [
+                "SIN",
+                "SQU",
+                "TRI",
+                "RAMP",
+                "PULS",
+                "PRBS",
+                "NOIS",
+                "ARB",
+                "DC",],
             'return_type': str})
-
 
         self.add_device_property({
             'name': 'arb_advance_mode_chan1',
@@ -247,7 +246,6 @@ class Agilent33500(InstrumentDriver):
             'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
-
         self.add_device_property({
             'name': 'burst_state_chan2',
             'write_string': 'SOUR2:BURS:STAT {}',
@@ -287,14 +285,14 @@ class Agilent33500(InstrumentDriver):
             'name': 'trigger_source_chan1',
             'write_string': 'TRIG1:SOUR {}',
             'query_string': 'TRIG1:SOUR?',
-            'values':  ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'trigger_source_chan2',
             'write_string': 'TRIG2:SOUR {}',
             'query_string': 'TRIG2:SOUR?',
-            'values':  ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.update_properties()
@@ -345,7 +343,6 @@ class Agilent33500(InstrumentDriver):
     def function(self, new_value):
         setattr(self, 'function_chan{}'.format(self.channel), new_value)
 
-
     @property
     def arb_advance_mode(self):
         self._arb_advance_mode = getattr(self, 'arb_advance_mode_chan{}'.format(self.channel))
@@ -354,7 +351,6 @@ class Agilent33500(InstrumentDriver):
     @arb_advance_mode.setter
     def arb_advance_mode(self, new_value):
         setattr(self, 'arb_advance_mode_chan{}'.format(self.channel), new_value)
-
 
     @property
     def arb_filter(self):
@@ -374,7 +370,6 @@ class Agilent33500(InstrumentDriver):
     def arb_sample_rate(self, new_value):
         setattr(self, 'arb_sample_rate_chan{}'.format(self.channel), new_value)
 
-
     @property
     def burst_mode(self):
         self._burst_mode = getattr(self, 'burst_mode_chan{}'.format(self.channel))
@@ -392,7 +387,6 @@ class Agilent33500(InstrumentDriver):
     @burst_cycles.setter
     def burst_cycles(self, new_value):
         setattr(self, 'burst_cycles_chan{}'.format(self.channel), new_value)
-
 
     @property
     def burst_state(self):
@@ -552,7 +546,7 @@ class Agilent33500(InstrumentDriver):
 
     @voltage.setter
     def voltage(self, new_value):
-        self.instrument_voltage = new_value /self.gain
+        self.instrument_voltage = new_value / self.gain
         self._voltage = new_value
 
     @property
@@ -593,16 +587,6 @@ class Agilent33500(InstrumentDriver):
         return self._errors
 
     # Source > Data properties and methods
-
-    def clear_volatile_memory(self):
-        """Sends command to clear volatile memory on instrument
-
-        Returns
-        -------
-        None
-
-        """
-        self.write("SOUR{}:DATA:VOL:CLE".format(self.channel))
 
     def trigger(self):
         """Sends trigger signal to instrument
@@ -720,7 +704,7 @@ class Agilent33500(InstrumentDriver):
 
         return scaled_values
 
-    def legacy_sweep_mode(self, values, srate, ramp_down_step = 0.5):
+    def legacy_sweep_mode(self, values, srate, ramp_down_step=0.5):
         """runs a sweep of voltages at a given sample rate
 
                 This method will take an array of voltages and a sample rate to create a waveform
@@ -1098,4 +1082,3 @@ class Agilent33500(InstrumentDriver):
         """
 
         return name.split("\\")[-1]
-

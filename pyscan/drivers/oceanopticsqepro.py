@@ -45,13 +45,12 @@ class OceanOpticsQEPro(ItemAttribute):
         Args:
             value - integration time in ns
         '''
-        self._integration_time = value*1e6
-        return self.spec.integration_time_micros(value*1e6)
+        self._integration_time = value * 1e6
+        return self.spec.integration_time_micros(value * 1e6)
 
     def get_integration_time(self):
         return self.spec.integration_time_micros()
     
-
     @property
     def intensities(self):
         return self.spec.intensities()

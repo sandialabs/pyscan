@@ -18,7 +18,8 @@ class Keithley2400(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Properties
     ----------
@@ -67,8 +68,8 @@ class Keithley2400(InstrumentDriver):
         self.source_voltage_range_settings['values'] = [0.21, 2.1, 21]
 
         self.source_current_range_settings = {}
-        self.source_current_range_settings['range'] = [1.e-6, 1.e-5,
-            1e-4, 1e-3, 1e-2, 1e-1, 1]
+        self.source_current_range_settings['range'] = [
+            1.e-6, 1.e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1]
 
         self.data_element_settings = {}
         self.data_element_settings['string_values'] = ['VOLT', 'CURR', 'RES']
@@ -133,20 +134,19 @@ class Keithley2400(InstrumentDriver):
         start = self.voltage
         if new_value == start:
             return
-        sign = (new_value - start)/np.abs(new_value - start)
+        sign = (new_value - start) / np.abs(new_value - start)
 
         if np.abs(new_value - start) < step_size:          
             self.write(';:SOUR:VOLT:LEV {}'.format(new_value))
             return
 
-        ramp_values = drange(start+sign*step_size, sign*step_size, new_value)
+        ramp_values = drange(start + sign * step_size, sign * step_size, new_value)
 
         for v in ramp_values:
             sleep(0.05)
             self.write(';:SOUR:VOLT:LEV {}'.format(v))
 
         self._voltage = new_value
-
 
     @property
     def output(self):

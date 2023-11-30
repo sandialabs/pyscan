@@ -10,12 +10,14 @@ from time import sleep
 
 class AmericanMagnetics430(InstrumentDriver):
     '''
-    Class to control American Magnetics 430 Magnet power supply. Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Class to control American Magnetics 430 Magnet power supply. Inherits 
+    from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
 
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
     ------
@@ -89,7 +91,7 @@ class AmericanMagnetics430(InstrumentDriver):
     @field.setter
     def field(self, new_value):
         self.target_field = new_value
-        while self.state()[0]==1:
+        while self.state()[0] == 1:
             sleep(0.1)
 
     def state(self):
@@ -112,15 +114,16 @@ class AmericanMagnetics430(InstrumentDriver):
         tuple (int, str)
         '''
 
-        state_meaning = { 1:  'RAMPING to target field/current',
-            2:  'HOLDING at the target field/current',
-            3:  'PAUSED',
-            4:  'Ramping in MANUAL UP mode',
-            5:  'Ramping in MANUAL DOWN mode',
-            6:  'ZEROING CURRENT (in progress)',
-            7:  'Quench detected',
-            8:  'At ZERO current',
-            9:  'Heating persistent switch',
+        state_meaning = {
+            1: 'RAMPING to target field/current',
+            2: 'HOLDING at the target field/current',
+            3: 'PAUSED',
+            4: 'Ramping in MANUAL UP mode',
+            5: 'Ramping in MANUAL DOWN mode',
+            6: 'ZEROING CURRENT (in progress)',
+            7: 'Quench detected',
+            8: 'At ZERO current',
+            9: 'Heating persistent switch',
             10: 'Cooling persistent switch'}
         state = int(self.query('STATE?'))
         return (state, state_meaning[state])
@@ -135,8 +138,8 @@ class AmericanMagnetics430(InstrumentDriver):
         '''
 
         # future: check that the supply is ready to ramp
-            # check if ramping
-            # check if heater is on 
+        # check if ramping
+        # check if heater is on 
         self.write('RAMP')
 
     def pause(self):

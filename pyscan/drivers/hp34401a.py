@@ -30,7 +30,6 @@ class HP34401A(InstrumentDriver):
     def initialize_properties(self):
         self.update_properties()
 
-
     def update_properties(self):
         pass
 

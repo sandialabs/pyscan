@@ -13,7 +13,8 @@ class OxfordIPS120(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value
+        from :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     '''
     def __init__(self, instrument):
@@ -29,7 +30,6 @@ class OxfordIPS120(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-
 
     def initialize_properties(self):
         self.target_field
@@ -72,7 +72,7 @@ class OxfordIPS120(InstrumentDriver):
         return self._target_current
 
     def get_current_sweep_rate(self):
-        self._current_sweep_rate= float(self.query_until_return('R6').replace('R', ''))
+        self._current_sweep_rate = float(self.query_until_return('R6').replace('R', ''))
         return self._current_sweep_rate
 
     def get_field(self):
@@ -125,11 +125,11 @@ class OxfordIPS120(InstrumentDriver):
               8: 'Fault'}
         status1 = X1[int(status[1])]
 
-        X2 = {0: 'Normal',
-              1: 'On Positive Voltage Limit',
-              2: 'On Negative Voltage Limit',
-              4: 'Outside Negative Current Limit',
-              8: 'Outside Positive Current Limit'}
+        # X2 = {0: 'Normal',
+        #       1: 'On Positive Voltage Limit',
+        #       2: 'On Negative Voltage Limit',
+        #       4: 'Outside Negative Current Limit',
+        #       8: 'Outside Positive Current Limit'}
 
         status2 = X1[int(status[2])]
 
@@ -192,5 +192,3 @@ class OxfordIPS120(InstrumentDriver):
                 return message
             else:
                 message = self.query('&') 
-                
-    

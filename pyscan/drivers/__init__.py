@@ -9,7 +9,7 @@ from .agilent8267d import AgilentE8267D
 from .agilent8275n import Agilent8275N
 from .americanmagnetics430 import AmericanMagnetics430
 from .blueforslog import BlueForsLog
-from .bkprecision9130b import BKPrecision9130B, BKHelmholtz
+from .bkprecision9130b import BKPrecision9130B
 from .hp34401a import HP34401A
 from .keithley2400 import Keithley2400
 from .kepcoBOP import KepcoBOP
@@ -26,18 +26,17 @@ from .stanford830 import Stanford830
 from .stanford860 import Stanford860
 from .stanford900 import Stanford900
 from .stanford928 import Stanford928
-from .stanford928 import stanford928 # deprecated, here for backwards compat.
 from .tpi1002a import TPI1002A
 from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
 try:
-    from .helios import HeliosCamera
+    from .helioscamera import HeliosCamera
 except ModuleNotFoundError:
     print('Helios Camera not installed')
 
 try:
-    from .bsc203 import BSC203
+    from .thorlabsbsc203 import BSC203
 except ModuleNotFoundError:
     print('msl not installed, Thorlabs BSC203 driver not loaded')
     
@@ -56,7 +55,6 @@ except ModuleNotFoundError:
     print('Thorlabs Kinesis not found, ThorlabsBSC203 not loaded')
 try:
     from .thorlabsbpc303 import ThorlabsBPC303
-    from .thorlabsbpc303 import ThorlabsBSC303 # deprecated, here for backwards compat.
 except ModuleNotFoundError:
     print('Thorlabs Kinesis not found, ThorlabsBPC303 not loaded')
 try:
