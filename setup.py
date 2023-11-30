@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-
+    
 setup(
     name="pyscan",
     version="0.0.1",
@@ -14,8 +14,8 @@ setup(
     description=(
         """
         Python measurement toolbox to interface with scientific
-         instruments and run experements"""
-        ),
+        instruments and run experements"""
+    ),
     license="MIT",
     keywords="scientific instrument drivers measurement tools",
     url="",

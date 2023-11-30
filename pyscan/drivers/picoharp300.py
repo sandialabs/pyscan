@@ -204,7 +204,7 @@ class PicoHarp300(ItemAttribute):
 
     def get_histogram(self):
         tryfunc(phlib.PH_GetHistogram(ctypes.c_int(self.dev), byref(counts), ctypes.c_int(0)),
-            "GetHistogram")
+                "GetHistogram")
 
     def get_flags(self):
         tryfunc(phlib.PH_GetFlags(ctypes.c_int(self.dev), byref(flags)), "GetFlags")
