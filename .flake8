@@ -36,6 +36,9 @@ ignore=F403,E266,W503,W291,W293
 per-file-ignores =
     pyscan/__init__.py:F401
     pyscan/measurement/__init__.py:F401
+    pyscan/general/__init__.py:F401
+    pyscan/drivers/__init__.py:F401
+    pyscan/plotting/__init__.py:F401
 
 # 120 characters is a more agreeable max line length for modern displays
 max-line-length=120
