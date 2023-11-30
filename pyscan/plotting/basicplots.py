@@ -6,12 +6,11 @@ Basic Plots
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pyscan.general import first_string, set_difference
 from .plotgenerator import PlotGenerator
 from .liveplot import live_plot
 
 
-def plot1D(expt,**kwarg):
+def plot1D(expt, **kwarg):
     """
     Function to generate a simple 2D plot
 
@@ -58,7 +57,6 @@ def plot2D(expt, **kwarg):
         Additional kwargs are `pyscan.plotting.plotgenerator.PlotGenerator` properties.
 
     """
-
     
     pg = PlotGenerator(expt, d=2, **kwarg)
 
@@ -72,6 +70,7 @@ def plot2D(expt, **kwarg):
 
     plt.xlim(pg.get_xrange())
     plt.ylim(pg.get_yrange())
+
 
 live_plot1D = live_plot(plot1D)
 live_plot2D = live_plot(plot2D)
@@ -104,6 +103,7 @@ def average_plot2D(expt, **kwarg):
 
     plot1D(expt, analysis_function=mean2D)
 
+
 live_average_plot1D = live_plot(average_plot1D)
 live_average_plot2D = live_plot(average_plot2D)
 
@@ -115,6 +115,7 @@ def mean1D(data):
     '''
 
     return np.nanmean(data, axis=1)
+
 
 def mean2D(data):
     '''

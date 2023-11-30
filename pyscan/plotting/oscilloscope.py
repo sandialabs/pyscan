@@ -7,10 +7,9 @@ Oscilloscope
 
 import matplotlib.pyplot as plt
 import numpy as np
-from time import sleep,time
+from time import sleep, time
 from IPython import display
-from pyscan.general import first_string, set_difference, is_list_type, is_numeric_type
-from .plotgenerator import PlotGenerator
+from pyscan.general import is_list_type, is_numeric_type
 
 
 def oscilloscope(measure_function, histo_range=100, dt=0.001):
@@ -37,13 +36,12 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
     plt.axis()
     plt.ion()
 
-
     x_data = []
     y_data = []
     data = []
     y = None
     
-    t0=time()
+    t0 = time()
     
     i = 0
     try:
@@ -100,7 +98,6 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
                 if y:
                     y_data = np.append(y_data[1:], [y])
             
-
             plt.gca().cla()
 
             plt.title("Oscilloscope {}".format(i))
@@ -108,21 +105,21 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
             if dims == 0:
                 plt.plot(x_data, data)
                 plt.xlabel("Time (s)")
-                ypad=(np.max(data)-np.min(data))/20
-                plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
-                plt.xlim(x_data[0],x_data[-1])
+                ypad = (np.max(data) - np.min(data)) / 20
+                plt.ylim(np.min(data) - ypad, np.max(data) + ypad)
+                plt.xlim(x_data[0], x_data[-1])
 
             if dims == 1:
                 plt.plot(x_data.T, data.T)
                 plt.xlabel(x_name)
-                ypad=(np.max(data)-np.min(data))/20
-                plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
-                plt.xlim(x_data[0],x_data[-1])
+                ypad = (np.max(data) - np.min(data)) / 20
+                plt.ylim(np.min(data) - ypad, np.max(data) + ypad)
+                plt.xlim(x_data[0], x_data[-1])
 
             if dims == 2:
                 plt.pcolormesh(x_data, y_data, data.T)
                 plt.xlabel(x_name)
-                plt.xlim(x_data[0],x_data[-1])
+                plt.xlim(x_data[0], x_data[-1])
                 plt.ylim(y_data[0], y_data[-1])
 
             plt.ylabel(y_name)

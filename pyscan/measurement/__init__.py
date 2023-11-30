@@ -1,9 +1,4 @@
-# methods
-# from .loadexperiment import load_experiment
-# try:
-# 	from .loadigorpro import load_igorpro
-# except:
-# 	print('igor not installed, load_igorpro not loaded')
+# Functions
 from .runinfo import new_runinfo
 from .loadexperiment import load_experiment
 

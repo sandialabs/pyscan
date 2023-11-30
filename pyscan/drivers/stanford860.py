@@ -7,6 +7,7 @@ Stanford860
 
 from .instrumentdriver import InstrumentDriver
 
+
 class Stanford860(InstrumentDriver):
     '''Class to control Stanford Research Systems SR860 - 500 kHz lock-in amplifier
     '''
@@ -25,8 +26,8 @@ class Stanford860(InstrumentDriver):
             if source in ['x', 'y', 'r']:
                 return (float(self.query('OUTP? {}'.format(index))))
             else:
-                return (float(self.query('OUTP? {}'.format(index))) *
-                        180 / 3.14159)
+                return (float(self.query('OUTP? {}'.format(index)))
+                        * 180 / 3.14159)
         else:
             print('Value Error:')
             print('Outputs are {}, {}, {}, or {}'.format(*values))

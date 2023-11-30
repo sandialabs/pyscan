@@ -14,15 +14,15 @@ class PulseLaser(InstrumentDriver):
    
     def __init__(self, com):
         print(com)
-        self.instrument=serial.Serial(port=com,
-            baudrate=9600,
-            parity=serial.PARITY_NONE,
-            stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS,
-            xonxoff=True,
-            timeout=1,
-            write_timeout=1
-            )
+        self.instrument = serial.Serial(port=com,
+                                        baudrate=9600,
+                                        parity=serial.PARITY_NONE,
+                                        stopbits=serial.STOPBITS_ONE,
+                                        bytesize=serial.EIGHTBITS,
+                                        xonxoff=True,
+                                        timeout=1,
+                                        write_timeout=1
+                                        )
    
     def set_cw(self):
         self.instrument.write('LAS\r'.encode())

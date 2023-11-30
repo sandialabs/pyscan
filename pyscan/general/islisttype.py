@@ -8,7 +8,6 @@ islisttype
 import numpy as np
 
 
-
 def is_list_type(obj):
     '''Determines if input is a `list`, `np.ndarray`, or `tuple`.
 

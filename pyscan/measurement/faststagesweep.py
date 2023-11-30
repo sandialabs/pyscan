@@ -7,7 +7,6 @@ Fast Stage Sweep
 
 from time import sleep
 from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.islisttype import is_list_type
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 # import nidaqmx
@@ -39,7 +38,6 @@ class FastStageSweep(MetaSweep):
         '''
         super().__init__(runinfo, devices, data_dir)
 
-
         self.runinfo.measure_function = self.line_counts
 
     def setup_instruments(self):
@@ -63,13 +61,13 @@ class FastStageSweep(MetaSweep):
         runinfo.start = xrange[0]
         runinfo.stop = xrange[-1]
         delta = xrange[1] - xrange[0]
-        d = runinfo.stop-runinfo.start
+        d = runinfo.stop - runinfo.start
         
-        runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1) # in mm/s
+        runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1)  # in mm/s
 
-        n_points = int(np.abs((runinfo.start - runinfo.stop)/delta))
+        n_points = int(np.abs((runinfo.start - runinfo.stop) / delta))
 
-        t = n_points/runinfo.srate
+        t = n_points / runinfo.srate
         runinfo.vel = round(np.abs(d / t), 5)
 
         runinfo.scan_time = t
@@ -116,8 +114,7 @@ class FastStageSweep(MetaSweep):
                         if self.runinfo.ndim == 1:
                             self[key] = np.array(value)
                         else:
-                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1 ,1))
-
+                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1, 1))
 
                     self.save_row()
 
@@ -142,7 +139,6 @@ class FastStageSweep(MetaSweep):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-
     def line_counts(self, expt):
         '''TODO
         '''
@@ -152,10 +148,10 @@ class FastStageSweep(MetaSweep):
         if runinfo.fast_chan == 1:
             chan = 'x'
             chan_fast = 'xfast'
-        elif runinfo.fast_chan ==2:
+        elif runinfo.fast_chan == 2:
             chan = 'y'
             chan_fast = 'yfast'
-        elif runinfo.fast_chan ==3:
+        elif runinfo.fast_chan == 3:
             chan = 'z'
             chan_fast = 'zfast'
 
@@ -167,8 +163,10 @@ class FastStageSweep(MetaSweep):
 
         sleep(2)
         
-        devices.stage.set_channel_velocity_parameters(runinfo.fast_chan,
-            runinfo.vel, runinfo.acc)
+        devices.stage.set_channel_velocity_parameters(
+            runinfo.fast_chan,
+            runinfo.vel,
+            runinfo.acc)
 
         devices.stage[chan_fast] = runinfo.stop
 
@@ -183,7 +181,7 @@ class FastStageSweep(MetaSweep):
                 d.counts0.append(counts0)
                 # d.counts1.append(counts1)
                 # d.counts_sum.append(counts_sum)
-                sleep(1/runinfo.srate)
+                sleep(1 / runinfo.srate)
         else:
             d.counts = devices.counter.get_n_binary_points(runinfo.loop0.n)
 

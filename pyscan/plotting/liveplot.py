@@ -6,7 +6,6 @@ Live Plot
 
 
 import matplotlib.pyplot as plt
-from .plotgenerator import PlotGenerator
 from IPython import display
 from time import sleep  
 
@@ -14,7 +13,8 @@ from time import sleep
 def live_plot(plotting_function, dt=1):
     '''
     Generates a function that executes plotting_function while data
-    is still being taken in Jupyter notebooks. Used by the live plotting functions such as :func:`~pyscan.plotting.basicplots.live_plot2D`.
+    is still being taken in Jupyter notebooks. Used by the live plotting
+    functions such as :func:`~pyscan.plotting.basicplots.live_plot2D`.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def live_plot(plotting_function, dt=1):
 
     def live_plot_function(expt=None, *arg, **kwarg):
 
-        while(expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
+        while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
             sleep(1)
 
         plt.axis()
@@ -54,7 +54,4 @@ def live_plot(plotting_function, dt=1):
         display.display(plt.gcf())
         display.clear_output(wait=True)
         
-
     return live_plot_function
-
-

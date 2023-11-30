@@ -5,8 +5,8 @@ recursivetodict
 """
 
 
-from copy import deepcopy
 import numpy as np
+
 
 def recursive_to_dict(obj_dict):
     '''
