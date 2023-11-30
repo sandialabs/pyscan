@@ -6,7 +6,7 @@ ZurichDriver
 
 
 import zhinst.ziPython as ziPython
-from pysweep.general.itemattribute import ItemAttribute
+from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 
 
