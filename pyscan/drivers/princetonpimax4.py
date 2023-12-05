@@ -4,6 +4,10 @@ PrincetonPiMax4
 ===============
 """
 
+from PrincetonInstruments.LightField.AddIns import Pulse
+from PrincetonInstruments.LightField.AddIns import ExperimentSettings
+from PrincetonInstruments.LightField.AddIns import CameraSettings
+from PrincetonInstruments.LightField.Automation import Automation
 from pyscan.general.itemattribute import ItemAttribute
 
 import clr
@@ -19,11 +23,6 @@ sys.path.append(os.environ['LIGHTFIELD_ROOT'] + "\\AddInViews")
 clr.AddReference('PrincetonInstruments.LightFieldViewV5')
 clr.AddReference('PrincetonInstruments.LightField.AutomationV5')
 clr.AddReference('PrincetonInstruments.LightFieldAddInSupportServices')
-
-from PrincetonInstruments.LightField.Automation import Automation
-from PrincetonInstruments.LightField.AddIns import CameraSettings
-from PrincetonInstruments.LightField.AddIns import ExperimentSettings
-from PrincetonInstruments.LightField.AddIns import Pulse
 
 
 class PrincetonPiMax4(ItemAttribute):
