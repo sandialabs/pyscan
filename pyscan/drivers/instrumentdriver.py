@@ -18,7 +18,7 @@ class InstrumentDriver(ItemAttribute):
     ----------
     instrument : string or pyvisa :class:`Resource`
         visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        :func:`.new_instrument`)
     '''
 
     def __init__(self, instrument):
