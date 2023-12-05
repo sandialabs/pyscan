@@ -24,10 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Jupyter demo notebooks use `import pyscan as ps` instead of hardcoded folder location
+- Fixed error in AverageScan "nrange not defined" (#2)
 
 ### Changed
 
 - README.md installation instructions simplified, no longer includes virtual env instructions
+
+### Breaking Changes
+
+- ThorlabsBSC303 is now called ThorlabsBPC303
+- stanford928 is now called Stanford928
 
 ### Removed
 
