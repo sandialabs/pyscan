@@ -246,7 +246,7 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
     def wait_port_msg(self, port=None, timeout=3):
         '''Wait for a message from port until data is available or the timeout
         occurs
-        
+
         Returns
         -------
         bool

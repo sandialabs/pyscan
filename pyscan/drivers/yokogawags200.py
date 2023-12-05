@@ -63,12 +63,12 @@ class YokogawaGS200(InstrumentDriver):
     def voltage(self):
         self._voltage = float(self.query('SOUR:LEV?').replace('\n', ''))
         return self._voltage
-    
+
     @voltage.setter
     def voltage(self, new_value):
 
         vmin, vmax = self.voltage_settings['range']
-        
+
         if vmin <= new_value <= vmax:
 
             step_size = self.step_size
@@ -99,6 +99,3 @@ class YokogawaGS200(InstrumentDriver):
             print('Range error:')
             print('Phase must be between {} and {}'.format(
                 vmin, vmax))
-
-
-    

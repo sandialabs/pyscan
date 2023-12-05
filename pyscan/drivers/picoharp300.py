@@ -92,12 +92,12 @@ def tryfunc(retcode, funcName):
 
 class PicoHarp300(ItemAttribute):
     '''Class to control PicoQuant PicoHarp 300 - Stand-alone TCSP Module with USB Interface
-    
+
     Parameters
     ----------
     dev
         Defaults to 0
-    
+
     '''
 
     def __init__(self, dev=0):
@@ -142,7 +142,7 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-   
+
     @resolution.setter
     def resolution(self, new_value):
         resolution = new_value
@@ -160,7 +160,7 @@ class PicoHarp300(ItemAttribute):
 
     def set_channel_1_voltage(self, zero_cross=10, discriminator=100):
         print(self.dev, zero_cross, discriminator)
-        
+
         tryfunc(
             phlib.PH_SetInputCFD(
                 ctypes.c_int(self.dev), ctypes.c_int(1),
@@ -229,7 +229,7 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-    
+
     def init_histogram_mode(self):
         self.set_histgram_mode()
         self.calibrate()

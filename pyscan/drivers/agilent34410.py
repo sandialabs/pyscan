@@ -35,6 +35,6 @@ class Agilent34410(InstrumentDriver):
         -------
         float
             DC Voltage in V
-    
+
         '''
         return float(self.query('MEAS:VOLT:DC?').strip('\n'))

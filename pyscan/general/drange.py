@@ -48,7 +48,7 @@ def drange(start, delta, stop):
         values = np.linspace(start, stop, int(np.abs(stop - start) / (delta) + 1))
     else:
         n = int(np.floor(np.abs(stop - start) / delta))
-        
+
         values = [start + sign * delta * i for i in range(n + 1)]
         values += [stop]
 

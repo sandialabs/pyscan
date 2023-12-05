@@ -22,12 +22,12 @@ def new_instrument(visa_string=None, gpib_address=None):
         full visa string address, defaults to `None`.
     gpib_address: int or str
         int to format visa string 'GPIB0::{}::INSTR', defaults to `None`.
-    
+
     Returns
     -------
     pyvisa :class:`Resource`
         Subclass of Resource from pyvisa library matching the instrument
-    
+
     '''
     if not hasattr(ps, 'rm'):
         ps.rm = visa.ResourceManager()

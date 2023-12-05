@@ -92,7 +92,7 @@ class JupyterTools(object):
         '''
 
         function_name = 'load_experiment'
-        
+
         file_name = self.get_last_scan_name()
         file_name = self.path_name + "/" + file_name
         command_str = 'expt = ps.{}(\'{}\','.format(function_name, file_name)

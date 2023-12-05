@@ -30,7 +30,7 @@ class FastStageSweep(MetaSweep):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
-    
+
     '''
 
     def __init__(self, runinfo, devices, data_dir=None, verbose=False):
@@ -47,14 +47,14 @@ class FastStageSweep(MetaSweep):
         devices = self.devices
 
         chan = self.runinfo.loop0.prop
-        
+
         if chan == 'x':
             chan = 1
         elif chan == 'y':
             chan = 2
         elif chan == 'z':
             chan = 3
-        
+
         xrange = list(self.runinfo.loop0.scan_dict.values())[0]
         runinfo.fast_values = xrange
 
@@ -62,7 +62,7 @@ class FastStageSweep(MetaSweep):
         runinfo.stop = xrange[-1]
         delta = xrange[1] - xrange[0]
         d = runinfo.stop - runinfo.start
-        
+
         runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1)  # in mm/s
 
         n_points = int(np.abs((runinfo.start - runinfo.stop) / delta))
@@ -162,7 +162,7 @@ class FastStageSweep(MetaSweep):
         devices.stage[chan] = runinfo.start
 
         sleep(2)
-        
+
         devices.stage.set_channel_velocity_parameters(
             runinfo.fast_chan,
             runinfo.vel,
@@ -186,5 +186,5 @@ class FastStageSweep(MetaSweep):
             d.counts = devices.counter.get_n_binary_points(runinfo.loop0.n)
 
         devices.stage.reset_speed()
-    
+
         return d

@@ -91,7 +91,7 @@ class PropertyScan(MetaScan):
 class FunctionScan(MetaScan):
     '''Class for iterating a function with input values inside an
     experimental loop. Inherits from `pyscan.measurement.scans.MetaScan`.
-    
+
     Parameters
     ----------
     function : func
@@ -117,7 +117,7 @@ class FunctionScan(MetaScan):
     def iterate(self, index, devices):
         '''
         Executes function(self.values[index]). Used by a Sweep class's run() function.
-        
+
         Parameters
         ----------
         index : 
@@ -148,7 +148,7 @@ class RepeatScan(MetaScan):
         self.scan_dict = {}
         if nrepeat is not np.inf:
             self.scan_dict['repeat'] = list(range(nrepeat))
-        
+
         else:
             self.scan_dict['repeat'] = []  # represents infinity
 

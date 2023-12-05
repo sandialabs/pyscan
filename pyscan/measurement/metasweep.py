@@ -112,7 +112,7 @@ class MetaSweep(ItemAttribute):
                     f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
                 else:
                     self[name] = np.nan
-                    f.create_dataset(name, shape=[1,], fillvalue=np.nan, dtype='float64')
+                    f.create_dataset(name, shape=[1, ], fillvalue=np.nan, dtype='float64')
 
     def preallocate_line(self, data):
         '''Preallocate line data based on the first value of the measurement function

@@ -17,7 +17,7 @@ except:
 
 class KeysiteM3302AAWG(ItemAttribute):
     '''Class to control Keysite M3302A PXIe AWG and Digitizer Combination
-    
+
     Parameters
     ----------
     chassis
