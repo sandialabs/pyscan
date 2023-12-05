@@ -23,7 +23,7 @@ class OxfordIGH(InstrumentDriver):
 
     def initialize_properties(self):
         pass
-    
+
     def set_local_locked(self):
         self.write('C0')
 
@@ -43,18 +43,18 @@ class OxfordIGH(InstrumentDriver):
         temperature = float(result[2:]) / 10000
 
         return temperature
-    
+
     def get_status(self):
 
         status = self.query_until_return('X')
         return status    
-        
+
     def query_until_return(self, query, n=10):
-    
+
         message = self.query(query)
-        
+
         for i in range(n):
-        
+
             if len(message) != 0:
                 return message
             else:

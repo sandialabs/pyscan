@@ -21,7 +21,7 @@ class Agilent33500(InstrumentDriver):
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
     channel : 
         channel of instrument, 1 or 2
-    
+
     Attributes
     ----------
     gain : 
@@ -150,7 +150,7 @@ class Agilent33500(InstrumentDriver):
                 "PRBS",
                 "NOIS",
                 "ARB",
-                "DC",],
+                "DC", ],
             'return_type': str})
 
         self.add_device_property({
@@ -166,7 +166,7 @@ class Agilent33500(InstrumentDriver):
                 "PRBS",
                 "NOIS",
                 "ARB",
-                "DC",],
+                "DC", ],
             'return_type': str})
 
         self.add_device_property({
@@ -297,12 +297,12 @@ class Agilent33500(InstrumentDriver):
 
         self.update_properties()
         self.check_errors()
-        
+
     @property
     def frequency(self):
         self._frequency = getattr(self, 'frequency_chan{}'.format(self.channel))
         return self._frequency
-    
+
     @frequency.setter
     def frequency(self, new_value):
         setattr(self, 'frequency_chan{}'.format(self.channel), new_value)
@@ -311,7 +311,7 @@ class Agilent33500(InstrumentDriver):
     def instrument_amplitude(self):
         self._instrument_amplitude = getattr(self, 'instrument_amplitude_chan{}'.format(self.channel))
         return self._instrument_amplitude
-    
+
     @instrument_amplitude.setter
     def instrument_amplitude(self, new_value):
         setattr(self, 'instrument_amplitude_chan{}'.format(self.channel), new_value)
@@ -320,7 +320,7 @@ class Agilent33500(InstrumentDriver):
     def instrument_voltage(self):
         self._instrument_voltage = getattr(self, 'instrument_voltage_chan{}'.format(self.channel))
         return self._instrument_voltage
-    
+
     @instrument_voltage.setter
     def instrument_voltage(self, new_value):
         setattr(self, 'instrument_voltage_chan{}'.format(self.channel), new_value)
@@ -329,7 +329,7 @@ class Agilent33500(InstrumentDriver):
     def voltage_autorange(self):
         self._voltage_autorange = getattr(self, 'voltage_autorange_chan{}'.format(self.channel))
         return self._voltage_autorange
-    
+
     @voltage_autorange.setter
     def voltage_autorange(self, new_value):
         setattr(self, 'voltage_autorange_chan{}'.format(self.channel), new_value)
@@ -338,7 +338,7 @@ class Agilent33500(InstrumentDriver):
     def function(self):
         self._function = getattr(self, 'function_chan{}'.format(self.channel))
         return self._function
-    
+
     @function.setter
     def function(self, new_value):
         setattr(self, 'function_chan{}'.format(self.channel), new_value)
@@ -347,7 +347,7 @@ class Agilent33500(InstrumentDriver):
     def arb_advance_mode(self):
         self._arb_advance_mode = getattr(self, 'arb_advance_mode_chan{}'.format(self.channel))
         return self._arb_advance_mode
-    
+
     @arb_advance_mode.setter
     def arb_advance_mode(self, new_value):
         setattr(self, 'arb_advance_mode_chan{}'.format(self.channel), new_value)
@@ -356,7 +356,7 @@ class Agilent33500(InstrumentDriver):
     def arb_filter(self):
         self._arb_filter = getattr(self, 'arb_filter_chan{}'.format(self.channel))
         return self._arb_filter
-    
+
     @arb_filter.setter
     def arb_filter(self, new_value):
         setattr(self, 'arb_filter_chan{}'.format(self.channel), new_value)
@@ -365,7 +365,7 @@ class Agilent33500(InstrumentDriver):
     def arb_sample_rate(self):
         self._arb_sample_rate = getattr(self, 'arb_sample_rate_chan{}'.format(self.channel))
         return self._arb_sample_rate
-    
+
     @arb_sample_rate.setter
     def arb_sample_rate(self, new_value):
         setattr(self, 'arb_sample_rate_chan{}'.format(self.channel), new_value)
@@ -374,7 +374,7 @@ class Agilent33500(InstrumentDriver):
     def burst_mode(self):
         self._burst_mode = getattr(self, 'burst_mode_chan{}'.format(self.channel))
         return self._burst_mode
-    
+
     @burst_mode.setter
     def burst_mode(self, new_value):
         setattr(self, 'burst_mode_chan{}'.format(self.channel), new_value)
@@ -383,7 +383,7 @@ class Agilent33500(InstrumentDriver):
     def burst_cycles(self):
         self._burst_cycles = getattr(self, 'burst_cycles_chan{}'.format(self.channel))
         return self._burst_cycles
-    
+
     @burst_cycles.setter
     def burst_cycles(self, new_value):
         setattr(self, 'burst_cycles_chan{}'.format(self.channel), new_value)
@@ -392,7 +392,7 @@ class Agilent33500(InstrumentDriver):
     def burst_state(self):
         self._burst_state = getattr(self, 'burst_state_chan{}'.format(self.channel))
         return self._burst_state
-    
+
     @burst_state.setter
     def burst_state(self, new_value):
         setattr(self, 'burst_state_chan{}'.format(self.channel), new_value)
@@ -401,7 +401,7 @@ class Agilent33500(InstrumentDriver):
     def output(self):
         self._output = getattr(self, 'output_chan{}'.format(self.channel))
         return self._output
-    
+
     @output.setter
     def output(self, new_value):
         setattr(self, 'output_chan{}'.format(self.channel), new_value)
@@ -410,7 +410,7 @@ class Agilent33500(InstrumentDriver):
     def output_load(self):
         self._output_load = getattr(self, 'output_load_chan{}'.format(self.channel))
         return self._output_load
-    
+
     @output_load.setter
     def output_load(self, new_value):
         setattr(self, 'output_load_chan{}'.format(self.channel), new_value)
@@ -419,7 +419,7 @@ class Agilent33500(InstrumentDriver):
     def trigger_source(self):
         self._trigger_source = getattr(self, 'trigger_source_chan{}'.format(self.channel))
         return self._trigger_source
-    
+
     @trigger_source.setter
     def trigger_source(self, new_value):
         setattr(self, 'trigger_source_chan{}'.format(self.channel), new_value)
@@ -533,7 +533,7 @@ class Agilent33500(InstrumentDriver):
     def amplitude(self):
         self._amplitude = self.instrument_amplitude * self.gain
         return self._amplitude
-    
+
     @amplitude.setter
     def amplitude(self, new_value):
         self.instrument_amplitude = new_value / self.gain
@@ -564,7 +564,7 @@ class Agilent33500(InstrumentDriver):
         firmwares = ID[-1].split('-')
         self.firmware_ = float(re.sub("[^0-9]", "", firmwares[0]))
         return self.firmware_
-    
+
     @property
     def errors(self):
         """Retrieve errors one by one and clear them

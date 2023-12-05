@@ -19,7 +19,7 @@ class PylonSDK(ItemAttribute):
 
         Args:
             settings: dict containing settings for property
-        
+
         Returns function that generates the property of the class
         '''
 

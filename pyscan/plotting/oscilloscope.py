@@ -40,9 +40,9 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
     y_data = []
     data = []
     y = None
-    
+
     t0 = time()
-    
+
     i = 0
     try:
         while True:
@@ -97,7 +97,7 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
                 x_data = np.append(x_data[1:], [x])
                 if y:
                     y_data = np.append(y_data[1:], [y])
-            
+
             plt.gca().cla()
 
             plt.title("Oscilloscope {}".format(i))

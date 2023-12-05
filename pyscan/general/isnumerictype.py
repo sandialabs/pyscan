@@ -12,7 +12,7 @@ def is_numeric_type(obj):
     ----------
     obj : 
         Object of any type.
-    
+
     Returns
     -------
     bool

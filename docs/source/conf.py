@@ -30,9 +30,9 @@ release = '0.0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-	'sphinx.ext.autodoc',
-	'sphinx.ext.coverage',
-	'numpydoc',
+        'sphinx.ext.autodoc',
+        'sphinx.ext.coverage',
+        'numpydoc',
 ]
 
 numpydoc_show_inherited_class_members = False
@@ -67,7 +67,7 @@ html_theme_options = {
     "logo": { #"link": "https://matplotlib.org/stable/",
              "image_light": "_static/pyscan logo v3.svg",
              "image_dark": "_static/pyscan logo v3.svg",
-	},
+        },
     # collapse_navigation in pydata-sphinx-theme is slow, so skipped for local
     # and CI builds https://github.com/pydata/pydata-sphinx-theme/pull/386
     # "collapse_navigation": not is_release_build,
@@ -79,4 +79,3 @@ html_theme_options = {
     #   template function in Sphinx.
     "navbar_links": "absolute",
 }
-

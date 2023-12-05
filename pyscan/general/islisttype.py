@@ -15,7 +15,7 @@ def is_list_type(obj):
     ----------
     obj : 
         Object of any type.
-    
+
     Returns
     -------
     bool

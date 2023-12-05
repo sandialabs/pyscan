@@ -542,4 +542,3 @@ class ZurichHF2Trigger(ZurichDriver):
 
     def set_device(self):
         self.daq.set('dataAcquisitionModule/device', 'dev{}'.format(self.dev))
-

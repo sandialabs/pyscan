@@ -101,7 +101,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
     def channel_input_config(self, full_scale, impedance, coupling):
         '''
         Configures the cannel inputs
-        
+
         Args:
             full_scale - float volage input scale
 

@@ -69,7 +69,7 @@ class TPI1002A(InstrumentDriver):
             Not tested
         state : str
             State
-        
+
     '''
     def __init__(self, instrument):
         super().__init__(instrument)
@@ -151,7 +151,7 @@ class TPI1002A(InstrumentDriver):
                             settings['write_string'].format(settings['send_type'](new_value)), 
                             return_bytes=settings['ok_bytes'] + 2 if 'ok_bytes' in settings else None)
         return retval
-    
+
     @check_errors
     def set_range_property(self, obj, new_value, settings):
         rng = settings['range']
@@ -262,7 +262,7 @@ class TPI1002A(InstrumentDriver):
             'return_type': lambda x: self._bytes_to_int(x, signed=True),
             'write_string': '080A{}',  # careful, will set to max/min if out of range
             'range': [-70, 10]})
-        
+
     def instruction_packet(self, instruction):
         if isinstance(instruction, str):
             instruction = bytes.fromhex(instruction)
@@ -288,7 +288,7 @@ class TPI1002A(InstrumentDriver):
     def _int_to_bytes(self, num, bytelen, signed=False):
         """LSB first"""
         return num.to_bytes(length=bytelen, byteorder='little', signed=signed)
-    
+
     def _bytes_to_int(self, bytcode, signed=False):
         """LSB first [bytcode] is a bytes object."""
         test = int(''.join([bytcode.hex()[i:i + 2] for i in range(0, len(bytcode.hex()), 2)][::-1]), 16)

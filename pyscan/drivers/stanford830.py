@@ -12,7 +12,7 @@ from time import sleep
 
 class Stanford830(InstrumentDriver):
     '''Class to control Stanford Research Systems SR830 DSP Dual Phase Lock-In Amplifier
-    
+
     Parameters
     ----------
     instrument :
@@ -277,7 +277,7 @@ class Stanford830(InstrumentDriver):
     def amplitude(self):
         self._amplitude = self.instrument_amplitude * self.gain
         return self._amplitude
-    
+
     @amplitude.setter
     def amplitude(self, new_value):
         self.instrument_amplitude = new_value / self.gain 

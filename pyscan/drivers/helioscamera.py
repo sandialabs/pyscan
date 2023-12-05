@@ -34,7 +34,7 @@ class HeliosSDK(ItemAttribute):
 
         Args:
             settings: dict containing settings for property
-        
+
         Returns function that generates the property of the class
         '''
 
@@ -224,7 +224,7 @@ def SensTqp_to_frequency(SensTqp):
 
 
 def frequency_to_SenseTqp(frequency):
-    
+
     return 70 * 1e6 / 8 / frequency - 30
 
 
@@ -238,7 +238,7 @@ class HeliosCamera(HeliosSDK):
         self.initialize_properties()
 
     def initialize_properties(self):
-        
+
         self.add_device_property({'name': 'internal_trigger',
                                   'get_command': lambda: getattr(self.instrument.map, 'TrigFreeExtN'),
                                   'return_type': int,
@@ -274,13 +274,13 @@ class HeliosCamera(HeliosSDK):
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'EnSynFOut', x),
                                   'int_range': [0, 1]})
-        
+
         self.add_device_property({'name': 'internal_trigger_on_position',
                                   'get_command': lambda: getattr(self.instrument.map, 'EnTrigOnPos'),
                                   'return_type': int,
                                   'set_command': lambda x: setattr(self.instrument.map, 'EnTrigOnPos', x),
                                   'int_range': [0, 1]})
-        
+
         self.add_device_property({'name': 'acquisition_mode',
                                   'get_command': lambda: getattr(self.instrument.map, 'CamMode'),
                                   'return_type': int,
@@ -336,7 +336,7 @@ class HeliosCamera(HeliosSDK):
 
         self._frequency = SensTqp_to_frequency(self.internal_tqp)
         return self._frequency
-    
+
     @frequency.setter
     def frequency(self, x):
 
@@ -350,12 +350,12 @@ class HeliosCamera(HeliosSDK):
         '''
         Camera automatically captures frames
         '''
-        
+
         self.internal_trigger = 1
         self.sync_out = sync_out
-        
+
     def external_trigger_mode(self, sync_out=1):
-        
+
         self.internal_trigger = 0
         self.external_time = 0
         self.internal_trigger_on_position = 0
@@ -363,19 +363,19 @@ class HeliosCamera(HeliosSDK):
         self.sync_out = sync_out
 
     def acquire_IQ_mode(self, compressed=0): 
-        
+
         self.acquisition_mode = 0
-        
+
     def acquire_amplitude_mode(self, offset_method=0, compressed=0): 
-        
+
         self.acquisition_mode = 1
         self.offset_method = offset_method
         self.compress_amplitude = compressed
-        
+
     def acquire_intensity_mode(self):
-        
+
         self.acquisition_mode = 3
-        
+
     def print_register_descriptions(self):
 
         rd = self.instrument.GetRegDesc()
@@ -394,7 +394,7 @@ class HeliosCamera(HeliosSDK):
             print('{}, {}'.format(name, comment))
             print('cam_mode,value, min, max')
             print('{}, {}, {}, {},\r\n'.format(level, def_value, min_value, max_value))
-    
+
     def print_register_description(self, register):
 
         rd = self.instrument.GetRegDesc()
@@ -458,7 +458,7 @@ class HeliosCamera(HeliosSDK):
         else:
             self._t_offset = 0
         return self._t_offset
-    
+
     @property
     def frame_time(self):
         self._frame_time = self.actual_cycles_per_frame / self.frequency + self._t_offset
