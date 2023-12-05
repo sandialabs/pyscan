@@ -115,27 +115,27 @@ class PicoHarp300(ItemAttribute):
 
         sleep(0.2)
 
-    @property
-    def binning(self):
-        tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
-        self._binning = binning.value
-        return self._binning
+    # @property
+    # def binning(self):
+    #     tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
+    #     self._binning = binning.value
+    #     return self._binning
 
-    @binning.setter
-    def binning(self, new_value):
-        binning = new_value
-        tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
+    # @binning.setter
+    # def binning(self, new_value):
+    #     binning = new_value
+    #     tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
 
-    @property
-    def offset(self):
-        tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
-        self._offset = offset.value
-        return self._offset
+    # @property
+    # def offset(self):
+    #     tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
+    #     self._offset = offset.value
+    #     return self._offset
 
-    @offset.setter
-    def offset(self, new_value):
-        offset = new_value
-        tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
+    # @offset.setter
+    # def offset(self, new_value):
+    #     offset = new_value
+    #     tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
 
     @property
     def resolution(self):
