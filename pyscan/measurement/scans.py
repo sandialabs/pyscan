@@ -185,7 +185,7 @@ class AverageScan(MetaScan):
         self.scan_dict = {}
         self.n = n_average
         self.nrange = range(self.n) 
-        self.scan_dict['average'] = list(nrange)
+        self.scan_dict['average'] = list(self.nrange)
         self.device_names = ['average']
         self.i = 0
         self.dt = dt
