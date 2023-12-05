@@ -20,7 +20,8 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
         Parameters
         ----------
         instrument :
-            Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+            Visa string or an instantiated instrument (return value from 
+            :func:`~pyscan.drivers.newinstrument.new_instrument`)
         port : str or int
             port to connnect driver.  If no port is identified, the
             driver will communicate with the mainframe.
@@ -295,19 +296,19 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
         full_message = ''
         done = False
         while not done:
-                # nbytes = int(self.query('NINP? {}'.format(port)))
-                response = self.query('GETN? {}, {}'.format(port, 128))
-                self.logger.debug('read_port: response={}'.format(repr(response)))
-                message, message_complete = self.extract_message(response)
-                full_message += message
-                if message_complete:
+            # nbytes = int(self.query('NINP? {}'.format(port)))
+            response = self.query('GETN? {}, {}'.format(port, 128))
+            self.logger.debug('read_port: response={}'.format(repr(response)))
+            message, message_complete = self.extract_message(response)
+            full_message += message
+            if message_complete:
+                done = True
+            else:
+                if not self.wait_port_msg(port):
+                    # timeout
                     done = True
-                else:
-                    if not self.wait_port_msg(port):
-                        # timeout
-                        done = True
-                        self.logger.warning('read_port: timeout waiting to '
-                                            'complete message (port {}'.format(port))
+                    self.logger.warning('read_port: timeout waiting to '
+                                        'complete message (port {}'.format(port))
 
         self.logger.debug('read_port: port={} msg={}'.format(port, full_message))
 

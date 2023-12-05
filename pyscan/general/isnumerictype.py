@@ -5,10 +5,6 @@ isnumerictype
 """
 
 
-import numpy as np
-
-
-
 def is_numeric_type(obj):
     '''Determines if input is an `int` or `float`.
 

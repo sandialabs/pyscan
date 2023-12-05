@@ -11,38 +11,36 @@ class OxfordIGH(InstrumentDriver):
 
     def __init__(self, instrument):
 
-        #super().__init__(instrument)
+        # super().__init__(instrument)
 
         self.instrument = instrument
         self.instrument.read_termination = '\r'
         self.instrument.write_termination = '\r'
         self.set_remote_unlocked()
 
-        
         self.debug = False
         self.initialize_properties()
-
 
     def initialize_properties(self):
         pass
     
     def set_local_locked(self):
-        status = self.write('C0')
+        self.write('C0')
 
     def set_remote_lock(self):
-        status = self.query('C1')
+        self.query('C1')
 
     def set_local_unlocked(self):
-        status = self.query('C2')
+        self.query('C2')
 
     def set_remote_unlocked(self):
-        status = self.query('C3')
+        self.query('C3')
 
     def get_mc_temperature(self):
         # R3 reads the full range to 1 mK
         # R32 reads the low temperature range to 0.1 mK
         result = self.query('R32')
-        temperature = float(result[2:])/10000
+        temperature = float(result[2:]) / 10000
 
         return temperature
     
@@ -61,6 +59,3 @@ class OxfordIGH(InstrumentDriver):
                 return message
             else:
                 message = self.query('&') 
-                
-if __name__=="__main__":
-    pass

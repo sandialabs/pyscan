@@ -6,7 +6,7 @@ ZurichDriver
 
 
 import zhinst.ziPython as ziPython
-from pysweep.general.itemattribute import ItemAttribute
+from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 
 
@@ -329,18 +329,18 @@ class ZurichHF2(ZurichDriver):
         print('Setting up trigger')
         self.trigger = self.daq.dataAcquisitionModule()
 
-        self.sample_rate = sample_rate*over_sample
+        self.sample_rate = sample_rate * over_sample
 
         self.trigger.set('dataAcquisitionModule/device', 'dev{}'.format(self.dev))
 
         self.trigger.set('dataAcquisitionModule/triggernode',
-                   '/dev{}/demods/{}/sample.auxin0'.format(self.dev, self.channel))
+                         '/dev{}/demods/{}/sample.auxin0'.format(self.dev, self.channel))
 
         self.trigger.set('dataAcquisitionModule/type', 1)  # 1 = edge
         self.trigger.set('dataAcquisitionModule/edge', 1)  # 1 = positive
 
         self.trigger.set('dataAcquisitionModule/level', trigger_level)
-        self.trigger.set('dataAcquisitionModule/hysteresis', trigger_level*0.05)
+        self.trigger.set('dataAcquisitionModule/hysteresis', trigger_level * 0.05)
 
         self.trigger.set('dataAcquisitionModule/grid/repetitions', 1)
         self.trigger.set('dataAcquisitionModule/grid/mode', 4)
@@ -349,17 +349,17 @@ class ZurichHF2(ZurichDriver):
         self.trigger.set('dataAcquisitionModule/count', 1)
         self.trigger.set('dataAcquisitionModule/holdoff/count', 0)
         self.trigger.set('dataAcquisitionModule/holdoff/time', 0)
-        self.trigger.set('dataAcquisitionModule/delay',  0)
+        self.trigger.set('dataAcquisitionModule/delay', 0)
         demod_rate = self.sample_rate
 
-        duration = n_total/demod_rate
+        duration = n_total / demod_rate
 
         self.trigger.set('dataAcquisitionModule/duration', duration)
 
-        self.trigger.set('dataAcquisitionModule/grid/cols', n_total*over_sample)
-        trigger_duration = self.trigger.getDouble('dataAcquisitionModule/duration')
+        self.trigger.set('dataAcquisitionModule/grid/cols', n_total * over_sample)
+        # trigger_duration = self.trigger.getDouble('dataAcquisitionModule/duration')
 
-        buffer_size = self.trigger.getInt('dataAcquisitionModule/buffersize')
+        # buffer_size = self.trigger.getInt('dataAcquisitionModule/buffersize')
 
         # We subscribe to the same demodulator sample we're triggering on, but we
         # could additionally subscribe to other node paths.
@@ -370,7 +370,7 @@ class ZurichHF2(ZurichDriver):
         self.trigger.subscribe(sigy)
 
         self.trigger.set('dataAcquisitionModule/save/filename', 'sw_trigger_with_save')
-        self.trigger.set('dataAcquisitionModule/save/fileformat', 1) # 1= CSV
+        self.trigger.set('dataAcquisitionModule/save/fileformat', 1)  # 1= CSV
 
         self.trigger.execute()
 
@@ -384,8 +384,9 @@ class ZurichHF2(ZurichDriver):
         d = {}
 
         for i in data_list:
-            d[i] = np.zeros((len(data['dev{}'.format(self.dev)]['demods']['0']['sample.{}'.format(i)]),
-                       data['dev{}'.format(self.dev)]['demods']['0']['sample.{}'.format(i)][0]['value'].shape[1]))
+            d[i] = np.zeros(
+                (len(data['dev{}'.format(self.dev)]['demods']['0']['sample.{}'.format(i)]),
+                 data['dev{}'.format(self.dev)]['demods']['0']['sample.{}'.format(i)][0]['value'].shape[1]))
             for j in range(d[i].shape[0]):
                 d[i][j, :] = data['dev{}'.format(self.dev)]['demods']['0']['sample.{}'.format(i)][j]['value'].T[:, 0]
 
@@ -423,117 +424,115 @@ class ZurichHF2Trigger(ZurichDriver):
     def init_settings(self):
 
         self.add_device_property({
-                    'name': 'device',
-                    'write_string': '/dataAcquisitionModule/device',
-                    'query_string': '/dataAcquisitionModule/device',
-                    'return_type': str})
+            'name': 'device',
+            'write_string': '/dataAcquisitionModule/device',
+            'query_string': '/dataAcquisitionModule/device',
+            'return_type': str})
 
         self.add_device_property({
-                    'name': 'trigger_node',
-                    'write_string': '/dataAcquisitionModule/triggernode',
-                    'query_string': '/dataAcquisitionModule/triggernode',
-                    'return_type': str})
+            'name': 'trigger_node',
+            'write_string': '/dataAcquisitionModule/triggernode',
+            'query_string': '/dataAcquisitionModule/triggernode',
+            'return_type': str})
 
         self.add_device_property({
-                    'name': 'trigger_type',
-                    'write_string': '/dataAcquisitionModule/triggertype',
-                    'query_string': '/dataAcquisitionModule/triggertype',
-                    'values': [0, 1, 2, 3 ,4],
-                    'return_type': int})
+            'name': 'trigger_type',
+            'write_string': '/dataAcquisitionModule/triggertype',
+            'query_string': '/dataAcquisitionModule/triggertype',
+            'values': [0, 1, 2, 3, 4],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'trigger_type',
-                    'write_string': '/dataAcquisitionModule/triggertype',
-                    'query_string': '/dataAcquisitionModule/triggertype',
-                    'values': [0, 1, 2, 3 ,4],
-                    'return_type': int})
+            'name': 'trigger_type',
+            'write_string': '/dataAcquisitionModule/triggertype',
+            'query_string': '/dataAcquisitionModule/triggertype',
+            'values': [0, 1, 2, 3, 4],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'trigger_edge',
-                    'write_string': '/dataAcquisitionModule/triggeredge',
-                    'query_string': '/dataAcquisitionModule/triggeredge',
-                    'values': [0, 1, 2, 3 ,4],
-                    'return_type': int})
+            'name': 'trigger_edge',
+            'write_string': '/dataAcquisitionModule/triggeredge',
+            'query_string': '/dataAcquisitionModule/triggeredge',
+            'values': [0, 1, 2, 3, 4],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'trigger_level',
-                    'write_string': '/dataAcquisitionModule/triggerlevel',
-                    'query_string': '/dataAcquisitionModule/triggerlevel',
-                    'range': [-1, 1],
-                    'return_type': float})
+            'name': 'trigger_level',
+            'write_string': '/dataAcquisitionModule/triggerlevel',
+            'query_string': '/dataAcquisitionModule/triggerlevel',
+            'range': [-1, 1],
+            'return_type': float})
 
         self.add_device_property({
-                    'name': 'trigger_hysteresis',
-                    'write_string': '/dataAcquisitionModule/triggerhysteresis',
-                    'query_string': '/dataAcquisitionModule/triggerhysteresis',
-                    'values': [-1, 1],
-                    'return_type': float})
+            'name': 'trigger_hysteresis',
+            'write_string': '/dataAcquisitionModule/triggerhysteresis',
+            'query_string': '/dataAcquisitionModule/triggerhysteresis',
+            'values': [-1, 1],
+            'return_type': float})
 
         self.add_device_property({
-                    'name': 'count',
-                    'write_string': '/dataAcquisitionModule/count',
-                    'query_string': '/dataAcquisitionModule/count',
-                    'range': [1, 1e5],
-                    'return_type': int})
+            'name': 'count',
+            'write_string': '/dataAcquisitionModule/count',
+            'query_string': '/dataAcquisitionModule/count',
+            'range': [1, 1e5],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'delay',
-                    'write_string': '/dataAcquisitionModule/delay',
-                    'query_string': '/dataAcquisitionModule/delay',
-                    'range': [-1, 1],
-                    'return_type': float})
+            'name': 'delay',
+            'write_string': '/dataAcquisitionModule/delay',
+            'query_string': '/dataAcquisitionModule/delay',
+            'range': [-1, 1],
+            'return_type': float})
 
         self.add_device_property({
-                    'name': 'duration',
-                    'write_string': '/dataAcquisitionModule/duration',
-                    'query_string': '/dataAcquisitionModule/duration',
-                    'range': [0, 60],
-                    'return_type': float})
+            'name': 'duration',
+            'write_string': '/dataAcquisitionModule/duration',
+            'query_string': '/dataAcquisitionModule/duration',
+            'range': [0, 60],
+            'return_type': float})
 
         self.add_device_property({
-                    'name': 'buffer_size',
-                    'write_string': '/dataAcquisitionModule/buffersize',
-                    'query_string': '/dataAcquisitionModule/buffersize',
-                    'return_type': float})
-
+            'name': 'buffer_size',
+            'write_string': '/dataAcquisitionModule/buffersize',
+            'query_string': '/dataAcquisitionModule/buffersize',
+            'return_type': float})
 
         # Grid properties
         self.add_device_property({
-                    'name': 'grid_mode',
-                    'write_string': '/dataAcquisitionModule/grid/mode',
-                    'query_string': '/dataAcquisitionModule/grid/mode',
-                    'values': [0, 1, 2, 3 ,4],
-                    'return_type': int})
+            'name': 'grid_mode',
+            'write_string': '/dataAcquisitionModule/grid/mode',
+            'query_string': '/dataAcquisitionModule/grid/mode',
+            'values': [0, 1, 2, 3, 4],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'grid_columns',
-                    'write_string': '/dataAcquisitionModule/grid/cols',
-                    'query_string': '/dataAcquisitionModule/grid/cols',
-                    'range': [1, 1e9],
-                    'return_type': int})
+            'name': 'grid_columns',
+            'write_string': '/dataAcquisitionModule/grid/cols',
+            'query_string': '/dataAcquisitionModule/grid/cols',
+            'range': [1, 1e9],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'grid_repetitions',
-                    'write_string': '/dataAcquisitionModule/grid/repetition',
-                    'query_string': '/dataAcquisitionModule/grid/repetition',
-                    'range': [1, 1e4],
-                    'return_type': int})
-
+            'name': 'grid_repetitions',
+            'write_string': '/dataAcquisitionModule/grid/repetition',
+            'query_string': '/dataAcquisitionModule/grid/repetition',
+            'range': [1, 1e4],
+            'return_type': int})
 
         # Holdoff properties
         self.add_device_property({
-                    'name': 'holdoff_count',
-                    'write_string': '/dataAcquisitionModule/holdoff/count',
-                    'query_string': '/dataAcquisitionModule/holdoff/count',
-                    'range': [0, 1e4],
-                    'return_type': int})
+            'name': 'holdoff_count',
+            'write_string': '/dataAcquisitionModule/holdoff/count',
+            'query_string': '/dataAcquisitionModule/holdoff/count',
+            'range': [0, 1e4],
+            'return_type': int})
 
         self.add_device_property({
-                    'name': 'holdoff_time',
-                    'write_string': '/dataAcquisitionModule/holdoff/time',
-                    'query_string': '/dataAcquisitionModule/holdoff/time',
-                    'range': [0, 1],
-                    'return_type': float})
+            'name': 'holdoff_time',
+            'write_string': '/dataAcquisitionModule/holdoff/time',
+            'query_string': '/dataAcquisitionModule/holdoff/time',
+            'range': [0, 1],
+            'return_type': float})
 
     def execute(self):
         self.daq.execute()

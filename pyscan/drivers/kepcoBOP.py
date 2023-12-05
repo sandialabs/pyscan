@@ -14,7 +14,8 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     tesla_per_amp : float
         Defaults to 0.004201
     

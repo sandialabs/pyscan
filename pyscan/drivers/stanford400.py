@@ -14,7 +14,8 @@ class Stanford400(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from 
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     
     Yields
     ------
@@ -195,7 +196,7 @@ class Stanford400(InstrumentDriver):
             'name': 'discriminator_slope_B',
             'write_string': 'DS 1, {}',
             'query_string': 'DS 1',
-            'dict_values': {0: 'rise', 1:'fall'},
+            'dict_values': {0: 'rise', 1: 'fall'},
             'return_type': float})
 
         self.add_device_property({
@@ -216,7 +217,7 @@ class Stanford400(InstrumentDriver):
             'name': 'discriminator_mode_B',
             'write_string': 'DM 1, {}',
             'query_string': 'DM 1',
-            'dict_values': {0: 'fixed', 1:'scan'},
+            'dict_values': {0: 'fixed', 1: 'scan'},
             'return_type': float})
 
         self.add_device_property({
@@ -310,7 +311,6 @@ class Stanford400(InstrumentDriver):
             'range': [0.005e-6, 999.2e-3],
             'return_type': float})
 
-
     ## Front panel commands
 
     def start(self):
@@ -333,4 +333,3 @@ class Stanford400(InstrumentDriver):
             return int(self.query('QB').replace('\r\n', ''))
         else:
             return self.query('QB {}'.format(n))
-

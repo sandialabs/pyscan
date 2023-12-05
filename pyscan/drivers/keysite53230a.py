@@ -15,7 +15,8 @@ class Keysite53230A(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     channel : int
         Channel
 
@@ -73,7 +74,7 @@ class Keysite53230A(InstrumentDriver):
 
         data = self.read_and_erase()
         n_header = data[1]
-        data= data[2+int(n_header)::]
+        data = data[2 + int(n_header)::]
         data = data.replace('\n', '').split(',')
         data = [float(d) for d in data]
         return data

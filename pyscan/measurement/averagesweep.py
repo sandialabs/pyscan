@@ -6,26 +6,25 @@ Average Sweep
 
 import numpy as np
 from time import sleep
-from pyscan.general.drange import drange
 from pyscan.general.islisttype import is_list_type
 from pyscan.measurement.metasweep import MetaSweep
 
 
 class AverageSweep(MetaSweep):
     '''Experiment class that takes data after each runinfo.loop0 iteration and averages over
-    the loop containing an :class:`AverageScan<pyscan.measurement.scans.AverageScan>` instance. 
-    It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+    the loop containing an `.AverageScan` instance
+    It inherits from `.MetaSweep`.
 
     Parameters
     ----------
     runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
-        Runinfo instance. The Runinfo loop containing the dependent variable 
-        that you want to average should be an instance of 
-        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`. 
-        There should be only one dependent variable to be averaged. 
-        The loops representing independent variables can be instances of 
+        Runinfo instance. The Runinfo loop containing the dependent variable
+        that you want to average should be an instance of
+        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
+        There should be only one dependent variable to be averaged.
+        The loops representing independent variables can be instances of
         :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
-    devices : 
+    devices :
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional
         The path to save the data, defaults to './backup'
@@ -57,7 +56,7 @@ class AverageSweep(MetaSweep):
         for m in range(self.runinfo.loop3.n):
             self.runinfo.loop3.i = m
             self.runinfo.loop3.iterate(m, self.devices)
-            sleep(self.runinfo.loop3.dt) 
+            sleep(self.runinfo.loop3.dt)
 
             for k in range(self.runinfo.loop2.n):
                 self.runinfo.loop2.i = k
@@ -76,8 +75,8 @@ class AverageSweep(MetaSweep):
 
                         data = self.runinfo.measure_function(self)
 
-                        #if on the first row of data, log the data names in self.runinfo.measured
-                        if np.all(np.array(self.runinfo.indicies) == 0): 
+                        # if on the first row of data, log the data names in self.runinfo.measured
+                        if np.all(np.array(self.runinfo.indicies) == 0):
                             for key, value in data.items():
                                 self.runinfo.measured.append(key)
                             self.preallocate(data)
@@ -113,11 +112,11 @@ class AverageSweep(MetaSweep):
             self.runinfo.end_function(self)
 
     def rolling_average(self, data):
-        '''Does a rolling average of newly measured data 
-        
+        '''Does a rolling average of newly measured data
+
         Parameters
         ----------
-        data : 
+        data :
             ItemAttribute instance of newly measured data point
         '''
         for key, value in data.items():
@@ -132,16 +131,15 @@ class AverageSweep(MetaSweep):
                     self[key][self.runinfo.average_indicies] = value
                 else:
                     self[key][self.runinfo.average_indicies] *= (
-                                self.runinfo.average_index/(self.runinfo.average_index + 1))
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
                     self[key][self.runinfo.average_indicies] += (
-                                value/(self.runinfo.average_index + 1))
+                        value / (self.runinfo.average_index + 1))
             else:
                 if self.runinfo.average_index == 0:
                     self[key] = value
 
                 else:
                     self[key] *= (
-                                self.runinfo.average_index/(self.runinfo.average_index + 1))
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
                     self[key] += (
-                                value/(self.runinfo.average_index + 1))
-
+                        value / (self.runinfo.average_index + 1))

@@ -6,6 +6,9 @@ Stanford830
 
 
 from .instrumentdriver import InstrumentDriver
+import numpy as np
+from time import sleep
+
 
 class Stanford830(InstrumentDriver):
     '''Class to control Stanford Research Systems SR830 DSP Dual Phase Lock-In Amplifier
@@ -13,7 +16,8 @@ class Stanford830(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from 
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
     ------
@@ -79,7 +83,6 @@ class Stanford830(InstrumentDriver):
         self.debug = False
         self.initialize_properties()
 
-
     def initialize_properties(self):
 
         self.add_device_property({
@@ -107,7 +110,7 @@ class Stanford830(InstrumentDriver):
             'name': 'reference_slope',
             'write_string': 'RSLP {}',
             'query_string': 'RSLP?',
-            'indexed_values':['sine zero', 'ttl rising', 'ttl falling'],
+            'indexed_values': ['sine zero', 'ttl rising', 'ttl falling'],
             'return_type': float})
 
         self.add_device_property({
@@ -121,14 +124,14 @@ class Stanford830(InstrumentDriver):
             'name': 'instrument_amplitude',
             'write_string': 'SLVL {}',
             'query_string': 'SLVL?',
-            'range':  [0, 5.0],
+            'range': [0, 5.0],
             'return_type': float})
 
         self.add_device_property({
             'name': 'input_configuration',
             'write_string': 'ISRC {}',
             'query_string': 'ISRC?',
-            'indexed_values':  ['A', 'A-B', 'Ie6', 'Ie8'],
+            'indexed_values': ['A', 'A-B', 'Ie6', 'Ie8'],
             'return_type': int})
 
         self.add_device_property({
@@ -156,59 +159,61 @@ class Stanford830(InstrumentDriver):
             'name': 'sensitivity',
             'write_string': 'SENS {}',
             'query_string': 'SENS?',
-            'indexed_values':  [2e-9, 5e-9,
-                                       10e-9, 20e-9, 50e-5,
-                                       100e-9, 200e-9, 500e-9,
-                                       1e-6, 2e-6, 5e-6,
-                                       10e-6, 20e-6, 50e-6,
-                                       100e-6, 200e-6, 500e-6,
-                                       1e-3, 2e-3, 5e-3,
-                                       10e-3, 20e-3, 50e-3,
-                                       100e-3, 200e-3, 500e-3,
-                                       1],
+            'indexed_values': [
+                2e-9, 5e-9,
+                10e-9, 20e-9, 50e-5,
+                100e-9, 200e-9, 500e-9,
+                1e-6, 2e-6, 5e-6,
+                10e-6, 20e-6, 50e-6,
+                100e-6, 200e-6, 500e-6,
+                1e-3, 2e-3, 5e-3,
+                10e-3, 20e-3, 50e-3,
+                100e-3, 200e-3, 500e-3,
+                1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'reserve_mode',
             'write_string': 'RMOD {}',
             'query_string': 'RMOD?',
-            'indexed_values':  ['high', 'normal', 'low'],
+            'indexed_values': ['high', 'normal', 'low'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'time_constant',
             'write_string': 'OFLT {}',
             'query_string': 'OFLT?',
-            'indexed_values':  [10e-6, 30e-6, 100e-6, 300e-6,
-                                         1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
-                                         300e-3,
-                                         1, 3, 10, 30, 100, 300, 1000, 3000,
-                                         10000, 30000],
+            'indexed_values': [
+                10e-6, 30e-6, 100e-6, 300e-6,
+                1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
+                300e-3,
+                1, 3, 10, 30, 100, 300, 1000, 3000,
+                10000, 30000],
             'return_type': int})
 
         self.add_device_property({
             'name': 'filter_slope',
             'write_string': 'OFSL{} {}',
             'query_string': 'OFSL?',
-            'indexed_values':  [6, 12, 18, 24],
+            'indexed_values': [6, 12, 18, 24],
             'return_type': int})
-
 
         self.add_device_property({
             'name': 'synchronous_filter',
             'write_string': 'SYNC {}',
             'query_string': 'SYNC?',
-            'indexed_values':  ['off', 'on'],
+            'indexed_values': ['off', 'on'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'sample_rate',
             'write_string': 'SRAT {}',
             'query_string': 'SRAT?',
-            'indexed_values':  [0.0625, .125, .250, .5, 1,
-                                       2, 4, 8,
-                                       16, 32, 64, 128,
-                                       256, 512, 'trigger'],
+            'indexed_values': [
+                0.0625, .125, .250, .5, 1,
+                2, 4, 8,
+                16, 32, 64, 128,
+                256, 512, 'trigger'],
             'return_type': int})
 
         self.add_device_property({
@@ -218,12 +223,11 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['one shot', 'loop'],
             'return_type': int})
 
-
         self.add_device_property({
             'name': 'trigger_mode',
             'write_string': 'TSTR {}',
             'query_string': 'TSTR?',
-            'indexed_values':  ['off', 'on'],
+            'indexed_values': ['off', 'on'],
             'return_type': int})
 
         self.update_properties()
@@ -285,8 +289,8 @@ class Stanford830(InstrumentDriver):
             if source in ['x', 'y', 'r']:
                 return (float(self.query('OUTP? {}'.format(index))))
             else:
-                return (float(self.query('OUTP? {}'.format(index))) *
-                        180 / 3.14159)
+                return (float(self.query('OUTP? {}'.format(index)))
+                        * 180 / 3.14159)
         else:
             print('Value Error:')
             print('Outputs are {}, {}, {}, or {}'.format(*values))
@@ -435,8 +439,8 @@ class Stanford830(InstrumentDriver):
         bw_dict = {6: 1 / (4 * tc), 12: 1 / (8 * tc), 18: 3 / (32 * tc), 24: 5 / (64 * tc)}
 
         available_rates = self.sample_rate_['values'][:-2]
-        sample_rate = available_rates[bisect_left(available_rates,
-                                                  1 / wait_dict[slope])]
+        sample_rate = available_rates[
+            np.bisect_left(available_rates, 1 / wait_dict[slope])]
 
         data = self.get_x_values(N=N, sample_rate=sample_rate) / gain
 

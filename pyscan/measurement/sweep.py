@@ -13,7 +13,9 @@ from datetime import datetime
 
 
 class Sweep(MetaSweep):
-    '''Experiment class that takes data after each loop0 iteration. Inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+    '''
+    Experiment class that takes data after each loop0 iteration. Inherits from 
+    `.MetaSweep`.
 
     Parameters
     ----------
@@ -140,7 +142,9 @@ class Sweep(MetaSweep):
 
         if self.runinfo.time:
             try:
-                self.runinfo.dt0 = [0] + [self.runinfo.t0[i] - self.runinfo.t0[i-1] for i in range(1, len(self.runinfo.t0))]
+                self.runinfo.dt0 = [0] + [self.runinfo.t0[i]
+                                          - self.runinfo.t0[i - 1]
+                                          for i in range(1, len(self.runinfo.t0))]
             except:
                 pass
             self.runinfo.dt1 = self.runinfo.t1 - self.runinfo.t0

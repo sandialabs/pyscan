@@ -5,14 +5,12 @@ ThorlabsMFF101
 """
 
 from pyscan.general.itemattribute import ItemAttribute
-from ctypes import c_char_p, c_int, c_double, c_ushort, c_ulong,\
-                    c_short
+from thorlabs_kinesis import filter_flipper as ff
+from ctypes import c_char_p, c_ushort, c_ulong
 from time import sleep
 
 c_word = c_ushort
 c_dword = c_ulong
-
-from thorlabs_kinesis import filter_flipper as ff
 
 
 class ThorlabsMFF101(ItemAttribute):

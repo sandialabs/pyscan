@@ -3,19 +3,15 @@ ThorlabsBPC303
 ==============
 """
 # -*- coding: utf-8 -*-
-import sys,os,time
-import ipywidgets as widgets
-import numpy as np
 
 from pyscan.general.itemattribute import ItemAttribute
-from ctypes import c_char_p, c_int, c_double, c_ushort, c_ulong,\
-                    c_short
+from thorlabs_kinesis import benchtop_piezo as bp
+from ctypes import c_char_p, c_ushort, c_ulong, c_short
 from time import sleep
 
 c_word = c_ushort
 c_dword = c_ulong
 
-from thorlabs_kinesis import benchtop_piezo as bp
 
 class ThorlabsBPC303(ItemAttribute):
     '''Class to control ThorLabs BPC303 - 3-Channel 150 V Benchtop Piezo Controller with USB  
@@ -28,7 +24,7 @@ class ThorlabsBPC303(ItemAttribute):
     def __init__(self, serial="71872242"):
         self.serial = c_char_p(bytes(serial, "utf-8"))
         if self.build_device_list() != 0:
-            Error('Could not build device list')
+            assert 0, 'Could not build device list'
         if self.open() != 0:
             print(self.open())
         sleep(1.5)
@@ -69,15 +65,15 @@ class ThorlabsBPC303(ItemAttribute):
         pos = self.to_real_units(pos)
         return pos
 
-    def to_device_units(self,val,pva=0):
+    def to_device_units(self, val, pva=0):
         """pva is 0 [position], 1 [velocity], or 2 [acceleration]"""
-        conversions=[122/200000]
-        return int(round(val/conversions[pva]))
+        conversions = [122 / 200000]
+        return int(round(val / conversions[pva]))
 
-    def to_real_units(self,val,pva=0):
+    def to_real_units(self, val, pva=0):
         """pva is 0 [position], 1 [velocity], or 2 [acceleration]"""
-        conversions=[200000/122]
-        return val/conversions[pva]
+        conversions = [200000 / 122]
+        return val / conversions[pva]
 
     def move_channel_to(self, channel, location, wait=True):
         index = self.to_device_units(location, 0)
@@ -130,16 +126,10 @@ class ThorlabsBPC303(ItemAttribute):
         return self._xyz
 
     @xyz.setter
-    def xyz(self,posns):
+    def xyz(self, posns):
         for i, posn in zip(range(1, 4), posns):
             self.move_channel_to(i, posn)
 
     def __del__(self):
         [self.stop_polling_channel(q) for q in range(1, 4)]
         self.close()
-
-class ThorlabsBSC303(ItemAttribute):  # pragma: no cover
-    '''Class for indicating to users of older versions of pyscan how to update code'''
-    def __init__(self, inst, port):
-        print('class "ThorlabsBSC303" is deprecated.  Use "ThorlabsBPC303"')
-        super().__init__(inst, port)
