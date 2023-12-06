@@ -17,8 +17,8 @@ def test_ItemAttribute():
     assert list(ia.values()) == [3, 'str']
     assert list(ia.items()) == [('test_prop1', 3), ('test_prop2', 'str')]
 
-    assert 'test_prop1' in ia
-    assert 'test_prop2' in ia
+    assert hasattr(ia, 'test_prop1')
+    assert hasattr(ia, 'test_prop2')
 
     del ia.test_prop1
     assert not hasattr(ia, 'test_prop1')
