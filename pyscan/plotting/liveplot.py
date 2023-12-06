@@ -53,5 +53,5 @@ def live_plot(plotting_function, dt=1):
 
         display.display(plt.gcf())
         display.clear_output(wait=True)
-        
+
     return live_plot_function

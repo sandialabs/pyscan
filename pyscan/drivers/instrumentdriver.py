@@ -18,7 +18,7 @@ class InstrumentDriver(ItemAttribute):
     ----------
     instrument : string or pyvisa :class:`Resource`
         visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        :func:`.new_instrument`)
     '''
 
     def __init__(self, instrument):
@@ -36,7 +36,7 @@ class InstrumentDriver(ItemAttribute):
         ----------
         string: str
             The message to send to the device
-        
+
         Returns
         -------
         str
@@ -53,7 +53,7 @@ class InstrumentDriver(ItemAttribute):
         ----------
         string: str
             The message to be sent
-        
+
         Returns
         -------
         None
@@ -68,7 +68,7 @@ class InstrumentDriver(ItemAttribute):
         -------
         str
             Message read from the instrument
-        
+
         '''
 
         return self.instrument.read()
@@ -101,7 +101,7 @@ class InstrumentDriver(ItemAttribute):
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
             fset=lambda obj, new_value: set_function(obj, new_value, settings))
-        
+
         setattr(self.__class__, settings['name'], property_definition)
 
     def get_instrument_property(self, obj, settings, debug=False):

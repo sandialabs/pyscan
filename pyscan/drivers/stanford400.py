@@ -10,13 +10,13 @@ from .instrumentdriver import InstrumentDriver
 
 class Stanford400(InstrumentDriver):
     '''Class for controlling Stanford Research Systems SR400 - Gated photon counter
-    
+
     Parameters
     ----------
     instrument :
         Visa string or an instantiated instrument (return value from 
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
-    
+
     Yields
     ------
     Properties which can be get and set :

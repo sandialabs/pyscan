@@ -32,7 +32,7 @@ class BKPrecision9130B(InstrumentDriver):
             Range: [0, 4]
         currents : [float, float, float]
             Ranges: [[0, 3], [0, 3], [0, 3]]
-        
+
     '''
     def __init__(self, instrument):
         super().__init__(instrument)

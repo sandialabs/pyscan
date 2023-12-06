@@ -4,6 +4,10 @@ PrincetonPiMax4
 ===============
 """
 
+from PrincetonInstruments.LightField.AddIns import Pulse
+from PrincetonInstruments.LightField.AddIns import ExperimentSettings
+from PrincetonInstruments.LightField.AddIns import CameraSettings
+from PrincetonInstruments.LightField.Automation import Automation
 from pyscan.general.itemattribute import ItemAttribute
 
 import clr
@@ -20,16 +24,11 @@ clr.AddReference('PrincetonInstruments.LightFieldViewV5')
 clr.AddReference('PrincetonInstruments.LightField.AutomationV5')
 clr.AddReference('PrincetonInstruments.LightFieldAddInSupportServices')
 
-from PrincetonInstruments.LightField.Automation import Automation
-from PrincetonInstruments.LightField.AddIns import CameraSettings
-from PrincetonInstruments.LightField.AddIns import ExperimentSettings
-from PrincetonInstruments.LightField.AddIns import Pulse
-
 
 class PrincetonPiMax4(ItemAttribute):
     '''Class to control Princeton Instruments PI MAX 4 camera
-    
-    
+
+
     '''   
     def __init__(self, verbose=False):
 
@@ -40,7 +39,7 @@ class PrincetonPiMax4(ItemAttribute):
         self.file_manager = self.application.FileManager
 
         self.verbose = False
-    
+
     def print_device_information(self):
         print("Experiment Device Information:")
         # Print model and serial number of current device
@@ -66,7 +65,7 @@ class PrincetonPiMax4(ItemAttribute):
         print(String.Format(
             "{0} {1} {2}", "Current",
             setting, "Capabilities:"))
-        
+
         for item in self.experiment.GetCurrentCapabilities(setting):        
             print_speeds(item)
 
@@ -75,7 +74,7 @@ class PrincetonPiMax4(ItemAttribute):
         print(String.Format(
             "{0} {1} {2}", "Maximum",
             setting, "Capabilities:"))
-        
+
         for item in self.experiment.GetMaximumCapabilities(setting):
             if (setting == CameraSettings.AdcSpeed):
                 print_speeds(item)
@@ -90,24 +89,24 @@ class PrincetonPiMax4(ItemAttribute):
                 print(String.Format(
                     "{0}{1} to {2}", "Setting ",
                     setting, value))
-            
+
             self.experiment.SetValue(setting, value)
-            
+
     @property
     def gating_mode(self):
         self._gating_mode = self.get_settings(CameraSettings.GatingMode, self.verbose)
         return self._gating_mode
-    
+
     @gating_mode.setter
     def gating_mode(self, value):
         self.set_value(CameraSettings.GatingMode, value)
         self._gating_mode = value
-        
+
     @property
     def gate_width(self):
         self._gate_width = self.get_settings(CameraSettings.GatingRepetitiveGate).Width / 1e6
         return self._gate_width
-        
+
     @gate_width.setter
     def gate_width(self, new_value):
         new_value
@@ -115,18 +114,18 @@ class PrincetonPiMax4(ItemAttribute):
         delay = self.get_settings(CameraSettings.GatingRepetitiveGate).Delay
         self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(new_value, delay))   
         self._gate_width = new_value
-        
+
     @property
     def gate_delay(self):
         self._gate_delay = self.get_settings(CameraSettings.GatingRepetitiveGate).delay
         return self._gate_delay
-        
+
     @gate_delay.setter
     def gate_delay(self, new_value):
         width = self.get_settings(CameraSettings.GatingRepetitiveGate).Width
         self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(width, new_value))   
         self._gate_delay = new_value
-    
+
     @property
     def intensifier_gain(self):
         self._intensifier_gain = self.get_settings(CameraSettings.IntensifierEMIccdGain)
@@ -136,7 +135,7 @@ class PrincetonPiMax4(ItemAttribute):
     def intensifier_gain(self, new_value):
         self.set_value(CameraSettings.IntensifierEMIccdGain, int(new_value))
         self._intensifier_gain = new_value
-    
+
     def acquire_image(self):
         self.save_file('temp')
         try:
@@ -159,7 +158,7 @@ class PrincetonPiMax4(ItemAttribute):
                 sleep(0.05)
 
         return image
-    
+
     def save_file(self, filename):
         # Set the base file name
         self.experiment.SetValue(

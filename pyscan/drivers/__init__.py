@@ -44,7 +44,7 @@ try:
     from .thorlabsbsc203 import BSC203
 except ModuleNotFoundError:
     print('msl not installed, Thorlabs BSC203 driver not loaded')
-    
+
 try:
     from .oceanopticsqepro import OceanOpticsQEPro
 except ModuleNotFoundError:

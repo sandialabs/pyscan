@@ -17,7 +17,7 @@ except:
 
 class KeysiteM3302AAWG(ItemAttribute):
     '''Class to control Keysite M3302A PXIe AWG and Digitizer Combination
-    
+
     Parameters
     ----------
     chassis
@@ -57,7 +57,6 @@ class KeysiteM3302AAWG(ItemAttribute):
     def set_channel_awg_from_array(
             self, channel, trigger_mode, start_delay, cycles, prescalar, waveform_type,
             waveform_data_A, waveform_data_B=None, padding_mode=0):
-
         '''
         Parameters
         ----------

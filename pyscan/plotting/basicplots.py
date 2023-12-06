@@ -57,7 +57,7 @@ def plot2D(expt, **kwarg):
         Additional kwargs are `pyscan.plotting.plotgenerator.PlotGenerator` properties.
 
     """
-    
+
     pg = PlotGenerator(expt, d=2, **kwarg)
 
     plt.pcolormesh(pg.x, pg.y, pg.data.T,

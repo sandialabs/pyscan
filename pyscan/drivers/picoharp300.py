@@ -92,12 +92,12 @@ def tryfunc(retcode, funcName):
 
 class PicoHarp300(ItemAttribute):
     '''Class to control PicoQuant PicoHarp 300 - Stand-alone TCSP Module with USB Interface
-    
+
     Parameters
     ----------
     dev
         Defaults to 0
-    
+
     '''
 
     def __init__(self, dev=0):
@@ -115,34 +115,34 @@ class PicoHarp300(ItemAttribute):
 
         sleep(0.2)
 
-    @property
-    def binning(self):
-        tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
-        self._binning = binning.value
-        return self._binning
+    # @property
+    # def binning(self):
+    #     tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
+    #     self._binning = binning.value
+    #     return self._binning
 
-    @binning.setter
-    def binning(self, new_value):
-        binning = new_value
-        tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
+    # @binning.setter
+    # def binning(self, new_value):
+    #     binning = new_value
+    #     tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
 
-    @property
-    def offset(self):
-        tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
-        self._offset = offset.value
-        return self._offset
+    # @property
+    # def offset(self):
+    #     tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
+    #     self._offset = offset.value
+    #     return self._offset
 
-    @offset.setter
-    def offset(self, new_value):
-        offset = new_value
-        tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
+    # @offset.setter
+    # def offset(self, new_value):
+    #     offset = new_value
+    #     tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
 
     @property
     def resolution(self):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-   
+
     @resolution.setter
     def resolution(self, new_value):
         resolution = new_value
@@ -160,7 +160,7 @@ class PicoHarp300(ItemAttribute):
 
     def set_channel_1_voltage(self, zero_cross=10, discriminator=100):
         print(self.dev, zero_cross, discriminator)
-        
+
         tryfunc(
             phlib.PH_SetInputCFD(
                 ctypes.c_int(self.dev), ctypes.c_int(1),
@@ -229,7 +229,7 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-    
+
     def init_histogram_mode(self):
         self.set_histgram_mode()
         self.calibrate()

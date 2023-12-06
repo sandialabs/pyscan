@@ -315,6 +315,6 @@ class ThorlabsBSC203(ItemAttribute):
             return vmax / amax + dx / vmax
 
     def reset_speed(self):
-        
+
         for chan in range(1, 4):
             self.set_channel_velocity_parameters(chan, 2, 4)

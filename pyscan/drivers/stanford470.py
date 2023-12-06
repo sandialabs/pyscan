@@ -10,7 +10,7 @@ from .instrumentdriver import InstrumentDriver
 
 class Stanford470(InstrumentDriver):
     '''Class to control Stanford Research Systems SR470 - Laser shutters and controllers
-    
+
     Parameters
     ----------
     instrument :

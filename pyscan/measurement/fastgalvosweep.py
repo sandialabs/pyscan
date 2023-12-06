@@ -30,7 +30,7 @@ class FastGalvoSweep(MetaSweep):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
- 
+
     '''
 
     def __init__(self, runinfo, devices, data_dir=None, verbose=False):
@@ -142,7 +142,7 @@ class FastGalvoSweep(MetaSweep):
         devices = expt.devices
 
         d = ItemAttribute()
-        
+
         devices.pb.start()
 
         sleep(runinfo.loop0.n / runinfo.srate * 1.01)

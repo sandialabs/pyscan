@@ -18,8 +18,8 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
     tesla_per_amp : float
         Defaults to 0.004201
-    
-    
+
+
     '''
     def __init__(self,
                  instrument,
