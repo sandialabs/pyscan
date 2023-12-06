@@ -63,9 +63,6 @@ class Agilent33500(InstrumentDriver):
         trigger_source : str
             Values: ["IMM", "EXT", "TIM", "BUS"]
 
-
-
-
     '''
 
     def __init__(self, instrument, channel):

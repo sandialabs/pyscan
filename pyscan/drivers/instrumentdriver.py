@@ -21,12 +21,13 @@ class InstrumentDriver(ItemAttribute):
         :func:`.new_instrument`)
     '''
 
-    def __init__(self, instrument):
+    def __init__(self, instrument, test=False):
         if isinstance(instrument, str):
             self.instrument = new_instrument(instrument)
         else:
             self.instrument = instrument
-        self.debug = False
+
+        self.test = test
 
     def query(self, string):
         '''

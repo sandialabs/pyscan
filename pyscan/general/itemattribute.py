@@ -40,3 +40,11 @@ class ItemAttribute(object):
         '''Returns a list of key:value pairs.
         '''
         return self.__dict__.items()
+
+    def __contains__(self, item):
+        '''
+        Overleads the `key in object` syntax to check if 
+        `key in obj.__dict__`
+        '''
+
+        return item in self.__dict__

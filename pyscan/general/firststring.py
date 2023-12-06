@@ -4,6 +4,7 @@ firststring
 -----------
 """
 
+import numpy as np
 from six import string_types
 
 
@@ -25,5 +26,9 @@ def first_string(obj):
 
     if isinstance(obj, string_types):
         return obj
-    else:
-        return obj[0]
+    elif isinstance(obj, (list, tuple, np.array)):
+        value = obj[0]
+        if isinstance(value, string_types):
+            return value    
+        else:
+            raise TypeError
