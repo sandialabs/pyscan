@@ -32,11 +32,17 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    'numpydoc']
+    # 'numpydoc',
+    'sphinx.ext.napoleon',]
 
+# napoleon options
+napoleon_numpy_docstring = True
+
+# numpydoc options
 numpydoc_show_inherited_class_members = False
 numpydoc_class_members_toctree = False
 
+# autodoc options
 autodoc_typehints = "none"
 autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
