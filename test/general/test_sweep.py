@@ -68,6 +68,7 @@ def test_0D_multi_data():
     None
     """
 
+    # setting up experiment
     devices = ps.ItemAttribute()        
     devices.v1 = ps.TestVoltage()
 
@@ -79,15 +80,18 @@ def test_0D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
         
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
+    # check the meta path was set successfully
     checkMetaPath(meta_path)
 
     expt.run()
@@ -109,17 +113,21 @@ def test_0D_multi_data():
         assert len(expt.repeat) == 1, "experiment repeat value is not 1"
         assert type(expt.x1) is float, "experiment x1 measurement is not a float"
         assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
+        assert expt.x2.dtype == 'float64'
         for i in expt.x3:
             assert type(i) is np.ndarray, "experiment x3 measurement is not a numpy array of numpy arrays"
+            assert i.dtype == 'float64'
 
     checkExptResults(expt)
 
+    # saves file name and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
+    # loads the experiment
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
-    # for checking experiment is loaded as expected
+    # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
         assert len(temp.keys()) == 6, "loaded experiment does not have 6 keys"
         assert hasattr(temp, 'runinfo'), "loaded experiment missing runinfo attribute"
@@ -151,6 +159,7 @@ def test_1D_data():
     None
     """
     
+    # setting up experiment
     devices = ps.ItemAttribute()        
     devices.v1 = ps.TestVoltage()
 
@@ -162,47 +171,63 @@ def test_1D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
     
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
+    # check the meta path was set successfully
     checkMetaPath(meta_path)
 
     expt.run()
 
+    # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 4
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
+        assert len(expt.keys()) == 4, "experiment does not have 4 keys"
+        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
+        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
+        assert hasattr(expt, 'x'), "experiment missing x attribute after running"
     
     checkExptOutput(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt):
+        assert type(expt.v1_voltage) is np.ndarray
+        assert expt.v1_voltage.dtype == 'float64'
         assert len(expt.v1_voltage) == 2
+        assert type(expt.x) is np.ndarray
+        assert expt.x.dtype == 'float64'
         assert len(expt.x) == 2
     
     checkExptResults(expt)
 
+    # saves file name and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # loads the experiment
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 4
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'x')
-        assert temp.x.dtype == 'float64'
+        assert len(temp.keys()) == 4, "loaded experiment does not have 4 keys"
+        assert hasattr(temp, 'runinfo'), "loaded experiment missing runinfo attribute"
+        assert hasattr(temp, 'devices'), "loaded experiment missing devices attribute"
+        assert hasattr(temp, 'v1_voltage'), "loaded experiment missing v1_voltage attribute"
+        assert hasattr(temp, 'x'), "loaded experiment missing x attribute"
+
+        assert type(temp.v1_voltage) is np.ndarray, "loaded v1_voltage is not a numpy array"
+        assert type(temp.x) is np.ndarray, "loaded x is not a numpy array"
+
         assert temp.v1_voltage.dtype == 'float64'
+        assert temp.x.dtype == 'float64'
 
     checkLoadExpt(temp)
 
