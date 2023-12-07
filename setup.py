@@ -23,7 +23,7 @@ setup(
         "drivers",
         "measurement",
         "experiment",
-    ]
+    ],
     url="",
     packages=find_packages(exclude=['docs']),
     long_description=read('README.md'),
