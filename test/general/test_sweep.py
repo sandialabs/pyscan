@@ -92,7 +92,8 @@ def test_0D_multi_data():
 
     expt.run()
 
-    def checkFour(expt):
+    # for checking the experiments output after running
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 6, "experiment does not have 6 keys"
         assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
         assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
@@ -101,33 +102,42 @@ def test_0D_multi_data():
         assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
         assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    # for checking the experiments results formatting after running
+    def checkExptResults(expt):
         assert len(expt.repeat) == 1, "experiment repeat value is not 1"
         assert type(expt.x1) is float, "experiment x1 measurement is not a float"
         assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
-        assert type(expt.x3) is np.ndarray, "experiment x2 measurement is not a numpy array"
+        for i in expt.x3:
+            assert type(i) is np.ndarray, "experiment x3 measurement is not a numpy array of numpy arrays"
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
-    def checkSix(temp):
-        assert len(temp.keys()) == 6
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'repeat')
-        assert hasattr(temp, 'x1')
-        assert hasattr(temp, 'x2')
-        assert hasattr(temp, 'x3')
-        assert temp.x1.dtype == 'float64'
+    # for checking experiment is loaded as expected
+    def checkLoadExpt(temp):
+        assert len(temp.keys()) == 6, "loaded experiment does not have 6 keys"
+        assert hasattr(temp, 'runinfo'), "loaded experiment missing runinfo attribute"
+        assert hasattr(temp, 'devices'), "loaded experiment missing devices attribute"
+        assert hasattr(temp, 'repeat'), "loaded experiment missing repeat attribute"
+        assert hasattr(temp, 'x1'), "loaded experiment missing x1 attribute"
+        assert hasattr(temp, 'x2'), "loaded experiment missing x2 attribute"
+        assert hasattr(temp, 'x3'), "loaded experiment missing x3 attribute"
 
-    checkSix(temp)
+        assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
+        assert type(temp.x2) is np.ndarray, "loaded x2 is not a numpy array"
+        assert type(temp.x3) is np.ndarray, "loaded x3 is not a numpy array"
+
+        assert temp.x1.dtype == 'float64', "loaded x1's data type is not float64"
+        assert temp.x2.dtype == 'float64', "loaded x1's data type is not float64"
+        assert temp.x3.dtype == 'float64', "loaded x1's data type is not float64"
+
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -165,19 +175,19 @@ def test_1D_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 4
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
         assert hasattr(expt, 'v1_voltage')
     
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.x) == 2
     
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -185,7 +195,7 @@ def test_1D_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 4
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -194,7 +204,7 @@ def test_1D_data():
         assert temp.x.dtype == 'float64'
         assert temp.v1_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -237,7 +247,7 @@ def test_1D_multi_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 6
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -246,15 +256,15 @@ def test_1D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         len(expt.x1) == 2
         list(expt.x2.shape) == [2, 2]
         list(expt.x3.shape) == [2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -262,7 +272,7 @@ def test_1D_multi_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 6
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -275,7 +285,7 @@ def test_1D_multi_data():
         assert temp.x3.dtype == 'float64'
         assert temp.v1_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -315,7 +325,7 @@ def test_2D_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 5
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -323,13 +333,13 @@ def test_2D_data():
         assert hasattr(expt, 'v2_voltage')
         assert hasattr(expt, 'x')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert list(expt.x.shape), [2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -337,7 +347,7 @@ def test_2D_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 5
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -348,7 +358,7 @@ def test_2D_data():
         assert temp.v1_voltage.dtype == 'float64'
         assert temp.v2_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -388,7 +398,7 @@ def test_2D_multi_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 7
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -398,16 +408,16 @@ def test_2D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         list(expt.x1.shape) == [2, 2]
         list(expt.x2.shape) == [2, 2]
         list(expt.x3.shape) == [2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -415,7 +425,7 @@ def test_2D_multi_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 7
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -430,7 +440,7 @@ def test_2D_multi_data():
         assert temp.v1_voltage.dtype == 'float64'
         assert temp.v2_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -472,7 +482,7 @@ def test_3D_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 6
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -481,15 +491,15 @@ def test_3D_data():
         assert hasattr(expt, 'v3_voltage')
         assert hasattr(expt, 'x')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
         list(expt.x.shape) == [2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -497,7 +507,7 @@ def test_3D_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 6
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -510,7 +520,7 @@ def test_3D_data():
         assert temp.v2_voltage.dtype == 'float64'
         assert temp.v3_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -552,7 +562,7 @@ def test_3D_multi_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 8
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -563,9 +573,9 @@ def test_3D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -573,7 +583,7 @@ def test_3D_multi_data():
         list(expt.x2.shape) == [2, 2, 2, 2]
         list(expt.x3.shape) == [2, 2, 2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -581,7 +591,7 @@ def test_3D_multi_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 8
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -598,7 +608,7 @@ def test_3D_multi_data():
         assert temp.v2_voltage.dtype == 'float64'
         assert temp.v3_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -642,7 +652,7 @@ def test_4D_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 7
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -652,16 +662,16 @@ def test_4D_data():
         assert hasattr(expt, 'v4_voltage')
         assert hasattr(expt, 'x')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
         assert len(expt.v3_voltage) == 2
         list(expt.x.shape) == [2, 2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -669,7 +679,7 @@ def test_4D_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 7
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -684,7 +694,7 @@ def test_4D_data():
         assert temp.v3_voltage.dtype == 'float64'
         assert temp.v4_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -728,7 +738,7 @@ def test_4D_multi_data():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 9
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -740,9 +750,9 @@ def test_4D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -751,7 +761,7 @@ def test_4D_multi_data():
         list(expt.x2.shape) == [2, 2, 2, 2, 2]
         list(expt.x3.shape) == [2, 2, 2, 2, 2, 2]
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -759,7 +769,7 @@ def test_4D_multi_data():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 9
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -778,7 +788,7 @@ def test_4D_multi_data():
         assert temp.v3_voltage.dtype == 'float64'
         assert temp.v4_voltage.dtype == 'float64'
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -816,20 +826,20 @@ def test_1D_repeat():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 4
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
         assert hasattr(expt, 'repeat')
         assert hasattr(expt, 'x')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.repeat) == 2
         assert len(expt.x) == 2
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -837,7 +847,7 @@ def test_1D_repeat():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 4
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -848,7 +858,7 @@ def test_1D_repeat():
         assert len(temp.x) == 2
         assert len(temp.repeat) == 2
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
 
@@ -886,20 +896,20 @@ def test_underscore_property():
 
     expt.run()
 
-    def checkFour(expt):
+    def checkExptOutput(expt):
         assert len(expt.keys()) == 4
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
         assert hasattr(expt, 'v1_device_other_voltage')
         assert hasattr(expt, 'x')
 
-    checkFour(expt)
+    checkExptOutput(expt)
 
-    def checkFive(expt):
+    def checkExptResults(expt):
         assert len(expt.v1_device_other_voltage) == 2
         assert len(expt.x) == 2
 
-    checkFive(expt)
+    checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
@@ -907,7 +917,7 @@ def test_underscore_property():
     # Test that we load what we expect
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
-    def checkSix(temp):
+    def checkLoadExpt(temp):
         assert len(temp.keys()) == 4
         assert hasattr(temp, 'runinfo')
         assert hasattr(temp, 'devices')
@@ -918,6 +928,6 @@ def test_underscore_property():
         assert len(temp.x) == 2
         assert len(temp.v1_device_other_voltage) == 2
 
-    checkSix(temp)
+    checkLoadExpt(temp)
 
     shutil.rmtree('./backup')
