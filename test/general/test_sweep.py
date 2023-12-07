@@ -30,13 +30,21 @@ def measure_up_to_3D(expt):
     return d
 
 
+# for checking keys, runinfo, and devices attributes
+def basicCheck(expt, intended_keys_length, loaded=''):
+    assert hasattr(expt, 'keys'), loaded + " experiment missing attribute 'keys'"
+    ks = str(len(expt.keys()))
+    iks = str(intended_keys_length)
+    error_string = loaded + "experiment has " + ks + " keys instead of " + iks + " keys"
+    assert len(expt.keys()) == intended_keys_length, error_string
+
+    assert hasattr(expt, 'runinfo'), loaded + "experiment missing runinfo attribute"
+    assert hasattr(expt, 'devices'), loaded + "experiment missing devices attribute"
+
+
 # for checking the experiment (expt) upon initialization
 def checkExptInit(expt):
-    assert hasattr(expt, 'keys'), "experiment missing attribute 'keys'"
-    assert len(expt.keys()) == 2, "wrong number of experiment keys"
-
-    assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute"
-    assert hasattr(expt, 'devices'), "experiment missing devices attribute"
+    basicCheck(expt, intended_keys_length=2)
 
     assert expt.runinfo.data_path.exists(), "experiment data path does not exist"
     assert expt.runinfo.data_path.is_dir(), "experiment data path is not a directory"
@@ -98,9 +106,8 @@ def test_0D_multi_data():
 
     # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 6, "experiment does not have 6 keys"
-        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
-        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        basicCheck(expt, intended_keys_length=6)
+        
         assert hasattr(expt, 'repeat'), "experiment missing devices attribute after running"
         assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
         assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
@@ -115,7 +122,7 @@ def test_0D_multi_data():
         assert type(expt.x1) is float, "experiment x1 measurement is not a float"
 
         assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
-        assert expt.x2.dtype == 'float64'
+        assert expt.x2.dtype == 'float64', "experiment x2 measurement data is not a float"
         list(expt.x2.shape) == [2, 2], "experiment x2 measurement is not the right shape"
 
         assert type(expt.x3) is np.ndarray, "experiment x3 measurement is not a numpy array"
@@ -135,9 +142,8 @@ def test_0D_multi_data():
     
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 6, "loaded experiment does not have 6 keys"
-        assert hasattr(temp, 'runinfo'), "loaded experiment missing runinfo attribute"
-        assert hasattr(temp, 'devices'), "loaded experiment missing devices attribute"
+        basicCheck(temp, 6, 'loaded')
+
         assert hasattr(temp, 'repeat'), "loaded experiment missing repeat attribute"
         assert hasattr(temp, 'x1'), "loaded experiment missing x1 attribute"
         assert hasattr(temp, 'x2'), "loaded experiment missing x2 attribute"
@@ -390,8 +396,17 @@ def test_2D_data():
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        assert len(expt.v1_voltage) == 2
-        assert list(expt.x.shape), [2, 2]
+        assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
+        assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
+        assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+
+        assert type(expt.v2_voltage) is np.ndarray, "experiment v2_voltage is not a numpy array"
+        assert expt.v2_voltage.dtype == 'float64', "experiment v2_voltage data is not a float"
+        assert len(expt.v2_voltage) == 2, "experiment v2_voltage array does not have 2 elements"
+
+        assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
+        assert expt.x.dtype == 'float64', "experiment x2 measurement data is not a float"
+        list(expt.x.shape) == [2, 2], "experiment x measurement is not the right shape"
 
     checkExptResults(expt)
 
