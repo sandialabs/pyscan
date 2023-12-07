@@ -91,6 +91,14 @@ def checkLoadedMulti(temp):
     assert temp.x3.dtype == 'float64', "loaded x3's data type is not float64"
 
 
+def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1):
+    assert type(voltage) is np.ndarray, "experiment v" + voltage_id + "_voltage is not a numpy array"
+    assert voltage.dtype == 'float64', "experiment v" + voltage_id + "_voltage data is not a float"
+    assert len(voltage) == 2, "experiment v" + voltage_id + "_voltage array does not have 2 elements"
+    assert voltage[0] == expected_value1, "experiment v" + voltage_id + "_voltage value[0] is not 0"
+    assert voltage[1] == expected_value2, "experiment v" + voltage_id + "_voltage value[1] is not 0.1"
+
+
 def test_0D_multi_data():
     """
     Testing 1D scan, measuring 1D, 2D, and 3D data and loaded file
@@ -171,20 +179,10 @@ def test_0D_multi_data():
         # check the loaded experiment keys, runinfo, and devices attributes
         basicCheck(temp, 6, loaded=True)
 
+        # check the loaded experiment has multidata measurement attributes
         checkLoadedMulti(temp)
 
         assert hasattr(temp, 'repeat'), "loaded experiment missing repeat attribute"
-        assert hasattr(temp, 'x1'), "loaded experiment missing x1 attribute"
-        assert hasattr(temp, 'x2'), "loaded experiment missing x2 attribute"
-        assert hasattr(temp, 'x3'), "loaded experiment missing x3 attribute"
-
-        assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
-        assert type(temp.x2) is np.ndarray, "loaded x2 is not a numpy array"
-        assert type(temp.x3) is np.ndarray, "loaded x3 is not a numpy array"
-
-        assert temp.x1.dtype == 'float64', "loaded x1's data type is not float64"
-        assert temp.x2.dtype == 'float64', "loaded x1's data type is not float64"
-        assert temp.x3.dtype == 'float64', "loaded x1's data type is not float64"
 
     checkLoadExpt(temp)
 
@@ -240,6 +238,8 @@ def test_1D_data():
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
+
+        checkVoltageResults(expt.v1_voltage, 0, 0.1)
         assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
         assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
         assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
@@ -323,10 +323,10 @@ def test_1D_multi_data():
         # check the experiment keys, runinfo, and devices attributes
         basicCheck(expt, 6)
 
+        # check the experiment has multidata measurement attributes
+        basicCheckMulti(expt)
+
         assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltages attribute after running"
-        assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
-        assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
-        assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
     checkExptOutput(expt)
 
@@ -335,6 +335,8 @@ def test_1D_multi_data():
         assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
         assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
         assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+        assert expt.v1_voltage[0] == 0, "experiment v1_voltage value[0] is not 0"
+        assert expt.v1_voltage[1] == 0.1, "experiment v1_voltage value[1] is not 0.1"
 
         assert type(expt.x1) is np.ndarray, "experiment x1 measurement is not a numpy array"
         assert expt.x1.dtype == 'float64', "experiment x1 measurement data is not a float"
@@ -364,20 +366,14 @@ def test_1D_multi_data():
         # check the loaded experiment keys, runinfo, and devices attributes
         basicCheck(temp, 6, loaded=True)
 
+        # check the loaded experiment has multidata measurement attributes
+        checkLoadedMulti(temp)
+
         assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'x1')
-        assert hasattr(temp, 'x2')
-        assert hasattr(temp, 'x3')
-
         assert type(temp.v1_voltage) is np.ndarray, "loaded v1_voltage is not a numpy array"
-        assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
-        assert type(temp.x2) is np.ndarray, "loaded x2 is not a numpy array"
-        assert type(temp.x3) is np.ndarray, "loaded x3 is not a numpy array"
-
         assert temp.v1_voltage.dtype == 'float64'
-        assert temp.x1.dtype == 'float64'
-        assert temp.x2.dtype == 'float64'
-        assert temp.x3.dtype == 'float64'
+        assert temp.v1_voltage[0] == 0, "experiment v1_voltage value[0] is not 0"
+        assert temp.v1_voltage[1] == 0.1, "experiment v1_voltage value[1] is not 0.1"
 
     checkLoadExpt(temp)
 
