@@ -111,12 +111,18 @@ def test_0D_multi_data():
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
         assert len(expt.repeat) == 1, "experiment repeat value is not 1"
+
         assert type(expt.x1) is float, "experiment x1 measurement is not a float"
+
         assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
         assert expt.x2.dtype == 'float64'
+        list(expt.x2.shape) == [2, 2], "experiment x2 measurement is not the right shape"
+
+        assert type(expt.x3) is np.ndarray, "experiment x3 measurement is not a numpy array"
         for i in expt.x3:
             assert type(i) is np.ndarray, "experiment x3 measurement is not a numpy array of numpy arrays"
-            assert i.dtype == 'float64'
+        assert expt.x3.dtype == 'float64', "experiment x3 measurement data is not a float"
+        list(expt.x3.shape) == [2, 2, 2], "experiment x3 measurement is not the right shape"
 
     checkExptResults(expt)
 
@@ -199,12 +205,13 @@ def test_1D_data():
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        assert type(expt.v1_voltage) is np.ndarray
-        assert expt.v1_voltage.dtype == 'float64'
-        assert len(expt.v1_voltage) == 2
-        assert type(expt.x) is np.ndarray
-        assert expt.x.dtype == 'float64'
-        assert len(expt.x) == 2
+        assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
+        assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
+        assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+
+        assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
+        assert expt.x.dtype == 'float64', "experiment x measurement data is not a float"
+        assert len(expt.x) == 2, "experiment x measurement array does not have 2 elements"
     
     checkExptResults(expt)
 
@@ -243,6 +250,7 @@ def test_1D_multi_data():
     None
     """
 
+    # setting up experiment
     devices = ps.ItemAttribute()        
     devices.v1 = ps.TestVoltage()
 
@@ -254,13 +262,10 @@ def test_1D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    global current_test_title
-    current_test_title = "test_1D_multi_data"
-    global current_tests_failed
-    current_tests_failed = 0
-
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
+    # check the experiment run info was initialized successfully
     expt.check_runinfo()
 
     checkExptRunInfo(expt)
@@ -268,35 +273,53 @@ def test_1D_multi_data():
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
+    # check the meta path was set successfully
     checkMetaPath(meta_path)
 
     expt.run()
 
+    # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 6
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'x1')
-        assert hasattr(expt, 'x2')
-        assert hasattr(expt, 'x3')
+        assert len(expt.keys()) == 6, "experiment does not have 6 keys"
+        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
+        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltages attribute after running"
+        assert hasattr(expt, 'x1'), "experiment missing x1_voltages attribute after running"
+        assert hasattr(expt, 'x2'), "experiment missing x2_voltages attribute after running"
+        assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
     checkExptOutput(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        assert len(expt.v1_voltage) == 2
-        len(expt.x1) == 2
-        list(expt.x2.shape) == [2, 2]
-        list(expt.x3.shape) == [2, 2, 2]
+        assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
+        assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
+        assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+
+        assert type(expt.x1) is np.ndarray, "experiment x1 measurement is not a numpy array"
+        assert expt.x1.dtype == 'float64', "experiment x1 measurement data is not a float"
+        len(expt.x1) == 2, "experiment x1 measurement is not the right length"
+
+        assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
+        assert expt.x2.dtype == 'float64', "experiment x2 measurement data is not a float"
+        list(expt.x2.shape) == [2, 2], "experiment x2 measurement is not the right shape"
+
+        assert type(expt.x3) is np.ndarray, "experiment x3 measurement is not a numpy array"
+        for i in expt.x3:
+            assert type(i) is np.ndarray, "experiment x3 measurement is not a numpy array of numpy arrays"
+        assert expt.x3.dtype == 'float64', "experiment x3 measurement data is not a float"
+        list(expt.x3.shape) == [2, 2, 2], "experiment x3 measurement is not the right shape"
 
     checkExptResults(expt)
 
+    # saves file name and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # loads the experiment
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
         assert len(temp.keys()) == 6
         assert hasattr(temp, 'runinfo')
@@ -397,6 +420,7 @@ def test_2D_multi_data():
     None
     """ 
 
+    # setting up experiment
     devices = ps.ItemAttribute()        
     devices.v1 = ps.TestVoltage()
     devices.v2 = ps.TestVoltage()
@@ -410,19 +434,23 @@ def test_2D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
+    # check the meta path was set successfully
     checkMetaPath(meta_path)
 
     expt.run()
 
+    # for checking the experiments output after running
     def checkExptOutput(expt):
         assert len(expt.keys()) == 7
         assert hasattr(expt, 'runinfo')
