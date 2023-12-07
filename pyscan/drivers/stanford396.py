@@ -9,7 +9,7 @@ from .instrumentdriver import InstrumentDriver
 
 
 class Stanford396(InstrumentDriver):
-    '''Class to control Stanford Research SG396 Vector Signal Generator
+    '''Class to control Stanford Research SR396 Vector Signal Generator
 
     Parameters
     ----------
