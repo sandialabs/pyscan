@@ -848,7 +848,7 @@ def test_underscore_property():
     """ 
 
     devices = ps.ItemAttribute()
-    devices.v1 = ps.TestVoltage()
+    devices.v1_device = ps.TestVoltage()
 
     runinfo = ps.RunInfo()
 
