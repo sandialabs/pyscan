@@ -70,14 +70,16 @@ def checkMetaPath(meta_path):
     assert meta_path.is_file(), "meta_path is not a file"
 
 
-# check the experiment has multidata measurement attributes
+# for checking that the experiment has multidata measurement attributes
 def basicCheckMulti(expt):
     assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
     assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
     assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
 
+# check the loaded experiment multidata measurement formatting
 def checkLoadedMulti(temp):
+    # check the experiment has multidata measurement attributes
     basicCheckMulti(temp)
 
     assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
@@ -140,7 +142,8 @@ def test_0D_multi_data():
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        assert len(expt.repeat) == 1, "experiment repeat value is not 1"
+        assert len(expt.repeat) == 1, "experiment repeat length is not 1"
+        assert expt.repeat == [0], "experiment repeat value is not 0"
 
         assert type(expt.x1) is float, "experiment x1 measurement is not a float"
 
@@ -240,6 +243,8 @@ def test_1D_data():
         assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
         assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
         assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+        assert expt.v1_voltage[0] == 0, "experiment v1_voltage value[0] is not 0"
+        assert expt.v1_voltage[1] == 0.1, "experiment v1_voltage value[1] is not 0.1"
 
         assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
         assert expt.x.dtype == 'float64', "experiment x measurement data is not a float"
@@ -267,6 +272,9 @@ def test_1D_data():
 
         assert temp.v1_voltage.dtype == 'float64'
         assert temp.x.dtype == 'float64'
+
+        assert temp.v1_voltage[0] == 0, "experiment v1_voltage value[0] is not 0"
+        assert temp.v1_voltage[1] == 0.1, "experiment v1_voltage value[1] is not 0.1"
 
     checkLoadExpt(temp)
 
