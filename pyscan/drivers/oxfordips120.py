@@ -9,11 +9,12 @@ from .instrumentdriver import InstrumentDriver
 
 class OxfordIPS120(InstrumentDriver):
     '''Class to control Oxford Instruments Intelligent Power Supply IPS120 Superconducting Magnet Power Supply
-    
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value
+        from :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     '''
     def __init__(self, instrument):
@@ -29,7 +30,6 @@ class OxfordIPS120(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-
 
     def initialize_properties(self):
         self.target_field
@@ -72,7 +72,7 @@ class OxfordIPS120(InstrumentDriver):
         return self._target_current
 
     def get_current_sweep_rate(self):
-        self._current_sweep_rate= float(self.query_until_return('R6').replace('R', ''))
+        self._current_sweep_rate = float(self.query_until_return('R6').replace('R', ''))
         return self._current_sweep_rate
 
     def get_field(self):
@@ -83,7 +83,7 @@ class OxfordIPS120(InstrumentDriver):
     def target_field(self):
         self._target_field = float(self.query_until_return('R8').replace('R', ''))
         return self._target_field
-    
+
     @target_field.setter
     def target_field(self, new_value):
         if (new_value >= -self.field_limit) and (new_value < self.field_limit):
@@ -91,7 +91,7 @@ class OxfordIPS120(InstrumentDriver):
             self._target_field = round(new_value, 4)
         else:
             print('Target field out of range, must be 0 < set point < {}'.format(self.field_limit))
-    
+
     @property
     def field_sweep_rate(self):
         self._field_sweep_rate = float(self.query_until_return('R9').replace('R', ''))
@@ -117,7 +117,7 @@ class OxfordIPS120(InstrumentDriver):
     def get_status(self):
 
         status = self.query_until_return('X')
-        
+
         X1 = {0: 'Normal',
               1: 'Quenched',
               2: 'Over Heated',
@@ -125,11 +125,11 @@ class OxfordIPS120(InstrumentDriver):
               8: 'Fault'}
         status1 = X1[int(status[1])]
 
-        X2 = {0: 'Normal',
-              1: 'On Positive Voltage Limit',
-              2: 'On Negative Voltage Limit',
-              4: 'Outside Negative Current Limit',
-              8: 'Outside Positive Current Limit'}
+        # X2 = {0: 'Normal',
+        #       1: 'On Positive Voltage Limit',
+        #       2: 'On Negative Voltage Limit',
+        #       4: 'Outside Negative Current Limit',
+        #       8: 'Outside Positive Current Limit'}
 
         status2 = X1[int(status[2])]
 
@@ -181,16 +181,14 @@ class OxfordIPS120(InstrumentDriver):
         mode2 = M2[int(status[11])]
 
         print('Mode: {}; {}'.format(mode1, mode2))
-        
+
     def query_until_return(self, query, n=10):
-    
+
         message = self.query(query)
-        
+
         for i in range(n):
-        
+
             if len(message) != 0:
                 return message
             else:
                 message = self.query('&') 
-                
-    

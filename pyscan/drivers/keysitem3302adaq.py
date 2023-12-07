@@ -3,15 +3,16 @@
 Keysite M3302A DAW
 """
 
+from pyscan.general import ItemAttribute
 
 import sys
-sys.path.append('c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
+sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
 
-from pyscan.general import ItemAttribute
 try:
     import keysightSD1
 except:
     print('Could not load Keysight SD1')
+
 
 class KeysiteM3302ADAQ(ItemAttribute):
     '''
@@ -100,7 +101,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
     def channel_input_config(self, full_scale, impedance, coupling):
         '''
         Configures the cannel inputs
-        
+
         Args:
             full_scale - float volage input scale
 
@@ -129,7 +130,6 @@ class KeysiteM3302ADAQ(ItemAttribute):
         Threshold options:
         voltage level (float)
         '''
-
 
         self.module.channelTriggerConfig(self.channel, analog_trigger_mode, threshold)
 
@@ -176,7 +176,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
         return self.module.DAQread(self.channel, points, timeout)
 
     def external_trigger_mode(self, time, cycles, trigger_channel=0, behavior=3):
-        n_points = int(time * 500e6)  #  500 MHz daq resolution
+        n_points = int(time * 500e6)  # 500 MHz daq resolution
         self.channel_input_config(full_scale=0.250, impedance=1, coupling=0)
         self.channel_trigger_config(analog_trigger_mode=1, threshold=1)
         self.DAQ_config(points_per_cycle=n_points, ncycles=cycles,

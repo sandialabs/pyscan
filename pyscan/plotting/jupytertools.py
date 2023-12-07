@@ -8,7 +8,7 @@ Jupyter Tools
 import os
 import glob
 from pathlib import Path
-from ipywidgets import *
+from ipywidgets import get_ipython
 import pyscan as ps
 
 
@@ -61,7 +61,7 @@ class JupyterTools(object):
         if self.path_name[-1] == '/':
             self.path_name = self.path_name[0:-1]
         newest = max(glob.iglob('{}/{}'.format(
-            self.path_name,'*.hdf5')), key=os.path.getctime)
+            self.path_name, '*.hdf5')), key=os.path.getctime)
 
         file_name = newest.replace(self.path_name + '\\', '')
         file_name = file_name[0:-4]
@@ -91,8 +91,8 @@ class JupyterTools(object):
         None
         '''
 
-        function_name='load_experiment'
-        
+        function_name = 'load_experiment'
+
         file_name = self.get_last_scan_name()
         file_name = self.path_name + "/" + file_name
         command_str = 'expt = ps.{}(\'{}\','.format(function_name, file_name)

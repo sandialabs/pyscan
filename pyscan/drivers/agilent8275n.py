@@ -9,12 +9,14 @@ from .instrumentdriver import InstrumentDriver
 
 class Agilent8275N(InstrumentDriver):
     '''
-    Class to control Agilent E8267D frequency source. Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Class to control Agilent E8267D frequency source. Inherits 
+    from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
 
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from 
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Properties
     ----------
@@ -26,7 +28,6 @@ class Agilent8275N(InstrumentDriver):
         Sets/queries state of the output. Values: [0, 1] (off, on)
 
     '''
-
 
     def __init__(self, instrument):
 
@@ -64,9 +65,7 @@ class Agilent8275N(InstrumentDriver):
 
         self.update_properties()
 
-
     def update_properties(self):
         self.frequency
         self.amplitude
         self.output
-

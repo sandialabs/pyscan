@@ -17,7 +17,7 @@ def recursive_to_itemattribute(data):
     ----------
     data : dict
         dictionary
-    
+
     Returns
     -------
     :class:`.ItemAttribute`
