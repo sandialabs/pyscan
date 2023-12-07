@@ -73,22 +73,33 @@ def test_init_from_noparams():
 
     # check that runinfo static and measured are initialized correctly
     def checkTwo():
-        assert not init_runinfo.static, "runinfo static not empty when intialized"
-        assert not init_runinfo.measured, "runinfo measured not empty when intialized"
+        assert hasattr(init_runinfo, 'static'), "runinfo static not initialized"
+        assert init_runinfo.static == {}, "runinfo static not empty when intialized"
+
+        assert hasattr(init_runinfo, 'measured'), "runinfo measured not initialized"
+        assert init_runinfo.measured == [], "runinfo measured not empty when intialized"
         
     checkTwo()
 
     # check that runinfo measure and trigger functions are initialized correctly
     def checkThree():
-        assert not init_runinfo.measure_function, "runinfo measure_function not None when intialized"
-        assert not init_runinfo.trigger_function, "runinfo trigger_function not None when intialized"
+        assert hasattr(init_runinfo, 'measure_function'), "runinfo measure_function not initialized"
+        assert init_runinfo.measure_function is None, "runinfo measure_function not None when intialized"
+
+        assert hasattr(init_runinfo, 'trigger_function'), "runinfo trigger_function not initialized"
+        assert init_runinfo.trigger_function is None, "runinfo trigger_function not None when intialized"
 
     checkThree()
 
     # check that runinfo initial pause, average d, and verbose settings are initialized correctly
     def checkFour():
+        assert hasattr(init_runinfo, 'initial_pause'), "runinfo initial_pause not initialized"
         assert init_runinfo.initial_pause == 0.1, "runinfo initial_pause not 0.1 when intialized"
+        
+        assert hasattr(init_runinfo, 'average_d'), "runinfo average_d not initialized"
         assert init_runinfo.average_d == -1, "runinfo average_d not -1 when intialized"
+
+        assert hasattr(init_runinfo, 'verbose'), "runinfo verbose not initialized"
         assert not init_runinfo.verbose, "runinfo verbose not set to False when intialized"
 
     checkFour()
