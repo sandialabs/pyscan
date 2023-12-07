@@ -31,15 +31,18 @@ def measure_up_to_3D(expt):
 
 
 # for checking keys, runinfo, and devices attributes
-def basicCheck(expt, intended_keys_length, loaded=''):
-    assert hasattr(expt, 'keys'), loaded + " experiment missing attribute 'keys'"
+def basicCheck(expt, intended_keys_length, loaded=False):
+    is_loaded = ''
+    if (loaded is True):
+        is_loaded = 'loaded'
+    assert hasattr(expt, 'keys'), is_loaded + " experiment missing attribute 'keys'"
     ks = str(len(expt.keys()))
     iks = str(intended_keys_length)
-    error_string = loaded + "experiment has " + ks + " keys instead of " + iks + " keys"
+    error_string = is_loaded + " experiment has " + ks + " keys instead of " + iks + " keys"
     assert len(expt.keys()) == intended_keys_length, error_string
 
-    assert hasattr(expt, 'runinfo'), loaded + "experiment missing runinfo attribute"
-    assert hasattr(expt, 'devices'), loaded + "experiment missing devices attribute"
+    assert hasattr(expt, 'runinfo'), is_loaded + " experiment missing runinfo attribute"
+    assert hasattr(expt, 'devices'), is_loaded + " experiment missing devices attribute"
 
 
 # for checking the experiment (expt) upon initialization
@@ -106,8 +109,9 @@ def test_0D_multi_data():
 
     # for checking the experiments output after running
     def checkExptOutput(expt):
+        # check the experiment keys, runinfo, and devices attributes
         basicCheck(expt, intended_keys_length=6)
-        
+
         assert hasattr(expt, 'repeat'), "experiment missing devices attribute after running"
         assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
         assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
@@ -142,7 +146,8 @@ def test_0D_multi_data():
     
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        basicCheck(temp, 6, 'loaded')
+        # check the loaded experiment keys, runinfo, and devices attributes
+        basicCheck(temp, 6, loaded=True)
 
         assert hasattr(temp, 'repeat'), "loaded experiment missing repeat attribute"
         assert hasattr(temp, 'x1'), "loaded experiment missing x1 attribute"
@@ -201,9 +206,7 @@ def test_1D_data():
 
     # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 4, "experiment does not have 4 keys"
-        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
-        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        basicCheck(expt, 4)
         assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
         assert hasattr(expt, 'x'), "experiment missing x attribute after running"
     
@@ -230,9 +233,7 @@ def test_1D_data():
 
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 4, "loaded experiment does not have 4 keys"
-        assert hasattr(temp, 'runinfo'), "loaded experiment missing runinfo attribute"
-        assert hasattr(temp, 'devices'), "loaded experiment missing devices attribute"
+        basicCheck(temp, 4, loaded=True)
         assert hasattr(temp, 'v1_voltage'), "loaded experiment missing v1_voltage attribute"
         assert hasattr(temp, 'x'), "loaded experiment missing x attribute"
 
