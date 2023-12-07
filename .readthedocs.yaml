@@ -18,6 +18,4 @@ python:
       path: .
       extra_requirements:
         - docs
-        - numpy
-        - numpydoc
-        - mpl-sphinx-theme
+    - requirements: docs/requirements.txt
