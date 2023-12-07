@@ -21,6 +21,21 @@ def test_init_from_noparams():
 
     # check that runinfo loops are initialized correctly
     def checkOne():
+        # check that loops 0 - 4 initialized
+        assert hasattr(init_runinfo, 'loop0'), "runinfo loop0 not intialized"
+        assert hasattr(init_runinfo, 'loop1'), "runinfo loop1 not intialized"
+        assert hasattr(init_runinfo, 'loop2'), "runinfo loop2 not intialized"
+        assert hasattr(init_runinfo, 'loop3'), "runinfo loop3 not intialized"
+
+        # check that loops 0 - 4 initialized
+        for loop in init_runinfo.loops:
+            assert isinstance(loop, ps.PropertyScan), "runinfo loops not initialized as Property Scan"
+
+        assert hasattr(init_runinfo, 'loop0'), "runinfo loop0 not intialized"
+        assert hasattr(init_runinfo, 'loop1'), "runinfo loop1 not intialized"
+        assert hasattr(init_runinfo, 'loop2'), "runinfo loop2 not intialized"
+        assert hasattr(init_runinfo, 'loop3'), "runinfo loop3 not intialized"
+
         # check that scan_dict initialized
         assert hasattr(init_runinfo.loop0, 'scan_dict'), "runinfo loop0 (Property Scan) scan_dict not intialized"
         assert hasattr(init_runinfo.loop1, 'scan_dict'), "runinfo loop1 (Property Scan) scan_dict not intialized"

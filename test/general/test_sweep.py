@@ -9,6 +9,7 @@ import shutil
 sys.path.append('../../../pyscan')
 
 
+# for setting runinfo measure_function to measure 1D data
 def measure_point(expt):
     d = ps.ItemAttribute()
 
@@ -17,6 +18,7 @@ def measure_point(expt):
     return d
 
 
+# for setting runinfo measure_function to measure (up to) 3D data
 def measure_up_to_3D(expt):
     d = ps.ItemAttribute()
 
@@ -27,19 +29,27 @@ def measure_up_to_3D(expt):
     return d
 
 
+# for checking the experiment (expt) upon initialization
 def checkOne(expt):
+    assert hasattr(expt, 'keys'), "experiment missing attribute 'keys'"
     assert len(expt.keys()) == 2, "wrong number of experiment keys"
+
     assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute"
     assert hasattr(expt, 'devices'), "experiment missing devices attribute"
-    assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
+
+    assert expt.runinfo.data_path.exists(), "experiment data path does not exist"
     assert expt.runinfo.data_path.is_dir(), "experiment data path is not a directory"
+    assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
+    
     assert len(expt.runinfo.measured) == 0
 
 
+# for checking whether the check experimental run info succeeded
 def checkTwo(expt):
-    assert expt.check_runinfo()
-    assert hasattr(expt.runinfo, 'long_name')
-    assert hasattr(expt.runinfo, 'short_name')
+    assert expt.check_runinfo(), "check_runinfo failed"
+    
+    assert hasattr(expt.runinfo, 'long_name'), "experiment runinfo long name not initialized by check_runinfo"
+    assert hasattr(expt.runinfo, 'short_name'), "experiment runinfo long name not initialized by check_runinfo"
 
 
 def checkThree(meta_path):

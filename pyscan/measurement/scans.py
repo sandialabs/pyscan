@@ -70,7 +70,7 @@ class PropertyScan(MetaScan):
         for dev in self.device_names:
             try:
                 devices[dev][self.prop] = self.scan_dict[dev + '_' + self.prop][index]
-            except:
+            except Exception:
                 continue
 
     def check_same_length(self):

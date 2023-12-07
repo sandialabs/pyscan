@@ -145,7 +145,7 @@ class Sweep(MetaSweep):
                 self.runinfo.dt0 = [0] + [self.runinfo.t0[i]
                                           - self.runinfo.t0[i - 1]
                                           for i in range(1, len(self.runinfo.t0))]
-            except:
+            except Exception:
                 pass
             self.runinfo.dt1 = self.runinfo.t1 - self.runinfo.t0
             self.runinfo.dt2 = self.runinfo.t2 - self.runinfo.t1
