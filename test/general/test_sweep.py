@@ -5,6 +5,7 @@ import pyscan as ps
 from random import random
 import sys
 import shutil
+import numpy as np
 
 sys.path.append('../../../pyscan')
 
@@ -30,7 +31,7 @@ def measure_up_to_3D(expt):
 
 
 # for checking the experiment (expt) upon initialization
-def checkOne(expt):
+def checkExptInit(expt):
     assert hasattr(expt, 'keys'), "experiment missing attribute 'keys'"
     assert len(expt.keys()) == 2, "wrong number of experiment keys"
 
@@ -45,15 +46,17 @@ def checkOne(expt):
 
 
 # for checking whether the check experimental run info succeeded
-def checkTwo(expt):
+def checkExptRunInfo(expt):
     assert expt.check_runinfo(), "check_runinfo failed"
     
     assert hasattr(expt.runinfo, 'long_name'), "experiment runinfo long name not initialized by check_runinfo"
     assert hasattr(expt.runinfo, 'short_name'), "experiment runinfo long name not initialized by check_runinfo"
 
 
-def checkThree(meta_path):
-    assert meta_path.is_file()
+# for checking that the meta path is initialized properly
+def checkMetaPath(meta_path):
+    assert meta_path.exists(), "meta_path not initialized"
+    assert meta_path.is_file(), "meta_path is not a file"
 
 
 def test_0D_multi_data():
@@ -76,33 +79,35 @@ def test_0D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
         
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
     def checkFour(expt):
-        assert len(expt.keys()) == 6
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'repeat')
-        assert hasattr(expt, 'x1')
-        assert hasattr(expt, 'x2')
-        assert hasattr(expt, 'x3')
+        assert len(expt.keys()) == 6, "experiment does not have 6 keys"
+        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
+        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        assert hasattr(expt, 'repeat'), "experiment missing devices attribute after running"
+        assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
+        assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
+        assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
     checkFour(expt)
 
     def checkFive(expt):
-        assert len(expt.repeat) == 1
-        assert issubclass(type(expt.x1), float)
+        assert len(expt.repeat) == 1, "experiment repeat value is not 1"
+        assert type(expt.x1) is float, "experiment x1 measurement is not a float"
+        assert type(expt.x2) is np.ndarray, "experiment x2 measurement is not a numpy array"
+        assert type(expt.x3) is np.ndarray, "experiment x2 measurement is not a numpy array"
 
     checkFive(expt)
 
@@ -147,16 +152,16 @@ def test_1D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
     
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -219,16 +224,16 @@ def test_1D_multi_data():
     global current_tests_failed
     current_tests_failed = 0
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -297,16 +302,16 @@ def test_2D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -370,16 +375,16 @@ def test_2D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -454,16 +459,16 @@ def test_3D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -534,16 +539,16 @@ def test_3D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -624,16 +629,16 @@ def test_4D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -710,16 +715,16 @@ def test_4D_multi_data():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -798,16 +803,16 @@ def test_1D_repeat():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
@@ -868,16 +873,16 @@ def test_underscore_property():
 
     expt = ps.Sweep(runinfo, devices)
 
-    checkOne(expt)
+    checkExptInit(expt)
 
     expt.check_runinfo()
 
-    checkTwo(expt)
+    checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
-    checkThree(meta_path)
+    checkMetaPath(meta_path)
 
     expt.run()
 
