@@ -91,6 +91,7 @@ def checkLoadedMulti(temp):
     assert temp.x3.dtype == 'float64', "loaded x3's data type is not float64"
 
 
+# for checking that the voltage(s) as expected
 def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1):
     assert type(voltage) is np.ndarray, "experiment v" + voltage_id + "_voltage is not a numpy array"
     assert voltage.dtype == 'float64', "experiment v" + voltage_id + "_voltage data is not a float"
@@ -238,13 +239,8 @@ def test_1D_data():
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-
+        # check voltage(s) as expected
         checkVoltageResults(expt.v1_voltage, 0, 0.1)
-        assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
-        assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
-        assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
-        assert expt.v1_voltage[0] == 0, "experiment v1_voltage value[0] is not 0"
-        assert expt.v1_voltage[1] == 0.1, "experiment v1_voltage value[1] is not 0.1"
 
         assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
         assert expt.x.dtype == 'float64', "experiment x measurement data is not a float"
