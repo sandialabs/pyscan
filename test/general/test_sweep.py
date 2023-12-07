@@ -28,11 +28,11 @@ def measure_up_to_3D(expt):
 
 
 def checkOne(expt):
-    assert len(expt.keys()) == 2
-    assert hasattr(expt, 'runinfo')
-    assert hasattr(expt, 'devices')
-    assert str(expt.runinfo.data_path) == 'backup'
-    assert expt.runinfo.data_path.is_dir()
+    assert len(expt.keys()) == 2, "wrong number of experiment keys"
+    assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute"
+    assert hasattr(expt, 'devices'), "experiment missing devices attribute"
+    assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
+    assert expt.runinfo.data_path.is_dir(), "experiment data path is not a directory"
     assert len(expt.runinfo.measured) == 0
 
 
