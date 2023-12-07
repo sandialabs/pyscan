@@ -20,4 +20,4 @@ python:
         - docs
         - numpy
         - numpydoc
-        - mpl_sphinx_theme
+        - mpl-sphinx-theme
