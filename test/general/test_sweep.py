@@ -347,6 +347,7 @@ def test_2D_data():
     None
     """ 
 
+    # setting up experiment
     devices = ps.ItemAttribute()        
     devices.v1 = ps.TestVoltage()
     devices.v2 = ps.TestVoltage()
@@ -360,29 +361,34 @@ def test_2D_data():
 
     expt = ps.Sweep(runinfo, devices)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
     expt.save_metadata()
     meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
 
+    # check the meta path was set successfully
     checkMetaPath(meta_path)
 
     expt.run()
 
+    # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 5
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'x')
+        assert len(expt.keys()) == 5, "experiment does not have 5 keys"
+        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
+        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
+        assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
+        assert hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
+        assert hasattr(expt, 'x'), "experiment missing x attribute after running"
 
     checkExptOutput(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt):
         assert len(expt.v1_voltage) == 2
         assert list(expt.x.shape), [2, 2]
