@@ -17,7 +17,8 @@ class InstrumentDriver(ItemAttribute):
     Parameters
     ----------
     instrument : string or pyvisa :class:`Resource`
-        visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        visa string or an instantiated instrument (return value from
+        :func:`.new_instrument`)
     '''
 
     def __init__(self, instrument):
@@ -35,7 +36,7 @@ class InstrumentDriver(ItemAttribute):
         ----------
         string: str
             The message to send to the device
-        
+
         Returns
         -------
         str
@@ -52,7 +53,7 @@ class InstrumentDriver(ItemAttribute):
         ----------
         string: str
             The message to be sent
-        
+
         Returns
         -------
         None
@@ -67,7 +68,7 @@ class InstrumentDriver(ItemAttribute):
         -------
         str
             Message read from the instrument
-        
+
         '''
 
         return self.instrument.read()
@@ -100,7 +101,7 @@ class InstrumentDriver(ItemAttribute):
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
             fset=lambda obj, new_value: set_function(obj, new_value, settings))
-        
+
         setattr(self.__class__, settings['name'], property_definition)
 
     def get_instrument_property(self, obj, settings, debug=False):
@@ -218,19 +219,19 @@ class InstrumentDriver(ItemAttribute):
         None
         '''
 
-        rngs=settings['ranges']
+        rngs = settings['ranges']
 
-        if len(rngs)!=len(new_value):
-            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'],len(rngs),len(new_value)))
-        elif all(rngi[0]<=new_valuei<=rngi[1] for new_valuei,rngi in zip(new_value,rngs)):
+        if len(rngs) != len(new_value):
+            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
+        elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
             if not self.debug:
                 obj.write(settings['write_string'].format(*new_value))
-                setattr(self,'_'+settings['name'],new_value)
+                setattr(self, '_' + settings['name'], new_value)
             else:
-                setattr(self,'_'+settings['name'],settings['write_string'].format(*new_value))
+                setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
             print('Range error:')
-            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs,new_value))
+            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs, new_value))
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -269,4 +270,3 @@ class InstrumentDriver(ItemAttribute):
             print('{} must be one of:'.format(settings['name']))
             for string in values:
                 print('{}'.format(string))
-

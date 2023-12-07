@@ -31,10 +31,10 @@ class RasterSweep(MetaSweep):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
-  
+
     '''
 
-    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time = False):
+    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False):
         super().__init__(runinfo, devices, data_dir)
 
         self.runinfo.time = time
@@ -75,7 +75,7 @@ class RasterSweep(MetaSweep):
                     self.runinfo.loop1.iterate(j, self.devices)
                     sleep(self.runinfo.loop1.dt)
 
-                    if j%2 == 0:
+                    if j % 2 == 0:
                         range0D = range(self.runinfo.loop0.n)
                     else:
                         range0D = reversed(range(self.runinfo.loop0.n))
@@ -143,7 +143,9 @@ class RasterSweep(MetaSweep):
 
         if self.runinfo.time:
             try:
-                self.runinfo.dt0 = [0] + [self.runinfo.t0[i] - self.runinfo.t0[i-1] for i in range(1, len(self.runinfo.t0))]
+                self.runinfo.dt0 = [0] + [self.runinfo.t0[i]
+                                          - self.runinfo.t0[i - 1] 
+                                          for i in range(1, len(self.runinfo.t0))]
             except:
                 pass
             self.runinfo.dt1 = self.runinfo.t1 - self.runinfo.t0

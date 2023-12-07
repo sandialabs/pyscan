@@ -62,7 +62,7 @@ class PlotGenerator(object):
     def key_or_none(self, key, kwarg):
         '''
         Sets attribute on PlotGenerator object if key is in kwarg
-        
+
         Parameters
         ----------
         key : 
@@ -96,9 +96,9 @@ class PlotGenerator(object):
         Generates label for x-axis of plot
         '''
         if len(self.other_x) == 0:
-             return '{}'.format(self.x_name)
+            return '{}'.format(self.x_name)
         else:
-             return '{} ({})'.format(self.x_name, ', '.join(self.other_x))
+            return '{} ({})'.format(self.x_name, ', '.join(self.other_x))
 
     def get_y(self):
         '''
@@ -126,7 +126,7 @@ class PlotGenerator(object):
             if len(self.other_y) == 0:
                 return '{}'.format(self.y_name)
             else:
-                 return '{} ({})'.format(self.y_name, ', '.join(self.other_y))
+                return '{} ({})'.format(self.y_name, ', '.join(self.other_y))
 
     def get_data(self):
         '''
@@ -145,7 +145,7 @@ class PlotGenerator(object):
 
         self.data = np.ma.masked_where(np.isnan(self.data), self.data)
 
-        if (self.d==2) and (self.data.ndim>2):
+        if (self.d == 2) and (self.data.ndim > 2):
             if self.index3D is None:
                 self.index3D = 0
             self.data_name = self.data_name + '[{}/{}]'.format(self.index3D, self.data.shape[2])
@@ -163,21 +163,21 @@ class PlotGenerator(object):
                                          self.expt.runinfo.loop4.n,
                                          self.data_name,
                                          self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim== 3:
+        elif self.expt.runinfo.ndim == 3:
             return'{}/{}, {}, {}'.format(self.expt.runinfo.loop3.i,
-                                 self.expt.runinfo.loop3.n,
-                                 self.data_name,
-                                 self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim== 2:
+                                         self.expt.runinfo.loop3.n,
+                                         self.data_name,
+                                         self.expt.runinfo.long_name)
+        elif self.expt.runinfo.ndim == 2:
             return'{}/{}, {}, {}'.format(self.expt.runinfo.loop2.i,
-                                 self.expt.runinfo.loop2.n,
-                                 self.data_name,
-                                 self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim== 1:
+                                         self.expt.runinfo.loop2.n,
+                                         self.data_name,
+                                         self.expt.runinfo.long_name)
+        elif self.expt.runinfo.ndim == 1:
             return'{}/{}, {}, {}'.format(self.expt.runinfo.loop1.i,
-                                 self.expt.runinfo.loop1.n,
-                                 self.data_name,
-                                 self.expt.runinfo.long_name)
+                                         self.expt.runinfo.loop1.n,
+                                         self.data_name,
+                                         self.expt.runinfo.long_name)
 
     def get_xrange(self):
         '''
@@ -194,12 +194,12 @@ class PlotGenerator(object):
         '''
 
         if self.y_range is None:
-            if self.d==1:
+            if self.d == 1:
                 return np.min(self.data), np.max(self.data)
             else:
                 return np.min(self.y), np.max(self.y)
         else:
-            if self.d==1:
+            if self.d == 1:
                 return self.y_range
             else:
                 return self.data_range
@@ -213,8 +213,3 @@ class PlotGenerator(object):
             return [np.min(self.data), np.max(self.data)]
         else:
             return self.data_range
-
-
-
-
-

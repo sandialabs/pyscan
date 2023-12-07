@@ -33,7 +33,7 @@ nactual = ctypes.c_int()
 ctcDone = ctypes.c_int()
 buffer = (ctypes.c_uint * TTREADMAX)()
 
-#def t2_data_to_times(data):
+# def t2_data_to_times(data):
 
 #    n31 = 0
 #    n30 = 0
@@ -69,8 +69,8 @@ def t2_data_to_times(data):
     chan1 = []
 
     for i, d in enumerate(data):
-        if len(bin(d))==34:
-            if bin(d)[2:6]== '1111':
+        if len(bin(d)) == 34:
+            if bin(d)[2:6] == '1111':
                 offset += wrap_around
         else:
             bdata = bin(d)
@@ -82,22 +82,22 @@ def t2_data_to_times(data):
     return chan0, chan1
 
 
-
 def tryfunc(retcode, funcName):
     if retcode < 0:
         phlib.PH_GetErrorString(errorString, ctypes.c_int(retcode))
-        print("PH_%s error %d (%s). Aborted." % (funcName, retcode,\
+        print("PH_%s error %d (%s). Aborted." % (funcName, retcode,
               errorString.value.decode("utf-8")))
         # closeDevices()
 
+
 class PicoHarp300(ItemAttribute):
     '''Class to control PicoQuant PicoHarp 300 - Stand-alone TCSP Module with USB Interface
-    
+
     Parameters
     ----------
     dev
         Defaults to 0
-    
+
     '''
 
     def __init__(self, dev=0):
@@ -115,57 +115,56 @@ class PicoHarp300(ItemAttribute):
 
         sleep(0.2)
 
-    @property
-    def binning(self):
-        tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
-        self._binning =  binning.value
-        return self._binning
+    # @property
+    # def binning(self):
+    #     tryfunc(phlib.PH_GetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "GetBinning")
+    #     self._binning = binning.value
+    #     return self._binning
 
-    @binning.setter
-    def binning(self, new_value):
-        binning = new_value
-        tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
+    # @binning.setter
+    # def binning(self, new_value):
+    #     binning = new_value
+    #     tryfunc(phlib.PH_SetBinning(ctypes.c_int(self.dev), ctypes.c_int(binning)), "SetBinning")
 
+    # @property
+    # def offset(self):
+    #     tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
+    #     self._offset = offset.value
+    #     return self._offset
 
-    @property
-    def offset(self):
-        tryfunc(phlib.PH_GetOffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "GetOffset")
-        self._offset =  offset.value
-        return self._offset
-
-    @offset.setter
-    def offset(self, new_value):
-        offset = new_value
-        tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
+    # @offset.setter
+    # def offset(self, new_value):
+    #     offset = new_value
+    #     tryfunc(phlib.PH_Setoffset(ctypes.c_int(self.dev), ctypes.c_int(offset)), "SetOffset")
 
     @property
     def resolution(self):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-   
+
     @resolution.setter
     def resolution(self, new_value):
         resolution = new_value
         tryfunc(phlib.PH_SetResolution(ctypes.c_int(self.dev), byref(resolution)), "SetResolution")
 
-
     def set_channel_0_voltage(self, zero_cross=10, discriminator=100):
         print(self.dev, zero_cross, discriminator)
 
         tryfunc(
-            phlib.PH_SetInputCFD(ctypes.c_int(self.dev), ctypes.c_int(0),\
-                                 ctypes.c_int(discriminator), ctypes.c_int(zero_cross)),\
-            "SetInputCFD"
-        )
+            phlib.PH_SetInputCFD(
+                ctypes.c_int(self.dev), ctypes.c_int(0),
+                ctypes.c_int(discriminator), ctypes.c_int(zero_cross)),
+            "SetInputCFD")
         sleep(0.2)
 
     def set_channel_1_voltage(self, zero_cross=10, discriminator=100):
         print(self.dev, zero_cross, discriminator)
-        
+
         tryfunc(
-            phlib.PH_SetInputCFD(ctypes.c_int(self.dev), ctypes.c_int(1),\
-                                 ctypes.c_int(discriminator), ctypes.c_int(zero_cross)),\
+            phlib.PH_SetInputCFD(
+                ctypes.c_int(self.dev), ctypes.c_int(1),
+                ctypes.c_int(discriminator), ctypes.c_int(zero_cross)),
             "SetInputCFD"
         )
         sleep(0.2)
@@ -186,13 +185,15 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_ClearHistMem(ctypes.c_int(self.dev), ctypes.c_int(0)), "ClearHistMeM")
 
     def get_count_rate_0(self):
-        tryfunc(phlib.PH_GetCountRate(ctypes.c_int(self.dev), ctypes.c_int(0), byref(count_rate_0)),\
-        "GetCountRate")
+        tryfunc(
+            phlib.PH_GetCountRate(ctypes.c_int(self.dev), ctypes.c_int(0), byref(count_rate_0)),
+            "GetCountRate")
         return count_rate_0.value
 
     def get_count_rate_1(self):
-        tryfunc(phlib.PH_GetCountRate(ctypes.c_int(self.dev), ctypes.c_int(1), byref(count_rate_1)),\
-        "GetCountRate")
+        tryfunc(
+            phlib.PH_GetCountRate(ctypes.c_int(self.dev), ctypes.c_int(1), byref(count_rate_1)),
+            "GetCountRate")
         return count_rate_1.value
 
     def start_measurement(self, time):
@@ -202,22 +203,22 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_StopMeas(ctypes.c_int(self.dev)), "StopMeas")
 
     def get_histogram(self):
-        tryfunc(phlib.PH_GetHistogram(ctypes.c_int(self.dev), byref(counts), ctypes.c_int(0)),\
-            "GetHistogram")
+        tryfunc(phlib.PH_GetHistogram(ctypes.c_int(self.dev), byref(counts), ctypes.c_int(0)),
+                "GetHistogram")
 
     def get_flags(self):
         tryfunc(phlib.PH_GetFlags(ctypes.c_int(self.dev), byref(flags)), "GetFlags")
         return flags.value
 
     def get_ctc_status(self):
-        tryfunc(phlib.PH_CTCStatus(ctypes.c_int(self.dev), byref(ctcDone)),\
+        tryfunc(phlib.PH_CTCStatus(ctypes.c_int(self.dev), byref(ctcDone)),
                 "CTCStatus")
         return ctcDone.value
 
     def read_fifo(self):
         tryfunc(
             phlib.PH_ReadFiFo(ctypes.c_int(self.dev), byref(buffer), TTREADMAX,
-                              byref(nactual)),\
+                              byref(nactual)),
             "ReadFiFo")
 
     def offset(self, new_value):
@@ -228,7 +229,6 @@ class PicoHarp300(ItemAttribute):
         tryfunc(phlib.PH_GetResolution(ctypes.c_int(self.dev), byref(resolution)), "GetResolution")
         self._resolution = resolution.value
         return self._resolution
-    
 
     def init_histogram_mode(self):
         self.set_histgram_mode()
@@ -242,12 +242,9 @@ class PicoHarp300(ItemAttribute):
         self.set_sync_divider()
         sleep(0.2)
 
-
     def run_correlation(self, time, file_name=None):
 
         self.start_measurement(time)
-
-        data = []
 
         if file_name is None:
             if not Path('./g2').is_dir():
@@ -256,7 +253,6 @@ class PicoHarp300(ItemAttribute):
             file_name = './g2/{}'.format(strftime("%Y%m%dT%H%M%S"))
 
         outputfile = open(file_name, "wb+")
-
 
         while True:
             flags = self.get_flags()
@@ -267,7 +263,7 @@ class PicoHarp300(ItemAttribute):
             self.read_fifo()
 
             if nactual.value > 0:
-                outputfile.write((ctypes.c_uint*nactual.value)(*buffer[0:nactual.value]))
+                outputfile.write((ctypes.c_uint * nactual.value)(*buffer[0:nactual.value]))
             else:
                 ctc_status = self.get_ctc_status()
                 if ctc_status > 0:

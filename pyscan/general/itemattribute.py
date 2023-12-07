@@ -17,11 +17,10 @@ class ItemAttribute(object):
 
     '''
 
-
-    def __init__(self,dictionary=None):
-        if dictionary!=None:
+    def __init__(self, dictionary=None):
+        if dictionary is not None:
             for k in dictionary.keys():
-                self[k]=dictionary[k]
+                self[k] = dictionary[k]
 
     __getitem__ = object.__getattribute__
     __setitem__ = object.__setattr__

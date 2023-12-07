@@ -10,11 +10,12 @@ from .instrumentdriver import InstrumentDriver
 
 class Stanford470(InstrumentDriver):
     '''Class to control Stanford Research Systems SR470 - Laser shutters and controllers
-    
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value
+        from :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
     ------

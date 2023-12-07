@@ -7,7 +7,6 @@ Fast Stage Sweep
 
 from time import sleep
 from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.islisttype import is_list_type
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 # import nidaqmx
@@ -31,14 +30,13 @@ class FastStageSweep(MetaSweep):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
-    
+
     '''
 
     def __init__(self, runinfo, devices, data_dir=None, verbose=False):
         '''Constructor method
         '''
         super().__init__(runinfo, devices, data_dir)
-
 
         self.runinfo.measure_function = self.line_counts
 
@@ -49,27 +47,27 @@ class FastStageSweep(MetaSweep):
         devices = self.devices
 
         chan = self.runinfo.loop0.prop
-        
+
         if chan == 'x':
             chan = 1
         elif chan == 'y':
             chan = 2
         elif chan == 'z':
             chan = 3
-        
+
         xrange = list(self.runinfo.loop0.scan_dict.values())[0]
         runinfo.fast_values = xrange
 
         runinfo.start = xrange[0]
         runinfo.stop = xrange[-1]
         delta = xrange[1] - xrange[0]
-        d = runinfo.stop-runinfo.start
-        
-        runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1) # in mm/s
+        d = runinfo.stop - runinfo.start
 
-        n_points = int(np.abs((runinfo.start - runinfo.stop)/delta))
+        runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1)  # in mm/s
 
-        t = n_points/runinfo.srate
+        n_points = int(np.abs((runinfo.start - runinfo.stop) / delta))
+
+        t = n_points / runinfo.srate
         runinfo.vel = round(np.abs(d / t), 5)
 
         runinfo.scan_time = t
@@ -116,8 +114,7 @@ class FastStageSweep(MetaSweep):
                         if self.runinfo.ndim == 1:
                             self[key] = np.array(value)
                         else:
-                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1 ,1))
-
+                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1, 1))
 
                     self.save_row()
 
@@ -142,7 +139,6 @@ class FastStageSweep(MetaSweep):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-
     def line_counts(self, expt):
         '''TODO
         '''
@@ -152,10 +148,10 @@ class FastStageSweep(MetaSweep):
         if runinfo.fast_chan == 1:
             chan = 'x'
             chan_fast = 'xfast'
-        elif runinfo.fast_chan ==2:
+        elif runinfo.fast_chan == 2:
             chan = 'y'
             chan_fast = 'yfast'
-        elif runinfo.fast_chan ==3:
+        elif runinfo.fast_chan == 3:
             chan = 'z'
             chan_fast = 'zfast'
 
@@ -166,9 +162,11 @@ class FastStageSweep(MetaSweep):
         devices.stage[chan] = runinfo.start
 
         sleep(2)
-        
-        devices.stage.set_channel_velocity_parameters(runinfo.fast_chan,
-            runinfo.vel, runinfo.acc)
+
+        devices.stage.set_channel_velocity_parameters(
+            runinfo.fast_chan,
+            runinfo.vel,
+            runinfo.acc)
 
         devices.stage[chan_fast] = runinfo.stop
 
@@ -183,10 +181,10 @@ class FastStageSweep(MetaSweep):
                 d.counts0.append(counts0)
                 # d.counts1.append(counts1)
                 # d.counts_sum.append(counts_sum)
-                sleep(1/runinfo.srate)
+                sleep(1 / runinfo.srate)
         else:
             d.counts = devices.counter.get_n_binary_points(runinfo.loop0.n)
 
         devices.stage.reset_speed()
-    
+
         return d

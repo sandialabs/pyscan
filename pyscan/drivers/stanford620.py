@@ -12,11 +12,12 @@ import numpy as np
 
 class Stanford620(InstrumentDriver):
     '''Class to control Stanford Research Systems SR620 - Time interval / frequency counter
-    
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
     ------
@@ -42,15 +43,15 @@ class Stanford620(InstrumentDriver):
             'name': 'arming_mode',
             'write_string': 'ARMM {}',
             'query_string': 'ARMM?',
-            'range': [0,12],
+            'range': [0, 12],
             'return_type': int})
 
         self.add_device_property({
             'name': 'mode',
             'write_string': 'MODE {}',
             'query_string': 'MODE?',
-            'indexed_values': ['time','width','rise/fall time','frequency',
-                               'period','phase','count'],
+            'indexed_values': ['time', 'width', 'rise/fall time', 'frequency',
+                               'period', 'phase', 'count'],
             'return_type': int})
 
         self.add_device_property({
@@ -81,25 +82,25 @@ class Stanford620(InstrumentDriver):
         return float(counts)
 
     def get_n_binary_points(self, n):
-        
+
         timeout0 = self.instrument.timeout
-        
+
         dt = self.arming_mode
-        if dt ==3:
+        if dt == 3:
             dt = 0.01
-        elif dt ==4:
+        elif dt == 4:
             dt = 0.1
         elif dt == 5:
             dt = 1
-        
-        timeout = dt*n*1.05
-        self.instrument.timeout = timeout*1000
-        
+
+        timeout = dt * n * 1.05
+        self.instrument.timeout = timeout * 1000
+
         self.write('BDMP {}'.format(n))
-        data = self.instrument.read_bytes(n*8)
-        format_str = '<'+'q'*n
-        
+        data = self.instrument.read_bytes(n * 8)
+        format_str = '<' + 'q' * n
+
         self.instrument.timeout = timeout0
         self.auto_start = 1
-        
-        return np.array(struct.unpack(format_str, data))*.00390625
+
+        return np.array(struct.unpack(format_str, data)) * .00390625

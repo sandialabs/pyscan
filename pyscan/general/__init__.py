@@ -4,7 +4,6 @@ from .drange import drange
 from .firststring import first_string
 from .islisttype import is_list_type
 from .isnumerictype import is_numeric_type
-from .makepulsingarbs import *
 from .quadraturesum import quadrature_sum
 from .recursivetodict import recursive_to_dict
 from .recursivetoitemattribute import recursive_to_itemattribute

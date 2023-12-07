@@ -9,6 +9,7 @@ import re
 from pyscan.general.drange import drange
 import numpy as np
 
+
 class Agilent33500(InstrumentDriver):
     '''
     Class to control Agilent33500 Arbitrary waveform generator
@@ -16,10 +17,11 @@ class Agilent33500(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     channel : 
         channel of instrument, 1 or 2
-    
+
     Attributes
     ----------
     gain : 
@@ -65,7 +67,6 @@ class Agilent33500(InstrumentDriver):
 
 
     '''
-
 
     def __init__(self, instrument, channel):
 
@@ -122,7 +123,6 @@ class Agilent33500(InstrumentDriver):
             'range': [-10, 10],
             'return_type': float})
 
-
         self.add_device_property({
             'name': 'voltage_autorange_chan1',
             'write_string': 'SOUR1:VOLT:RANG:AUTO {}',
@@ -141,34 +141,33 @@ class Agilent33500(InstrumentDriver):
             'name': 'function_chan1',
             'write_string': 'SOUR1:FUNC {}',
             'query_string': 'SOUR1:FUNC?',
-            'values':  [
-            "SIN",
-            "SQU",
-            "TRI",
-            "RAMP",
-            "PULS",
-            "PRBS",
-            "NOIS",
-            "ARB",
-            "DC",],
+            'values': [
+                "SIN",
+                "SQU",
+                "TRI",
+                "RAMP",
+                "PULS",
+                "PRBS",
+                "NOIS",
+                "ARB",
+                "DC", ],
             'return_type': str})
 
         self.add_device_property({
             'name': 'function_chan2',
             'write_string': 'SOUR2:FUNC {}',
             'query_string': 'SOUR2:FUNC?',
-            'values':  [
-            "SIN",
-            "SQU",
-            "TRI",
-            "RAMP",
-            "PULS",
-            "PRBS",
-            "NOIS",
-            "ARB",
-            "DC",],
+            'values': [
+                "SIN",
+                "SQU",
+                "TRI",
+                "RAMP",
+                "PULS",
+                "PRBS",
+                "NOIS",
+                "ARB",
+                "DC", ],
             'return_type': str})
-
 
         self.add_device_property({
             'name': 'arb_advance_mode_chan1',
@@ -247,7 +246,6 @@ class Agilent33500(InstrumentDriver):
             'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
-
         self.add_device_property({
             'name': 'burst_state_chan2',
             'write_string': 'SOUR2:BURS:STAT {}',
@@ -287,24 +285,24 @@ class Agilent33500(InstrumentDriver):
             'name': 'trigger_source_chan1',
             'write_string': 'TRIG1:SOUR {}',
             'query_string': 'TRIG1:SOUR?',
-            'values':  ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'trigger_source_chan2',
             'write_string': 'TRIG2:SOUR {}',
             'query_string': 'TRIG2:SOUR?',
-            'values':  ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.update_properties()
         self.check_errors()
-        
+
     @property
     def frequency(self):
         self._frequency = getattr(self, 'frequency_chan{}'.format(self.channel))
         return self._frequency
-    
+
     @frequency.setter
     def frequency(self, new_value):
         setattr(self, 'frequency_chan{}'.format(self.channel), new_value)
@@ -313,7 +311,7 @@ class Agilent33500(InstrumentDriver):
     def instrument_amplitude(self):
         self._instrument_amplitude = getattr(self, 'instrument_amplitude_chan{}'.format(self.channel))
         return self._instrument_amplitude
-    
+
     @instrument_amplitude.setter
     def instrument_amplitude(self, new_value):
         setattr(self, 'instrument_amplitude_chan{}'.format(self.channel), new_value)
@@ -322,7 +320,7 @@ class Agilent33500(InstrumentDriver):
     def instrument_voltage(self):
         self._instrument_voltage = getattr(self, 'instrument_voltage_chan{}'.format(self.channel))
         return self._instrument_voltage
-    
+
     @instrument_voltage.setter
     def instrument_voltage(self, new_value):
         setattr(self, 'instrument_voltage_chan{}'.format(self.channel), new_value)
@@ -331,7 +329,7 @@ class Agilent33500(InstrumentDriver):
     def voltage_autorange(self):
         self._voltage_autorange = getattr(self, 'voltage_autorange_chan{}'.format(self.channel))
         return self._voltage_autorange
-    
+
     @voltage_autorange.setter
     def voltage_autorange(self, new_value):
         setattr(self, 'voltage_autorange_chan{}'.format(self.channel), new_value)
@@ -340,27 +338,25 @@ class Agilent33500(InstrumentDriver):
     def function(self):
         self._function = getattr(self, 'function_chan{}'.format(self.channel))
         return self._function
-    
+
     @function.setter
     def function(self, new_value):
         setattr(self, 'function_chan{}'.format(self.channel), new_value)
-
 
     @property
     def arb_advance_mode(self):
         self._arb_advance_mode = getattr(self, 'arb_advance_mode_chan{}'.format(self.channel))
         return self._arb_advance_mode
-    
+
     @arb_advance_mode.setter
     def arb_advance_mode(self, new_value):
         setattr(self, 'arb_advance_mode_chan{}'.format(self.channel), new_value)
-
 
     @property
     def arb_filter(self):
         self._arb_filter = getattr(self, 'arb_filter_chan{}'.format(self.channel))
         return self._arb_filter
-    
+
     @arb_filter.setter
     def arb_filter(self, new_value):
         setattr(self, 'arb_filter_chan{}'.format(self.channel), new_value)
@@ -369,17 +365,16 @@ class Agilent33500(InstrumentDriver):
     def arb_sample_rate(self):
         self._arb_sample_rate = getattr(self, 'arb_sample_rate_chan{}'.format(self.channel))
         return self._arb_sample_rate
-    
+
     @arb_sample_rate.setter
     def arb_sample_rate(self, new_value):
         setattr(self, 'arb_sample_rate_chan{}'.format(self.channel), new_value)
-
 
     @property
     def burst_mode(self):
         self._burst_mode = getattr(self, 'burst_mode_chan{}'.format(self.channel))
         return self._burst_mode
-    
+
     @burst_mode.setter
     def burst_mode(self, new_value):
         setattr(self, 'burst_mode_chan{}'.format(self.channel), new_value)
@@ -388,17 +383,16 @@ class Agilent33500(InstrumentDriver):
     def burst_cycles(self):
         self._burst_cycles = getattr(self, 'burst_cycles_chan{}'.format(self.channel))
         return self._burst_cycles
-    
+
     @burst_cycles.setter
     def burst_cycles(self, new_value):
         setattr(self, 'burst_cycles_chan{}'.format(self.channel), new_value)
-
 
     @property
     def burst_state(self):
         self._burst_state = getattr(self, 'burst_state_chan{}'.format(self.channel))
         return self._burst_state
-    
+
     @burst_state.setter
     def burst_state(self, new_value):
         setattr(self, 'burst_state_chan{}'.format(self.channel), new_value)
@@ -407,7 +401,7 @@ class Agilent33500(InstrumentDriver):
     def output(self):
         self._output = getattr(self, 'output_chan{}'.format(self.channel))
         return self._output
-    
+
     @output.setter
     def output(self, new_value):
         setattr(self, 'output_chan{}'.format(self.channel), new_value)
@@ -416,7 +410,7 @@ class Agilent33500(InstrumentDriver):
     def output_load(self):
         self._output_load = getattr(self, 'output_load_chan{}'.format(self.channel))
         return self._output_load
-    
+
     @output_load.setter
     def output_load(self, new_value):
         setattr(self, 'output_load_chan{}'.format(self.channel), new_value)
@@ -425,7 +419,7 @@ class Agilent33500(InstrumentDriver):
     def trigger_source(self):
         self._trigger_source = getattr(self, 'trigger_source_chan{}'.format(self.channel))
         return self._trigger_source
-    
+
     @trigger_source.setter
     def trigger_source(self, new_value):
         setattr(self, 'trigger_source_chan{}'.format(self.channel), new_value)
@@ -539,7 +533,7 @@ class Agilent33500(InstrumentDriver):
     def amplitude(self):
         self._amplitude = self.instrument_amplitude * self.gain
         return self._amplitude
-    
+
     @amplitude.setter
     def amplitude(self, new_value):
         self.instrument_amplitude = new_value / self.gain
@@ -552,7 +546,7 @@ class Agilent33500(InstrumentDriver):
 
     @voltage.setter
     def voltage(self, new_value):
-        self.instrument_voltage = new_value /self.gain
+        self.instrument_voltage = new_value / self.gain
         self._voltage = new_value
 
     @property
@@ -570,7 +564,7 @@ class Agilent33500(InstrumentDriver):
         firmwares = ID[-1].split('-')
         self.firmware_ = float(re.sub("[^0-9]", "", firmwares[0]))
         return self.firmware_
-    
+
     @property
     def errors(self):
         """Retrieve errors one by one and clear them
@@ -593,16 +587,6 @@ class Agilent33500(InstrumentDriver):
         return self._errors
 
     # Source > Data properties and methods
-
-    def clear_volatile_memory(self):
-        """Sends command to clear volatile memory on instrument
-
-        Returns
-        -------
-        None
-
-        """
-        self.write("SOUR{}:DATA:VOL:CLE".format(self.channel))
 
     def trigger(self):
         """Sends trigger signal to instrument
@@ -720,7 +704,7 @@ class Agilent33500(InstrumentDriver):
 
         return scaled_values
 
-    def legacy_sweep_mode(self, values, srate, ramp_down_step = 0.5):
+    def legacy_sweep_mode(self, values, srate, ramp_down_step=0.5):
         """runs a sweep of voltages at a given sample rate
 
                 This method will take an array of voltages and a sample rate to create a waveform
@@ -1098,4 +1082,3 @@ class Agilent33500(InstrumentDriver):
         """
 
         return name.split("\\")[-1]
-
