@@ -32,8 +32,8 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    # 'numpydoc',
-    'sphinx.ext.napoleon',]
+    # 'sphinx.ext.napoleon',
+    'numpydoc',]
 
 # napoleon options
 napoleon_numpy_docstring = True
