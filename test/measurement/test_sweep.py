@@ -27,11 +27,17 @@ def measure_up_to_3D(expt):
     return d
 
 
+# for setting up prestring based on loaded to differentiate loaded experiment error strings
+def isLoaded(loaded):
+    if (loaded is True):
+        return 'loaded '
+    else:
+        return ''
+
+
 # for checking keys, runinfo, and devices attributes
 def checkHasAttributes(expt, intended_keys_length, loaded=False):
-    is_loaded = ''
-    if (loaded is True):
-        is_loaded = 'loaded '
+    is_loaded = isLoaded(loaded)
     assert hasattr(expt, 'keys'), is_loaded + "experiment missing attribute 'keys'"
     ks = str(len(expt.keys()))
     iks = str(intended_keys_length)
@@ -74,13 +80,11 @@ def checkHasData(expt):
 
 # for checking that the data results are as expected
 def checkDataResults(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
-    is_loaded = ''
-    if (loaded is True):
-        is_loaded = 'loaded '
+    is_loaded = isLoaded(loaded)
     pre_string = is_loaded + "experiment x" + str(id) + " measurement "
 
-    if (dtype == float):
-        assert type(x) is float, pre_string + "is not a float"
+    if (dtype == float or shape == [1]):
+        assert type(x) is dtype, pre_string + "is not a float"
     else:
         assert type(x) is dtype, pre_string + "is not a numpy array"
         assert x.dtype == 'float64', pre_string + "data is not a float"
@@ -92,10 +96,13 @@ def checkDataResults(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
 
 
 # for checking that the experiment has multidata measurement attributes
-def checkHasMultiData(expt):
-    assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
-    assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
-    assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
+def checkHasMultiData(expt, loaded=False):
+    is_loaded = isLoaded(loaded)
+    pre_string = is_loaded + "experiment missing x"
+    post_string = " attribute after running"
+    assert hasattr(expt, 'x1'), pre_string + "1" + post_string
+    assert hasattr(expt, 'x2'), pre_string + "2" + post_string
+    assert hasattr(expt, 'x3'), pre_string + "3" + post_string
 
 
 # for checking that the multi data results are as expected
@@ -107,51 +114,39 @@ def checkMultiDataResults(expt, shape1=[2], shape2=[2], shape3=[2]):
     checkDataResults(expt.x3, shape3)
 
 
-# for checking the loaded experiment multidata measurement formatting
-def checkLoadedMulti(temp):
-    # check the experiment has multidata measurement attributes
-    checkHasMultiData(temp)
-
-    assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
-    assert type(temp.x2) is np.ndarray, "loaded x2 is not a numpy array"
-    assert type(temp.x3) is np.ndarray, "loaded x3 is not a numpy array"
-
-    assert temp.x1.dtype == 'float64', "loaded x1's data type is not float64"
-    assert temp.x2.dtype == 'float64', "loaded x2's data type is not float64"
-    assert temp.x3.dtype == 'float64', "loaded x3's data type is not float64"
-
-
 # for checking the experiment has voltages
-def checkHasVoltages(expt, num_voltages):
-    assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
+def checkHasVoltages(expt, num_voltages, loaded=False):
+    is_loaded = isLoaded(loaded)
+
+    assert hasattr(expt, 'v1_voltage'), is_loaded + "experiment missing v1_voltage attribute after running"
     if (num_voltages > 1):
-        assert hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
+        assert hasattr(expt, 'v2_voltage'), is_loaded + "experiment missing v2_voltage attribute after running"
     else:
-        assert not hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
+        assert not hasattr(expt, 'v2_voltage'), is_loaded + "experiment missing v2_voltage attribute after running"
     if (num_voltages > 2):
-        assert hasattr(expt, 'v3_voltage'), "experiment missing v3_voltage attribute after running"
+        assert hasattr(expt, 'v3_voltage'), is_loaded + "experiment missing v3_voltage attribute after running"
     else:
-        assert not hasattr(expt, 'v3_voltage'), "experiment missing v3_voltage attribute after running"
+        assert not hasattr(expt, 'v3_voltage'), is_loaded + "experiment missing v3_voltage attribute after running"
     if (num_voltages > 3):
-        assert hasattr(expt, 'v4_voltage'), "experiment missing v4_voltage attribute after running"
+        assert hasattr(expt, 'v4_voltage'), is_loaded + "experiment missing v4_voltage attribute after running"
     else:
-        assert not hasattr(expt, 'v4_voltage'), "experiment missing v4_voltage attribute after running"
+        assert not hasattr(expt, 'v4_voltage'), is_loaded + "experiment missing v4_voltage attribute after running"
     if (num_voltages > 4):
-        assert hasattr(expt, 'v5_voltage'), "experiment missing v5_voltage attribute after running"
+        assert hasattr(expt, 'v5_voltage'), is_loaded + "experiment missing v5_voltage attribute after running"
     else:
-        assert not hasattr(expt, 'v5_voltage'), "experiment missing v5_voltage attribute after running"
+        assert not hasattr(expt, 'v5_voltage'), is_loaded + "experiment missing v5_voltage attribute after running"
 
 
 # for checking that the voltage(s) as expected
 def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1, loaded=False):
-    is_loaded = ''
-    if (loaded is True):
-        is_loaded = 'loaded '
-    assert type(voltage) is np.ndarray, is_loaded + "experiment v" + str(voltage_id) + "_voltage is not a numpy array"
-    assert voltage.dtype == 'float64', is_loaded + "experiment v" + str(voltage_id) + "_voltage data is not a float"
-    assert len(voltage) == 2, is_loaded + "experiment v" + str(voltage_id) + "_voltage array does not have 2 elements"
-    assert voltage[0] == expected_value1, is_loaded + "experiment v" + str(voltage_id) + "_voltage value[0] is not 0"
-    assert voltage[1] == expected_value2, is_loaded + "experiment v" + str(voltage_id) + "_voltage value[1] is not 0.1"
+    is_loaded = isLoaded(loaded)
+    
+    pre_string = is_loaded + "experiment v" + str(voltage_id) + "_voltage "
+    assert type(voltage) is np.ndarray, pre_string + "is not a numpy array"
+    assert voltage.dtype == 'float64', pre_string + "data is not a float"
+    assert len(voltage) == 2, pre_string + "array does not have 2 elements"
+    assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
+    assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
 
 
 def test_0D_multi_data():
@@ -209,7 +204,7 @@ def test_0D_multi_data():
         assert expt.repeat == [0], "experiment repeat value is not 0"
 
         # check the data results are as expected
-        checkDataResults(expt.x1, id=1, dtype=float)
+        checkDataResults(expt.x1, id=1, dtype=float, shape=[1])
 
         checkDataResults(expt.x2, id=2, shape=[2])
 
@@ -230,7 +225,7 @@ def test_0D_multi_data():
         checkHasAttributes(temp, 6, loaded=True)
 
         # check the loaded experiment has multidata measurement attributes
-        checkHasMultiData(temp)
+        checkHasMultiData(temp, loaded=True)
 
         # check the loaded data results are as expected
         checkDataResults(temp.x1, id=1, shape=[1], loaded=True)
@@ -319,7 +314,7 @@ def test_1D_data():
         checkHasAttributes(temp, intended_keys_length=4, loaded=True)
 
         # check the eloaded xperiment has the right number of voltages
-        checkHasVoltages(temp, 1)
+        checkHasVoltages(temp, num_voltages=1)
 
         # check the loaded experiment has data measurement attribute
         checkHasData(temp)
@@ -328,7 +323,7 @@ def test_1D_data():
         checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=True)
 
         # check the loaded data results are as expected
-        checkDataResults(temp.x)
+        checkDataResults(temp.x, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -412,17 +407,17 @@ def test_1D_multi_data():
         checkHasAttributes(temp, 6, loaded=True)
 
         # check the loaded experiment has the right number of voltages
-        checkHasVoltages(temp, 1)
+        checkHasVoltages(temp, 1, loaded=True)
 
         # check the loaded experiment has multidata measurement attributes
         checkHasMultiData(temp)
 
         # check the data results are as expected
-        checkDataResults(temp.x1, id=1)
+        checkDataResults(temp.x1, id=1, loaded=True)
 
-        checkDataResults(temp.x2, id=2, shape=[2, 2])
+        checkDataResults(temp.x2, id=2, shape=[2, 2], loaded=True)
 
-        checkDataResults(temp.x3, id=3, shape=[2, 2, 2])
+        checkDataResults(temp.x3, id=3, shape=[2, 2, 2], loaded=True)
 
         # check voltage(s) are as expected
         checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=True)
@@ -473,28 +468,26 @@ def test_2D_data():
 
     # for checking the experiments output after running
     def checkExptOutput(expt):
-        assert len(expt.keys()) == 5, "experiment does not have 5 keys"
-        assert hasattr(expt, 'runinfo'), "experiment missing runinfo attribute after running"
-        assert hasattr(expt, 'devices'), "experiment missing devices attribute after running"
-        assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
-        assert hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
-        assert hasattr(expt, 'x'), "experiment missing x attribute after running"
+        # check the experiment has intended keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=5)
+
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=2)
+
+        # check the experiment has data measurement attribute
+        checkHasData(expt)
 
     checkExptOutput(expt)
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        assert type(expt.v1_voltage) is np.ndarray, "experiment v1_voltage is not a numpy array"
-        assert expt.v1_voltage.dtype == 'float64', "experiment v1_voltage data is not a float"
-        assert len(expt.v1_voltage) == 2, "experiment v1_voltage array does not have 2 elements"
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1)
 
-        assert type(expt.v2_voltage) is np.ndarray, "experiment v2_voltage is not a numpy array"
-        assert expt.v2_voltage.dtype == 'float64', "experiment v2_voltage data is not a float"
-        assert len(expt.v2_voltage) == 2, "experiment v2_voltage array does not have 2 elements"
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2)
 
-        assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
-        assert expt.x.dtype == 'float64', "experiment x2 measurement data is not a float"
-        list(expt.x.shape) == [2, 2], "experiment x measurement is not the right shape"
+        # check the data results are as expected
+        checkDataResults(expt.x, shape=[2, 2])
 
     checkExptResults(expt)
 
@@ -505,12 +498,23 @@ def test_2D_data():
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 5
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'x')
+        # check the loaded experiment has keys, runinfo, and devices attributes
+        checkHasAttributes(temp, intended_keys_length=5, loaded=True)
+
+        # check the eloaded xperiment has the right number of voltages
+        checkHasVoltages(temp, num_voltages=2)
+
+        # check the loaded experiment has data measurement attribute
+        checkHasData(temp)
+
+        # check the loaded voltage(s) are as expected
+        checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=True)
+
+        checkVoltageResults(temp.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=True)
+
+        # check the loaded data results are as expected
+        checkDataResults(temp.x, shape=[1], loaded=True)
+
         assert temp.x.dtype == 'float64'
         assert temp.v1_voltage.dtype == 'float64'
         assert temp.v2_voltage.dtype == 'float64'
