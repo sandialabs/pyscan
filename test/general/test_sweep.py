@@ -31,7 +31,7 @@ def measure_up_to_3D(expt):
 
 
 # for checking keys, runinfo, and devices attributes
-def basicCheck(expt, intended_keys_length, loaded=False):
+def checkHasAttributes(expt, intended_keys_length, loaded=False):
     is_loaded = ''
     if (loaded is True):
         is_loaded = 'loaded'
@@ -47,7 +47,7 @@ def basicCheck(expt, intended_keys_length, loaded=False):
 
 # for checking the experiment (expt) upon initialization
 def checkExptInit(expt):
-    basicCheck(expt, intended_keys_length=2)
+    checkHasAttributes(expt, intended_keys_length=2)
 
     assert expt.runinfo.data_path.exists(), "experiment data path does not exist"
     assert expt.runinfo.data_path.is_dir(), "experiment data path is not a directory"
@@ -70,17 +70,29 @@ def checkMetaPath(meta_path):
     assert meta_path.is_file(), "meta_path is not a file"
 
 
+# for checking that the experiment has data measurement attribute
+def checkHasData(expt):
+    assert hasattr(expt, 'x'), "experiment missing x attribute after running"
+
+
+# for checking that the data results are as expected
+def checkDataResults(expt):
+    assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
+    assert expt.x.dtype == 'float64', "experiment x measurement data is not a float"
+    assert len(expt.x) == 2, "experiment x measurement array does not have 2 elements"
+
+
 # for checking that the experiment has multidata measurement attributes
-def basicCheckMulti(expt):
+def checkHasMultiData(expt):
     assert hasattr(expt, 'x1'), "experiment missing x1 attribute after running"
     assert hasattr(expt, 'x2'), "experiment missing x2 attribute after running"
     assert hasattr(expt, 'x3'), "experiment missing x3 attribute after running"
 
 
-# check the loaded experiment multidata measurement formatting
+# for checking the loaded experiment multidata measurement formatting
 def checkLoadedMulti(temp):
     # check the experiment has multidata measurement attributes
-    basicCheckMulti(temp)
+    checkHasMultiData(temp)
 
     assert type(temp.x1) is np.ndarray, "loaded x1 is not a numpy array"
     assert type(temp.x2) is np.ndarray, "loaded x2 is not a numpy array"
@@ -89,6 +101,27 @@ def checkLoadedMulti(temp):
     assert temp.x1.dtype == 'float64', "loaded x1's data type is not float64"
     assert temp.x2.dtype == 'float64', "loaded x2's data type is not float64"
     assert temp.x3.dtype == 'float64', "loaded x3's data type is not float64"
+
+
+# for checking the experiment has voltages
+def checkHasVoltages(expt, num_voltages):
+    assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
+    if (num_voltages > 1):
+        assert hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
+    else:
+        assert not hasattr(expt, 'v2_voltage'), "experiment missing v2_voltage attribute after running"
+    if (num_voltages > 2):
+        assert hasattr(expt, 'v3_voltage'), "experiment missing v3_voltage attribute after running"
+    else:
+        assert not hasattr(expt, 'v3_voltage'), "experiment missing v3_voltage attribute after running"
+    if (num_voltages > 3):
+        assert hasattr(expt, 'v4_voltage'), "experiment missing v4_voltage attribute after running"
+    else:
+        assert not hasattr(expt, 'v4_voltage'), "experiment missing v4_voltage attribute after running"
+    if (num_voltages > 4):
+        assert hasattr(expt, 'v5_voltage'), "experiment missing v5_voltage attribute after running"
+    else:
+        assert not hasattr(expt, 'v5_voltage'), "experiment missing v5_voltage attribute after running"
 
 
 # for checking that the voltage(s) as expected
@@ -140,10 +173,10 @@ def test_0D_multi_data():
     # for checking the experiments output after running
     def checkExptOutput(expt):
         # check the experiment keys, runinfo, and devices attributes
-        basicCheck(expt, intended_keys_length=6)
+        checkHasAttributes(expt, intended_keys_length=6)
 
         # check the experiment has multidata measurement attributes
-        basicCheckMulti(expt)
+        checkHasMultiData(expt)
 
         assert hasattr(expt, 'repeat'), "experiment missing devices attribute after running"
 
@@ -178,7 +211,7 @@ def test_0D_multi_data():
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
         # check the loaded experiment keys, runinfo, and devices attributes
-        basicCheck(temp, 6, loaded=True)
+        checkHasAttributes(temp, 6, loaded=True)
 
         # check the loaded experiment has multidata measurement attributes
         checkLoadedMulti(temp)
@@ -229,22 +262,24 @@ def test_1D_data():
 
     # for checking the experiments output after running
     def checkExptOutput(expt):
-        # check the experiment keys, runinfo, and devices attributes
-        basicCheck(expt, 4)
+        # check the experiment has intended keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=4)
 
-        assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltage attribute after running"
-        assert hasattr(expt, 'x'), "experiment missing x attribute after running"
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=1)
+        
+        # check that the experiment has data measurement attribute
+        checkHasData(expt)
     
     checkExptOutput(expt)
 
     # for checking the experiments results formatting after running
     def checkExptResults(expt):
-        # check voltage(s) as expected
+        # check voltage(s) are as expected
         checkVoltageResults(expt.v1_voltage, 0, 0.1)
 
-        assert type(expt.x) is np.ndarray, "experiment x measurement is not a numpy array"
-        assert expt.x.dtype == 'float64', "experiment x measurement data is not a float"
-        assert len(expt.x) == 2, "experiment x measurement array does not have 2 elements"
+        # check the data results are as expected
+        checkDataResults(expt)
     
     checkExptResults(expt)
 
@@ -258,7 +293,7 @@ def test_1D_data():
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
         # check the loaded experiment keys, runinfo, and devices attributes
-        basicCheck(temp, 4, loaded=True)
+        checkHasAttributes(temp, 4, loaded=True)
 
         assert hasattr(temp, 'v1_voltage'), "loaded experiment missing v1_voltage attribute"
         assert hasattr(temp, 'x'), "loaded experiment missing x attribute"
@@ -317,10 +352,10 @@ def test_1D_multi_data():
     # for checking the experiments output after running
     def checkExptOutput(expt):
         # check the experiment keys, runinfo, and devices attributes
-        basicCheck(expt, 6)
+        checkHasAttributes(expt, 6)
 
         # check the experiment has multidata measurement attributes
-        basicCheckMulti(expt)
+        checkHasMultiData(expt)
 
         assert hasattr(expt, 'v1_voltage'), "experiment missing v1_voltages attribute after running"
 
@@ -360,7 +395,7 @@ def test_1D_multi_data():
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
         # check the loaded experiment keys, runinfo, and devices attributes
-        basicCheck(temp, 6, loaded=True)
+        checkHasAttributes(temp, 6, loaded=True)
 
         # check the loaded experiment has multidata measurement attributes
         checkLoadedMulti(temp)
