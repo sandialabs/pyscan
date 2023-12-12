@@ -100,7 +100,7 @@ def check_expt_init(expt):
 
 # for checking whether the check experimental run info succeeded
 def check_expt_runinfo(expt):
-    assert expt.check_runinfo(), "check_runinfo failed"
+    assert expt.check_runinfo(), "check_runinfo() failed"
     
     assert hasattr(expt.runinfo, 'long_name'), "experiment runinfo long name not initialized by check_runinfo"
     assert hasattr(expt.runinfo, 'short_name'), "experiment runinfo long name not initialized by check_runinfo"
