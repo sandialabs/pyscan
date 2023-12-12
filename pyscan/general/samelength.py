@@ -23,4 +23,4 @@ def same_length(list_of_lists):
         True if lists have the same length
     '''
 
-    return np.all([len(l) == len(list_of_lists[0]) for l in list_of_lists])
+    return np.all([len(alist) == len(list_of_lists[0]) for alist in list_of_lists])

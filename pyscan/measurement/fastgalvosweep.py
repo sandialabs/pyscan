@@ -7,7 +7,6 @@ Fast Galvo Sweep
 
 from time import sleep
 from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.islisttype import is_list_type
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 # import nidaqmx
@@ -31,14 +30,13 @@ class FastGalvoSweep(MetaSweep):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
- 
+
     '''
 
     def __init__(self, runinfo, devices, data_dir=None, verbose=False):
         '''Constructor method
         '''
         super().__init__(runinfo, devices, data_dir)
-
 
         self.runinfo.measure_function = self.line_counts
 
@@ -52,10 +50,12 @@ class FastGalvoSweep(MetaSweep):
         xrange = list(self.runinfo.loop0.scan_dict.values())[0]
 
         dev.legacy_sweep_mode(xrange, runinfo.srate, 5)
-        devices.pb.setup_single_ttl(['counter', 'awg'], ['aom'],
-            total_time = runinfo.loop0.n / runinfo.srate * 1.05)
+        devices.pb.setup_single_ttl(
+            ['counter', 'awg'], 
+            ['aom'],
+            total_time=runinfo.loop0.n / runinfo.srate * 1.05)
         devices.counter.setup_timed_buffer(
-            1/runinfo.srate, runinfo.loop0.n, runinfo.loop1.n)
+            1 / runinfo.srate, runinfo.loop0.n, runinfo.loop1.n)
 
         sleep(0.2)
 
@@ -110,8 +110,7 @@ class FastGalvoSweep(MetaSweep):
                         if self.runinfo.ndim == 1:
                             self[key] = np.array(value)
                         else:
-                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1 ,1))
-
+                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1, 1))
 
                     self.save_row()
 
@@ -136,7 +135,6 @@ class FastGalvoSweep(MetaSweep):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-
     def line_counts(self, expt):
         '''TODO
         '''
@@ -144,7 +142,7 @@ class FastGalvoSweep(MetaSweep):
         devices = expt.devices
 
         d = ItemAttribute()
-        
+
         devices.pb.start()
 
         sleep(runinfo.loop0.n / runinfo.srate * 1.01)

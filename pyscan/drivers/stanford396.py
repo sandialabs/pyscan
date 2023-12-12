@@ -10,11 +10,12 @@ from .instrumentdriver import InstrumentDriver
 
 class Stanford396(InstrumentDriver):
     '''Class to control Stanford Research SR396 Vector Signal Generator
-    
+
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from 
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
     ------
@@ -80,7 +81,7 @@ class Stanford396(InstrumentDriver):
             'name': 'output',
             'write_string': 'ENBR {}',
             'query_string': 'ENBR?',
-            'values': [0,1],
+            'values': [0, 1],
             'return_type': float})
 
         # Common settings
@@ -96,7 +97,7 @@ class Stanford396(InstrumentDriver):
             'name': 'noise_mode',
             'write_string': 'NOIS {}',
             'query_string': 'NOIS?',
-            'indexed_values': ['small','large'],
+            'indexed_values': ['small', 'large'],
             'return_type': float})
 
         self.add_device_property({
@@ -112,29 +113,29 @@ class Stanford396(InstrumentDriver):
             'name': 'modulation',
             'write_string': 'MODL {}',
             'query_string': 'MODL?',
-            'values': [0,1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'input_coupling',
             'write_string': 'COUP {}',
             'query_string': 'COUP?',
-            'values': [0,1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'modulation_type',
             'write_string': 'TYPE {}',
             'query_string': 'TYPE?',
-            'values': ['am','fm','phim','sweep','pulse', 
-                               'blank','qam','cpm','vbs'],
+            'values': ['am', 'fm', 'phim', 'sweep', 'pulse', 
+                       'blank', 'qam', 'cpm', 'vbs'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'modulation_function',
             'write_string': 'SFNC {}',
             'query_string': 'SFNC?',
-            'values': ['sin','ramp','triangle','external','waveform'],
+            'values': ['sin', 'ramp', 'triangle', 'external', 'waveform'],
             'return_type': int})
 
         self.add_device_property({
@@ -175,7 +176,7 @@ class Stanford396(InstrumentDriver):
     def setup_external_IQ(self):
 
         self.modulation = 1
-        self.sweep_modulation_function = 5 # External
+        self.sweep_modulation_function = 5  # External
         self.modulation_type = 'phim'
         self.modulation_subtype = 5
-        self.iq_modulation_function = 5 # External
+        self.iq_modulation_function = 5  # External

@@ -51,7 +51,7 @@ def load_experiment(file_name):
             expt.devices[key] = value
 
         data = h5py.File('{}.hdf5'.format(file_name), 'r')
-        with  h5py.File('{}.hdf5'.format(file_name), 'r') as f:
+        with h5py.File('{}.hdf5'.format(file_name), 'r') as f:
             for key, value in data.items():
                 expt[key] = (f[key][:]).astype('float64')
 
@@ -74,4 +74,3 @@ def load_experiment(file_name):
         f.close()
 
         return expt
-

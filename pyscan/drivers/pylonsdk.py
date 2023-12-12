@@ -19,10 +19,9 @@ class PylonSDK(ItemAttribute):
 
         Args:
             settings: dict containing settings for property
-        
+
         Returns function that generates the property of the class
         '''
-
 
         if 'values' in settings:
             set_function = self.set_values_property
@@ -145,7 +144,6 @@ class PylonSDK(ItemAttribute):
             print('{} must be an integer between {} and {}'.format(
                 settings['name'], rng[0], rng[1]))
 
-
     def set_range_properties(self, obj, new_value, settings):
         '''
         Generator function for settings dictionary with 'ranges' item
@@ -159,19 +157,19 @@ class PylonSDK(ItemAttribute):
         returns None
         '''
 
-        rngs=settings['ranges']
+        rngs = settings['ranges']
 
-        if len(rngs)!=len(new_value):
-            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'],len(rngs),len(new_value)))
-        elif all(rngi[0]<=new_valuei<=rngi[1] for new_valuei,rngi in zip(new_value,rngs)):
+        if len(rngs) != len(new_value):
+            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
+        elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
             if not self.debug:
                 obj.write(settings['write_string'].format(*new_value))
-                setattr(self,'_'+settings['name'],new_value)
+                setattr(self, '_' + settings['name'], new_value)
             else:
-                setattr(self,'_'+settings['name'],settings['write_string'].format(*new_value))
+                setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
             print('Range error:')
-            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs,new_value))
+            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs, new_value))
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -204,4 +202,3 @@ class PylonSDK(ItemAttribute):
             print('{} must be one of:'.format(settings['name']))
             for string in values:
                 print('{}'.format(string))
-

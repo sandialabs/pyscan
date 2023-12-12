@@ -4,35 +4,41 @@ Runinfo
 =======
 """
 
-import numpy as np
 from pyscan.general.itemattribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
 
 
-
 class RunInfo(ItemAttribute):
     '''
-    Object that contains information of how to run the experiment. Inherits from :class:`~pyscan.general.itemattribute.ItemAttribute`. This is generally used as an input parameter to Sweep classes.
-    
-    You must set the desired number of loops to a type of Scan before using RunInfo in a Sweep class. Set the loops in order from `loop0` to `loop3` - for example, if you are sweeping over 2 variables, set `loop0` and `loop1`. Do not set `loop0` and `loop2`.
-    
+    Object that contains information of how to run the experiment. Inherits from `.ItemAttribute`.
+    This is generally used as an input parameter to Sweep classes.
+
+    You must set the desired number of loops to a type of Scan before using RunInfo in a Sweep class.
+    Set the loops in order from `loop0` to `loop3` - for example, if you are sweeping over 2 variables,
+    set `loop0` and `loop1`. Do not set `loop0` and `loop2`.
     Attributes
     ----------
-    loop0, loop1, loop2, loop3 : :class:`~pyscan.measurement.scans.PropertyScan`, :class:`~pyscan.measurement.scans.AverageScan`, :class:`~pyscan.measurement.scans.RepeatScan` or :class:`~pyscan.measurement.scans.FunctionScan`
-        Set each loop to a scan object representing one experimental variable. The scan property or function will be looped during the experiment, with loop0 being the innermost loop. Defaults to :class:`PropertyScan({}, prop=None)<pyscan.measurement.scans.PropertyScan>`, which indicates that the loop will not be used.
-    measured : 
-        Array that contains the names of measured dataset, assigned by a Sweep object's :func:`~pyscan.measurement.metasweep.MetaSweep.run` method.
+    loop0, loop1, loop2, loop3 : `PropertyScan`, `AverageScan`, `RepeatScan` or `FunctionScan`
+        Set each loop to a scan object representing one experimental variable. The scan property or
+        function will be looped during the experiment, with loop0 being the innermost loop.
+        Defaults to `PropertyScan({}, prop=None)<pyscan.measurement.scans.PropertyScan>`,
+        which indicates that the loop will not be used.
+    measured :
+        Array that contains the names of measured dataset, assigned by a Sweep object's `.MetaSweep.run` method.
     measure_function : func
-        User-defined function that controls how to measure data. It should accept a Sweep object as its only parameter, and returns an :class:`~pyscan.general.itemattribute.ItemAttribute` object containing the measured data.
+        User-defined function that controls how to measure data. It should accept a Sweep object as its only parameter,
+        and returns an `.ItemAttribute` object containing the measured data.
     trigger_function : func
         User-defined function that controls triggering of instruments
     initial_pause : float
         Pause before first setting instruments in seconds, defaults to 0.1.
     average_d : int
-        Loop index used by AverageSweep to track which loop to average over, defaults to -1. Automatically is set to the correct index by :func:`RunInfo.check()` method, which is automatically called by Sweep :func:`~pyscan.measurement.metasweep.MetaSweep.run` methods.
-    verbose : bool 
+        Loop index used by AverageSweep to track which loop to average over, defaults to -1.
+        Automatically is set to the correct index by `RunInfo.check()` method, which is automatically
+        called by Sweep `.MetaSweep.run` methods.
+    verbose : bool
         Flag to print status information, defaults to `False`.
-    
+
     '''
 
     def __init__(self):
@@ -52,12 +58,13 @@ class RunInfo(ItemAttribute):
         self.initial_pause = 0.1
         self.average_d = -1
 
-        self.verbose=False
+        self.verbose = False
 
     def check(self):
-        '''Checks to see if runinfo is properly formatted. Called by Sweep object's :func:`run` methods.  
+        '''Checks to see if runinfo is properly formatted. Called by Sweep object's `run` methods.
 
-        Automatically sets self.average_d to the correct loop index (i.e., the loop which contains an instance of :class:`pyscan.measurement.scans.AverageScan`) to average over. Relevant for :class:`pyscan.measurement.averagesweep.AverageSweep`.
+        Automatically sets self.average_d to the correct loop index (i.e., the loop which contains an
+        instance of `.AverageScan`) to average over. Relevant for `.AverageSweep`.
         '''
         if issubclass(type(self.loop0), AverageScan):
             self.average_d = 0
@@ -92,7 +99,7 @@ class RunInfo(ItemAttribute):
                 self.loop3.n)
         dims = [n for n in dims if n != 1]
         self._dims = tuple(dims)
-        return self._dims #what is the purpose of creating a private attribute _dims? It is never used and dims property seems sufficient.
+        return self._dims
 
     @property
     def average_dims(self):
@@ -106,7 +113,7 @@ class RunInfo(ItemAttribute):
     def ndim(self):
         ''' Returns number of non 1 sized loops
         '''
-        self._ndim = len(self.dims) #why is this stored as a property? It is never used
+        self._ndim = len(self.dims)  # why is this stored as a property? It is never used
         return self._ndim
 
     @property
@@ -118,8 +125,8 @@ class RunInfo(ItemAttribute):
 
     @property
     def indicies(self):
-        ''' Returns tuple of the current loop iteration indicies, 
-        excluding loops of size 1
+        '''
+        Returns tuple of the current loop iteration indicies,
         '''
         self._indicies = (self.loop0.i,
                           self.loop1.i,
@@ -130,24 +137,25 @@ class RunInfo(ItemAttribute):
 
     @property
     def line_indicies(self):
-        self._line_indicies = (self.loop1.i,
-                          self.loop2.i,
-                          self.loop3.i)
+        self._line_indicies = (
+            self.loop1.i,
+            self.loop2.i,
+            self.loop3.i)
         self._line_indicies = self._line_indicies[:self.ndim]
         return tuple(self._line_indicies)
-
 
     @property
     def average_indicies(self):
         ''' Returns tuple of the current loop iteration indicies,
-        excluding loops of size 1 and averaged loop. These are the active loops not to be averaged. Used by :class:`pyscan.measurement.averagesweep.AverageSweep`.
+        excluding loops of size 1 and averaged loop. These are the active
+        loops not to be averaged. Used by `.AverageSweep`.
         '''
         self._average_indicies = drop(self.indicies, self.average_d)
         return tuple(self._average_indicies)
 
     @property
     def average_index(self):
-        ''' Returns the index of the loop to be averaged. Used by :class:`pyscan.AverageSweep`.
+        ''' Returns the index of the loop to be averaged. Used by `pyscan.AverageSweep`.
         '''
         self._average_index = self.indicies[self.average_d]
         return self._average_index
@@ -160,18 +168,19 @@ def new_runinfo(*arg, **kwarg):
 
 
 def drop(array, index):
-    ''' Drops an object at `index` in `array`
+    '''
+    Drops an object at `index` in `array`
 
     Parameters
     ----------
     array : list or numpy.array
         Array for object to be dropped
-    index : int 
+    index : int
         Index of object to be dropped
-    
+
     Returns
     list
         The array minus the dropped value
     '''
 
-    return list(array[0:index]) + list(array[index+1:])
+    return list(array[0:index]) + list(array[index + 1:])

@@ -19,7 +19,6 @@ class TestVoltage(ItemAttribute):
         more storage for an arbitrary value
     '''
 
-
     def __init__(self):
 
         self.debug = False
@@ -42,4 +41,3 @@ class TestVoltage(ItemAttribute):
     @other_voltage.setter
     def other_voltage(self, new_value):
         self._other_voltage = new_value
-

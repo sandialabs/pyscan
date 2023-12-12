@@ -15,7 +15,7 @@ def first_string(obj):
     ----------
     obj : str, list or array 
         Instance of string or array of strings.
-    
+
     Returns
     -------
         - ``obj`` if `obj` is a string

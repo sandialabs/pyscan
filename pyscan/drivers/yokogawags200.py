@@ -21,7 +21,8 @@ class YokogawaGS200(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`~pyscan.drivers.newinstrument.new_instrument`)
     dt : float
         time in s between voltage steps
     step_size : float
@@ -36,7 +37,6 @@ class YokogawaGS200(InstrumentDriver):
     def __init__(self, instrument, dt=0.1, step_size=0.03):
 
         super().__init__(instrument)
-
 
         self.dt = dt
         self.step_size = step_size
@@ -63,12 +63,12 @@ class YokogawaGS200(InstrumentDriver):
     def voltage(self):
         self._voltage = float(self.query('SOUR:LEV?').replace('\n', ''))
         return self._voltage
-    
+
     @voltage.setter
     def voltage(self, new_value):
 
         vmin, vmax = self.voltage_settings['range']
-        
+
         if vmin <= new_value <= vmax:
 
             step_size = self.step_size
@@ -80,14 +80,14 @@ class YokogawaGS200(InstrumentDriver):
             start = self.voltage
             if new_value == start:
                 return
-            sign = (new_value - self._voltage)/np.abs(new_value - self._voltage)
+            sign = (new_value - self._voltage) / np.abs(new_value - self._voltage)
 
             if np.abs(new_value - start) < step_size:          
                 self.write('SOUR:LEV:FIX {}'.format(new_value))
                 self._voltage = new_value
                 return
 
-            ramp_values = drange(start+sign*step_size, sign*step_size, new_value)
+            ramp_values = drange(start + sign * step_size, sign * step_size, new_value)
 
             for v in ramp_values:
                 sleep(self.dt)
@@ -99,6 +99,3 @@ class YokogawaGS200(InstrumentDriver):
             print('Range error:')
             print('Phase must be between {} and {}'.format(
                 vmin, vmax))
-
-
-    

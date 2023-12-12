@@ -7,7 +7,6 @@ PulseBlaster
 
 from pyscan.general.itemattribute import ItemAttribute
 import ctypes
-import numpy as np
 
 PULSE_PROGRAM = 0
 FREQ_REGS = 1
@@ -20,6 +19,7 @@ except:
     except:
         print("Failed to load spinapi library.")
         pass
+
 
 def enum(**enums):
     return type('Enum', (), enums)
@@ -78,12 +78,11 @@ spinapi.pb_stop.restype = (ctypes.c_int)
 spinapi.pb_reset.restype = (ctypes.c_int)
 spinapi.pb_close.restype = (ctypes.c_int)
 
-spinapi.pb_inst_pbonly.argtype = (
-    ctypes.c_int,  # flags
-    ctypes.c_int,  # inst
-    ctypes.c_int,  # inst_data
-    ctypes.c_double  # timing value
-    )
+spinapi.pb_inst_pbonly.argtype =\
+    (ctypes.c_int,  # flags
+     ctypes.c_int,  # inst
+     ctypes.c_int,  # inst_data
+     ctypes.c_double)  # timing value)
 
 spinapi.pb_inst_pbonly.restype = (ctypes.c_int)
 
@@ -149,7 +148,7 @@ class PulseBlaster(ItemAttribute):
 
     def inst(self, *args):
         t = list(args)
-        #Argument 13 must be a double
+        # Argument 13 must be a double
         t[-1] = ctypes.c_double(t[-1])
         args = tuple(t)
         return spinapi.pb_inst_pbonly(*args)
@@ -160,7 +159,7 @@ class PulseBlaster(ItemAttribute):
     def stop(self):
         return spinapi.pb_stop()
 
-    def reset(self): 
+    def reset(self):
         return spinapi.pb_reset()
 
     def close(self):
@@ -192,12 +191,14 @@ class PulseBlaster(ItemAttribute):
         else:
             print('Bad instruction')
 
-    def setup_single_ttl(self, 
-        ttl_chans=[], always_on_chans=[], 
-        total_time=1, ttl_time=1e-6):
+    def setup_single_ttl(self,
+                         ttl_chans=[],
+                         always_on_chans=[],
+                         total_time=1,
+                         ttl_time=1e-6):
 
         self.stop()
-        
+
         always_on = 0
         for chan in always_on_chans:
             always_on += 2**self[chan]
@@ -208,9 +209,8 @@ class PulseBlaster(ItemAttribute):
 
         print(ttl, always_on)
         self.start_programming()
-        self.inst(ttl+always_on, Inst.CONTINUE, 0, ttl_time*1e9)
-        self.inst(always_on, Inst.STOP, 0, total_time*1e9)
+        self.inst(ttl + always_on, Inst.CONTINUE, 0, ttl_time * 1e9)
+        self.inst(always_on, Inst.STOP, 0, total_time * 1e9)
         self.stop_programming()
 
         self.reset()
-

@@ -15,7 +15,7 @@ def quadrature_sum(array):
     ----------
     array : float
         array-like object
-    
+
     Returns
     -------
     float
