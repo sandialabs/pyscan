@@ -1,10 +1,8 @@
 '''
 Pytest functions to test the Runinfo class
 '''
-import pyscan as ps
-import sys
 
-sys.path.append('../../../pyscan')
+import pyscan as ps
 
 
 def test_init_from_noparams():

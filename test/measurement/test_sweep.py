@@ -3,11 +3,8 @@ Pytest functions to test the pointbypoint experiment class
 '''
 import pyscan as ps
 from random import random
-import sys
 import shutil
 import numpy as np
-
-sys.path.append('../../../pyscan')
 
 
 # for setting runinfo measure_function to measure 1D data
