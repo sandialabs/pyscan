@@ -53,7 +53,7 @@ numpy docs and is outlined in this document.
 ### 4.1 Docstring Structure
 
 The docstring for a function or class definition should be located directly under the 
-definition line enclosed with three triple quotes ''' '''
+definition line enclosed with three triple quotes """ """ 
 
 If the enclosed docstring can be a single line keep the doc string on a single line. Such as 
 
