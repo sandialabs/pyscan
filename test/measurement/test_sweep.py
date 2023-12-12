@@ -7,6 +7,8 @@ import shutil
 import numpy as np
 
 
+##################### METHODS USED BY TEST CASES #####################
+
 # for setting runinfo measure_function to measure 1D data
 def measure_point(expt):
     d = ps.ItemAttribute()
@@ -35,8 +37,41 @@ def isLoaded(loaded):
         return ''
 
 
+# for setting up the experiments
+def setUpExperiment(num_devices, measure_function, repeat=False, repeat_num=1):
+    devices = ps.ItemAttribute()
+    devices.v1 = ps.TestVoltage()
+
+    runinfo = ps.RunInfo()
+
+    if (repeat is True):
+        runinfo.loop0 = ps.RepeatScan(repeat_num)
+    else:
+        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+
+        if (num_devices > 1):
+            devices.v2 = ps.TestVoltage()
+            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+
+        if (num_devices > 2):
+            devices.v3 = ps.TestVoltage()
+            runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+
+        if (num_devices > 3):
+            devices.v4 = ps.TestVoltage()
+            runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+        
+        if (num_devices > 4):
+            assert False, "num_devices > 4 not implemented in testing"
+
+    runinfo.measure_function = measure_function
+
+    expt = ps.Sweep(runinfo, devices)
+    return expt
+
+
 # for checking keys, runinfo, and devices attributes
-def checkHasAttributes(expt, intended_keys_length, loaded=False):
+def checkHasAttributes(expt, intended_keys_length, additional=None, loaded=False):
     is_loaded = isLoaded(loaded)
     assert hasattr(expt, 'keys'), is_loaded + "experiment missing attribute 'keys'"
     ks = str(len(expt.keys()))
@@ -46,6 +81,9 @@ def checkHasAttributes(expt, intended_keys_length, loaded=False):
 
     assert hasattr(expt, 'runinfo'), is_loaded + "experiment missing runinfo attribute"
     assert hasattr(expt, 'devices'), is_loaded + "experiment missing devices attribute"
+
+    if (additional is not None):
+        assert hasattr(expt, additional), is_loaded + "experiment missing " + additional + " attribute"
 
 
 # for checking the experiment (expt) upon initialization
@@ -68,14 +106,17 @@ def checkExptRunInfo(expt):
 
 
 # for checking that the meta path is initialized properly
-def checkMetaPath(meta_path):
+def checkMetaPath(expt):
+    expt.save_metadata()
+    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
     assert meta_path.exists(), "meta_path not initialized"
     assert meta_path.is_file(), "meta_path is not a file"
 
 
 # for checking that the experiment has data measurement attribute
-def checkHasData(expt):
-    assert hasattr(expt, 'x'), "experiment missing x attribute after running"
+def checkHasData(expt, loaded=False):
+    is_loaded = isLoaded(loaded)
+    assert hasattr(expt, 'x'), is_loaded + "experiment missing x attribute after running"
 
 
 # for checking that the data results are as expected
@@ -140,7 +181,7 @@ def checkHasVoltages(expt, num_voltages, loaded=False):
 # for checking that the voltage(s) as expected
 def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1, loaded=False):
     is_loaded = isLoaded(loaded)
-    
+
     pre_string = is_loaded + "experiment v" + str(voltage_id) + "_voltage "
     assert type(voltage) is np.ndarray, pre_string + "is not a numpy array"
     assert voltage.dtype == 'float64', pre_string + "data is not a float"
@@ -148,6 +189,8 @@ def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1,
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
 
+
+####################### TEST CASES BEGIN HERE #######################
 
 def test_0D_multi_data():
     """
@@ -158,17 +201,8 @@ def test_0D_multi_data():
     None
     """
 
-    # setting up experiment
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.RepeatScan(1)
-
-    runinfo.measure_function = measure_up_to_3D
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=1, measure_function=measure_up_to_3D, repeat=True, repeat_num=1)
 
     # check the experiment was initialized correctly
     checkExptInit(expt)
@@ -178,37 +212,32 @@ def test_0D_multi_data():
     # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
     # check the meta path was set successfully
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    # for checking the experiments output after running
-    def checkExptOutput(expt):
+    # for checking the experiments attributes and output after running
+    def checkExptAttributes(expt, loaded=False):
         # check the experiment keys, runinfo, and devices attributes
-        checkHasAttributes(expt, intended_keys_length=6)
+        checkHasAttributes(expt, intended_keys_length=6, additional='repeat', loaded=loaded)
 
         # check the experiment has multidata measurement attributes
-        checkHasMultiData(expt)
+        checkHasMultiData(expt, loaded=loaded)
 
-        assert hasattr(expt, 'repeat'), "experiment missing devices attribute after running"
-
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
     # for checking the experiments results formatting after running
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.repeat) == 1, "experiment repeat length is not 1"
         assert expt.repeat == [0], "experiment repeat value is not 0"
 
         # check the data results are as expected
-        checkDataResults(expt.x1, id=1, dtype=float, shape=[1])
+        checkDataResults(expt.x1, id=1, dtype=float, shape=[1], loaded=loaded)
 
-        checkDataResults(expt.x2, id=2, shape=[2])
+        checkDataResults(expt.x2, id=2, shape=[2], loaded=loaded)
 
-        checkDataResults(expt.x3, id=3, shape=[2, 2])
+        checkDataResults(expt.x3, id=3, shape=[2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
@@ -221,11 +250,8 @@ def test_0D_multi_data():
     
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        # check the loaded experiment keys, runinfo, and devices attributes
-        checkHasAttributes(temp, 6, loaded=True)
-
-        # check the loaded experiment has multidata measurement attributes
-        checkHasMultiData(temp, loaded=True)
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
 
         # check the loaded data results are as expected
         checkDataResults(temp.x1, id=1, shape=[1], loaded=True)
@@ -233,8 +259,6 @@ def test_0D_multi_data():
         checkDataResults(temp.x2, id=2, shape=[2], loaded=True)
 
         checkDataResults(temp.x3, id=3, shape=[2, 2], loaded=True)
-
-        assert hasattr(temp, 'repeat'), "loaded experiment missing repeat attribute"
 
     checkLoadExpt(temp)
 
@@ -249,18 +273,9 @@ def test_1D_data():
     --------
     None
     """
-    
-    # setting up experiment
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
 
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-
-    runinfo.measure_function = measure_point
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=1, measure_function=measure_point)
 
     # check the experiment was initialized correctly
     checkExptInit(expt)
@@ -270,34 +285,31 @@ def test_1D_data():
     # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
     # check the meta path was set successfully
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    # for checking the experiments output after running
-    def checkExptOutput(expt):
+    # for checking the experiments attributes and output after running
+    def checkExptAttributes(expt, loaded=False):
         # check the experiment has intended keys, runinfo, and devices attributes
-        checkHasAttributes(expt, intended_keys_length=4)
+        checkHasAttributes(expt, intended_keys_length=4, loaded=loaded)
 
         # check the experiment has the right number of voltages
-        checkHasVoltages(expt, num_voltages=1)
+        checkHasVoltages(expt, num_voltages=1, loaded=loaded)
         
         # check the experiment has data measurement attribute
         checkHasData(expt)
     
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
     # for checking the experiments results formatting after running
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         # check voltage(s) are as expected
-        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=loaded)
 
         # check the data results are as expected
-        checkDataResults(expt.x)
+        checkDataResults(expt.x, loaded=loaded)
     
     checkExptResults(expt)
 
@@ -310,20 +322,11 @@ def test_1D_data():
 
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        # check the loaded experiment has keys, runinfo, and devices attributes
-        checkHasAttributes(temp, intended_keys_length=4, loaded=True)
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
 
-        # check the eloaded xperiment has the right number of voltages
-        checkHasVoltages(temp, num_voltages=1)
-
-        # check the loaded experiment has data measurement attribute
-        checkHasData(temp)
-
-        # check the loaded voltage(s) are as expected
-        checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=True)
-
-        # check the loaded data results are as expected
-        checkDataResults(temp.x, loaded=True)
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -339,17 +342,8 @@ def test_1D_multi_data():
     None
     """
 
-    # setting up experiment
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-
-    runinfo.measure_function = measure_up_to_3D
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=1, measure_function=measure_up_to_3D)
 
     # check the experiment was initialized correctly
     checkExptInit(expt)
@@ -359,38 +353,35 @@ def test_1D_multi_data():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
     # check the meta path was set successfully
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    # for checking the experiments output after running
-    def checkExptOutput(expt):
+    # for checking the experiments attributes and output after running
+    def checkExptAttributes(expt, loaded=False):
         # check the experiment keys, runinfo, and devices attributes
-        checkHasAttributes(expt, 6)
+        checkHasAttributes(expt, 6, loaded=loaded)
 
         # check the experiment has multidata measurement attributes
-        checkHasMultiData(expt)
+        checkHasMultiData(expt, loaded=loaded)
 
         # check the experiment has the right number of voltages
-        checkHasVoltages(expt, num_voltages=1)
+        checkHasVoltages(expt, num_voltages=1, loaded=loaded)
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
     # for checking the experiments results formatting after running
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         # check voltage(s) are as expected
-        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=loaded)
 
         # check the data results are as expected
-        checkDataResults(expt.x1, id=1)
+        checkDataResults(expt.x1, id=1, loaded=loaded)
 
-        checkDataResults(expt.x2, id=2, shape=[2, 2])
+        checkDataResults(expt.x2, id=2, shape=[2, 2], loaded=loaded)
 
-        checkDataResults(expt.x3, id=3, shape=[2, 2, 2])
+        checkDataResults(expt.x3, id=3, shape=[2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
@@ -403,24 +394,11 @@ def test_1D_multi_data():
 
     # for checking the experiment is loaded as expected
     def checkLoadExpt(temp):
-        # check the loaded experiment keys, runinfo, and devices attributes
-        checkHasAttributes(temp, 6, loaded=True)
+        # check the loaded experiment has the right attributes
+        checkExptResults(temp, loaded=True)
 
-        # check the loaded experiment has the right number of voltages
-        checkHasVoltages(temp, 1, loaded=True)
-
-        # check the loaded experiment has multidata measurement attributes
-        checkHasMultiData(temp)
-
-        # check the data results are as expected
-        checkDataResults(temp.x1, id=1, loaded=True)
-
-        checkDataResults(temp.x2, id=2, shape=[2, 2], loaded=True)
-
-        checkDataResults(temp.x3, id=3, shape=[2, 2, 2], loaded=True)
-
-        # check voltage(s) are as expected
-        checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, loaded=True)
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -436,19 +414,8 @@ def test_2D_data():
     None
     """ 
 
-    # setting up experiment
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-
-    runinfo.measure_function = measure_point
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=2, measure_function=measure_point)
 
     # check the experiment was initialized correctly
     checkExptInit(expt)
@@ -458,36 +425,33 @@ def test_2D_data():
     # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
     # check the meta path was set successfully
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    # for checking the experiments output after running
-    def checkExptOutput(expt):
+    # for checking the experiments attributes and output after running
+    def checkExptAttributes(expt, loaded=False):
         # check the experiment has intended keys, runinfo, and devices attributes
-        checkHasAttributes(expt, intended_keys_length=5)
+        checkHasAttributes(expt, intended_keys_length=5, loaded=loaded)
 
         # check the experiment has the right number of voltages
-        checkHasVoltages(expt, num_voltages=2)
+        checkHasVoltages(expt, num_voltages=2, loaded=loaded)
 
         # check the experiment has data measurement attribute
         checkHasData(expt)
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
     # for checking the experiments results formatting after running
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         # check voltage(s) are as expected
-        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1)
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
 
-        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2)
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
 
         # check the data results are as expected
-        checkDataResults(expt.x, shape=[2, 2])
+        checkDataResults(expt.x, shape=[2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
@@ -498,26 +462,11 @@ def test_2D_data():
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
     def checkLoadExpt(temp):
-        # check the loaded experiment has keys, runinfo, and devices attributes
-        checkHasAttributes(temp, intended_keys_length=5, loaded=True)
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
 
-        # check the eloaded xperiment has the right number of voltages
-        checkHasVoltages(temp, num_voltages=2)
-
-        # check the loaded experiment has data measurement attribute
-        checkHasData(temp)
-
-        # check the loaded voltage(s) are as expected
-        checkVoltageResults(temp.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=True)
-
-        checkVoltageResults(temp.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=True)
-
-        # check the loaded data results are as expected
-        checkDataResults(temp.x, shape=[1], loaded=True)
-
-        assert temp.x.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -533,19 +482,8 @@ def test_2D_multi_data():
     None
     """ 
 
-    # setting up experiment
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-
-    runinfo.measure_function = measure_up_to_3D
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=2, measure_function=measure_up_to_3D)
 
     # check the experiment was initialized correctly
     checkExptInit(expt)
@@ -555,33 +493,36 @@ def test_2D_multi_data():
     # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
     # check the meta path was set successfully
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    # for checking the experiments output after running
-    def checkExptOutput(expt):
-        assert len(expt.keys()) == 7
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'x1')
-        assert hasattr(expt, 'x2')
-        assert hasattr(expt, 'x3')
+    # for checking the experiments attributes and output after running
+    def checkExptAttributes(expt, loaded=False):
+        # check the experiment keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=7, loaded=loaded)
 
-    checkExptOutput(expt)
+        # check the experiment has multidata measurement attributes
+        checkHasMultiData(expt, loaded=loaded)
 
-    def checkExptResults(expt):
-        assert len(expt.v1_voltage) == 2
-        assert len(expt.v2_voltage) == 2
-        list(expt.x1.shape) == [2, 2]
-        list(expt.x2.shape) == [2, 2]
-        list(expt.x3.shape) == [2, 2, 2]
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=2, loaded=loaded)
+
+    checkExptAttributes(expt)
+
+    def checkExptResults(expt, loaded=False):
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
+
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
+
+        # check the data results are as expected
+        checkDataResults(expt.x1, id=1, shape=[2, 2], loaded=loaded)
+
+        checkDataResults(expt.x2, id=2, shape=[2, 2, 2], loaded=loaded)
+
+        checkDataResults(expt.x3, id=3, shape=[2, 2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
@@ -592,19 +533,11 @@ def test_2D_multi_data():
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 7
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'x1')
-        assert hasattr(temp, 'x2')
-        assert hasattr(temp, 'x3')
-        assert temp.x1.dtype == 'float64'
-        assert temp.x2.dtype == 'float64'
-        assert temp.x3.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -620,20 +553,8 @@ def test_3D_data():
     None
     """ 
 
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-    devices.v3 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-    runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-
-    runinfo.measure_function = measure_point
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=3, measure_function=measure_point)
 
     checkExptInit(expt)
 
@@ -641,14 +562,11 @@ def test_3D_data():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 6
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -657,9 +575,9 @@ def test_3D_data():
         assert hasattr(expt, 'v3_voltage')
         assert hasattr(expt, 'x')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -700,20 +618,8 @@ def test_3D_multi_data():
     None
     """ 
 
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-    devices.v3 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-    runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-
-    runinfo.measure_function = measure_up_to_3D
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=3, measure_function=measure_up_to_3D)
 
     checkExptInit(expt)
 
@@ -721,14 +627,11 @@ def test_3D_multi_data():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 8
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -739,9 +642,9 @@ def test_3D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -788,22 +691,8 @@ def test_4D_data():
     None
     """ 
 
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-    devices.v3 = ps.TestVoltage()
-    devices.v4 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-    runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-    runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
-
-    runinfo.measure_function = measure_point
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=4, measure_function=measure_point)
 
     checkExptInit(expt)
 
@@ -811,14 +700,11 @@ def test_4D_data():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 7
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -828,9 +714,9 @@ def test_4D_data():
         assert hasattr(expt, 'v4_voltage')
         assert hasattr(expt, 'x')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -874,22 +760,8 @@ def test_4D_multi_data():
     None
     """ 
 
-    devices = ps.ItemAttribute()        
-    devices.v1 = ps.TestVoltage()
-    devices.v2 = ps.TestVoltage()
-    devices.v3 = ps.TestVoltage()
-    devices.v4 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-    runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-    runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
-
-    runinfo.measure_function = measure_up_to_3D
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=4, measure_function=measure_up_to_3D)
 
     checkExptInit(expt)
 
@@ -897,14 +769,11 @@ def test_4D_multi_data():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 9
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
@@ -916,9 +785,9 @@ def test_4D_multi_data():
         assert hasattr(expt, 'x2')
         assert hasattr(expt, 'x3')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.v1_voltage) == 2
         assert len(expt.v2_voltage) == 2
         assert len(expt.v3_voltage) == 2
@@ -968,16 +837,8 @@ def test_1D_repeat():
     None
     """ 
 
-    devices = ps.ItemAttribute()
-    devices.v1 = ps.TestVoltage()
-
-    runinfo = ps.RunInfo()
-
-    runinfo.loop0 = ps.RepeatScan(2)
-
-    runinfo.measure_function = measure_point
-
-    expt = ps.Sweep(runinfo, devices)
+    # set up experiment
+    expt = setUpExperiment(num_devices=1, measure_function=measure_point, repeat=True, repeat_num=2)
 
     checkExptInit(expt)
 
@@ -985,23 +846,20 @@ def test_1D_repeat():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 4
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
         assert hasattr(expt, 'repeat')
         assert hasattr(expt, 'x')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.repeat) == 2
         assert len(expt.x) == 2
 
@@ -1055,23 +913,20 @@ def test_underscore_property():
 
     checkExptRunInfo(expt)
 
-    expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
-
-    checkMetaPath(meta_path)
+    checkMetaPath(expt)
 
     expt.run()
 
-    def checkExptOutput(expt):
+    def checkExptAttributes(expt, loaded=False):
         assert len(expt.keys()) == 4
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
         assert hasattr(expt, 'v1_device_other_voltage')
         assert hasattr(expt, 'x')
 
-    checkExptOutput(expt)
+    checkExptAttributes(expt)
 
-    def checkExptResults(expt):
+    def checkExptResults(expt, loaded=False):
         assert len(expt.v1_device_other_voltage) == 2
         assert len(expt.x) == 2
 
