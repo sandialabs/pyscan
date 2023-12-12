@@ -215,6 +215,7 @@ def test_0D_multi_data():
     # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     # for checking the experiments attributes and output after running
@@ -288,6 +289,7 @@ def test_1D_data():
     # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     # for checking the experiments attributes and output after running
@@ -356,6 +358,7 @@ def test_1D_multi_data():
     # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     # for checking the experiments attributes and output after running
@@ -428,6 +431,7 @@ def test_2D_data():
     # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     # for checking the experiments attributes and output after running
@@ -496,6 +500,7 @@ def test_2D_multi_data():
     # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     # for checking the experiments attributes and output after running
@@ -556,17 +561,22 @@ def test_3D_data():
     # set up experiment
     expt = setUpExperiment(num_devices=3, measure_function=measure_point)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     def checkExptAttributes(expt, loaded=False):
+        
         assert len(expt.keys()) == 6
         assert hasattr(expt, 'runinfo')
         assert hasattr(expt, 'devices')
