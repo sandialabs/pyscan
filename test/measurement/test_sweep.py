@@ -129,7 +129,7 @@ def checkDataResults(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
     else:
         assert type(x) is dtype, pre_string + "is not a numpy array"
         assert x.dtype == 'float64', pre_string + "data is not a float"
-        assert list(x.shape) == shape, pre_string + "array does not have 2 elements"
+        assert list(x.shape) == shape, pre_string + "array does not have " + str(shape) + " elements"
         
         if (shape == [2, 2] or shape == [2, 2, 2] or shape == [2, 2, 2, 2] or shape == [2, 2, 2, 2, 2]):
             for i in x:
@@ -179,10 +179,10 @@ def checkHasVoltages(expt, num_voltages, loaded=False):
 
 
 # for checking that the voltage(s) as expected
-def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1, loaded=False):
+def checkVoltageResults(voltage, expected_value1, expected_value2, voltage_id=1, loaded=False, string_modifier=''):
     is_loaded = isLoaded(loaded)
 
-    pre_string = is_loaded + "experiment v" + str(voltage_id) + "_voltage "
+    pre_string = is_loaded + "experiment v" + str(voltage_id) + string_modifier + "_voltage "
     assert type(voltage) is np.ndarray, pre_string + "is not a numpy array"
     assert voltage.dtype == 'float64', pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
@@ -231,7 +231,8 @@ def test_0D_multi_data():
     # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
         assert len(expt.repeat) == 1, "experiment repeat length is not 1"
-        assert expt.repeat == [0], "experiment repeat value is not 0"
+        assert expt.repeat == [0], "expt.repeat is not [0]"
+        assert expt.repeat[0] == 0.0, "experiment repeat[0] is not 0.0"
 
         # check the data results are as expected
         checkDataResults(expt.x1, id=1, dtype=float, shape=[1], loaded=loaded)
@@ -242,19 +243,23 @@ def test_0D_multi_data():
 
     checkExptResults(expt)
 
-    # saves file name and deletes the experiment
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # loads the experiment
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
-    # for checking the experiment is loaded as expected
+    # check that we load what we expect
     def checkLoadExpt(temp):
         # check the loaded experiment has the right attributes
         checkExptAttributes(temp, loaded=True)
 
         # check the loaded data results are as expected
+        assert len(temp.repeat) == 1, "experiment repeat length is not 1"
+        assert temp.repeat == [0], "expt.repeat is not [0]"
+        assert temp.repeat[0] == 0.0, "experiment repeat[0] is not 0.0"
+
         checkDataResults(temp.x1, id=1, shape=[1], loaded=True)
 
         checkDataResults(temp.x2, id=2, shape=[2], loaded=True)
@@ -315,14 +320,14 @@ def test_1D_data():
     
     checkExptResults(expt)
 
-    # saves file name and deletes the experiment
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # loads the experiment
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    # for checking the experiment is loaded as expected
+    # check that we load what we expect
     def checkLoadExpt(temp):
         # check the loaded experiment has the right attributes
         checkExptAttributes(temp, loaded=True)
@@ -388,14 +393,14 @@ def test_1D_multi_data():
 
     checkExptResults(expt)
 
-    # saves file name and deletes the experiment
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # loads the experiment
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
-    # for checking the experiment is loaded as expected
+    # check that we load what we expect
     def checkLoadExpt(temp):
         # check the loaded experiment has the right attributes
         checkExptResults(temp, loaded=True)
@@ -459,12 +464,14 @@ def test_2D_data():
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
         # check the loaded experiment has the right attributes
         checkExptAttributes(temp, loaded=True)
@@ -516,6 +523,7 @@ def test_2D_multi_data():
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
         # check voltage(s) are as expected
         checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
@@ -531,12 +539,14 @@ def test_2D_multi_data():
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
         # check the loaded experiment has the right attributes
         checkExptAttributes(temp, loaded=True)
@@ -575,44 +585,47 @@ def test_3D_data():
     # run the experiment
     expt.run()
 
+    # for checking the experiments attributes and output after running
     def checkExptAttributes(expt, loaded=False):
-        
-        assert len(expt.keys()) == 6
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'v3_voltage')
-        assert hasattr(expt, 'x')
+        # check the experiment has intended keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=6, loaded=loaded)
+
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=3, loaded=loaded)
+
+        # check the experiment has data measurement attribute
+        checkHasData(expt)
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
-        assert len(expt.v1_voltage) == 2
-        assert len(expt.v2_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        list(expt.x.shape) == [2, 2, 2]
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
+
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
+
+        # checkVoltageResults(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+
+        # check the data results are as expected
+        checkDataResults(expt.x, shape=[2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 6
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'v3_voltage')
-        assert hasattr(temp, 'x')
-        assert temp.x.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
-        assert temp.v3_voltage.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -631,61 +644,65 @@ def test_3D_multi_data():
     # set up experiment
     expt = setUpExperiment(num_devices=3, measure_function=measure_up_to_3D)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
+    # for checking the experiments attributes and output after running
     def checkExptAttributes(expt, loaded=False):
-        assert len(expt.keys()) == 8
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'v3_voltage')
-        assert hasattr(expt, 'x1')
-        assert hasattr(expt, 'x2')
-        assert hasattr(expt, 'x3')
+        # check the experiment keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=8, loaded=loaded)
+
+        # check the experiment has multidata measurement attributes
+        checkHasMultiData(expt, loaded=loaded)
+
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=3, loaded=loaded)
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
-        assert len(expt.v1_voltage) == 2
-        assert len(expt.v2_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        list(expt.x1.shape) == [2, 2, 2]
-        list(expt.x2.shape) == [2, 2, 2, 2]
-        list(expt.x3.shape) == [2, 2, 2, 2, 2]
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
+
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
+
+        # checkVoltageResults(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+
+        # check the data results are as expected
+        checkDataResults(expt.x1, id=1, shape=[2, 2, 2], loaded=loaded)
+
+        checkDataResults(expt.x2, id=2, shape=[2, 2, 2, 2], loaded=loaded)
+
+        checkDataResults(expt.x3, id=3, shape=[2, 2, 2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 8
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'v3_voltage')
-        assert hasattr(temp, 'x1')
-        assert hasattr(temp, 'x2')
-        assert hasattr(temp, 'x3')
-        assert temp.x1.dtype == 'float64'
-        assert temp.x2.dtype == 'float64'
-        assert temp.x3.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
-        assert temp.v3_voltage.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -704,57 +721,63 @@ def test_4D_data():
     # set up experiment
     expt = setUpExperiment(num_devices=4, measure_function=measure_point)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
+    # for checking the experiments attributes and output after running
     def checkExptAttributes(expt, loaded=False):
-        assert len(expt.keys()) == 7
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'v3_voltage')
-        assert hasattr(expt, 'v4_voltage')
-        assert hasattr(expt, 'x')
+        # check the experiment has intended keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=7, loaded=loaded)
+
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=4, loaded=loaded)
+
+        # check the experiment has data measurement attribute
+        checkHasData(expt)
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
-        assert len(expt.v1_voltage) == 2
-        assert len(expt.v2_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        list(expt.x.shape) == [2, 2, 2, 2]
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
+
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
+
+        # checkVoltageResults(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+
+        checkVoltageResults(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4, loaded=loaded)
+
+        # check the data results are as expected
+        checkDataResults(expt.x, shape=[2, 2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 7
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'v3_voltage')
-        assert hasattr(temp, 'v4_voltage')
-        assert hasattr(temp, 'x')
-        assert temp.x.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
-        assert temp.v3_voltage.dtype == 'float64'
-        assert temp.v4_voltage.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -773,65 +796,67 @@ def test_4D_multi_data():
     # set up experiment
     expt = setUpExperiment(num_devices=4, measure_function=measure_up_to_3D)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
+    # for checking the experiments attributes and output after running
     def checkExptAttributes(expt, loaded=False):
-        assert len(expt.keys()) == 9
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'v1_voltage')
-        assert hasattr(expt, 'v2_voltage')
-        assert hasattr(expt, 'v3_voltage')
-        assert hasattr(expt, 'v4_voltage')
-        assert hasattr(expt, 'x1')
-        assert hasattr(expt, 'x2')
-        assert hasattr(expt, 'x3')
+        # check the experiment keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=9, loaded=loaded)
+
+        # check the experiment has multidata measurement attributes
+        checkHasMultiData(expt, loaded=loaded)
+
+        # check the experiment has the right number of voltages
+        checkHasVoltages(expt, num_voltages=4, loaded=loaded)
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
-        assert len(expt.v1_voltage) == 2
-        assert len(expt.v2_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        assert len(expt.v3_voltage) == 2
-        list(expt.x1.shape) == [2, 2, 2, 2]
-        list(expt.x2.shape) == [2, 2, 2, 2, 2]
-        list(expt.x3.shape) == [2, 2, 2, 2, 2, 2]
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_voltage, expected_value1=0, expected_value2=0.1, voltage_id=1, loaded=loaded)
+
+        checkVoltageResults(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
+
+        # checkVoltageResults(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+
+        checkVoltageResults(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4, loaded=loaded)
+
+        # check the data results are as expected
+        checkDataResults(expt.x1, id=1, shape=[2, 2, 2, 2], loaded=loaded)
+
+        checkDataResults(expt.x2, id=2, shape=[2, 2, 2, 2, 2], loaded=loaded)
+
+        checkDataResults(expt.x3, id=3, shape=[2, 2, 2, 2, 2, 2], loaded=loaded)
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 9
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_voltage')
-        assert hasattr(temp, 'v2_voltage')
-        assert hasattr(temp, 'v3_voltage')
-        assert hasattr(temp, 'v4_voltage')
-        assert hasattr(temp, 'x1')
-        assert hasattr(temp, 'x2')
-        assert hasattr(temp, 'x3')
-        assert temp.x1.dtype == 'float64'
-        assert temp.x2.dtype == 'float64'
-        assert temp.x3.dtype == 'float64'
-        assert temp.v1_voltage.dtype == 'float64'
-        assert temp.v2_voltage.dtype == 'float64'
-        assert temp.v3_voltage.dtype == 'float64'
-        assert temp.v4_voltage.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
@@ -850,47 +875,54 @@ def test_1D_repeat():
     # set up experiment
     expt = setUpExperiment(num_devices=1, measure_function=measure_point, repeat=True, repeat_num=2)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
-
+        
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
     def checkExptAttributes(expt, loaded=False):
-        assert len(expt.keys()) == 4
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
-        assert hasattr(expt, 'repeat')
-        assert hasattr(expt, 'x')
+        # check the experiment keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=4, additional='repeat', loaded=loaded)
+
+        # check the experiment has multidata measurement attributes
+        checkHasData(expt, loaded=loaded)
 
     checkExptAttributes(expt)
 
     def checkExptResults(expt, loaded=False):
-        assert len(expt.repeat) == 2
-        assert len(expt.x) == 2
+        assert len(expt.repeat) == 2, "experiment repeat length is not 2"
+        assert expt.repeat[0] == 0.0, "experiment repeat[0] is not 0.0"
+        assert expt.repeat[1] == 1.0, "experiment repeat[1] is not 1.0"
+
+        # check the data results are as expected
+        checkDataResults(expt.x, loaded=loaded)
 
     checkExptResults(expt)
 
+    # saves file name of the saved experiment data and deletes the experiment
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
-    
+
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 4
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'repeat')
-        assert hasattr(temp, 'x')
-        assert temp.x.dtype == 'float64'
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
         assert temp.repeat.dtype == 'float64'
-        assert len(temp.x) == 2
-        assert len(temp.repeat) == 2
 
     checkLoadExpt(temp)
 
@@ -905,7 +937,7 @@ def test_underscore_property():
     --------
     None
     """ 
-
+    # set up experiment
     devices = ps.ItemAttribute()
     devices.v1_device = ps.TestVoltage()
 
@@ -917,47 +949,56 @@ def test_underscore_property():
 
     expt = ps.Sweep(runinfo, devices)
 
+    # check the experiment was initialized correctly
     checkExptInit(expt)
 
     expt.check_runinfo()
 
+    # check the experiment run info was initialized successfully
     checkExptRunInfo(expt)
 
+    # check the meta path was set successfully
     checkMetaPath(expt)
 
+    # run the experiment
     expt.run()
 
+    # for checking the experiments attributes and output after running
     def checkExptAttributes(expt, loaded=False):
-        assert len(expt.keys()) == 4
-        assert hasattr(expt, 'runinfo')
-        assert hasattr(expt, 'devices')
+        # check the experiment has intended keys, runinfo, and devices attributes
+        checkHasAttributes(expt, intended_keys_length=4, loaded=loaded)
+
+        # check the experiment has the right voltage attribute
         assert hasattr(expt, 'v1_device_other_voltage')
-        assert hasattr(expt, 'x')
+        
+        # check the experiment has data measurement attribute
+        checkHasData(expt)
 
     checkExptAttributes(expt)
 
+    # for checking the experiments results formatting after running
     def checkExptResults(expt, loaded=False):
-        assert len(expt.v1_device_other_voltage) == 2
-        assert len(expt.x) == 2
+        # check voltage(s) are as expected
+        checkVoltageResults(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1, loaded=loaded, string_modifier='_device_other')
+
+        # check the data results are as expected
+        checkDataResults(expt.x, loaded=loaded)
 
     checkExptResults(expt)
 
     file_name = expt.runinfo.long_name
     del expt
 
-    # Test that we load what we expect
+    # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
     
+    # check that we load what we expect
     def checkLoadExpt(temp):
-        assert len(temp.keys()) == 4
-        assert hasattr(temp, 'runinfo')
-        assert hasattr(temp, 'devices')
-        assert hasattr(temp, 'v1_device_other_voltage')
-        assert hasattr(temp, 'x')
-        assert temp.x.dtype == 'float64'
-        assert temp.v1_device_other_voltage.dtype == 'float64'
-        assert len(temp.x) == 2
-        assert len(temp.v1_device_other_voltage) == 2
+        # check the loaded experiment has the right attributes
+        checkExptAttributes(temp, loaded=True)
+
+        # check the loaded experiment results are accurate
+        checkExptResults(temp, loaded=True)
 
     checkLoadExpt(temp)
 
