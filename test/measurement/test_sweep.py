@@ -184,8 +184,13 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     is_loaded = loaded_modifier(loaded)
 
     pre_string = is_loaded + "experiment v" + str(voltage_id) + string_modifier + "_voltage "
-    assert type(voltage) is np.ndarray, pre_string + "is not a numpy array"
-    assert voltage.dtype == 'float64', pre_string + "data is not a float"
+    assert (type(voltage) is np.ndarray or type(voltage) is list), pre_string + "is not a numpy array"
+    for i in voltage:
+        try:
+            assert i.dtype == 'float64', pre_string + "data is not a float"
+        except Exception:
+            assert type(i) == float, pre_string + "data is not a float"
+    #assert voltage.dtype == 'float64', pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
@@ -607,7 +612,7 @@ def test_3D_data():
 
         check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
 
-        # check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+        check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
 
         # check the data results are as expected
         check_data_results(expt.x, shape=[2, 2, 2], loaded=loaded)
@@ -680,7 +685,7 @@ def test_3D_multi_data():
 
         check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
 
-        # check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+        check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
 
         # check the data results are as expected
         check_data_results(expt.x1, id=1, shape=[2, 2, 2], loaded=loaded)
@@ -757,7 +762,7 @@ def test_4D_data():
 
         check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
 
-        # check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+        check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
 
         check_voltage_results(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4, loaded=loaded)
 
@@ -832,7 +837,7 @@ def test_4D_multi_data():
 
         check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2, loaded=loaded)
 
-        # check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
+        check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3, loaded=loaded)
 
         check_voltage_results(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4, loaded=loaded)
 

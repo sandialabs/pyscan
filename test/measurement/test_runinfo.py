@@ -17,102 +17,87 @@ def test_init_from_noparams():
 
     init_runinfo = ps.RunInfo()
 
+    # for checking that loops have expected attributes
+    def check_loops_have_attribute(loops, attribute_name):
+        counter = 0
+        for loop in loops:
+            assert hasattr(loop, attribute_name), "runinfo loop" + str(counter) + " (Property Scan) " + attribute_name + " not intialized"
+            counter += 1
+
+    # for checking that runinfo attributes are as expected
+    def check_attribute(runinfo, attribute, attribute_name, expected):
+        assert hasattr(runinfo, attribute_name), "runinfo " + attribute_name + " not initialized"
+        assert (attribute is expected or attribute == expected), "runinfo " + attribute_name + " not " + str(expected) + " when intialized"
+
     # check that runinfo loops are initialized correctly
-    def checkOne():
+    def check_runinfo_loops():
         # check that loops 0 - 4 initialized
-        assert hasattr(init_runinfo, 'loop0'), "runinfo loop0 not intialized"
-        assert hasattr(init_runinfo, 'loop1'), "runinfo loop1 not intialized"
-        assert hasattr(init_runinfo, 'loop2'), "runinfo loop2 not intialized"
-        assert hasattr(init_runinfo, 'loop3'), "runinfo loop3 not intialized"
+        for i in range(4):
+            assert hasattr(init_runinfo, 'loop' + str(i)), "runinfo loop" + str(i) + " not initialized"
 
         # check that loops 0 - 4 initialized
         for loop in init_runinfo.loops:
             assert isinstance(loop, ps.PropertyScan), "runinfo loops not initialized as Property Scan"
 
-        assert hasattr(init_runinfo, 'loop0'), "runinfo loop0 not intialized"
-        assert hasattr(init_runinfo, 'loop1'), "runinfo loop1 not intialized"
-        assert hasattr(init_runinfo, 'loop2'), "runinfo loop2 not intialized"
-        assert hasattr(init_runinfo, 'loop3'), "runinfo loop3 not intialized"
-
         # check that scan_dict initialized
-        assert hasattr(init_runinfo.loop0, 'scan_dict'), "runinfo loop0 (Property Scan) scan_dict not intialized"
-        assert hasattr(init_runinfo.loop1, 'scan_dict'), "runinfo loop1 (Property Scan) scan_dict not intialized"
-        assert hasattr(init_runinfo.loop2, 'scan_dict'), "runinfo loop2 (Property Scan) scan_dict not intialized"
-        assert hasattr(init_runinfo.loop3, 'scan_dict'), "runinfo loop3 (Property Scan) scan_dict not intialized"
+        check_loops_have_attribute(init_runinfo.loops, 'scan_dict')
 
         # check that scan_dict initialized as empty
-        assert init_runinfo.loop0.scan_dict == {}, "runinfo loop0 (Property Scan) scan_dict not empty when intialized"
-        assert init_runinfo.loop1.scan_dict == {}, "runinfo loop1 (Property Scan) scan_dict not empty when intialized"
-        assert init_runinfo.loop2.scan_dict == {}, "runinfo loop2 (Property Scan) scan_dict not empty when intialized"
-        assert init_runinfo.loop3.scan_dict == {}, "runinfo loop3 (Property Scan) scan_dict not empty when intialized"
+        counter = 0
+        for loop in init_runinfo.loops:
+            assert loop.scan_dict == {}, "runinfo loop" + str(counter) + " (Property Scan) scan_dict not empty when intialized"
+            counter += 1
 
         # check that prop initialized
-        assert hasattr(init_runinfo.loop0, 'prop'), "runinfo loop0 (Property Scan) prop not intialized"
-        assert hasattr(init_runinfo.loop1, 'prop'), "runinfo loop1 (Property Scan) prop not intialized"
-        assert hasattr(init_runinfo.loop2, 'prop'), "runinfo loop2 (Property Scan) prop not intialized"
-        assert hasattr(init_runinfo.loop3, 'prop'), "runinfo loop3 (Property Scan) prop not intialized"
+        check_loops_have_attribute(init_runinfo.loops, 'prop')
 
         # check that prop initialized as None
-        assert init_runinfo.loop0.prop is None, "runinfo loop0 (Property Scan) prop not None when intialized"
-        assert init_runinfo.loop1.prop is None, "runinfo loop1 (Property Scan) prop not None when intialized"
-        assert init_runinfo.loop2.prop is None, "runinfo loop2 (Property Scan) prop not None when intialized"
-        assert init_runinfo.loop3.prop is None, "runinfo loop3 (Property Scan) prop not None when intialized"
+        counter = 0
+        for loop in init_runinfo.loops:
+            assert loop.prop == None, "runinfo loop" + str(counter) + " (Property Scan) prop not None when intialized"
+            counter += 1
 
         # check that dt initialized
-        assert hasattr(init_runinfo.loop0, 'dt'), "runinfo loop0 (Property Scan) dt not intialized"
-        assert hasattr(init_runinfo.loop1, 'dt'), "runinfo loop1 (Property Scan) dt not intialized"
-        assert hasattr(init_runinfo.loop2, 'dt'), "runinfo loop2 (Property Scan) dt not intialized"
-        assert hasattr(init_runinfo.loop3, 'dt'), "runinfo loop3 (Property Scan) dt not intialized"
+        check_loops_have_attribute(init_runinfo.loops, 'dt')
 
         # check that dt initialized as 0
-        assert init_runinfo.loop0.dt == 0, "runinfo loop0 (Property Scan) dt not 0 when intialized"
-        assert init_runinfo.loop1.dt == 0, "runinfo loop1 (Property Scan) dt not 0 when intialized"
-        assert init_runinfo.loop2.dt == 0, "runinfo loop2 (Property Scan) dt not 0 when intialized"
-        assert init_runinfo.loop3.dt == 0, "runinfo loop3 (Property Scan) dt not 0 when intialized"
+        counter = 0
+        for loop in init_runinfo.loops:
+            assert loop.dt == 0, "runinfo loop" + str(counter) + " (Property Scan) dt not 0 when intialized"
+            counter += 1
 
         # check that i initialized
-        assert hasattr(init_runinfo.loop0, 'i'), "runinfo loop0 (Property Scan) i not intialized"
-        assert hasattr(init_runinfo.loop1, 'i'), "runinfo loop1 (Property Scan) i not intialized"
-        assert hasattr(init_runinfo.loop2, 'i'), "runinfo loop2 (Property Scan) i not intialized"
-        assert hasattr(init_runinfo.loop3, 'i'), "runinfo loop3 (Property Scan) i not intialized"
+        check_loops_have_attribute(init_runinfo.loops, 'i')
 
         # check that i initialized as 0
-        assert init_runinfo.loop0.i == 0, "runinfo loop3 (Property Scan) i not 0 when intialized"
-        assert init_runinfo.loop1.i == 0, "runinfo loop3 (Property Scan) i not 0 when intialized"
-        assert init_runinfo.loop2.i == 0, "runinfo loop3 (Property Scan) i not 0 when intialized"
-        assert init_runinfo.loop3.i == 0, "runinfo loop3 (Property Scan) i not 0 when intialized"
+        counter = 0
+        for loop in init_runinfo.loops:
+            assert loop.i == 0, "runinfo loop" + str(counter) + " (Property Scan) i not 0 when intialized"
+            counter += 1
 
-    checkOne()
+    check_runinfo_loops()
 
-    # check that runinfo static and measured are initialized correctly
-    def checkTwo():
-        assert hasattr(init_runinfo, 'static'), "runinfo static not initialized"
-        assert init_runinfo.static == {}, "runinfo static not empty when intialized"
+    # check that runinfo attributes are initialized correctly
+    def check_runinfo_attributes():
+        # check that static initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.static, attribute_name='static', expected={})
 
-        assert hasattr(init_runinfo, 'measured'), "runinfo measured not initialized"
-        assert init_runinfo.measured == [], "runinfo measured not empty when intialized"
+        # check that measured initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measured, attribute_name='measured', expected=[])
+
+        # check that measure_function initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measure_function, attribute_name='measure_function', expected=None)
+
+        # check that trigger_function initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.trigger_function, attribute_name='trigger_function', expected=None)
+
+        # check that initial_pause initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.initial_pause, attribute_name='initial_pause', expected=0.1)
         
-    checkTwo()
+        # check that average_d initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.average_d, attribute_name='average_d', expected=-1)
 
-    # check that runinfo measure and trigger functions are initialized correctly
-    def checkThree():
-        assert hasattr(init_runinfo, 'measure_function'), "runinfo measure_function not initialized"
-        assert init_runinfo.measure_function is None, "runinfo measure_function not None when intialized"
+        # check that verbose initialized correctly
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.verbose, attribute_name='verbose', expected=False)
 
-        assert hasattr(init_runinfo, 'trigger_function'), "runinfo trigger_function not initialized"
-        assert init_runinfo.trigger_function is None, "runinfo trigger_function not None when intialized"
-
-    checkThree()
-
-    # check that runinfo initial pause, average d, and verbose settings are initialized correctly
-    def checkFour():
-        assert hasattr(init_runinfo, 'initial_pause'), "runinfo initial_pause not initialized"
-        assert init_runinfo.initial_pause == 0.1, "runinfo initial_pause not 0.1 when intialized"
-        
-        assert hasattr(init_runinfo, 'average_d'), "runinfo average_d not initialized"
-        assert init_runinfo.average_d == -1, "runinfo average_d not -1 when intialized"
-
-        assert hasattr(init_runinfo, 'verbose'), "runinfo verbose not initialized"
-        assert not init_runinfo.verbose, "runinfo verbose not set to False when intialized"
-
-    checkFour()
+    check_runinfo_attributes()
