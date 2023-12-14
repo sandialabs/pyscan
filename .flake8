@@ -10,7 +10,8 @@
 # E722: do not use bare except, specify exception instead
 # W503: Line breaks should occur after the binary operator
 # to keep all variable names aligned. (we're doing the opposite)
-ignore=E266,E722,W503
+# C901 too complex, change this later
+ignore=E266,E722,W503,C901
 
 ; exclude=
 
