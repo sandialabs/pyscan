@@ -157,27 +157,27 @@ class PlotGenerator(object):
         '''
 
         if not self.expt.runinfo.running:
-            return'{}, {}'.format(self.data_name, self.expt.runinfo.long_name)
+            return '{}, {}'.format(self.data_name, self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 4:
-            return'{}/{}, {}, {}'.format(self.expt.runinfo.loop4.i,
-                                         self.expt.runinfo.loop4.n,
-                                         self.data_name,
-                                         self.expt.runinfo.long_name)
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop4.i,
+                                          self.expt.runinfo.loop4.n,
+                                          self.data_name,
+                                          self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 3:
-            return'{}/{}, {}, {}'.format(self.expt.runinfo.loop3.i,
-                                         self.expt.runinfo.loop3.n,
-                                         self.data_name,
-                                         self.expt.runinfo.long_name)
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop3.i,
+                                          self.expt.runinfo.loop3.n,
+                                          self.data_name,
+                                          self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 2:
-            return'{}/{}, {}, {}'.format(self.expt.runinfo.loop2.i,
-                                         self.expt.runinfo.loop2.n,
-                                         self.data_name,
-                                         self.expt.runinfo.long_name)
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop2.i,
+                                          self.expt.runinfo.loop2.n,
+                                          self.data_name,
+                                          self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 1:
-            return'{}/{}, {}, {}'.format(self.expt.runinfo.loop1.i,
-                                         self.expt.runinfo.loop1.n,
-                                         self.data_name,
-                                         self.expt.runinfo.long_name)
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop1.i,
+                                          self.expt.runinfo.loop1.n,
+                                          self.data_name,
+                                          self.expt.runinfo.long_name)
 
     def get_xrange(self):
         '''
