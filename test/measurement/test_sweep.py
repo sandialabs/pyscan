@@ -190,7 +190,6 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
             assert i.dtype == 'float64', pre_string + "data is not a float"
         except Exception:
             assert type(i) == float, pre_string + "data is not a float"
-    #assert voltage.dtype == 'float64', pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
@@ -986,7 +985,8 @@ def test_underscore_property():
     # for checking the experiments results formatting after running
     def check_expt_results(expt, loaded=False):
         # check voltage(s) are as expected
-        check_voltage_results(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1, loaded=loaded, string_modifier='_device_other')
+        check_voltage_results(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1, 
+                              loaded=loaded, string_modifier='_device_other')
 
         # check the data results are as expected
         check_data_results(expt.x, loaded=loaded)
