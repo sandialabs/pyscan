@@ -17,7 +17,13 @@ setup(
         instruments and run experements"""
     ),
     license="MIT",
-    keywords="scientific instrument drivers measurement tools",
+    keywords = [
+        "scientific",
+        "instrument",
+        "drivers",
+        "measurement",
+        "experiment",
+    ],
     url="",
     packages=find_packages(exclude=['docs']),
     long_description=read('README.md'),
@@ -35,6 +41,11 @@ setup(
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "License :: MIT",
+        "Programming Language :: Python",
+        "Topic :: Scientific/Engineering :: Physics",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Unix"
     ],
     python_requires='>=3.6',
 )

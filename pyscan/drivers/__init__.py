@@ -31,6 +31,11 @@ from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
 try:
+    from .attocubeANC350 import AttocubeANC350
+except ModuleNotFoundError:
+    print('pylablib not found, AttocubeANC350 not loaded')
+
+try:
     from .helioscamera import HeliosCamera
 except ModuleNotFoundError:
     print('Helios Camera not installed')
