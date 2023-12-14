@@ -14,7 +14,7 @@ def first_string(obj):
 
     Parameters
     ----------
-    obj : str, list or array 
+    obj : str, list or array
         Instance of string or array of strings.
 
     Returns
@@ -29,6 +29,6 @@ def first_string(obj):
     elif isinstance(obj, (list, tuple, np.array)):
         value = obj[0]
         if isinstance(value, string_types):
-            return value    
+            return value
         else:
             raise TypeError

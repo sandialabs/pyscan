@@ -61,7 +61,7 @@ def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1)
         if (num_devices > 3):
             devices.v4 = ps.TestVoltage()
             runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
-        
+
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
 
@@ -94,14 +94,14 @@ def check_expt_init(expt):
     assert expt.runinfo.data_path.exists(), "experiment data path does not exist"
     assert expt.runinfo.data_path.is_dir(), "experiment data path is not a directory"
     assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
-    
+
     assert len(expt.runinfo.measured) == 0
 
 
 # for checking whether the check experimental run info succeeded
 def check_expt_runinfo(expt):
     assert expt.check_runinfo(), "check_runinfo() failed"
-    
+
     assert hasattr(expt.runinfo, 'long_name'), "experiment runinfo long name not initialized by check_runinfo"
     assert hasattr(expt.runinfo, 'short_name'), "experiment runinfo long name not initialized by check_runinfo"
 
@@ -126,15 +126,15 @@ def check_data_results(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
     pre_string = is_loaded + "experiment x" + str(id) + " measurement "
 
     if (dtype == float or shape == [1]):
-        assert type(x) is dtype, pre_string + "is not a float"
+        assert isinstance(x, dtype), pre_string + "is not a float"
     else:
-        assert type(x) is dtype, pre_string + "is not a numpy array"
+        assert isinstance(x, dtype), pre_string + "is not a numpy array"
         assert x.dtype == 'float64', pre_string + "data is not a float"
         assert list(x.shape) == shape, pre_string + "array does not have " + str(shape) + " elements"
-        
+
         if (shape == [2, 2] or shape == [2, 2, 2] or shape == [2, 2, 2, 2] or shape == [2, 2, 2, 2, 2]):
             for i in x:
-                assert type(i) is np.ndarray, pre_string + "is not a numpy array of numpy arrays"
+                assert isinstance(i, np.ndarray), pre_string + "is not a numpy array of numpy arrays"
 
 
 # for checking that the experiment has multidata measurement attributes
@@ -149,10 +149,10 @@ def check_has_multi_data(expt, loaded=False):
 
 # for checking that the multi data results are as expected
 def check_multi_data_results(expt, shape1=[2], shape2=[2], shape3=[2]):
-    assert type(expt.x1) is float
+    assert isinstance(expt.x1, float)
     check_data_results(expt.x2, shape2)
     for i in expt.x3:
-        assert type(i) is np.ndarray, "experiment x3 measurement is not a numpy array of numpy arrays"
+        assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
     check_data_results(expt.x3, shape3)
 
 
@@ -184,12 +184,12 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     is_loaded = loaded_modifier(loaded)
 
     pre_string = is_loaded + "experiment v" + str(voltage_id) + string_modifier + "_voltage "
-    assert (type(voltage) is np.ndarray or type(voltage) is list), pre_string + "is not a numpy array"
+    assert (isinstance(voltage, np.ndarray) or isinstance(voltage, list)), pre_string + "is not a numpy array"
     for i in voltage:
         try:
             assert i.dtype == 'float64', pre_string + "data is not a float"
         except Exception:
-            assert type(i) == float, pre_string + "data is not a float"
+            assert isinstance(i, float), pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
@@ -212,7 +212,7 @@ def test_0D_multi_data():
 
     # check the experiment was initialized correctly
     check_expt_init(expt)
-        
+
     expt.check_runinfo()
 
     # check the experiment run info was initialized successfully
@@ -255,7 +255,7 @@ def test_0D_multi_data():
 
     # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
-    
+
     # check that we load what we expect
     def check_load_expt(temp):
         # check the loaded experiment has the right attributes
@@ -291,7 +291,7 @@ def test_1D_data():
 
     # check the experiment was initialized correctly
     check_expt_init(expt)
-    
+
     expt.check_runinfo()
 
     # check the experiment run info was initialized successfully
@@ -310,10 +310,10 @@ def test_1D_data():
 
         # check the experiment has the right number of voltages
         check_has_voltages(expt, num_voltages=1, loaded=loaded)
-        
+
         # check the experiment has data measurement attribute
         check_has_data(expt)
-    
+
     check_expt_attributes(expt)
 
     # for checking the experiments results formatting after running
@@ -323,7 +323,7 @@ def test_1D_data():
 
         # check the data results are as expected
         check_data_results(expt.x, loaded=loaded)
-    
+
     check_expt_results(expt)
 
     # saves file name of the saved experiment data and deletes the experiment
@@ -426,7 +426,7 @@ def test_2D_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=2, measure_function=measure_point)
@@ -497,7 +497,7 @@ def test_2D_multi_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=2, measure_function=measure_up_to_3D)
@@ -572,7 +572,7 @@ def test_3D_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=3, measure_function=measure_point)
@@ -645,7 +645,7 @@ def test_3D_multi_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=3, measure_function=measure_up_to_3D)
@@ -722,7 +722,7 @@ def test_4D_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=4, measure_function=measure_point)
@@ -797,7 +797,7 @@ def test_4D_multi_data():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=4, measure_function=measure_up_to_3D)
@@ -876,14 +876,14 @@ def test_1D_repeat():
     Returns
     --------
     None
-    """ 
+    """
 
     # set up experiment
     expt = set_up_experiment(num_devices=1, measure_function=measure_point, repeat=True, repeat_num=2)
 
     # check the experiment was initialized correctly
     check_expt_init(expt)
-        
+
     expt.check_runinfo()
 
     # check the experiment run info was initialized successfully
@@ -942,7 +942,7 @@ def test_underscore_property():
     Returns
     --------
     None
-    """ 
+    """
     # set up experiment
     devices = ps.ItemAttribute()
     devices.v1_device = ps.TestVoltage()
@@ -976,7 +976,7 @@ def test_underscore_property():
 
         # check the experiment has the right voltage attribute
         assert hasattr(expt, 'v1_device_other_voltage')
-        
+
         # check the experiment has data measurement attribute
         check_has_data(expt)
 
@@ -985,7 +985,7 @@ def test_underscore_property():
     # for checking the experiments results formatting after running
     def check_expt_results(expt, loaded=False):
         # check voltage(s) are as expected
-        check_voltage_results(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1, 
+        check_voltage_results(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1,
                               loaded=loaded, string_modifier='_device_other')
 
         # check the data results are as expected
@@ -998,7 +998,7 @@ def test_underscore_property():
 
     # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
-    
+
     # check that we load what we expect
     def check_load_expt(temp):
         # check the loaded experiment has the right attributes

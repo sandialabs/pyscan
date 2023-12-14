@@ -43,7 +43,7 @@ class ItemAttribute(object):
 
     def __contains__(self, item):
         '''
-        Overleads the `key in object` syntax to check if 
+        Overleads the `key in object` syntax to check if
         `key in obj.__dict__`
         '''
 

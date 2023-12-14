@@ -15,9 +15,9 @@ class PlotGenerator(object):
 
     Parameters:
     -----------
-    expt : 
+    expt :
         The experiment object
-    d : 
+    d :
         Dimensionality of the data to be plotted
     x_name : optional
         User choice of x_data, otherwise defautls to first valid
@@ -33,10 +33,10 @@ class PlotGenerator(object):
         User choice of y range (2D) or vertical range (3D), otherwise default
     index3D : optional
         If data is 3D and plot is 2D, choose slice, otherwise 0
-    analysis_function : optional 
+    analysis_function : optional
         Analysis to perform on data, otherwise, returns data
     analysis_args : tuple, optional
-        If analysis dependes on multipled datasets, will apply 
+        If analysis dependes on multipled datasets, will apply
         analysis function to these datasets
 
     """
@@ -65,9 +65,9 @@ class PlotGenerator(object):
 
         Parameters
         ----------
-        key : 
+        key :
             possible input
-        kwarg : 
+        kwarg :
             kwargs from __init__
 
         Returns

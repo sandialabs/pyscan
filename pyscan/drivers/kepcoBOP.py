@@ -21,6 +21,7 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
 
 
     '''
+
     def __init__(self,
                  instrument,
                  tesla_per_amp=0.004201,
@@ -62,7 +63,7 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
 
         Parameters
         ----------
-        bop_mode : 
+        bop_mode :
             'current' or 'voltage' (or 4 letter abbrev.), any case
         '''
 
@@ -112,7 +113,7 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
 
         else:
             print('Range Error:')
-            print('Current must be between {0:.4f} and {0:.4f} Amp'.format(imin, imax))
+            print('Current must be between {:.4f} and {:.4f} Amp'.format(imin, imax))
 
     @property
     def field(self):
@@ -130,4 +131,4 @@ class KepcoBOP(InstrumentDriver):  # pragma: no cover
             self.current = new_current
         else:
             print('Range Error:')
-            print('Field must be between {0:.5f} and {0:.5f} Amp'.format(bmin, bmax))
+            print('Field must be between {:.5f} and {:.5f} Amp'.format(bmin, bmax))

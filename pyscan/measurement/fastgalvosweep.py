@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fast Galvo Sweep 
+Fast Galvo Sweep
 ================
 """
 
@@ -18,13 +18,13 @@ class FastGalvoSweep(MetaSweep):
     Parameters
     ----------
     runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
-        Runinfo instance. The Runinfo loop containing the dependent variable 
-        that you want to average should be an instance of 
-        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`. 
-        There should be only one dependent variable to be averaged. 
-        The loops representing independent variables can be instances of 
+        Runinfo instance. The Runinfo loop containing the dependent variable
+        that you want to average should be an instance of
+        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
+        There should be only one dependent variable to be averaged.
+        The loops representing independent variables can be instances of
         :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
-    devices : 
+    devices :
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional
         The path to save the data, defaults to './backup'
@@ -51,7 +51,7 @@ class FastGalvoSweep(MetaSweep):
 
         dev.legacy_sweep_mode(xrange, runinfo.srate, 5)
         devices.pb.setup_single_ttl(
-            ['counter', 'awg'], 
+            ['counter', 'awg'],
             ['aom'],
             total_time=runinfo.loop0.n / runinfo.srate * 1.05)
         devices.counter.setup_timed_buffer(

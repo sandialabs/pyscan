@@ -3,7 +3,7 @@ import numpy as np
 
 
 def test_drange():
-    
+
     # If the start and end value are the same, give a single valued array
     values = ps.drange(1, 0.01, 1)
     assert values == [1], "drange(1, 0.01, 1) gave wrong output"
@@ -17,7 +17,7 @@ def test_drange():
     assert works, "ps.drange(1, 0.01, 1.2) gave wrong output"
 
     values = ps.drange(1, 0.015, 1.2)
-    test_values = np.append(np.round(np.arange(1, 1.195, 0.015), 5), 1.2) 
+    test_values = np.append(np.round(np.arange(1, 1.195, 0.015), 5), 1.2)
     assert np.all(values == test_values), "ps.drange(1, 0.015, 1.2) gave wrong output"
 
     # Negative direcions

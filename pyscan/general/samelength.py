@@ -14,10 +14,10 @@ def same_length(list_of_lists):
 
     Parameters
     ----------
-    list_of_lists : list[list] or dict 
+    list_of_lists : list[list] or dict
         a list or dict of lists
 
-    Returns 
+    Returns
     -------
     bool
         True if lists have the same length

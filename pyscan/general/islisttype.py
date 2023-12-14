@@ -13,7 +13,7 @@ def is_list_type(obj):
 
     Parameters
     ----------
-    obj : 
+    obj :
         Object of any type.
 
     Returns

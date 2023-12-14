@@ -14,19 +14,19 @@ from datetime import datetime
 
 class Sweep(MetaSweep):
     '''
-    Experiment class that takes data after each loop0 iteration. Inherits from 
+    Experiment class that takes data after each loop0 iteration. Inherits from
     `.MetaSweep`.
 
     Parameters
     ----------
     runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
-        Runinfo instance. The Runinfo loop containing the dependent variable 
-        that you want to average should be an instance of 
-        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`. 
-        There should be only one dependent variable to be averaged. 
-        The loops representing independent variables can be instances of 
+        Runinfo instance. The Runinfo loop containing the dependent variable
+        that you want to average should be an instance of
+        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
+        There should be only one dependent variable to be averaged.
+        The loops representing independent variables can be instances of
         :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
-    devices : 
+    devices :
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional
         The path to save the data, defaults to './backup'
@@ -83,22 +83,22 @@ class Sweep(MetaSweep):
                         indicies = self.runinfo.indicies
 
                         if self.runinfo.time:
-                            self.runinfo.t0[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t0[indicies] = (datetime.now()).timestamp()
 
                         self.runinfo.loop0.iterate(i, self.devices)
 
                         if self.runinfo.time:
-                            self.runinfo.t1[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t1[indicies] = (datetime.now()).timestamp()
 
                         sleep(self.runinfo.loop0.dt)
 
                         if self.runinfo.time:
-                            self.runinfo.t2[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t2[indicies] = (datetime.now()).timestamp()
 
                         data = self.runinfo.measure_function(self)
 
                         if self.runinfo.time:
-                            self.runinfo.t3[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
                         if np.all(np.array(self.runinfo.indicies) == 0):
                             for key, value in data.items():
@@ -111,12 +111,12 @@ class Sweep(MetaSweep):
                             else:
                                 self[key] = value
                         if self.runinfo.time:
-                            self.runinfo.t4[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
                         self.save_point()
 
                         if self.runinfo.time:
-                            self.runinfo.t5[indicies] = (datetime.now()).timestamp() 
+                            self.runinfo.t5[indicies] = (datetime.now()).timestamp()
 
                         if self.runinfo.running is False:
                             self.runinfo.complete = 'stopped'
@@ -154,7 +154,7 @@ class Sweep(MetaSweep):
             self.runinfo.dt5 = self.runinfo.t5 - self.runinfo.t4
             self.runinfo.dttotal = self.runinfo.t5 - self.runinfo.t0
             self.runinfo.total_run_time = np.sum(self.runinfo.dttotal)
-            self.runinfo.total_time = (datetime.now()).timestamp() - t0 
+            self.runinfo.total_time = (datetime.now()).timestamp() - t0
 
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)

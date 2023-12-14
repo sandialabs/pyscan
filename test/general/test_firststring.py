@@ -1,5 +1,5 @@
 import pyscan as ps
-import pytest 
+import pytest
 
 
 def test_first_string():

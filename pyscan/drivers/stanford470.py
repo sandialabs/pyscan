@@ -20,7 +20,7 @@ class Stanford470(InstrumentDriver):
     Yields
     ------
     Properties which can be get and set:
-        state : 
+        state :
             Dict Values: {0: 'closed', 1: 'open'}
     '''
 

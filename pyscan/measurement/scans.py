@@ -95,7 +95,7 @@ class FunctionScan(MetaScan):
     Parameters
     ----------
     function : func
-        Function to be applied during each iteration. Must take a single argument representing one 
+        Function to be applied during each iteration. Must take a single argument representing one
         item in the `values` array. The function's return value is not used.
     values : list
         An array of values to run the function on.
@@ -120,10 +120,10 @@ class FunctionScan(MetaScan):
 
         Parameters
         ----------
-        index : 
-            The index of the `values` array to run the function on. The `FunctionScan`'s `values` at 
+        index :
+            The index of the `values` array to run the function on. The `FunctionScan`'s `values` at
             the given `index` will be the function input.
-        devices: 
+        devices:
             Not used
         '''
         self.function(self.scan_dict[self.function.__name__][index])
@@ -142,6 +142,7 @@ class RepeatScan(MetaScan):
     dt : float
         Wait time in seconds after repeat. Used by sweep classes, defaults to 0.
     '''
+
     def __init__(self, nrepeat, dt=0):
         '''Constructor method
         '''
@@ -187,7 +188,7 @@ class AverageScan(MetaScan):
 
     Parameters
     ----------
-    n_average : int 
+    n_average : int
         Number of times to average data from inner loops
     dt : float
         Wait time in seconds after each measurement. Used by Sweep classes, defaults to 0.
@@ -196,7 +197,7 @@ class AverageScan(MetaScan):
     def __init__(self, n_average, dt=0):
         self.scan_dict = {}
         self.n = n_average
-        self.nrange = range(self.n) 
+        self.nrange = range(self.n)
         self.scan_dict['average'] = list(self.nrange)
         self.device_names = ['average']
         self.i = 0
@@ -209,7 +210,7 @@ class AverageScan(MetaScan):
         pass
 
     def check_same_length(self):
-        ''' 
+        '''
         Not used
-        ''' 
+        '''
         return 1

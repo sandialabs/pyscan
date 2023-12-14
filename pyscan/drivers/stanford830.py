@@ -16,7 +16,7 @@ class Stanford830(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from 
+        Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
@@ -72,8 +72,9 @@ class Stanford830(InstrumentDriver):
         end_buffer_mode : int
             Indexed_values: ['one shot', 'loop']
         trigger_mode : int
-            Indexed_values':  ['off', 'on']     
+            Indexed_values':  ['off', 'on']
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)
@@ -280,7 +281,7 @@ class Stanford830(InstrumentDriver):
 
     @amplitude.setter
     def amplitude(self, new_value):
-        self.instrument_amplitude = new_value / self.gain 
+        self.instrument_amplitude = new_value / self.gain
 
     def read_output(self, source):
         values = ['x', 'y', 'r', 'theta']
@@ -366,7 +367,7 @@ class Stanford830(InstrumentDriver):
 
         Parameters
         ----------
-        sample_rate : 
+        sample_rate :
             buffer sample rate
         '''
 

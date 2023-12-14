@@ -19,12 +19,12 @@ class Agilent33500(InstrumentDriver):
     instrument :
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
-    channel : 
+    channel :
         channel of instrument, 1 or 2
 
     Attributes
     ----------
-    gain : 
+    gain :
         multiplication factor for voltages at the device, defaults to 1.
     channel :
         Channel instrument is running on
@@ -35,7 +35,7 @@ class Agilent33500(InstrumentDriver):
     ------
     Properties which can be get and set :
         frequency : float
-            sets/queries instrument frequency. Range: [0.001, 30e6] 
+            sets/queries instrument frequency. Range: [0.001, 30e6]
         instrument_amplitude : float
             set/queries amplitude output. Range: [-10, 10]
         instrument_voltage : float
@@ -43,7 +43,7 @@ class Agilent33500(InstrumentDriver):
         voltage_autorange : str or int
             sets/querqies voltage autoranging. Values: [0, 'off', 1, 'on'], returns str
         function : str
-            sets/queries instrument function. Values:  ["SIN","SQU","TRI","RAMP","PULS","PRBS","NOIS","ARB","DC",] 
+            sets/queries instrument function. Values:  ["SIN","SQU","TRI","RAMP","PULS","PRBS","NOIS","ARB","DC",]
         arb_advance_mode : str
             sets/queries Advancement method for arbitrary waveforms. Values: ["TRIG", "SRAT"]
         arb_filter : str
@@ -534,7 +534,7 @@ class Agilent33500(InstrumentDriver):
     @amplitude.setter
     def amplitude(self, new_value):
         self.instrument_amplitude = new_value / self.gain
-        self._amplitude = new_value 
+        self._amplitude = new_value
 
     @property
     def voltage(self):
@@ -905,7 +905,7 @@ class Agilent33500(InstrumentDriver):
         offset : float, optional
             dc voltage offset of waveform, defaults to 0.
         srate : float, optional
-            sample rate in Hz, defaults to 1e3. 
+            sample rate in Hz, defaults to 1e3.
         filter : str
             filter mode
 

@@ -7,10 +7,10 @@ def test_is_list_type():
     list1 = (1, 2, 3)
     list2 = [1, 2, 3]
     list3 = np.array([1, 2, 3])
-    
+
     notlist1 = 'string'
     notlist2 = 2
-    
+
     assert ps.is_list_type(list1)
     assert ps.is_list_type(list2)
     assert ps.is_list_type(list3)

@@ -91,17 +91,17 @@ def test_init_from_noparams():
         check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measured, attribute_name='measured', expected=[])
 
         # check that measure_function initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measure_function, 
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measure_function,
                         attribute_name='measure_function', expected=None)
 
         # check that trigger_function initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.trigger_function, 
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.trigger_function,
                         attribute_name='trigger_function', expected=None)
 
         # check that initial_pause initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.initial_pause, 
+        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.initial_pause,
                         attribute_name='initial_pause', expected=0.1)
-        
+
         # check that average_d initialized correctly
         check_attribute(runinfo=init_runinfo, attribute=init_runinfo.average_d, attribute_name='average_d', expected=-1)
 
