@@ -40,3 +40,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Test notebooks
+      run: |
+        pytest --nbmake "./demo_notebooks/" 
