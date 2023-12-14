@@ -22,7 +22,13 @@ but is also auto run on the main and development branches upon commit.
 Autopep8 can be used to correct pep8 errors. Though be caeful that this may not correct all 
 pep8 issues.  Implement autopep8 via 
 
-`autopep8 .`
+`autopep8 --in-place --aggressive -r --max-line-length 120 -v .`
+
+--in-place makes changes in the file<br>
+--aggressive changes errors other than just spacing<br>
+-r is recursive over all files in the directories<br>
+--max-line-length 120 self explanitory<br>
+-v verbose prints out changes <br>
 
 in the home directory of pyscan. This significantly helps with small, repeated issues such
 blank spaces in empty lines and extra spaces at the end of lines, which no one really wants
