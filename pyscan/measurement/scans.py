@@ -54,7 +54,7 @@ class PropertyScan(MetaScan):
 
         self.device_names = list(input_dict.keys())
 
-        self.property = prop
+        self.property = prop #flagging this because duplicate
         self.dt = dt
         self.check_same_length()
         self.i = 0
@@ -169,7 +169,7 @@ class RepeatScan(MetaScan):
     def iterate(self, index, devices):
         '''Iterates repeat loop
         '''
-        if self.n is np.inf:  # bug? when would self.n be np.inf?
+        if self.n is np.inf:  #bug? when would self.n be np.inf?
             self.scan_dict['repeat'].append(self.n + 1)
             self.nrange += 1
             self.n += 1
