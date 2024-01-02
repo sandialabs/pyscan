@@ -202,7 +202,7 @@ def test_property_scan():
 
     test_1D_property_scan_4loops()
 
-    #are we intending to test multi dictionary input items for loops and should I add test cases for them here?
+    # ########are we intending to test multi dictionary input items for loops and should I add test cases for them here?
 
 
 def test_function_scan():
@@ -371,8 +371,8 @@ def test_repeat_scan():
 
         check_attributes(loop, dt)
 
-    test_num_repeat(-1)  #do we want this to be allowed?
-    test_num_repeat(0)  #do we want this to be allowed?
+    test_num_repeat(-1)  # ###########do we want this to be allowed?
+    test_num_repeat(0)  # ##############do we want this to be allowed?
     test_num_repeat(0, dt=1)
     test_num_repeat(1)
     test_num_repeat(2)
@@ -431,8 +431,8 @@ def test_average_scan():
 
         check_attributes(loop, dt)
 
-    #test_num_average(-1)  #do we want this to be allowable?
-    test_num_average(0)  #do we want this to be allowable?
+    test_num_average(-1)  # ###############do we want this to be allowable?
+    test_num_average(0)  # ################do we want this to be allowable?
     test_num_average(1)
     test_num_average(100)
-    test_num_average(1000000)  #any upper limit here?
+    test_num_average(1000000)  # ################any upper limit here?
