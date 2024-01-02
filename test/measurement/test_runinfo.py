@@ -42,42 +42,29 @@ def test_init_from_noparams():
         for loop in init_runinfo.loops:
             assert isinstance(loop, ps.PropertyScan), "runinfo loops not initialized as Property Scan"
 
-        # check that scan_dict initialized
+        # check that loop attributes are initialized
         check_loops_have_attribute(init_runinfo.loops, 'scan_dict')
-
-        # check that scan_dict initialized as empty
-        counter = 0
-        for loop in init_runinfo.loops:
-            err_string = "runinfo loop" + str(counter) + " (Property Scan) scan_dict not empty when intialized"
-            assert loop.scan_dict == {}, err_string
-            counter += 1
-
-        # check that prop initialized
         check_loops_have_attribute(init_runinfo.loops, 'prop')
-
-        # check that prop initialized as None
-        counter = 0
-        for loop in init_runinfo.loops:
-            err_string = "runinfo loop" + str(counter) + " (Property Scan) prop not None when intialized"
-            assert loop.prop is None, err_string
-            counter += 1
-
-        # check that dt initialized
         check_loops_have_attribute(init_runinfo.loops, 'dt')
-
-        # check that dt initialized as 0
-        counter = 0
-        for loop in init_runinfo.loops:
-            assert loop.dt == 0, "runinfo loop" + str(counter) + " (Property Scan) dt not 0 when intialized"
-            counter += 1
-
-        # check that i initialized
         check_loops_have_attribute(init_runinfo.loops, 'i')
 
-        # check that i initialized as 0
+        # check that each loops attributes are initialized correctly
         counter = 0
         for loop in init_runinfo.loops:
+            # check that scan_dict initialized as empty {}
+            err_string = "runinfo loop" + str(counter) + " (Property Scan) scan_dict not empty when intialized"
+            assert loop.scan_dict == {}, err_string
+
+            # check that prop initialized as None
+            err_string = "runinfo loop" + str(counter) + " (Property Scan) prop not None when intialized"
+            assert loop.prop is None, err_string
+
+            # check that dt initialized as 0
+            assert loop.dt == 0, "runinfo loop" + str(counter) + " (Property Scan) dt not 0 when intialized"
+
+            # check that i initialized as 0
             assert loop.i == 0, "runinfo loop" + str(counter) + " (Property Scan) i not 0 when intialized"
+
             counter += 1
 
     check_runinfo_loops()
