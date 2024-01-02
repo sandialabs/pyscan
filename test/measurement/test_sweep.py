@@ -1,5 +1,5 @@
 '''
-Pytest functions to test the pointbypoint experiment class
+Pytest functions to test the Sweep experiment class
 '''
 import pyscan as ps
 from random import random
@@ -7,7 +7,7 @@ import shutil
 import numpy as np
 
 
-##################### METHODS USED BY TEST CASES #####################
+##################### FUNCTIONS USED BY TEST CASES #####################
 
 
 # for setting runinfo measure_function to measure 1D data
