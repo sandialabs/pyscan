@@ -31,7 +31,8 @@ Getting an Existing Remote Branch from GitHub:
     To get and switch to a remote branch use the command:
     git checkout remote-branch-name-here
 
-    You will now be on that remote branch.
+    It should say "branch 'remote-branch-name-here' set up to track 'origin/remote-branch-name-here'". If so, you will now be on that remote branch. 
+    Otherwise, make sure you typed the remote branch name correctly and try again.
 
 
 Creating and Managing Branches
@@ -69,12 +70,23 @@ Creating and Managing Branches
     ############## I think we should include this because this is best practice rather than using revert, but what do you think? #########
     If you wish to undo your current changes and return to a previous state, there is a way to do this; however, THIS CAN BE DANGEROUS AS YOU CAN LOSE A LOT OF YOUR CODE, so DO THIS AT YOUR OWN RISK!
     Furthermore, only do this on your local machine, do not try this on our repository! Instead, if you want a commit reverted on the GitHub repository please submit an issues request for us to handle.
-    It is recommended to back up your current state to another directory first. To reset you must first locate the hash of the commit you want to return to. There are several ways to do this.
+    It is recommended to back up your current state to another branch or directory first. To save your current branches state first you can first commit (i.e. git commit -am "Saving my work, just in case"),
+    then create a new branch (i.e. git branch my-saved-work), that way you won't lose any of your 
+    
+    To reset you must first locate the hash of the commit you want to return to. There are several ways to do this.
     The first and most simple is by using git log; however, to make use of this it is important to have made good notes for your past commits so that you can identify the one you wish to return to. 
     The hash will be the 40 character hexadecimal string of numbers and letters, which will look something like this: 8159595fbf3f16ce7184008d14e9df7c9eb04f5f.
     You may also find commit hashes on GitHub by first going to the branch you are working with, clicking on the Commits (just under the green <> Code button), and 
     copying the hash of the commit you want to return to. Once you are SURE you have copied the correct hash you can reset your current progress to that corresponding commit with the command:
     git reset hash-here
+
+    Another alternative for resetting your current state to a remote branches state is to use the commands:
+    git fetch origin
+    git reset --hard origin/branch-name
+
+    Again, it is a good idea to save your current branches state first using:
+    git commit -am "Saving my work, just in case"
+    git branch my-saved-work
 
 
 Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
