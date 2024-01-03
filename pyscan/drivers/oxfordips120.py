@@ -17,6 +17,7 @@ class OxfordIPS120(InstrumentDriver):
         from :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)
@@ -137,14 +138,14 @@ class OxfordIPS120(InstrumentDriver):
 
         A = {0: 'Hold',
              1: 'To Set Point',
-             2: 'To Zero', 
+             2: 'To Zero',
              4: 'Clamped'}
 
         activity = A[int(status[4])]
 
         print('Activity: {}'.format(activity))
 
-        C = {0: 'Local & Locked', 
+        C = {0: 'Local & Locked',
              1: 'Remote & Locked',
              2: 'Local & Unlocked',
              3: 'Remote & Unlocked',
@@ -158,7 +159,7 @@ class OxfordIPS120(InstrumentDriver):
         print('Local/Remote Status: {}'.format(loc))
 
         H = {0: 'Off, Magnet at Zero',
-             1: 'On', 
+             1: 'On',
              2: 'Off, Maget at Field',
              5: 'Heater Fault',
              8: 'No Switch Fitted'}
@@ -169,11 +170,11 @@ class OxfordIPS120(InstrumentDriver):
 
         M1 = {0: 'Amps, Fast',
               1: 'Tesla, Fast',
-              4: 'Amps, Slow', 
+              4: 'Amps, Slow',
               5: 'Tesla, Slow'}
 
-        M2 = {0: 'at rest', 
-              1: 'Sweeping', 
+        M2 = {0: 'at rest',
+              1: 'Sweeping',
               2: 'Sweep Limit',
               3: 'Sweeping & Sweep Limiting'}
 
@@ -191,4 +192,4 @@ class OxfordIPS120(InstrumentDriver):
             if len(message) != 0:
                 return message
             else:
-                message = self.query('&') 
+                message = self.query('&')

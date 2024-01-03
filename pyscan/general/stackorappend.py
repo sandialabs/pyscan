@@ -29,9 +29,9 @@ def stack_or_append(array, value):
         else:  # 1d array
             array = np.append(array, value)
     else:  # 2d array or higher
-        if len(array) == 0: 
+        if len(array) == 0:
             array = value
-        elif array.shape[0] == 1: 
+        elif array.shape[0] == 1:
             array = np.append(array, value, axis=0).T  # unexpected behaviour?
         else:
             array = np.concatenate((array, value.T), axis=-1)  # unexpected behaviour?

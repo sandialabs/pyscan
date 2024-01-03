@@ -14,13 +14,14 @@ c_dword = c_ulong
 
 
 class ThorlabsBPC303(ItemAttribute):
-    '''Class to control ThorLabs BPC303 - 3-Channel 150 V Benchtop Piezo Controller with USB  
+    '''Class to control ThorLabs BPC303 - 3-Channel 150 V Benchtop Piezo Controller with USB
 
     Parameters
     ----------
     serial : str
         Serial number string. Defaults to "71872242".
     '''
+
     def __init__(self, serial="71872242"):
         self.serial = c_char_p(bytes(serial, "utf-8"))
         if self.build_device_list() != 0:

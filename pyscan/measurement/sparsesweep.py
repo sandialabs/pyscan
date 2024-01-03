@@ -12,20 +12,20 @@ import numpy as np
 
 
 class SparseSweep(MetaSweep):
-    '''Experiment class that takes data after each loop0 iteration if 
+    '''Experiment class that takes data after each loop0 iteration if
     runinfo.sparse_points[self.runinfo.indicies] = 1, allowing the experiment
     to skip taking data points. Inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
 
     Parameters
     ----------
     runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
-        Runinfo instance. The Runinfo loop containing the dependent variable 
-        that you want to average should be an instance of 
-        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`. 
-        There should be only one dependent variable to be averaged. 
-        The loops representing independent variables can be instances of 
+        Runinfo instance. The Runinfo loop containing the dependent variable
+        that you want to average should be an instance of
+        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
+        There should be only one dependent variable to be averaged.
+        The loops representing independent variables can be instances of
         :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
-    devices : 
+    devices :
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional
         The path to save the data, defaults to './backup'

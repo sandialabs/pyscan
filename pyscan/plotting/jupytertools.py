@@ -23,11 +23,12 @@ class JupyterTools(object):
     default_z : str
         Default name of data, defaults to 'x'.
     default_vrange : list of length 2
-        default z range of 3D plots, defaults to [-0.02, 0.02]. 
-    plot_size : 
+        default z range of 3D plots, defaults to [-0.02, 0.02].
+    plot_size :
         plot size. defaults to `None`.
 
     '''
+
     def __init__(self):
         self.path_name = './backup'
         self.default_z = 'x'
@@ -78,7 +79,7 @@ class JupyterTools(object):
 
         Parameters
         ----------
-        function_name : 
+        function_name :
             funciton to be applied to data
 
         Other Parameters

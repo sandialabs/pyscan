@@ -7,7 +7,7 @@ Live Plot
 
 import matplotlib.pyplot as plt
 from IPython import display
-from time import sleep  
+from time import sleep
 
 
 def live_plot(plotting_function, dt=1):

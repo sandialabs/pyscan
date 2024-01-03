@@ -1,20 +1,16 @@
 from pylablib.devices.Attocube.anc350 import ANC350
-from pyscan.general.itemattribute import ItemAttribute
 from .instrumentdriver import InstrumentDriver
 
-class AttocubeANC350(InstrumentDriver): #deleted ANC350
+
+class AttocubeANC350(InstrumentDriver):  # deleted ANC350
 
     def __init__(self, instrument):
 
         super().__init__(instrument)
 
         self.inst = ANC350()
-        #self.debug = False
-        #self.initialize_properties()
-
-        # setattr(self.__class__, 'x', property(lambda self: self.get_x(), lambda self, new_value: self.set_x(new_value)))
-        # setattr(self.__class__, 'y', property(lambda self: self.get_y(), lambda self, new_value: self.set_y(new_value)))
-        # setattr(self.__class__, 'z', property(lambda self: self.get_z(), lambda self, new_value: self.set_z(new_value)))
+        # self.debug = False
+        # self.initialize_properties()
 
     def get_x(self):
         self._x = self.inst.get_position(0)

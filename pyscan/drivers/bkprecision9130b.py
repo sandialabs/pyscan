@@ -14,7 +14,7 @@ class BKPrecision9130B(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from 
+        Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
@@ -34,6 +34,7 @@ class BKPrecision9130B(InstrumentDriver):
             Ranges: [[0, 3], [0, 3], [0, 3]]
 
     '''
+
     def __init__(self, instrument):
         super().__init__(instrument)
 

@@ -12,15 +12,15 @@ import logging
 class Stanford900(InstrumentDriver):  # pragma: no cover
 
     def __init__(self, instrument, port=None, debug=False):
-        '''Class to control Stanford Research Systems SIM900 - 8 Slot Small 
-        Instrumentation Modules (SIM) System Mainframe. 
-        To use, confirm Stanford Research Systems SIM900 box, and identify port 
+        '''Class to control Stanford Research Systems SIM900 - 8 Slot Small
+        Instrumentation Modules (SIM) System Mainframe.
+        To use, confirm Stanford Research Systems SIM900 box, and identify port
         on the SIM900 that the instrument will communicate with.
 
         Parameters
         ----------
         instrument :
-            Visa string or an instantiated instrument (return value from 
+            Visa string or an instantiated instrument (return value from
             :func:`~pyscan.drivers.newinstrument.new_instrument`)
         port : str or int
             port to connnect driver.  If no port is identified, the
@@ -128,7 +128,7 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
 
         Returns
         -------
-        list 
+        list
             List of ports
         '''
 
@@ -358,13 +358,13 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
 
         Parameters
         ----------
-        response : 
+        response :
             SIM900 instrument response
 
         Returns
         -------
         (message, message_complete)
-            message is the extracted message from 
+            message is the extracted message from
             the port, and message_complete is true when it ends with "\r\n".
         '''
 

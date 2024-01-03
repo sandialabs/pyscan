@@ -18,7 +18,7 @@ def plot1D(expt, **kwarg):
     ----------
     expt :
         The experiment object
-    d : 
+    d :
         Dimensionality of the data to be plotted
 
     Other Parameters
@@ -48,7 +48,7 @@ def plot2D(expt, **kwarg):
     ----------
     expt :
         The experiment object
-    d : 
+    d :
         Dimensionality of the data to be plotted
 
     Other Parameters

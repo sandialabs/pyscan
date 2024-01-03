@@ -58,7 +58,7 @@ class HeliosSDK(ItemAttribute):
     def get_instrument_property(self, obj, settings, debug=False):
         '''
         Generator function for a query function of the instrument
-        that sends the query string and formats the return based on 
+        that sends the query string and formats the return based on
         settings['return_type']
 
         Args:
@@ -122,7 +122,7 @@ class HeliosSDK(ItemAttribute):
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
-                settings['set_command'](new_value)  
+                settings['set_command'](new_value)
                 setattr(self, '_' + settings['name'], new_value)
             else:
                 setattr(self, '_' + settings['name'],
@@ -346,7 +346,7 @@ class HeliosCamera(HeliosSDK):
         else:
             print("Bad frequency, must be 2121Hz < f < 291,666 Hz")
 
-    def internal_trigger_mode(self, sync_out=1):        
+    def internal_trigger_mode(self, sync_out=1):
         '''
         Camera automatically captures frames
         '''
@@ -362,11 +362,11 @@ class HeliosCamera(HeliosSDK):
 
         self.sync_out = sync_out
 
-    def acquire_IQ_mode(self, compressed=0): 
+    def acquire_IQ_mode(self, compressed=0):
 
         self.acquisition_mode = 0
 
-    def acquire_amplitude_mode(self, offset_method=0, compressed=0): 
+    def acquire_amplitude_mode(self, offset_method=0, compressed=0):
 
         self.acquisition_mode = 1
         self.offset_method = offset_method
@@ -448,7 +448,7 @@ class HeliosCamera(HeliosSDK):
 
     @property
     def actual_cycles_per_frame(self):
-        self._actual_cycles_per_frame = self.cycles_per_frame * 2 + 2 
+        self._actual_cycles_per_frame = self.cycles_per_frame * 2 + 2
         return self._actual_cycles_per_frame
 
     @property
