@@ -47,7 +47,7 @@ def get_last_value(path):
 
 def get_df(path, name):
     '''
-    Returns dataframe from path 
+    Returns dataframe from path
 
     Args:
         path - path to file

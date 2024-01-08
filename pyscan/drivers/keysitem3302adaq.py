@@ -22,30 +22,31 @@ class KeysiteM3302ADAQ(ItemAttribute):
 
     Parameters
     ----------
-    chassis : int 
+    chassis : int
         chassis index
-    slot : int 
+    slot : int
         slot of card
     channel : int
         channel of DAQ
 
     Properties
     ----------
-    coupling : 
-        queries input coupling 
+    coupling :
+        queries input coupling
         returns:
             0 - DC
             1 - AC
-    full_scale : 
+    full_scale :
         queries full scale of input voltage
         returns float
-    impedance : 
+    impedance :
         queries input impedence
         returns:
             0 - high Z
             1 - 50 Ohms
 
     '''
+
     def __init__(self, chassis, slot, channel):
 
         self.chassis = chassis
@@ -55,7 +56,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
         self.module = keysightSD1.SD_AIN()
         self.module.openWithSlot("", self.chassis, self.slot)
 
-    @property 
+    @property
     def coupling(self):
         self._coupling = self.module.channelCoupling(self.channel)
         return self._coupling
@@ -150,9 +151,9 @@ class KeysiteM3302ADAQ(ItemAttribute):
 
         '''
         self.module.DAQconfig(self.channel,
-                              points_per_cycle, 
+                              points_per_cycle,
                               ncycles,
-                              trigger_delay, 
+                              trigger_delay,
                               trigger_mode)
 
     def digital_trigger_config(self, source, behavior):

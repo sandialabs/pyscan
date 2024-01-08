@@ -13,7 +13,7 @@ def new_instrument(visa_string=None, gpib_address=None):
     '''
     Function creates a new visa instrument based on input type.
     If neither a visa_string or gpib_address is entered, prints a list
-    of possible instruments and returns `None`. If both visa_string and gpib_address are 
+    of possible instruments and returns `None`. If both visa_string and gpib_address are
     entered, only gpib_address is used.
 
     Parameters

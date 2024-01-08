@@ -223,7 +223,7 @@ class ZurichHF2(ZurichDriver):
             'values': [0.01, 0.1, 1, 10],
             'return_type': float})
 
-        ## Oscillator
+        # Oscillator
 
         self.add_device_property({
             'name': 'frequency',
@@ -232,7 +232,7 @@ class ZurichHF2(ZurichDriver):
             'range': [0, 1e8],
             'return_type': float})
 
-        ## Input settings
+        # Input settings
 
         self.add_device_property({
             'name': 'input_range',
@@ -262,7 +262,7 @@ class ZurichHF2(ZurichDriver):
             'range': [0, 1],
             'return_type': int})
 
-        ## Demodulator settings
+        # Demodulator settings
 
         self.add_device_property({
             'name': 'adc',

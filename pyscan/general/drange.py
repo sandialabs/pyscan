@@ -10,11 +10,11 @@ import numpy as np
 
 def drange(start, delta, stop):
     '''
-    Returns an array from `start`, with steps of size `delta` to 
+    Returns an array from `start`, with steps of size `delta` to
     `stop`, inclusive.
 
     - If ``stop-start`` is not divisible by `delta`,
-      it fits as many integer steps of `delta` as possible, 
+      it fits as many integer steps of `delta` as possible,
       then adds `stop` as the final step.
     - If ``stop-start < delta`` returns ``[start, stop]``.
     - If ``stop == start`` returns ``[start]``.
