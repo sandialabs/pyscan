@@ -11,10 +11,10 @@ from pyvisa.errors import VisaIOError
 
 def print_error(errcode):
     print("TPI Error: %s"
-          % ['Checksum error', 'Undefined command type (first body byte)', 
-             'Undefined command (second body byte)', 'Data out of range', 
-             'Illegal beacon message character', 
-             'Requested RF level < -90 dBm', 
+          % ['Checksum error', 'Undefined command type (first body byte)',
+             'Undefined command (second body byte)', 'Data out of range',
+             'Illegal beacon message character',
+             'Requested RF level < -90 dBm',
              'Internal beacon message length error',
              'Unknown script command',
              'No detector available',
@@ -23,7 +23,7 @@ def print_error(errcode):
              'Communication watchdog timeout',
              'Failed to write EEPROM',
              'Failed to read EEPROM'][errcode])
-    return 
+    return
 
 
 def check_errors(fn):
@@ -48,9 +48,9 @@ class TPI1002A(InstrumentDriver):
     Yields
     ------
     Properties which can be get and set :
-        user_control : 
+        user_control :
             Values: [0,1]. 0 is False, 1 is True.
-        output : 
+        output :
             Values':[0,1]. 0 is False, 1 is True.
         frequency : int
             Frequency in kHz. Range: [35000,4400000].
@@ -65,12 +65,13 @@ class TPI1002A(InstrumentDriver):
             Hardware version of device
         firmware_version : str
             Firmware version of device
-        supply_voltages : 
+        supply_voltages :
             Not tested
         state : str
             State
 
     '''
+
     def __init__(self, instrument):
         super().__init__(instrument)
 
@@ -89,7 +90,7 @@ class TPI1002A(InstrumentDriver):
 
     def read(self, return_bytes=None, raw=False):
         """
-        Set nbytes (without header/checksum) to expected number of bytes. 
+        Set nbytes (without header/checksum) to expected number of bytes.
         If you're right, things will be fast.  If you're wrong, comm will be out of sync.
         """
         if return_bytes is not None:
@@ -147,8 +148,8 @@ class TPI1002A(InstrumentDriver):
             print('Value error: %s must be one of %s' % (settings['name'], ', '.join(str(values))))
             return
         retval = self.query(settings['write_string'].format(new_value) if
-                            'send_type' not in settings else 
-                            settings['write_string'].format(settings['send_type'](new_value)), 
+                            'send_type' not in settings else
+                            settings['write_string'].format(settings['send_type'](new_value)),
                             return_bytes=settings['ok_bytes'] + 2 if 'ok_bytes' in settings else None)
         return retval
 
@@ -159,7 +160,7 @@ class TPI1002A(InstrumentDriver):
         if not (rng[0] <= new_value <= rng[1]):
             print('Range error: {} must be between {} and {}.'.format(settings['name'], rng[0], rng[1]))
             return -1
-        retval = self.query(settings['write_string'].format(new_value) if 'send_type' not in 
+        retval = self.query(settings['write_string'].format(new_value) if 'send_type' not in
                             settings else settings['write_string'].format(settings['send_type'](new_value)),
                             return_bytes=settings['ok_bytes'] + 2 if 'ok_bytes' in settings else None)
         setattr(self, '_' + settings['name'], new_value)
@@ -277,9 +278,9 @@ class TPI1002A(InstrumentDriver):
     def packet_checksum(self, rawpacket):
         # todo: better way to complement
         hrawpqt = rawpacket[2:].hex()
-        return (sum(-int(s, 16) for s in [hrawpqt[i:i + 2] for i in 
+        return (sum(-int(s, 16) for s in [hrawpqt[i:i + 2] for i in
                                           range(0, len(hrawpqt), 2)]) % 256 + int('ff', 16)) % 256
-        # return bytes.fromhex('%02x' % ((sum(-int(s,16) for s in [hrawpqt[i:i+2] for i 
+        # return bytes.fromhex('%02x' % ((sum(-int(s,16) for s in [hrawpqt[i:i+2] for i
         # in range(0,len(hrawpqt),2)])%256+int('ff',16))%256))
 
     def _int_to_hex(self, num, bytelen, signed=False):

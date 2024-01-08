@@ -10,7 +10,7 @@ def is_numeric_type(obj):
 
     Parameters
     ----------
-    obj : 
+    obj :
         Object of any type.
 
     Returns

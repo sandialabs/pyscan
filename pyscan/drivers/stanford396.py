@@ -14,7 +14,7 @@ class Stanford396(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from 
+        Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
@@ -36,7 +36,7 @@ class Stanford396(InstrumentDriver):
         input_coupling : int
             Values: [0, 1]
         modulation_type : str
-            Values: ['am','fm','phim','sweep','pulse', 
+            Values: ['am','fm','phim','sweep','pulse',
             'blank','qam','cpm','vbs']. Returns int
         modulation_function : str
             Values: ['sin','ramp','triangle','external','waveform']. Returns int
@@ -52,6 +52,7 @@ class Stanford396(InstrumentDriver):
             Range: [0, 11]=
 
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)
@@ -107,7 +108,7 @@ class Stanford396(InstrumentDriver):
             'range': [-180, 180],
             'return_type': float})
 
-        ## Modulation Commands
+        # Modulation Commands
 
         self.add_device_property({
             'name': 'modulation',
@@ -127,7 +128,7 @@ class Stanford396(InstrumentDriver):
             'name': 'modulation_type',
             'write_string': 'TYPE {}',
             'query_string': 'TYPE?',
-            'values': ['am', 'fm', 'phim', 'sweep', 'pulse', 
+            'values': ['am', 'fm', 'phim', 'sweep', 'pulse',
                        'blank', 'qam', 'cpm', 'vbs'],
             'return_type': int})
 

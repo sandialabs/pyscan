@@ -26,7 +26,7 @@ def recursive_to_itemattribute(data):
     new_data = ItemAttribute()
 
     for key, value in data.items():
-        if type(value) is dict:
+        if isinstance(value, dict):
             new_data[key] = recursive_to_itemattribute(value)
         else:
             new_data[key] = value

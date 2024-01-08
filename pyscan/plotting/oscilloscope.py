@@ -20,7 +20,7 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
     ----------
     measure_function : func
         Function that generates a data point or set
-    histo_range : int 
+    histo_range : int
         Total number of data points before overwriting
     dt : float
         Time in s between datapoints being taken
@@ -50,7 +50,7 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
 
             d = measure_function()
 
-            # print(is_list_type(d), is_numeric_type(d))   
+            # print(is_list_type(d), is_numeric_type(d))
 
             if is_numeric_type(d):
                 dims = 0

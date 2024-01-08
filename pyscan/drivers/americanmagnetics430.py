@@ -10,7 +10,7 @@ from time import sleep
 
 class AmericanMagnetics430(InstrumentDriver):
     '''
-    Class to control American Magnetics 430 Magnet power supply. Inherits 
+    Class to control American Magnetics 430 Magnet power supply. Inherits
     from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
 
     Parameters
@@ -23,15 +23,15 @@ class AmericanMagnetics430(InstrumentDriver):
     ------
     Properties which can be get and set :
         target_field : float
-            Sets/queries the target field of the magnet in Tesla  
+            Sets/queries the target field of the magnet in Tesla
         field : float
             Sets/queries the magnetic field of the magnet in Tesla.
             When setting, locks until target field is reached
         persistant_switch_state : int
             Sets/queries state of the persistant switch. Values: [0, 1] (off, on)
-    Properties which can be get only : 
+    Properties which can be get only :
         magnet_voltage : float
-            Queries the voltage applied to the magnet leads  
+            Queries the voltage applied to the magnet leads
     '''
 
     def __init__(self, instrument):
@@ -139,7 +139,7 @@ class AmericanMagnetics430(InstrumentDriver):
 
         # future: check that the supply is ready to ramp
         # check if ramping
-        # check if heater is on 
+        # check if heater is on
         self.write('RAMP')
 
     def pause(self):

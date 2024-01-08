@@ -136,7 +136,7 @@ class Keithley2400(InstrumentDriver):
             return
         sign = (new_value - start) / np.abs(new_value - start)
 
-        if np.abs(new_value - start) < step_size:          
+        if np.abs(new_value - start) < step_size:
             self.write(';:SOUR:VOLT:LEV {}'.format(new_value))
             return
 

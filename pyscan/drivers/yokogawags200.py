@@ -82,7 +82,7 @@ class YokogawaGS200(InstrumentDriver):
                 return
             sign = (new_value - self._voltage) / np.abs(new_value - self._voltage)
 
-            if np.abs(new_value - start) < step_size:          
+            if np.abs(new_value - start) < step_size:
                 self.write('SOUR:LEV:FIX {}'.format(new_value))
                 self._voltage = new_value
                 return

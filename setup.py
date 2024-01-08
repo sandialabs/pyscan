@@ -17,7 +17,7 @@ setup(
         instruments and run experements"""
     ),
     license="MIT",
-    keywords = [
+    keywords=[
         "scientific",
         "instrument",
         "drivers",

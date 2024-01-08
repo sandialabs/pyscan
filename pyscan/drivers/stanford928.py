@@ -10,10 +10,10 @@ from math import floor
 class Stanford928(Stanford900):  # pragma: no cover
 
     def __init__(self, instrument, port, debug=False):
-        '''Class to control Stanford Research Systems SIM928 - Small 
+        '''Class to control Stanford Research Systems SIM928 - Small
         Instrumentation Modules (SIM) Isolated Voltage Source.
 
-        To use: Confirm stanford research system 928SIM box, and identify port on the 
+        To use: Confirm stanford research system 928SIM box, and identify port on the
         SIM928 that the instrument will communicate with
         '''
 
@@ -200,6 +200,7 @@ class Stanford928(Stanford900):  # pragma: no cover
 
 class stanford928(Stanford928):  # pragma: no cover
     '''Class for indicating to users of older versions of pyscan how to update code'''
+
     def __init__(self, inst, port):
         print('class "stanford928" is deprecated.  Use Stanford928')
         super().__init__(inst, port)

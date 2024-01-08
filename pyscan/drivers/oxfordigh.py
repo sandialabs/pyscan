@@ -47,7 +47,7 @@ class OxfordIGH(InstrumentDriver):
     def get_status(self):
 
         status = self.query_until_return('X')
-        return status    
+        return status
 
     def query_until_return(self, query, n=10):
 
@@ -58,4 +58,4 @@ class OxfordIGH(InstrumentDriver):
             if len(message) != 0:
                 return message
             else:
-                message = self.query('&') 
+                message = self.query('&')

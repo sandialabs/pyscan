@@ -21,7 +21,7 @@ class Stanford620(InstrumentDriver):
 
     Yields
     ------
-    Properties which can be get and set : 
+    Properties which can be get and set :
         arming_mode : int
             Range: [0,12]
         mode : int

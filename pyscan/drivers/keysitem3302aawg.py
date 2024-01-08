@@ -25,6 +25,7 @@ class KeysiteM3302AAWG(ItemAttribute):
 
 
     '''
+
     def __init__(self, chassis, slot):
 
         self.chassis = chassis
