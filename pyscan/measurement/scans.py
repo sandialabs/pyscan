@@ -146,6 +146,8 @@ class RepeatScan(MetaScan):
     def __init__(self, nrepeat, dt=0):
         '''Constructor method
         '''
+        assert nrepeat > 0, "nrepeat must be > 0"
+        assert nrepeat != np.inf, "nrepeat is np.inf"
         self.scan_dict = {}
         self.scan_dict['repeat'] = list(range(nrepeat))
 
@@ -184,6 +186,8 @@ class AverageScan(MetaScan):
     '''
 
     def __init__(self, n_average, dt=0):
+        assert n_average > 0, "n_average must be > 0"
+        assert n_average != np.inf, "n_average must not be np.inf"
         self.scan_dict = {}
         self.n = n_average
         self.nrange = range(self.n)
