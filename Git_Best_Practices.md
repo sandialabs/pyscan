@@ -37,7 +37,7 @@ Getting an Existing Remote Branch from GitHub:
 
 Creating and Managing Branches
 
-    To create a new branch, type the following command followed by the name of your branch:
+    To create a new branch, type the following command followed by the name of your branch (this will not switch to the branch and remain on the active branch until you switch as described in the following steps):
     git branch my-branch-name-here
 
     (The style for the branch name should follow this syntax, with each word separated by a hyphen.)
