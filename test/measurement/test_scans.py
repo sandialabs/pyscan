@@ -33,6 +33,16 @@ def check_iterate_function(loop, scan_name):
         assert False, scan_name + " loop iterate function error"
 
 
+# for setting up devices to test scans iterate functions
+def setup_devices():
+    devices = ps.ItemAttribute()
+    devices.v1 = ps.TestVoltage()
+    devices.v2 = ps.TestVoltage()
+    devices.v3 = ps.TestVoltage()
+    devices.v4 = ps.TestVoltage()
+    return devices
+
+
 # mostly a placeholder for now, meta scan has no init function
 def test_meta_scan():
     """
@@ -125,11 +135,8 @@ def test_property_scan():
         loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=1)
         loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=1)
 
-        devices = ps.ItemAttribute()
-        devices.v1 = ps.TestVoltage()
-        devices.v2 = ps.TestVoltage()
-        devices.v3 = ps.TestVoltage()
-        devices.v4 = ps.TestVoltage()
+        # setup devices for testing iterate function
+        devices = setup_devices()
 
         scan_name = "Property Scan loop"
 
@@ -288,12 +295,8 @@ def test_function_scan():
                 pass
             return return_value
 
-        # set up devices for testing iterate function
-        devices = ps.ItemAttribute()
-        devices.v1 = ps.TestVoltage()
-        devices.v2 = ps.TestVoltage()
-        devices.v3 = ps.TestVoltage()
-        devices.v4 = ps.TestVoltage()
+        # setup devices for testing iterate function
+        devices = setup_devices()
 
         # initialize the function scan loop
         loop = ps.FunctionScan(input_function, values=[0, 1, 2], dt=1)
