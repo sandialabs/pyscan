@@ -54,7 +54,7 @@ class PropertyScan(MetaScan):
 
         self.device_names = list(input_dict.keys())
 
-        self.property = prop  # ##################flagging this because duplicate
+        self.property = prop  # ##################flagging this because duplicate ##### Test deleting this.
         self.dt = dt
         self.check_same_length()
         self.i = 0
@@ -147,34 +147,23 @@ class RepeatScan(MetaScan):
         '''Constructor method
         '''
         self.scan_dict = {}
-        if nrepeat is not np.inf:
-            self.scan_dict['repeat'] = list(range(nrepeat))
-
-        else:
-            self.scan_dict['repeat'] = []  # represents infinity
+        self.scan_dict['repeat'] = list(range(nrepeat))
 
         self.device_names = ['repeat']
         self.dt = dt
 
-        if nrepeat is not np.inf:
-            self.n = nrepeat
-            self.nrange = range(self.n)
-
-        else:
-            self.n = 0  # represents infinity?
-            self.nrange = 0
+        self.n = nrepeat
+        self.nrange = range(self.n)
 
         self.i = 0
 
     def iterate(self, index, devices):
         '''Iterates repeat loop
         '''
-        if self.n is np.inf:  # ############## bug? when would self.n be np.inf?
-            self.scan_dict['repeat'].append(self.n + 1)
-            self.nrange += 1
-            self.n += 1
-        else:
-            pass  # ? if not np.inf then the loop doesn't run?
+
+        # Need a method here to iterate infinitely/continuously.
+
+        pass
 
     def check_same_length(self):
         '''

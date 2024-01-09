@@ -371,12 +371,12 @@ def test_repeat_scan():
 
         check_attributes(loop, dt)
 
-    test_num_repeat(-1)  # ###########do we want this to be allowed?
-    test_num_repeat(0)  # ##############do we want this to be allowed?
+    test_num_repeat(-1)  # ###########do we want this to be allowed? NO 
+    test_num_repeat(0)  # ##############do we want this to be allowed? NO
     test_num_repeat(0, dt=1)
     test_num_repeat(1)
     test_num_repeat(2)
-    test_num_repeat(np.inf)
+    test_num_repeat(np.inf) ############ NO
 
 
 def test_average_scan():
@@ -431,9 +431,9 @@ def test_average_scan():
 
         check_attributes(loop, dt)
 
-    test_num_average(-1)  # ###############do we want this to be allowable?
-    test_num_average(0)  # ################do we want this to be allowable?
+    test_num_average(-1)  # ###############do we want this to be allowable? NO
+    test_num_average(0)  # ################do we want this to be allowable? NO
     test_num_average(1)
     test_num_average(1, dt=1)
     test_num_average(100)
-    test_num_average(1000000)  # ################any upper limit here?
+    test_num_average(1000000)  # ################any upper limit here? YES: Upper limit np.inf
