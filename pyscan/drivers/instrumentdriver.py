@@ -243,7 +243,7 @@ class InstrumentDriver(ItemAttribute):
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
         Generator function for settings dictionary with 'indexed_values' item
-        Check that new_value is in settings['indexed_values'], if not, 
+        Check that new_value is in settings['indexed_values'], if not,
         rejects command
 
         Parameters
@@ -278,20 +278,20 @@ class InstrumentDriver(ItemAttribute):
             print('{} must be one of:'.format(settings['name']))
             for string in values:
                 print('{}'.format(string))
-    
+
     def set_dict_values_property(self, obj, new_value, settings):
         '''
         Generator function for settings dictionary with 'dict_values' item.
-        Check that new_value is a value in settings['dict_values']. If so, 
-        sends the associated key to the settings['write_string']; if not, 
+        Check that new_value is a value in settings['dict_values']. If so,
+        sends the associated key to the settings['write_string']; if not,
         rejects command.
 
         Parameters
         ----------
-        obj : 
+        obj :
             parent class object
-        new_value : 
-            new_value whose associated dictionary key will be set on the 
+        new_value :
+            new_value whose associated dictionary key will be set on the
             instrument
         settings : dict
             dictionary with ['dict_values'] item
