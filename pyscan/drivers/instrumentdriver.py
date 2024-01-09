@@ -127,7 +127,11 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string']).strip('\n')
-            value = settings['return_type'](value)
+            if 'dict_values' in settings:
+                key = settings['return_type'](value)
+                value = {key : settings['dict_values'][key]}
+            else:
+                value = settings['return_type'](value)
         else:
             value = settings['query_string']
 
