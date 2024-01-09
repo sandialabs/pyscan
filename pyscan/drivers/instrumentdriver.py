@@ -130,7 +130,7 @@ class InstrumentDriver(ItemAttribute):
             value = obj.query(settings['query_string']).strip('\n')
             if 'dict_values' in settings:
                 key = settings['return_type'](value)
-                value = {key : settings['dict_values'][key]}
+                value = {key: settings['dict_values'][key]}
             else:
                 value = settings['return_type'](value)
         else:
@@ -305,8 +305,7 @@ class InstrumentDriver(ItemAttribute):
 
         if new_value in dictionary.values():
             key = list(dictionary.keys())[
-                list(dictionary.values()).index(new_value)
-                ]
+                list(dictionary.values()).index(new_value)]
             if not self.debug:
                 print(settings['write_string'].format(key))
 
