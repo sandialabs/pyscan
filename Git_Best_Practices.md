@@ -56,22 +56,24 @@ Creating and Managing Branches
     This will also show if you have saved changes you have not committed to git. Each time you commit to git it will save the current state of your branch.
     This is more useful than simply saving your work because you can return to each commit later, in case you want to revert to a previous state of your branch.
     To commit changes to all the files you have been working on use the following command:
-    git commit -am "And leave a note about what changes you made here to have a log for keeping track of the main changes you made to this commit."
+    git commit -am "And leave a note here about what changes you made here to have a log for keeping track of the main changes you made to this commit."
 
     Alternatively, you can commit the changes you made to individual files by using the following command with the path to the file you are committing:
     git commit -m "Note your changes here." path/to/my/file.ext
 
-    To see a full history of changes made using git you can use the command:
+    To see a history of changes made using git you can use the command:
     git log
 
     You may notice that if you create new files, git will not automatically commit them. To add them to git so that they will be tracked with each commit use the command:
     git add path/to/my/file.ext
 
+    ############## Talk about git stash here before or in replacement of the following reset instructions ###########################
+
     ############## I think we should include this because this is best practice rather than using revert, but what do you think? #########
     If you wish to undo your current changes and return to a previous state, there is a way to do this; however, THIS CAN BE DANGEROUS AS YOU CAN LOSE A LOT OF YOUR CODE, so DO THIS AT YOUR OWN RISK!
     Furthermore, only do this on your local machine, do not try this on our repository! Instead, if you want a commit reverted on the GitHub repository please submit an issues request for us to handle.
     It is recommended to back up your current state to another branch or directory first. To save your current branches state first you can first commit (i.e. git commit -am "Saving my work, just in case"),
-    then create a new branch (i.e. git branch my-saved-work), that way you won't lose any of your 
+    then create a new branch (i.e. git branch my-saved-work), that way you can still access your work on this new branch later.
     
     To reset you must first locate the hash of the commit you want to return to. There are several ways to do this.
     The first and most simple is by using git log; however, to make use of this it is important to have made good notes for your past commits so that you can identify the one you wish to return to. 
@@ -80,11 +82,11 @@ Creating and Managing Branches
     copying the hash of the commit you want to return to. Once you are SURE you have copied the correct hash you can reset your current progress to that corresponding commit with the command:
     git reset hash-here
 
-    Another alternative for resetting your current state to a remote branches state is to use the commands:
+    Another alternative for resetting your current state to a remote branch's state is to use the commands:
     git fetch origin
     git reset --hard origin/branch-name
 
-    Again, it is a good idea to save your current branches state first using:
+    Again, it is a good idea to save your current branch's state first using:
     git commit -am "Saving my work, just in case"
     git branch my-saved-work
 
@@ -92,9 +94,12 @@ Creating and Managing Branches
 Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
 
     If you want to share your branch by adding it to the GitHub repository you must first log in to a GitHub account. 
-    Then you can with the following command (though you may need to request permission from us first):
+    Then you can share your branch to the repository with the following command (though you may need to request permission from us first):
     git push
     
+
+    ######## consider putting git pull first and then noting that git pull is git fetch and git merge combined? Consider discluding git merge for git pull to ensure the merge is up to date with repository (since git pull includes fetch first) #######
+
     However, if your branch is not up to date with changes made to the same branch on the GitHub repository you will encounter an error message.
     To fix this you will need to fetch the changes to update your current view of the main repository and then merge those changes with your branch to proceed.
 
@@ -109,10 +114,12 @@ Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
 
     Upon attempting to merge YOU MAY NEED TO RESOLVE CONFLICTS between your branch and the repository branch.
     If you see a CONFLICT message, you will need to manually address merge conflicts in the files listed.
-    If you are unsure whether there was a conflict or whether a conflict was resolved, using:  git status   will show whether ther are unmerged paths. To abort the merge at this stage 
+    If you are unsure whether there was a conflict or whether a conflict was resolved, using:  git status   will show whether ther are unmerged paths. 
+    To abort the merge at this stage and return to your branches state before the pull/merge request you can use the command:
+    git merge --abort
 
 
-    To do so go through each of the files listed to find the conflicts (there may be more than one instance!), which will be bracketed and separated in the following syntax:
+    To to resolve conflicts first go through each of the files listed to find the conflicts (there may be more than one instance!), which will be bracketed and separated in the following syntax:
 
     <<<<<<< HEAD
     Current state of your local branch that is in conflict with the incoming merge
@@ -127,12 +134,13 @@ Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
         4. Compare Changes (to visualize the differences between each version)
 
     If you are not in Visual Studio Code you can manually resolve conflicts by replacing the conflict notations (both brackets and it's contents) with what you want to remain.
-    For example, the manually resolved conflict from the above conflict could look something like:
+    For example, the manually resolved conflict from the above conflict (starting with <<<<<<< HEAD) you could edit it to look something like:
 
     Current state of your local branch that is in conflict with the incoming merge
     Current state of the branch you are merging from that is in conflict with your current branch
 
-    If you want to keep both the current state of your branch AND the current state of the branch you are merging from.
+    This is how to resolve it if you want to keep both the current state of your branch AND the current state of the branch you are merging from.
+    Otherwise, keep the state you want to finalize and delete everything you don't want included.
 
     Once you have resolved the conflict(s) you must commit the changes, using the aforementioned commands (i.e. git commit -am "Note what branch you merged and other changes here.")
 
@@ -141,13 +149,15 @@ Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
 
 Pull Requests
 
-    At some point you may wish to add your changes to the main, or another branch on our GitHub repository to benefit others ability to make use of this pyscan program.
-    We welcome your requests; however, we ask that you use them sparingly, intentionally, and only for significant improvements to the functionality.
+    At some point you may wish to add your changes to the main, or another branch on our GitHub repository to benefit other's ability to make use of this pyscan program.
+    We welcome your requests; however, we ask that you only make a pull request once your branch has been tested using all our provided pytest test cases and is shown to be fully functional.
+    
     This will help us to stay on top of updating pyscan meaningfully as different pull requests come in.
 
-    To submit a pull request navigate to the pull requests tab on our GitHub page. Then click to create a pull request and select the base branch you want to merge to 
-    and the branch you want to merge from to the base branch. Please leave a meaningful note detailing why you want to merge this two branches to help us evaluate your request.
+    To submit a pull request navigate to the pull requests tab on our GitHub page. Then click to create a pull request. First select the base branch you want to merge to, then select the branch you want to merge from. Please include a meaningful note detailing why you want to merge these two branches to help us evaluate your request.
 
+
+######## This belongs somewhere else because it's not related to Git. Should be included in a user guide. ###########
 
 Issues With Pyscan
 
