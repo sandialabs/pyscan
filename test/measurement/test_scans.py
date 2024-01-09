@@ -5,6 +5,7 @@ Pytest functions to test the Scans class
 import pyscan as ps
 import numpy as np
 import pytest
+from time import sleep
 
 
 # for checking that the scans have the given attributes
@@ -124,6 +125,12 @@ def test_property_scan():
         loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=1)
         loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=1)
 
+        devices = ps.ItemAttribute()
+        devices.v1 = ps.TestVoltage()
+        devices.v2 = ps.TestVoltage()
+        devices.v3 = ps.TestVoltage()
+        devices.v4 = ps.TestVoltage()
+
         scan_name = "Property Scan loop"
 
         # check that loops 0 - 4 initialized as Property Scan
@@ -187,8 +194,17 @@ def test_property_scan():
             err_string = "Property Scan loop" + str(loop_num) + " i not " + str(expected_i) + " when intialized"
             assert loops[loop_num].i == expected_i, err_string
 
-            # check that iterate functions as expected
-            check_iterate_function(loop, scan_name)
+            # check that iterate functions as expected (this adds a lot of runtime to the testing)
+            for loop in loops:
+                check_iterate_function(loop, scan_name)
+
+                for m in range(loop.n):
+                    loop.iterate(loop.i, devices)
+
+                    for dev in loop.device_names:
+                        devices[dev][loop.prop] == loop.scan_dict[dev + '_' + loop.prop][loop.i]
+
+                    sleep(loop.dt)  # Can we remove this to save time when running test cases, or is it important?
 
         # check each loop for expected attribute values
         check_loop_attributes(loops, 0, self[0], prop, expected_scan_dict1=0.0,
@@ -265,11 +281,19 @@ def test_function_scan():
     test_empty_loop()
 
     # for testing a function scan loop initialized as populated
-    def test_loop():
+    def test_loop(return_value=0):
         # set up a basic function to pass as an input to the function scan
         def input_function(num):
             for i in range(num):
-                print(i)
+                pass
+            return return_value
+
+        # set up devices for testing iterate function
+        devices = ps.ItemAttribute()
+        devices.v1 = ps.TestVoltage()
+        devices.v2 = ps.TestVoltage()
+        devices.v3 = ps.TestVoltage()
+        devices.v4 = ps.TestVoltage()
 
         # initialize the function scan loop
         loop = ps.FunctionScan(input_function, values=[0, 1, 2], dt=1)
@@ -306,12 +330,15 @@ def test_function_scan():
 
             # check that iterate functions as expected
             check_iterate_function(loop, scan_name)
+            err_string = scan_name + " iterate function not as expected."
+            assert loop.function(loop.scan_dict[loop.function.__name__][0]) == return_value, err_string
 
         # check that the attributes are initialized correctly
         check_attributes()
 
     # test a function scan loop initialized as populated
     test_loop()
+    test_loop(return_value=1)
 
 
 def test_repeat_scan():

@@ -23,7 +23,7 @@ def measure_point(expt):
 def measure_up_to_3D(expt):
     d = ps.ItemAttribute()
 
-    d.x1 = random()
+    d.x1 = random()  # could make predictable to ensure data is saved properly
     d.x2 = [random() for i in range(2)]
     d.x3 = [[random() for i in range(2)] for j in range(2)]
 
