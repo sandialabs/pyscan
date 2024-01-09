@@ -295,7 +295,7 @@ class InstrumentDriver(ItemAttribute):
             instrument
         settings : dict
             dictionary with ['dict_values'] item
-        
+
         Returns
         -------
         None
