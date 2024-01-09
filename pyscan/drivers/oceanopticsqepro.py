@@ -16,13 +16,13 @@ class OceanOpticsQEPro(ItemAttribute):
 
     Parameters
     ----------
-    sn : 
+    sn :
         serial number of the spectrometer. Defaults to None.
 
     Properties
     ----------
     intensities :
-        returns an array of intensities 
+        returns an array of intensities
     wavelength :
         returns an array of measured wavelenghts
     spectrum :

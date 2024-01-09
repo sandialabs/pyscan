@@ -14,7 +14,7 @@ class Stanford400(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from 
+        Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
     Yields
@@ -80,6 +80,7 @@ class Stanford400(InstrumentDriver):
             Range: [0.005e-6, 999.2e-3]
 
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)
@@ -270,48 +271,48 @@ class Stanford400(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'gate_mode_A', 
+            'name': 'gate_mode_A',
             'write_string': 'GM 0, {}',
             'query_string': 'GM 0',
             'values': [0, 1, 2],
             'return_type': int})
 
         self.add_device_property({
-            'name': 'gate_delay_A', 
+            'name': 'gate_delay_A',
             'write_string': 'GD 0, {}',
             'query_string': 'GD 0',
             'range': [0, 999.2e-3],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'gate_width_A', 
+            'name': 'gate_width_A',
             'write_string': 'GW 0, {}',
             'query_string': 'GW 0',
             'range': [0.005e-6, 999.2e-3],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'gate_mode_B', 
+            'name': 'gate_mode_B',
             'write_string': 'GM 1, {}',
             'query_string': 'GM 1',
             'values': [0, 1, 2],
             'return_type': int})
 
         self.add_device_property({
-            'name': 'gate_delay_B', 
+            'name': 'gate_delay_B',
             'write_string': 'GD 1, {}',
             'query_string': 'GD 1',
             'range': [0, 999.2e-3],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'gate_width_B', 
+            'name': 'gate_width_B',
             'write_string': 'GW 1, {}',
             'query_string': 'GW 1',
             'range': [0.005e-6, 999.2e-3],
             'return_type': float})
 
-    ## Front panel commands
+    # Front panel commands
 
     def start(self):
         self.write('CS')

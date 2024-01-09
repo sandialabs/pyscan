@@ -21,12 +21,13 @@ class InstrumentDriver(ItemAttribute):
         :func:`.new_instrument`)
     '''
 
-    def __init__(self, instrument):
+    def __init__(self, instrument, test=False):
         if isinstance(instrument, str):
             self.instrument = new_instrument(instrument)
         else:
             self.instrument = instrument
-        self.debug = False
+
+        self.test = test
 
     def query(self, string):
         '''
@@ -109,11 +110,11 @@ class InstrumentDriver(ItemAttribute):
     def get_instrument_property(self, obj, settings, debug=False):
         '''
         Generator function for a query function of the instrument
-        that sends the query string and formats the return based on 
+        that sends the query string and formats the return based on
         settings['return_type']
 
         Parameters
-        obj : 
+        obj :
             parent object
         settings : dict
             settings dictionary
@@ -148,7 +149,7 @@ class InstrumentDriver(ItemAttribute):
         ----------
         obj :
             parent class object
-        new_value : 
+        new_value :
             new_value to be set on instrument
         settings : dict
             dictionary with ['values'] item
@@ -180,7 +181,7 @@ class InstrumentDriver(ItemAttribute):
 
         Parameters
         ----------
-        obj : 
+        obj :
             parent class object
         new_value :
             new_value to be set on instrument
@@ -213,7 +214,7 @@ class InstrumentDriver(ItemAttribute):
 
         Parameters
         ----------
-        obj : 
+        obj :
             parent class object
         new_value :
             new_value to be set on instrument
@@ -247,7 +248,7 @@ class InstrumentDriver(ItemAttribute):
 
         Parameters
         ----------
-        obj : 
+        obj :
             parent class object
         new_value :
             new_value to be set on instrument

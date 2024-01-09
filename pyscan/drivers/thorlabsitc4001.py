@@ -19,10 +19,11 @@ class ThorLabsITC4001(InstrumentDriver):
 
     Yields
     ------
-    Properties which can be get and set : 
+    Properties which can be get and set :
         current : float
             Range: [0, 0.4]
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)

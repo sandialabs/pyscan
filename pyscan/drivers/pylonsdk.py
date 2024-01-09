@@ -43,7 +43,7 @@ class PylonSDK(ItemAttribute):
     def get_instrument_property(self, obj, settings, debug=False):
         '''
         Generator function for a query function of the instrument
-        that sends the query string and formats the return based on 
+        that sends the query string and formats the return based on
         settings['return_type']
 
         Args:
@@ -107,7 +107,7 @@ class PylonSDK(ItemAttribute):
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
-                settings['set_command'](new_value)  
+                settings['set_command'](new_value)
                 setattr(self, '_' + settings['name'], new_value)
             else:
                 setattr(self, '_' + settings['name'],

@@ -15,7 +15,7 @@ import sys
 import os
 import spe_loader as sl
 from time import sleep
-from System.IO import *
+from System.IO import print_speeds, Path
 from System import String
 from System.Collections.Generic import List
 sys.path.append(os.environ['LIGHTFIELD_ROOT'])
@@ -29,7 +29,8 @@ class PrincetonPiMax4(ItemAttribute):
     '''Class to control Princeton Instruments PI MAX 4 camera
 
 
-    '''   
+    '''
+
     def __init__(self, verbose=False):
 
         self.auto = Automation(True, List[String]())
@@ -66,10 +67,10 @@ class PrincetonPiMax4(ItemAttribute):
             "{0} {1} {2}", "Current",
             setting, "Capabilities:"))
 
-        for item in self.experiment.GetCurrentCapabilities(setting):        
+        for item in self.experiment.GetCurrentCapabilities(setting):
             print_speeds(item)
 
-    def print_maximum_capabilities(self, setting):    
+    def print_maximum_capabilities(self, setting):
         # Get Max Capabilities
         print(String.Format(
             "{0} {1} {2}", "Maximum",
@@ -81,7 +82,7 @@ class PrincetonPiMax4(ItemAttribute):
             else:
                 print(String.Format('\t{0} {1}', setting, item))
 
-    def set_value(self, setting, value, verbose=False):    
+    def set_value(self, setting, value, verbose=False):
         # Check for existence before setting
         # gain, adc rate, or adc quality
         if self.experiment.Exists(setting):
@@ -112,7 +113,7 @@ class PrincetonPiMax4(ItemAttribute):
         new_value
 
         delay = self.get_settings(CameraSettings.GatingRepetitiveGate).Delay
-        self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(new_value, delay))   
+        self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(new_value, delay))
         self._gate_width = new_value
 
     @property
@@ -123,7 +124,7 @@ class PrincetonPiMax4(ItemAttribute):
     @gate_delay.setter
     def gate_delay(self, new_value):
         width = self.get_settings(CameraSettings.GatingRepetitiveGate).Width
-        self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(width, new_value))   
+        self.set_value(CameraSettings.GatingRepetitiveGate, Pulse(width, new_value))
         self._gate_delay = new_value
 
     @property
@@ -147,7 +148,7 @@ class PrincetonPiMax4(ItemAttribute):
 
         self.experiment.Acquire()
 
-        while 1:
+        while True:
             try:
                 with NoStdStreams():
                     image = sl.load_from_files(['c:/snl/lightfield/temp.spe']).data[0][0]

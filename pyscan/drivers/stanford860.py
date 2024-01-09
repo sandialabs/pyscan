@@ -11,6 +11,7 @@ from .instrumentdriver import InstrumentDriver
 class Stanford860(InstrumentDriver):
     '''Class to control Stanford Research Systems SR860 - 500 kHz lock-in amplifier
     '''
+
     def __init__(self, instrument):
 
         super().__init__(instrument)

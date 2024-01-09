@@ -22,6 +22,7 @@ class ThorlabsBSC203(ItemAttribute):
     serial : str
         Unit serial number. Defaults to "70878515".
     '''
+
     def __init__(self, serial="70878515"):
         self.serial = c_char_p(bytes(serial, "utf-8"))
         if self.build_device_list() != 0:
@@ -36,7 +37,7 @@ class ThorlabsBSC203(ItemAttribute):
 
             sleep(0.25)
             j = 0
-            while 1:
+            while True:
                 try:
                     self.load_channel_settings(c_short(i))
                     break

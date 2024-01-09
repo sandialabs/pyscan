@@ -21,6 +21,7 @@ class ThorlabsMFF101(ItemAttribute):
     serial : str
         Serial number string of device.
     '''
+
     def __init__(self, serial):
         self.serial = c_char_p(bytes(serial, "utf-8"))
         self.build_device_list()
