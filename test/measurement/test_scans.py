@@ -22,13 +22,13 @@ def check_attribute_value(scan_name, attribute_name, attribute, expected_value):
 
 
 # for checking that the iterate function is working as expected
-def check_iterate_function(loop, scan_name):
+def check_iterate_function(loop, scan_name, devices=[]):
     # check that iterate is callable
     assert callable(loop.iterate), scan_name + " loop iterate function not callable"
 
     # check that iterate functions as expected
     try:
-        loop.iterate(0, [])  # This only tests if it runs, not if the results are desired.
+        loop.iterate(0, devices)  # This only tests if it runs, not if the results are desired.
     except Exception:
         assert False, scan_name + " loop iterate function error"
 
@@ -332,7 +332,7 @@ def test_function_scan():
             check_attribute_value(scan_name, 'n', loop.n, expected_value=3)
 
             # check that iterate functions as expected
-            check_iterate_function(loop, scan_name)
+            check_iterate_function(loop, scan_name, devices=devices)
             err_string = scan_name + " iterate function not as expected."
             assert loop.function(loop.scan_dict[loop.function.__name__][0]) == return_value, err_string
 
