@@ -9,6 +9,7 @@ Next, navigate to the GitHub page and click on the green <> Code button drop dow
 
 
 Open a terminal (gitbash, anaconda, or equivalent) and type the following command (replace the copied URL if different):
+
 `git clone https://github.com/sandialabs/pyscan.git`
 
 
@@ -27,29 +28,34 @@ All the following git commands are to be submitted in the terminal (gitbash, ana
 ### 2.1 Getting an Existing Remote Branch from GitHub:
 
 To see all branches that exist on GitHub and on your local machine use the command:
+
 `git branch -a`
 
 To get and switch to a remote branch use the command:
+
 `git checkout remote-branch-name-here`
 
-In response the terminal should say: `branch 'remote-branch-name-here' set up to track 'origin/remote-branch-name-here'`.
-If so, you will now be on that remote branch. 
-Otherwise, you may have created a new, strictly local branch on accident. Make sure you typed the remote branch name correctly and try again.
+In response the terminal should say: `branch 'remote-branch-name-here' set up to track 'origin/remote-branch-name-here'`. If so, you will now be on that remote branch. Otherwise, you may have created a new, strictly local branch on accident. Make sure you typed the remote branch name correctly and try again.
 
 
 ### 2.2 Creating and Switching to a New Branch
 
 To create a new branch, type the following command followed by the name of your branch (this will not switch to the branch and remain on the active branch until you switch as described in the following steps):
+
 `git branch my-branch-name-here`
 
 The style for branch names should follow this syntax, with each word separated by a hyphen.
 
 If you want to see a list of the branches currently exist on your local machine, type the following command:
+
 `git branch`
 
-To delete unnecessary or accidental branches you can use the command: `git branch -d branch-name-to-delete`
+To delete unnecessary or accidental branches you can use the command: 
+
+`git branch -d branch-name-to-delete`
 
 Now you can switch to the branch you just made (or switch to a pre-existing branch) using the following command with the corresponding branch name:
+
 `git switch branch-name-I-want-to-switch-to`
 
 Now any saves that you make will be saved to your current branch and no longer affect other branches. 
@@ -57,19 +63,22 @@ Now any saves that you make will be saved to your current branch and no longer a
 ### 2.3 Committing Changes to your Branch
 
 If you want to know which branch you are currently on you can type the following command:
-`git status`
-This will also show if you have saved changes you have not committed to git. 
+`git status`. This will also show if you have saved changes you have not committed to git. 
 
 Each time you commit to git it will save the current state of your branch.
-This is more useful than simply saving your work because you can return to each commit later, in case you want to revert to a previous state of your branch.
 
-To commit changes to all the files you have been working on use the following command:
+Commiting to git is more useful than simply saving your work because each iteration of your work is logged, and you can return to each commit later in case you want to revert to a previous state of your branch.
+
+To commit changes to all the files you have been working on use the following command: 
+
 `git commit -am "And leave a note here summarizing the changes you made to this commit here to have a log for keeping track. This will be useful later."`
 
-Alternatively, you can commit the changes you made to individual files by using the following command with the path to the file you are committing:
+Alternatively, you can commit the changes you made to individual files by using the following command with the path to the file you are committing: 
+
 `git commit -m "Note your changes here." path/to/my/file.ext`
 
-You may notice that if you create new files, git will not automatically add them to your commits. To add them to git so that they will be tracked with each commit use the command:
+You may notice that if you create new files, git will not automatically add them to your commits. To add them to git so that they will be tracked with each commit use the command: 
+
 `git add path/to/my/file.ext`
 
 ### 2.4 Resetting Your Branch to the Repositories Current State
@@ -79,7 +88,9 @@ If you want to undo changes to your branch and simply reset to the original stat
 Before doing this it is recommended you save your work to a new branch by first committing your work (i.e. `git commit -am "Saving my work, just in case"`) and then creating a new branch (i.e. `git branch my-saved-work`). This way you won't lose anything because you can still access your current state (before resetting) on this new branch later.
 
 Once your work is saved, you can reset to the remote branch's state using the commands:
+
 `git fetch origin`
+
 `git reset --hard origin/branch-name`
 
 
@@ -97,15 +108,19 @@ To save your current branches state first you can first commit (i.e. `git commit
 then create a new branch (i.e. `git branch my-saved-work`), that way you can still access your work on this new branch later.
 
 To reset you must first locate the hash of the commit you want to return to. 
-The hash will be the 40 character hexadecimal string of numbers and letters, which will look something like this: `8159595fbf3f16ce7184008d14e9df7c9eb04f5f`.
+The hash will be the 40 character hexadecimal string of numbers and letters, which will look something like this:
+
+`8159595fbf3f16ce7184008d14e9df7c9eb04f5f`
+
 There are several ways to find this.
 
 To see a history of changes made and their corresponding hashes you can use the command: `git log`; however, to make use of this it is important to have made good notes for your past commits so that you can accurately identify which one you wish to return to.
 
 You may also find commit hashes for commits to the repository on GitHub by first going to the branch you are working with, clicking on the Commits (just under the green <> Code button), and copying the hash of the commit you want to return to. Once you are SURE you have copied the correct hash you can reset your current progress to that corresponding commit with the command:
-`git reset hash-here`
 
-Now your state will be reset to the commit corresponding to the hash, and all intermediary commits will be deleted.
+`git reset insert-hash-here`
+
+If entered correctly your state will be reset to the commit corresponding to the hash, and all intermediary commits will be deleted.
 
 
 ## 3. Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
@@ -123,6 +138,7 @@ You can also merge your local branches using `git merge branch-name`, which will
 Upon attempting to merge YOU MAY NEED TO RESOLVE CONFLICTS between your branch and the branch you are pulling from.
 If you see a CONFLICT message, you will need to address merge conflicts in the files listed. (If you are unsure whether there was a conflict or whether a conflict was resolved, using `git status` will show whether ther are unmerged paths after attempting to merge.)
 If there is a conflict and you don't want to resolve it you can abort the merge at this stage and return to your branches state before the pull/merge using the command:
+
 `git merge --abort`
 
 ### 3.3 Resolving Conflicts
@@ -130,9 +146,13 @@ If there is a conflict and you don't want to resolve it you can abort the merge 
 To to resolve conflicts first go through each of the files listed to find the conflicts (there may be more than one instance!). Once in the files, the conflicts will be bracketed in the code with the following syntax:
 
 `<<<<<<< HEAD`
+
 `Current state of your local branch that is in conflict with the incoming merge`
+
 `=======`
+
 `Current state of the branch you are merging from that is in conflict with your current branch`
+
 `>>>>>>>`
 
 To resolve this in Microsoft Visual Studio Code (which we recommend) you will be presented with options above the conflict to:
@@ -163,7 +183,7 @@ Finally, you may use `git push` to share your now up to date branch with the wor
 
 At some point you may wish to add your changes to the main, or another branch on our GitHub repository to benefit other's ability to make use of this pyscan program. We welcome your requests; however, we ask that you only make a pull request once your branch has been tested using our provided pytest test cases and is shown to be fully functional. 
 
-You may see if your branch passes our test cases using GitHub once you have pushed your branches changes to the repository. Simply navigate to the Actions tab on the GitHub webpage, select `Python application` under Actions on the left, and then run your workflow using the `Run workflow` button and selecting your branch.
+You may see if your branch passes our test cases using GitHub once you have pushed your branches changes to the repository. Simply navigate to the Actions tab on the GitHub webpage, select `Python application` under Actions on the left, and then run your workflow using the `Run workflow` button and selecting your branch. It will run through our tests and if it tells you the build succeeded with a green checkmark you passed our test cases (please still test any new features you have added on your end).
 
 This will help us to stay on top of updating pyscan meaningfully as different pull requests come in.
 
