@@ -125,13 +125,15 @@ If entered correctly your state will be reset to the commit corresponding to the
 
 ## 3. Sharing, Updating, and Managing Your Branch in Relation to the GitHub Repository
 
-### 3.1 Sharing
+### 3.1 Sharing Your Branch
 If you want to share your branch by adding it to the GitHub repository you must first log in to a GitHub account. 
 Then you can share your branch to the repository with the following command (though you may need to request permission from us first): `git push`; however, if your branch is not up to date with changes made to the same branch on the GitHub repository you will encounter an error message.
 
-### 3.2 Merging and Pulling
+### 3.2 Merging, Pulling, and Updating Branches
 
-To fix this you will need to fetch the changes to update your current view of the main repository and then merge those changes with your branch to proceed. This can be accomplished by using `git fetch` followed by `git merge origin branch-name` or, more simply, `git pull` which is a combination of git fetch and merge. Using git pull will pull changes made to your current branch from the repository, or alternatively you can select a different branch to pull changes from (i.e. `git pull origin main`) which will pull changes from the selected origin branch to your current local branch.
+To fix this you will need to fetch the changes to update your current view of the main repository and then merge those changes with your branch to proceed. This can be accomplished by using `git fetch` followed by `git merge origin branch-name` or, more simply, `git pull` which is a combination of git fetch and merge. 
+
+Using git pull will pull updates made to your current branch from the repository, or alternatively you can select a different branch to pull changes from (i.e. `git pull origin main`) which will pull changes from the selected origin branch to your current local branch. This effectively updates your branch by incorporating new changes that have been added to the repository.
 
 You can also merge your local branches using `git merge branch-name`, which will additively combine branches.
 
