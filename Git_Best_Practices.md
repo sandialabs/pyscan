@@ -42,12 +42,12 @@ Otherwise, you may have created a new, strictly local branch on accident. Make s
 To create a new branch, type the following command followed by the name of your branch (this will not switch to the branch and remain on the active branch until you switch as described in the following steps):
 `git branch my-branch-name-here`
 
-(The style for the branch name should follow this syntax, with each word separated by a hyphen.)
+The style for branch names should follow this syntax, with each word separated by a hyphen.
 
 If you want to see a list of the branches currently exist on your local machine, type the following command:
 `git branch`
 
-(To delete unnecessary or accidental branches you can use the command: `git branch -d branch-name-to-delete`)
+To delete unnecessary or accidental branches you can use the command: `git branch -d branch-name-to-delete`
 
 Now you can switch to the branch you just made (or switch to a pre-existing branch) using the following command with the corresponding branch name:
 `git switch branch-name-I-want-to-switch-to`
@@ -88,7 +88,7 @@ Once your work is saved, you can reset to the remote branch's state using the co
 ### 2.5 Resetting your Branch to a Previous Commit
 ############## I think we should include this because this is best practice rather than using revert, but what do you think? #########
 
-#### THIS CAN BE DANGEROUS AS YOU CAN LOSE A LOT OF YOUR WORK, so DO THIS AT YOUR OWN RISK!
+#### THIS CAN BE DANGEROUS AS YOU CAN LOSE A LOT OF YOUR WORK, DO THIS AT YOUR OWN RISK!
 ###
 Furthermore, only do this on your local machine, do not try this on our repository! Instead, if you want a commit reverted on the GitHub repository please submit an issues request for us to handle.
 
@@ -97,7 +97,7 @@ To save your current branches state first you can first commit (i.e. `git commit
 then create a new branch (i.e. `git branch my-saved-work`), that way you can still access your work on this new branch later.
 
 To reset you must first locate the hash of the commit you want to return to. 
-The hash will be the 40 character hexadecimal string of numbers and letters, which will look something like this: `8159595fbf3f16ce7184008d14e9df7c9eb04f5f`
+The hash will be the 40 character hexadecimal string of numbers and letters, which will look something like this: `8159595fbf3f16ce7184008d14e9df7c9eb04f5f`.
 There are several ways to find this.
 
 To see a history of changes made and their corresponding hashes you can use the command: `git log`; however, to make use of this it is important to have made good notes for your past commits so that you can accurately identify which one you wish to return to.
@@ -129,11 +129,11 @@ If there is a conflict and you don't want to resolve it you can abort the merge 
 
 To to resolve conflicts first go through each of the files listed to find the conflicts (there may be more than one instance!). Once in the files, the conflicts will be bracketed in the code with the following syntax:
 
-<<<<<<< HEAD
-Current state of your local branch that is in conflict with the incoming merge
-=======
-Current state of the branch you are merging from that is in conflict with your current branch
->>>>>>>
+`<<<<<<< HEAD`
+`Current state of your local branch that is in conflict with the incoming merge`
+`=======`
+`Current state of the branch you are merging from that is in conflict with your current branch`
+`>>>>>>>`
 
 To resolve this in Microsoft Visual Studio Code (which we recommend) you will be presented with options above the conflict to:
     1. Accept Current Change (to keep the version you have in your current branch)
@@ -145,6 +145,7 @@ If you are not in Visual Studio Code you can manually resolve conflicts by repla
 For example, the manually resolved conflict from the conflict listed above (starting with <<<<<<< HEAD) you could keep both the current state of your branch AND the current state of the branch you are merging from by deleting the brackets and separating equal signs:
 
 `Current state of your local branch that is in conflict with the incoming merge`
+
 `Current state of the branch you are merging from that is in conflict with your current branch`
 
 Otherwise, only keep the state you want to finalize and delete everything you don't want included. For example, if you want to implement the incoming change (from the branch you are pulling/merging from) over and instead of your current state, all that would remain of the manually edited conflict is:
