@@ -1,13 +1,16 @@
+# Test Docs using MD instead of RST
+
 Welcome to pyscan's documentation!
 ==================================
 
-.. toctree::
+```
+{toctree}
    :maxdepth: 2
    :caption: Contents:
 
    the_basics
    api_index
-
+```
 
 
 Indices and tables
