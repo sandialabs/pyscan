@@ -32,11 +32,8 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    # 'sphinx.ext.napoleon',
-    'numpydoc',]
-
-# napoleon options
-napoleon_numpy_docstring = True
+    'numpydoc',
+    'myst_parser' # allows you to use .md and .rst files for pages]
 
 # numpydoc options
 numpydoc_show_inherited_class_members = False
@@ -47,6 +44,11 @@ autodoc_typehints = "none"
 autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
 
+# myst_parser options
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
