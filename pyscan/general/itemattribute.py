@@ -12,7 +12,7 @@ class ItemAttribute(object):
 
     Parameters
     ----------
-    dictionary : dice
+    dictionary : dict
         Dictionary object, defaults to None.
 
     '''

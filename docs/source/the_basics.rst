@@ -5,7 +5,7 @@ Welcome to pyscan's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   reference_index
+   basics/getting_started
 
 
 
