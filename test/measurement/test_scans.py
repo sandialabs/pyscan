@@ -130,10 +130,10 @@ def test_property_scan():
         loops = [0, 1, 2, 3]
         self = ['v1', 'v2', 'v3', 'v4']
         prop = 'voltage'
-        loops[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=1)
-        loops[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=1)
-        loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=1)
-        loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=1)
+        loops[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=.1)
+        loops[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=.1)
+        loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.1)
+        loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.1)
 
         # setup devices for testing iterate function
         devices = setup_devices()
@@ -215,13 +215,13 @@ def test_property_scan():
 
         # check each loop for expected attribute values
         check_loop_attributes(loops, 0, self[0], prop, expected_scan_dict1=0.0,
-                              expected_scan_dict2=0.1, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.1, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 1, self[1], prop, expected_scan_dict1=0.1,
-                              expected_scan_dict2=0.0, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 2, self[2], prop, expected_scan_dict1=0.3,
-                              expected_scan_dict2=0.2, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.2, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 3, self[3], prop, expected_scan_dict1=-0.1,
-                              expected_scan_dict2=0.0, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
 
     test_1D_property_scan_4loops()
 
