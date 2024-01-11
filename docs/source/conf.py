@@ -33,7 +33,9 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'numpydoc',
-    'myst_parser' # allows you to use .md and .rst files for pages]
+    'myst_parser']
+# myst_parser allows you to use .md and .rst files for pages
+
 
 # numpydoc options
 numpydoc_show_inherited_class_members = False
