@@ -54,7 +54,6 @@ class PropertyScan(MetaScan):
 
         self.device_names = list(input_dict.keys())
 
-        self.property = prop  # ##################flagging this because duplicate ##### Test deleting this.
         self.dt = dt
         self.check_same_length()
         self.i = 0
