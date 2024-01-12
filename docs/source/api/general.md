@@ -1,9 +1,12 @@
 # General
 
+```{eval-rst}
 .. automodule:: pyscan.general.itemattribute
 	:members:
+```
 
 ## Functions
+```{eval-rst}
 .. automodule:: pyscan.general.drange
 	:members:
 
@@ -33,8 +36,11 @@
 
 .. automodule:: pyscan.general.stackorappend
 	:members:
+```
 
-Pulse Sequences
----------------
+## Pulse Sequences
+
+```{eval-rst}
 .. automodule:: pyscan.general.makepulsingarbs
 	:members:
+```
