@@ -1,17 +1,17 @@
 # Welcome to pyscan's documentation!
 
 ```{toctree}
-   :maxdepth: 2
-   :caption: The Basics
+:maxdepth: 2
+:caption: The Basics
 
-   the_basics
+the_basics
 ```
 
 ```{toctree}
-   :maxdepth: 2
-   :caption: API
-   
-   api_index
+:maxdepth: 2
+:caption: API
+
+api_index
 ```
 
 
