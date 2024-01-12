@@ -1,3 +1,5 @@
 numpydoc
 pydata-sphinx-theme
 myst-parser
+nbsphinx
+ipykernel

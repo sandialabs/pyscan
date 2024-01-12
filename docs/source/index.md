@@ -1,15 +1,11 @@
 Welcome to pyscan's documentation!
 ==================================
 
-# Pyscan
-
-Python scientific measurement toolbox
-
 ## Intro
 
-Pyscan is an instrument control and measurement tool box for scientific laboratory instruments.
+**Pyscan** is a toolbox for controlling and collecting measurements from scientific laboratory instruments.
 
-It provides tools to create "experiments," in which you can interface with devices, define a measurement function with which to collect data from the devices, and run an experiment to "loop" over multiple variables or properties. The data can be plotted live so the experimenter can observe data collection during the experiment, and once complete, the data and metadata with all experimental parameters are automatically saved to a h5py file. Such files can be loaded and the data can be plotted again at a later time.
+It provides tools to create "experiments," in which you can interface with devices, collect data from the devices using custom functions, and run the experiment to "loop" over multiple variables or properties. The data can be plotted live so the experimenter can observe data collection during the experiment, and once complete, the data and metadata with all experimental parameters are automatically saved to a h5py file. Such files can be loaded and the data can be plotted again at a later time.
 
 A selection of instrument drivers are included, but drivers from other libraries can also be used with pyscan.
 
@@ -24,8 +20,6 @@ the_basics
 
 api_index
 ```
-.. toctree::
-
 
 # Indices and tables
 
