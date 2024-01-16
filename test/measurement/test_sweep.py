@@ -1,10 +1,11 @@
 '''
-Pytest functions to test the Sweep experiment class
+Pytest functions to test the Sweep experiment class and the load experiment function from loadexperiment.py
 '''
 import pyscan as ps
 from random import random
 import shutil
 import numpy as np
+import pytest
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -195,6 +196,52 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
 
 
+# for checking that the load experiment function is working as expected
+def check_loaded_expt_further(expt):
+    # for checking variable devices formatting
+    def check_loaded_dev_attributes(dev, name, attributes):
+        for a in attributes:
+            assert hasattr(dev, a), "loaded experiment device " + name + " does not have " + a + " attribute"
+        assert isinstance(dev, ps.ItemAttribute), "loaded device " + name + " is not an instance of item attribute"
+
+    # confirm these are instances of item attribute
+    assert isinstance(expt, ps.ItemAttribute), "loaded expt is not loaded as an instance of item attribute"
+    assert isinstance(expt.runinfo, ps.ItemAttribute), "expt runinfo is not loaded as an instance of item attribute"
+    assert isinstance(expt.devices, ps.ItemAttribute), "expt devices is not loaded as an instance of item attribute"
+    assert isinstance(expt.runinfo.static, ps.ItemAttribute), "runinfo static is not loaded as an item attribute"
+
+    # check that the devices are as expected
+    v_attributes = ['debug', '_voltage', '_other_voltage']
+    for device in expt.devices.__dict__.keys():
+        check_loaded_dev_attributes(expt.devices[device], device, v_attributes)
+
+        assert type(expt.devices[device].debug) is bool, "devices " + device + " debug is not loaded as a boolean"
+        assert type(expt.devices[device]._voltage) is int, "devices " + device + " voltage is not loaded as an int"
+        err_string = "devices " + device + " other voltage is not loaded as an int"
+        assert type(expt.devices[device]._other_voltage) is int, err_string
+
+    # evaluate the loops formatting ################ confirm they are supposed to be loaded as type string! ###########
+    for loop in expt.runinfo.__dict__.keys():
+        if loop.startswith('loop'):
+            # in a way this is circular reasoning... not sure how to correct this
+            assert hasattr(expt.runinfo, loop), "loaded runinfo does not have loop attribute"
+            # is this supposed to be a string? From other testing it looked liked loops should also be item attributes
+            assert type(loop) is str, "loaded runinfo loop loaded as " + str(type(loop)) + " not as a string"
+
+    # check other attributes for proper type when loaded
+    assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"
+    assert type(expt.runinfo.measure_function) is str, "runinfo measure function is not loaded as a string"
+    assert expt.runinfo.trigger_function is None, "runinfo trigger function is not loaded as None"
+    assert type(expt.runinfo.initial_pause) is float, "runinfo initial pause is not loaded as a float"
+    assert type(expt.runinfo.average_d) is int, "runinfo average_d is not loaded as a float"
+    assert type(expt.runinfo.verbose) is bool, "runinfo verbose is not loaded as a boolean"
+    assert type(expt.runinfo.time) is bool, "runinfo time is not loaded as a boolean"
+    assert type(expt.runinfo.long_name) is str, "runinfo long_name is not loaded as a string"
+    assert type(expt.runinfo.short_name) is str, "runinfo short_name is not loaded as a string"
+    if hasattr(expt.runinfo, 'running'):
+        assert type(expt.runinfo.running) is bool, "runinfo running is not loaded as a boolean"
+
+
 ####################### TEST CASES BEGIN HERE #######################
 
 
@@ -253,6 +300,10 @@ def test_0D_multi_data():
     file_name = expt.runinfo.long_name
     del expt
 
+    # test that load experiment rejects other file types
+    with pytest.raises(Exception):
+        temp = ps.load_experiment('./test/measurement/test_scans.py')
+
     # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
@@ -271,6 +322,8 @@ def test_0D_multi_data():
         check_data_results(temp.x2, id=2, shape=[2], loaded=True)
 
         check_data_results(temp.x3, id=3, shape=[2, 2], loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -341,6 +394,8 @@ def test_1D_data():
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
 
+        check_loaded_expt_further(temp)
+
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
@@ -409,10 +464,12 @@ def test_1D_multi_data():
     # check that we load what we expect
     def check_load_expt(temp):
         # check the loaded experiment has the right attributes
-        check_expt_results(temp, loaded=True)
+        check_expt_attributes(temp, loaded=True)
 
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -484,6 +541,8 @@ def test_2D_data():
 
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -560,6 +619,8 @@ def test_2D_multi_data():
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
 
+        check_loaded_expt_further(temp)
+
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
@@ -632,6 +693,8 @@ def test_3D_data():
 
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -710,6 +773,8 @@ def test_3D_multi_data():
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
 
+        check_loaded_expt_further(temp)
+
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
@@ -784,6 +849,8 @@ def test_4D_data():
 
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -864,6 +931,8 @@ def test_4D_multi_data():
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
 
+        check_loaded_expt_further(temp)
+
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
@@ -929,6 +998,8 @@ def test_1D_repeat():
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
         assert temp.repeat.dtype == 'float64'
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 
@@ -1006,6 +1077,8 @@ def test_underscore_property():
 
         # check the loaded experiment results are accurate
         check_expt_results(temp, loaded=True)
+
+        check_loaded_expt_further(temp)
 
     check_load_expt(temp)
 

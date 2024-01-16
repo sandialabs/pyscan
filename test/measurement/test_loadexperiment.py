@@ -1,5 +1,5 @@
 '''
-Pytest functions to test the load experiment function
+Pytest supplementary functions to test the load experiment function (mainly tested in the test_sweep.py file)
 '''
 
 import pyscan as ps
@@ -36,9 +36,6 @@ def test_load_experiment():
             with pytest.raises(Exception):
                 ps.load_experiment(file_name)
 
-        expt_attributes = ['runinfo', 'devices', 'v1_voltage', 'x1', 'x2', 'x3']
-        check_has_attributes(expt, 'expt', expt_attributes)
-
         runinfo_attributes = ['loop0', 'loop1', 'loop2', 'loop3', 'static', 'measured', 'measure_function',
                               'trigger_function', 'initial_pause', 'average_d', 'verbose', 'time',
                               'long_name', 'short_name', 'running']
@@ -49,26 +46,6 @@ def test_load_experiment():
         check_has_attributes(expt.runinfo.loop1, 'loop1', loop_attributes)
         check_has_attributes(expt.runinfo.loop2, 'loop2', loop_attributes)
         check_has_attributes(expt.runinfo.loop3, 'loop3', loop_attributes)
-
-        devices_attributes = ['v1', 'v2', 'v3']
-        check_has_attributes(expt.devices, 'devices', devices_attributes)
-
-        v_attributes = ['debug', '_voltage', '_other_voltage']
-        for device in expt.devices.__dict__.keys():
-            check_has_attributes(expt.devices[device], device, v_attributes)
-
-            assert type(expt.devices[device].debug) is bool, "devices " + device + " debug is not loaded as a boolean"
-            assert type(expt.devices[device]._voltage) is int, "devices " + device + " voltage is not loaded as an int"
-            err_string = "devices " + device + " other voltage is not loaded as an int"
-            assert type(expt.devices[device]._other_voltage) is int, err_string
-
-        assert isinstance(expt, ps.ItemAttribute), "expt is not loaded as an instance of item attribute"
-        assert isinstance(expt.runinfo, ps.ItemAttribute), "expt runinfo is not loaded as an instance of item attribute"
-        assert isinstance(expt.devices, ps.ItemAttribute), "expt devices is not loaded as an instance of item attribute"
-        assert isinstance(expt.runinfo.static, ps.ItemAttribute), "runinfo static is not loaded as an item attribute"
-        assert isinstance(expt.devices.v1, ps.ItemAttribute), "runinfo v1 is not loaded as an item attribute"
-        assert isinstance(expt.devices.v2, ps.ItemAttribute), "runinfo v2 is not loaded as an item attribute"
-        assert isinstance(expt.devices.v3, ps.ItemAttribute), "runinfo v3 is not loaded as an item attribute"
 
         assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"
         assert type(expt.runinfo.measure_function) is str, "runinfo measure function is not loaded as a string"
@@ -81,7 +58,9 @@ def test_load_experiment():
         assert type(expt.runinfo.short_name) is str, "runinfo short_name is not loaded as a string"
         assert type(expt.runinfo.running) is bool, "runinfo running is not loaded as a boolean"
 
-        #print(type(expt.devices.v1['_other_voltage']))
+        for device in expt.devices.__dict__.keys():
+            print("dev is: ", device)
+        print("loop0 is: ", type(expt.runinfo.loop0))
         print("Success!")
 
     # file name may need to be updated depending on what files are available, or to select generic files.
