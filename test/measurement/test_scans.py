@@ -2,6 +2,7 @@
 Pytest functions to test the Scans class
 '''
 
+
 import pyscan as ps
 import numpy as np
 import pytest
@@ -134,6 +135,10 @@ def test_property_scan():
         loops[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=.1)
         loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.1)
         loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.1)
+
+        with pytest.raises(Exception):
+            bad_runinfo = ps.RunInfo()
+            bad_runinfo.loop1 = ps.PropertyScan({'v1': ps.drange(5, 5, 5), 'diff': ps.drange(0, 0.1, 0.1)}, 'voltage')
 
         # setup devices for testing iterate function
         devices = setup_devices()
