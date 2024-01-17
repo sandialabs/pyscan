@@ -13,6 +13,11 @@ from io import StringIO
 import sys
 
 
+# for testing default trigger function with empty function
+def empty_function():
+    pass
+
+
 # for setting runinfo measure_function to measure 1D data
 def measure_point(expt):
     d = ps.ItemAttribute()
@@ -65,6 +70,15 @@ def test_meta_sweep():
             # ################ This is what the program is doing... is this what we want? ###############
             assert ms.runinfo.data_path == Path(Path(data_dir)), "Meta Sweep data path not set up properly"
         assert ms.runinfo.data_path.is_dir()
+
+        '''
+        # testing meta sweeps preallocat method here
+        data = ms.runinfo.measure_function(ms)
+        if np.all(np.array(ms.runinfo.indicies) == 0):
+            for key, value in data.items():
+                ms.runinfo.measured.append(key)
+            ms.preallocate(data)
+        '''
 
         # testing meta sweep's check runinfo method
         assert callable(ms.check_runinfo)
@@ -121,9 +135,10 @@ def test_meta_sweep():
         assert list(temp.devices.__dict__.keys()) == ['v1', 'v2', 'v3'], "save meta data issue saving runinfo.devices"
 
         # testing meta sweep's start thread method
-        assert callable(ms.start_thread)
+        assert callable(ms.start_thread), "meta sweep's start thread method not callable"
         assert not hasattr(ms.runinfo, 'running'), "meta sweep runinfo has running attribute before expected"
         ms.start_thread()
+        # try to affirm thread is running here... threading only showed 1 thread running before and after
         assert hasattr(ms.runinfo, 'running'), "meta sweep runinfo does not have running attribute after start thread"
         assert ms.runinfo.running is True, "meta sweep's start thread method did not set runinfo to running"
 
@@ -139,18 +154,26 @@ def test_meta_sweep():
         sys.stdout = sys.__stdout__
         assert print_output.strip() == 'Stopping Experiment', "meta sweep's stop method does not print confirmation"
 
-        '''
-        # testing meta sweeps preallocat function here
-        data = ms.runinfo.measure_function(ms)
-        if np.all(np.array(ms.runinfo.indicies) == 0):
-            for key, value in data.items():
-                ms.runinfo.measured.append(key)
-            ms.preallocate(data)
-        '''
+        # test meta sweep's run method *placeholder*
+        assert callable(ms.run), "meta sweep's run method not callable"
 
-        print("Success!")
+        # test meta sweep's setup runinfo method *placeholder*
+        assert callable(ms.setup_runinfo), "meta sweep's setup runinfo method not callable"
+
+        # test meta sweep's setup instruments method *placeholder*
+        assert callable(ms.setup_instruments), "meta sweep's setup instruments method not callable"
+
+        # test meta sweep's default trigger method
+        assert callable(ms.default_trigger_function), "meta sweep's default trigger method not callable"
+        with pytest.raises(Exception):
+            ms.default_trigger_function()
+
+        ms.devices.trigger = ps.ItemAttribute()
+        ms.devices.trigger.trigger = empty_function
+        ms.default_trigger_function()
 
     test_ms_diff_inputs()
+    test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
 
 
-test_meta_sweep()
+# test_meta_sweep()
