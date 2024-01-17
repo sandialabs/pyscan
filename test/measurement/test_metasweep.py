@@ -40,6 +40,16 @@ def measure_up_to_3D(expt):
     return d
 
 
+# for checking 3d shaped arrays filled with nans
+def check_3D_array(array):
+    for k in array:
+        for j in k:
+            for i in j:
+                assert type(i) is np.float64
+                # again, is this supposed to always be nan after running above save functions?
+                assert np.isnan(i)
+
+
 def test_meta_sweep():
     """
     Testing meta sweep
@@ -49,7 +59,7 @@ def test_meta_sweep():
     None
     """
 
-    def test_ms_diff_inputs(data_dir=None, measure_function=measure_point):
+    def test_ms_diff_inputs(data_dir=None, measure_function=measure_point, allocate='preallocate'):
         devices = ps.ItemAttribute()
         devices.v1 = ps.TestVoltage()
         devices.v2 = ps.TestVoltage()
@@ -100,12 +110,19 @@ def test_meta_sweep():
         # setting file name for loading later
         file_name = './backup/{}'.format(ms.runinfo.long_name)
 
-        # ############### testing meta sweeps preallocat method here? Or will we be changing to dynamic allocation?
+        # ############### testing meta sweeps preallocate method here? Or will we be changing to dynamic allocation?
         data = ms.runinfo.measure_function(ms)
         if np.all(np.array(ms.runinfo.indicies) == 0):
             for key, value in data.items():
                 ms.runinfo.measured.append(key)
-            ms.preallocate(data)
+            if allocate == 'preallocate':
+                ms.preallocate(data)
+            elif allocate == 'preallocate_line':
+                ms.preallocate_line(data)
+            else:
+                assert False, "allocate input variable for test not acceptable"
+
+        # ##############
 
         # testing meta sweep's check runinfo method with bad inputs
         bad_runinfo = ps.RunInfo()
@@ -119,6 +136,7 @@ def test_meta_sweep():
         assert callable(ms.get_time)
 
         # testing meta sweep's save point method
+
         assert callable(ms.save_point)
         ms.save_point()
 
@@ -132,9 +150,52 @@ def test_meta_sweep():
 
         # now loading the experiment to check the information was saved properly
         temp = ps.load_experiment(file_name)
-        print("temp.__dict__ is: ", temp.__dict__)
+        # print("temp dict is: ", temp.__dict__.keys())
+
+        # test that preallocate and saves functioned as expected based on loaded experiment
+        ###### Note! These are all empty... is this working correctly since no data is saved from the save methods
+        if allocate == 'preallocate':
+            if list(data.__dict__.keys()) == ['x']:
+                assert temp.x.shape == (2, 5, 5)
+                check_3D_array(temp.x)
+            elif list(data.__dict__.keys()) == ['x1', 'x2', 'x3']:
+                assert temp.x1.shape == (2, 5, 5)
+                check_3D_array(temp.x1)
+
+                assert temp.x2.shape == (2, 5, 5, 2)
+                for f in temp.x2:
+                    check_3D_array(f)
+
+                assert temp.x3.shape == (2, 5, 5, 2, 2)
+                for z in temp.x3:
+                    for f in z:
+                        check_3D_array(f)
+        else:
+            if list(data.__dict__.keys()) == ['x']:
+                assert temp.x.shape == (2, 5, 5)
+                check_3D_array(temp.x)
+            elif list(data.__dict__.keys()) == ['x1', 'x2', 'x3']:
+                assert temp.x1.shape == (2, 5, 5)
+                check_3D_array(temp.x1)
+                assert temp.x2.shape == (2, 5, 5)
+                check_3D_array(temp.x2)
+                assert temp.x3.shape == (2, 5, 5)
+                check_3D_array(temp.x3)
 
         assert len(temp.__dict__.keys()) == 5 + len(ms.runinfo.measured)
+
+        # check that the meta data was saved and loaded with expected attributes
+        assert hasattr(temp, 'runinfo'), "runinfo was not saved/could not be loaded from meta data to temp"
+        assert hasattr(temp, 'devices'), "devices was not saved/could not be loaded from meta data to temp"
+        assert hasattr(temp, 'v1_voltage'), "v1_voltage was not saved/could not be loaded from meta data to temp"
+        assert hasattr(temp, 'v2_voltage'), "v2_voltage was not saved/could not be loaded from meta data to temp"
+        assert hasattr(temp, 'v3_voltage'), "v3_voltage was not saved/could not be loaded from meta data to temp"
+        if list(data.__dict__.keys()) == ['x']:
+            assert hasattr(temp, 'x'), "x was not saved/could not be loaded from meta data to temp"
+        elif list(data.__dict__.keys()) == ['x1', 'x2', 'x3']:
+            assert hasattr(temp, 'x1'), "x1 was not saved/could not be loaded from meta data to temp"
+            assert hasattr(temp, 'x2'), "x2 was not saved/could not be loaded from meta data to temp"
+            assert hasattr(temp, 'x3'), "x3 was not saved/could not be loaded from meta data to temp"
 
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert type(temp.runinfo.measured) is list, "save meta data didn't save runinfo.measured as a list"
@@ -187,11 +248,11 @@ def test_meta_sweep():
 
         shutil.rmtree('./backup')
 
-        print("Success!")
-
     test_ms_diff_inputs()
+    test_ms_diff_inputs(data_dir='./backup', allocate='preallocate_line')
     test_ms_diff_inputs(data_dir=None, measure_function=measure_up_to_3D)
     test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
+    test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D, allocate='preallocate_line')
 
 
 test_meta_sweep()
