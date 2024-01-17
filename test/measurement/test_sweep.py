@@ -99,6 +99,7 @@ def check_expt_init(expt):
     assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
 
     assert len(expt.runinfo.measured) == 0
+    assert expt.runinfo.measured == []
 
 
 # for checking whether the check experimental run info succeeded
@@ -309,6 +310,8 @@ def test_0D_multi_data():
     # load the experiment we just ran
     temp = ps.load_experiment('./backup/{}'.format(file_name))
 
+    print(temp.devices.__dict__.keys())
+
     # check that we load what we expect
     def check_load_expt(temp):
         # check the loaded experiment has the right attributes
@@ -330,7 +333,7 @@ def test_0D_multi_data():
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
-
+test_0D_multi_data()
 
 def test_1D_data():
     """
