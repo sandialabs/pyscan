@@ -20,7 +20,7 @@ def empty_function():
     pass
 
 
-# for setting runinfo measure_function to measure 1D data
+# for setting runinfo measure_function to measure 1D data randomly
 def measure_point(expt):
     d = ps.ItemAttribute()
 
@@ -29,7 +29,7 @@ def measure_point(expt):
     return d
 
 
-# for setting runinfo measure_function to measure (up to) 3D data
+# for setting runinfo measure_function to measure (up to) 3D data randomly
 def measure_up_to_3D(expt):
     d = ps.ItemAttribute()
 
@@ -69,6 +69,7 @@ def test_meta_sweep():
         runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0.5)}, 'voltage')
         runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.5, 0.1, 0.8)}, 'voltage')
+        loops = {'loop0': 'v1', 'loop1': 'v2', 'loop2': 'v3'}
 
         runinfo.measure_function = measure_function
 
@@ -122,8 +123,6 @@ def test_meta_sweep():
             else:
                 assert False, "allocate input variable for test not acceptable"
 
-        # ##############
-
         # testing meta sweep's check runinfo method with bad inputs
         bad_runinfo = ps.RunInfo()
         bad_runinfo.loop0 = ps.PropertyScan({'v8': ps.drange(0, 0.1, 0.1)}, 'voltage')
@@ -135,8 +134,8 @@ def test_meta_sweep():
         # testing meta sweep's get time method *placeholder*
         assert callable(ms.get_time)
 
+        # ############# The following saves don't seem to be saving any data to the file, not sure why...
         # testing meta sweep's save point method
-
         assert callable(ms.save_point)
         ms.save_point()
 
@@ -201,6 +200,26 @@ def test_meta_sweep():
         assert type(temp.runinfo.measured) is list, "save meta data didn't save runinfo.measured as a list"
         assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
+        # check that loops meta data was saved/loaded correctly
+        assert hasattr(temp.runinfo, 'loop0'), "save meta data didn't save loop0, or it couldn't be loaded"
+        assert hasattr(temp.runinfo, 'loop1'), "save meta data didn't save loop1, or it couldn't be loaded"
+        assert hasattr(temp.runinfo, 'loop2'), "save meta data didn't save loop2, or it couldn't be loaded"
+        for loop in loops:
+            assert temp.runinfo[loop].prop == 'voltage', "save meta data didn't save " + loop + ".prop correctly"
+            assert hasattr(temp.runinfo[loop], 'scan_dict'), "save meta data didn't save " + loop + "scan_dict"
+            assert hasattr(temp.runinfo[loop], 'input_dict'), "save meta data didn't save " + loop + "input_dict"
+            assert temp.runinfo[loop].device_names == [loops[loop]], "save meta data didn't save " + loop + "devicename"
+            assert temp.runinfo[loop].dt == 0, "save meta data didn't save " + loop + ".dt correctly"
+            assert temp.runinfo[loop].i == 0, "save meta data didn't save " + loop + ".i correctly"
+
+        assert temp.runinfo.loop0.n == 2, "save meta data didn't save loop0.n, or it couldn't be loaded"
+        assert temp.runinfo.loop1.n == 5, "save meta data didn't save loop1.n, or it couldn't be loaded"
+        assert temp.runinfo.loop2.n == 5, "save meta data didn't save loop2.n, or it couldn't be loaded"
+        assert temp.runinfo.loop0.nrange == [0, 1], "save meta data didn't save loop0.nrange value"
+        assert temp.runinfo.loop1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop1.nrange value"
+        assert temp.runinfo.loop2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop2.nrange value"
+
+        # check that devices were saved and loaded properly
         assert hasattr(temp.devices, 'v1'), "save meta data didn't save runinfo.devices meta data"
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"
         assert list(temp.devices.__dict__.keys()) == ['v1', 'v2', 'v3'], "save meta data issue saving runinfo.devices"
@@ -209,7 +228,8 @@ def test_meta_sweep():
         assert callable(ms.start_thread), "meta sweep's start thread method not callable"
         assert not hasattr(ms.runinfo, 'running'), "meta sweep runinfo has running attribute before expected"
         ms.start_thread()
-        # try to affirm thread is running here... threading only showed 1 thread running before and after
+
+        # try to affirm thread is running/ran here... threading only showed 1 thread running before and after
         assert hasattr(ms.runinfo, 'running'), "meta sweep runinfo does not have running attribute after start thread"
         assert ms.runinfo.running is True, "meta sweep's start thread method did not set runinfo to running"
 
