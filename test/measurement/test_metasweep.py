@@ -273,6 +273,3 @@ def test_meta_sweep():
     test_ms_diff_inputs(data_dir=None, measure_function=measure_up_to_3D)
     test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
     test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D, allocate='preallocate_line')
-
-
-test_meta_sweep()
