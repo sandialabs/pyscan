@@ -7,9 +7,8 @@ import pyscan as ps
 from pyscan.measurement.metasweep import MetaSweep
 from pathlib import Path
 from random import random
-import numpy as np
+# import numpy as np
 import pytest
-import threading
 from io import StringIO
 import sys
 
@@ -138,8 +137,7 @@ def test_meta_sweep():
         assert ms.runinfo.complete == 'stopped', "meta sweep's stop method did not set runinfo complete to stopped"
         print_output = buffer.getvalue()
         sys.stdout = sys.__stdout__
-        assert print_output.strip() == 'Stopping Experiment', "meta sweep's stop method does not print 'Stopping Experiment'"
-
+        assert print_output.strip() == 'Stopping Experiment', "meta sweep's stop method does not print confirmation"
 
         '''
         # testing meta sweeps preallocat function here
