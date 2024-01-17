@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Aug 21, 2019
-@author: amounce
-"""
-
 from .instrumentdriver import InstrumentDriver
 
 

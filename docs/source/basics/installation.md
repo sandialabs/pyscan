@@ -29,20 +29,3 @@ git clone https://github.com/sandialabs/pyscan
 ```
 pip install .
 ```
-
-## Usage
-
-Sample Jupyter Notebooks running dummy experiments are located in the demo_notebooks folder.
-
-For the full instructions on how to use pyscan library, read the docs!
-
-## Contribute
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
-
-## Citing Pyscan
-
-If Pyscan contributes to a project that leads to publication, please acknowledge this by citing Pyscan.

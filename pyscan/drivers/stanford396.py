@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Stanford396
-===========
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 
 

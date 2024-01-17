@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on June 19, 2020
-@author: amounce
-"""
-
-
 from pathlib import Path
 import pandas as pd
 

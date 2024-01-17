@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Average Sweep
-=============
-"""
-
 import numpy as np
 from time import sleep
 from pyscan.general.islisttype import is_list_type

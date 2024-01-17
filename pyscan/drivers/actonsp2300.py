@@ -1,7 +1,3 @@
-'''
-ActonSP2300
-===========
-'''
 import serial
 import time
 from .instrumentdriver import InstrumentDriver

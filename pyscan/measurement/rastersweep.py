@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Raster Sweep
-============
-"""
-
-
 from time import sleep
 from pyscan.measurement.metasweep import MetaSweep
 from pyscan.general.islisttype import is_list_type

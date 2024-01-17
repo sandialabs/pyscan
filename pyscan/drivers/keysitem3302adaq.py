@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Keysite M3302A DAW
-"""
-
 from pyscan.general import ItemAttribute
 
 import sys

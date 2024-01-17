@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-islisttype
-----------
-"""
-
-
 import numpy as np
 
 

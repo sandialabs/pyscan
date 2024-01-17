@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Stanford620
-===========
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 import struct
 import numpy as np

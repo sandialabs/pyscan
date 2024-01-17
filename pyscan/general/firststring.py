@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-firststring
------------
-"""
-
 import numpy as np
 from six import string_types
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-ThorlabsMFF101
-==============
-"""
-
 from pyscan.general.itemattribute import ItemAttribute
 from thorlabs_kinesis import filter_flipper as ff
 from ctypes import c_char_p, c_ushort, c_ulong

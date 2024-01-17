@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-PulseLaser
-==========
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 from time import sleep
 import serial

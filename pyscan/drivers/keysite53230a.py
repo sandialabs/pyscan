@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Keysite53230A
-=============
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 
 

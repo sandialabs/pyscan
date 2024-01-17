@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-recursivetodict
----------------
-"""
-
-
 import numpy as np
 
 

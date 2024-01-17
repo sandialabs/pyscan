@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-YokogawaGS200
-=============
-"""
-
 from .instrumentdriver import InstrumentDriver
 import numpy as np
 from time import sleep

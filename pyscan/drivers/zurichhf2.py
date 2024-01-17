@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-ZurichDriver
-============
-"""
-
-
 import zhinst.ziPython as ziPython
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np

@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Stanford830
-===========
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 import numpy as np
 from time import sleep

@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Oct 30, 2019
-
-@author: amounce
-"""
-
 import numpy as np
 from seabreeze.spectrometers import Spectrometer
 from pyscan.general.itemattribute import ItemAttribute

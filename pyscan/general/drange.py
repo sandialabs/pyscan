@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-drange
-------
-"""
-
-
 import numpy as np
 
 

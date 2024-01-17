@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-OxfordIGH
-=========
-"""
-
 from .instrumentdriver import InstrumentDriver
 
 

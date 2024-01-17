@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-KeysiteM3302AAWG
-================
-"""
-
 from pyscan.general import ItemAttribute
 
 import sys

@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Load Experiment
-===============
-"""
-
-
 import h5py
 import pickle
 import json

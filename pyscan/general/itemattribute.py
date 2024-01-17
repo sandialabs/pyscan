@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Item Attribute
-==============
-"""
-
-
 class ItemAttribute(object):
     '''
     Class that has properties which can be called like dictionary
