@@ -1,3 +1,4 @@
 # How it works
 
-![Pyscan overview](/assets/images/san-juan-mountains.jpg "Pyscan Overview Caption")
+this is a basic description of how pyscan works
+![Pyscan overview](/_static/Pyscan_overview_C1_diagram.png "Pyscan Overview Caption")
