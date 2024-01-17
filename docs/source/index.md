@@ -16,6 +16,12 @@ the_basics
 ```
 
 ```{toctree}
+:maxdepth: 1
+
+advanced_usage
+```
+
+```{toctree}
 :maxdepth: 2
 
 api_index
