@@ -9,6 +9,23 @@ It provides tools to create "experiments," in which you can interface with devic
 
 A selection of instrument drivers are included, but drivers from other libraries can also be used with pyscan.
 
+## Usage
+
+Sample Jupyter Notebooks running dummy experiments are located in the [demo notebooks](./basics/demo_notebooks) folder.
+
+For the full instructions on how to use pyscan library, read the docs!
+
+## Contribute
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+## Citing Pyscan
+
+If Pyscan contributes to a project that leads to publication, please acknowledge this by citing Pyscan.
+
 ```{toctree}
 :maxdepth: 1
 
