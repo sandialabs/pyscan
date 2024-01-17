@@ -60,7 +60,7 @@ class MetaSweep(ItemAttribute):
             data_dir = Path('./backup')
         else:
             data_dir = Path(data_dir)
-        self.runinfo.data_path = Path(data_dir)
+        self.runinfo.data_path = Path(data_dir)  # seems redundant to use Path() again here
 
         if not self.runinfo.data_path.is_dir():
             self.runinfo.data_path.mkdir()
@@ -73,6 +73,8 @@ class MetaSweep(ItemAttribute):
         data : `.ItemAttribute`
             ItemAttribute containing data
         '''
+
+        # I beleive we want to change this to allow for dynamic allocation, or perhaps create a new method for this.
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
