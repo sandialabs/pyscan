@@ -223,13 +223,16 @@ def check_loaded_expt_further(expt):
         err_string = "devices " + device + " other voltage is not loaded as an int"
         assert type(expt.devices[device]._other_voltage) is int, err_string
 
-    # evaluate the loops formatting ################ confirm they are supposed to be loaded as type string! ###########
-    for loop in expt.runinfo.__dict__.keys():
-        if loop.startswith('loop'):
-            # in a way this is circular reasoning... not sure how to correct this
-            assert hasattr(expt.runinfo, loop), "loaded runinfo does not have loop attribute"
-            # is this supposed to be a string? From other testing it looked liked loops should also be item attributes
-            assert type(loop) is str, "loaded runinfo loop loaded as " + str(type(loop)) + " not as a string"
+    # check the runinfo loops
+    assert hasattr(expt.runinfo, 'loop0'), "loaded expt does not have loop0"
+    assert hasattr(expt.runinfo, 'loop1'), "loaded expt does not have loop1"
+    assert hasattr(expt.runinfo, 'loop2'), "loaded expt does not have loop2"
+    assert hasattr(expt.runinfo, 'loop3'), "loaded expt does not have loop3"
+
+    for key in expt.runinfo.__dict__.keys():
+        if key.startswith('loop'):
+            loop = key
+            assert isinstance(expt.runinfo[loop], ps.ItemAttribute), "loaded runinfo " + loop + " not item attribute"
 
     # check other attributes for proper type when loaded
     assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"

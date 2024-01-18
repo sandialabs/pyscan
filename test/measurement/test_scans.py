@@ -136,6 +136,7 @@ def test_property_scan():
         loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.1)
         loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.1)
 
+        # verifying the check same length function called by property scan will fail with bad runinfo
         with pytest.raises(Exception):
             bad_runinfo = ps.RunInfo()
             bad_runinfo.loop1 = ps.PropertyScan({'v1': ps.drange(5, 5, 5), 'diff': ps.drange(0, 0.1, 0.1)}, 'voltage')
