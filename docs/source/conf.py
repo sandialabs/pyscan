@@ -80,7 +80,7 @@ html_theme_options = {
     # collapse_navigation in pydata-sphinx-theme is slow, so skipped for local
     # and CI builds https://github.com/pydata/pydata-sphinx-theme/pull/386
     # "collapse_navigation": not is_release_build,
-    "show_prev_next": False,
+    "show_prev_next": True,
     # Determines the type of links produced in the navigation header:
     # - absolute: Links point to the URL https://matplotlib.org/...
     # - server-stable: Links point to top-level of the server /stable/...
@@ -96,11 +96,12 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         }
     ],
-    "primary_sidebar_end": [],
+    # "primary_sidebar_end": [],
+    "use_edit_page_button": True,
 }
 
 html_sidebars = {
     # default is
     # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
-    "**": ["sidebar-nav-bs"]
+    # "**": ["sidebar-nav-bs"]
 }
