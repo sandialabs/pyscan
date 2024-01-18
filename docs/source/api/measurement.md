@@ -2,7 +2,10 @@
 ```{eval-rst}
 .. automodule:: pyscan.measurement.runinfo
 	:members:
+```
 
+## Scan
+```{eval-rst}
 .. automodule:: pyscan.measurement.scans
 	:members:
 ```
