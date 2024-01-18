@@ -244,8 +244,11 @@ def check_loaded_expt_further(expt):
     assert type(expt.runinfo.time) is bool, "runinfo time is not loaded as a boolean"
     assert type(expt.runinfo.long_name) is str, "runinfo long_name is not loaded as a string"
     assert type(expt.runinfo.short_name) is str, "runinfo short_name is not loaded as a string"
+    # ### sometimes loaded expt doesn't have runinfo.running... why? Is this supposed to be allowed? ###
     if hasattr(expt.runinfo, 'running'):
         assert type(expt.runinfo.running) is bool, "runinfo running is not loaded as a boolean"
+    # runinfo.complete does not seem to be saved... do we want it to be
+        # to know if the expt crashed before it could finish?
 
 
 ####################### TEST CASES BEGIN HERE #######################
