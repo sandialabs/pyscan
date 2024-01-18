@@ -227,7 +227,6 @@ def test_meta_sweep():
         assert temp.runinfo.loop2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop2.nrange value"
 
         # check that devices were saved and loaded properly
-        assert hasattr(temp.devices, 'v1'), "save meta data didn't save runinfo.devices meta data"
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"
         assert list(temp.devices.__dict__.keys()) == ['v1', 'v2', 'v3'], "save meta data issue saving runinfo.devices"
 
@@ -238,7 +237,7 @@ def test_meta_sweep():
 
         # try to affirm thread is running/ran here... threading only showed 1 thread running before and after
         assert hasattr(ms.runinfo, 'running'), "meta sweep runinfo does not have running attribute after start thread"
-        assert ms.runinfo.running is True, "meta sweep's start thread method did not set runinfo to running"
+        assert ms.runinfo.running is True, "meta sweep's start thread method did not set runinfo running to true"
 
         # testing meta sweep's stop method
         assert callable(ms.stop), "meta sweep's stop method not callable"
@@ -247,6 +246,7 @@ def test_meta_sweep():
         sys.stdout = buffer
         ms.stop()
         assert hasattr(ms.runinfo, 'complete'), "meta sweep runinfo does not have complete attribute after stop()"
+        assert ms.runinfo.running is False, "meta sweep's start thread method did not set runinfo running to false"
         assert ms.runinfo.complete == 'stopped', "meta sweep's stop method did not set runinfo complete to stopped"
         print_output = buffer.getvalue()
         sys.stdout = sys.__stdout__
@@ -269,9 +269,6 @@ def test_meta_sweep():
         ms.devices.trigger = ps.ItemAttribute()
         ms.devices.trigger.trigger = empty_function
         ms.default_trigger_function()
-
-        ms.runinfo.complete = True
-        ms.runinfo.running = False
 
         if data_dir is None:
             shutil.rmtree('./backup')
