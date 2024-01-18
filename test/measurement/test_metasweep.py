@@ -65,9 +65,13 @@ def test_meta_sweep():
         devices.v3 = ps.TestVoltage()
 
         runinfo = ps.RunInfo()
+
+        # consider adding and testing for 4 loops since runinfo has 4 by default. Should 3 be allowed by Meta Sweep?
         runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0.5)}, 'voltage')
         runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.5, 0.1, 0.8)}, 'voltage')
+
+        # dictionary of loops to later verify they were saved according to loops created
         loops = {'loop0': 'v1', 'loop1': 'v2', 'loop2': 'v3'}
 
         runinfo.measure_function = measure_function
@@ -198,6 +202,7 @@ def test_meta_sweep():
             assert hasattr(temp, 'x2'), "x2 was not saved/could not be loaded from meta data to temp"
             assert hasattr(temp, 'x3'), "x3 was not saved/could not be loaded from meta data to temp"
 
+        # could maybe add to and clarify this
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert type(temp.runinfo.measured) is list, "save meta data didn't save runinfo.measured as a list"
         assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
