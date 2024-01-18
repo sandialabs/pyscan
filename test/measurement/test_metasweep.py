@@ -108,7 +108,10 @@ def test_meta_sweep():
         assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
         # setting file name for loading later
-        file_name = './backup/{}'.format(ms.runinfo.long_name)
+        if data_dir is None:
+            file_name = './backup/' + ms.runinfo.long_name
+        else:
+            file_name = data_dir + '/' + ms.runinfo.long_name
 
         # ############### testing meta sweeps preallocate method here? Or will we be changing to dynamic allocation?
         data = ms.runinfo.measure_function(ms)
