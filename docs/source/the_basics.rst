@@ -8,4 +8,4 @@ The Basics
    basics/how_it_works
    basics/basic_example
    basics/demo_notebooks
-   demo_notebooks/01-example
+   demo_notebooks/01-example_property_scans
