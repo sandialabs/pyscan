@@ -95,11 +95,12 @@ html_theme_options = {
             "url": "https://github.com/sandialabs/pyscan",
             "icon": "fab fa-github-square",
         }
-    ]
+    ],
+    "primary_sidebar_end": [],
 }
 
 html_sidebars = {
-    # default is 
-    # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"]
+    # default is
+    # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
     "**": ["sidebar-nav-bs"]
 }
