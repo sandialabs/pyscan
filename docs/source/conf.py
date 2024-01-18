@@ -87,7 +87,7 @@ html_theme_options = {
     # - internal: Links point to the internal files as expanded by the `pathto`
     #   template function in Sphinx.
     "navbar_links": "absolute",
-    "navbar_aligh": "left",
+    "navbar_align": "left",
     # social media links
     "icon_links": [
         {
