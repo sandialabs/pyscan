@@ -37,10 +37,3 @@
 .. automodule:: pyscan.general.stackorappend
 	:members:
 ```
-
-## Pulse Sequences
-
-```{eval-rst}
-.. automodule:: pyscan.general.makepulsingarbs
-	:members:
-```
