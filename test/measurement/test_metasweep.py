@@ -268,9 +268,13 @@ def test_meta_sweep():
         ms.runinfo.complete = True
         ms.runinfo.running = False
 
-        shutil.rmtree('./backup')
+        if data_dir is None:
+            shutil.rmtree('./backup')
+        else:
+            shutil.rmtree(data_dir)
 
     test_ms_diff_inputs()
+    test_ms_diff_inputs(data_dir='./backeep')
     test_ms_diff_inputs(data_dir='./backup', allocate='preallocate_line')
     test_ms_diff_inputs(data_dir=None, measure_function=measure_up_to_3D)
     test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
