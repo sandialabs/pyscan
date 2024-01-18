@@ -96,12 +96,12 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         }
     ],
-    # "primary_sidebar_end": [],
+    "primary_sidebar_end": [],
     "use_edit_page_button": True,
 }
 
 html_sidebars = {
     # default is
     # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
-    # "**": ["sidebar-nav-bs"]
+    "**": ["sidebar-nav-bs"]
 }
