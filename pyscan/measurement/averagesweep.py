@@ -122,7 +122,6 @@ class AverageSweep(MetaSweep):
         for key, value in data.items():
 
             # two cases: 1. self[key] is a list 2. self[key] is not a list
-
             if is_list_type(self[key]):
                 if is_list_type(value):
                     value = np.array(value).astype(float)

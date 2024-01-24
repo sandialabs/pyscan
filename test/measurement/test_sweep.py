@@ -155,10 +155,10 @@ def check_has_multi_data(expt, loaded=False):
 # for checking that the multi data results are as expected
 def check_multi_data_results(expt, shape1=[2], shape2=[2], shape3=[2]):
     assert isinstance(expt.x1, float)
-    check_data_results(expt.x2, shape2)
+    check_data_results(expt.x2, id=2, shape=shape2)
     for i in expt.x3:
         assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
-    check_data_results(expt.x3, shape3)
+    check_data_results(expt.x3, id=2, shape=shape3)
 
 
 # for checking the experiment has voltages

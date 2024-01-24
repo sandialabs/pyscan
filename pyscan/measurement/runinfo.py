@@ -68,6 +68,8 @@ class RunInfo(ItemAttribute):
         '''
         if issubclass(type(self.loop0), AverageScan):
             self.average_d = 0
+        # ############ this seems to only allow for one loop to be registered as average scan
+        # is this what we want???
         elif issubclass(type(self.loop1), AverageScan):
             self.average_d = 1
         elif issubclass(type(self.loop2), AverageScan):
