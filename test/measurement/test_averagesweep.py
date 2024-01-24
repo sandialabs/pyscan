@@ -160,6 +160,17 @@ def test_averagesweep():
         if num_devices > 3:
             check_voltage_results(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4)
 
+        # add more testing here?
+
+        # saves file name of the saved experiment data and deletes the experiment
+        file_name = expt.runinfo.long_name
+        del expt
+
+        # load the experiment we just ran
+        temp = ps.load_experiment('./backup/{}'.format(file_name))
+
+        
+
         # close and delete directories created from running this test
         if data_dir is None:
             shutil.rmtree('./backup')
