@@ -58,7 +58,7 @@ def loaded_modifier(loaded):
 
 
 # for setting up the experiments
-def set_up_experiment(num_devices, measure_function, data_dir, verbose):
+def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average=3):
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()
 
@@ -67,16 +67,19 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose):
     runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
 
     if (num_devices > 1):
-        devices.v2 = ps.TestVoltage()
-        runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+        # devices.v2 = ps.TestVoltage()
+        # runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+        runinfo.loop1 = ps.AverageScan(n_average, dt=0)
 
     if (num_devices > 2):
-        devices.v3 = ps.TestVoltage()
-        runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+        # devices.v3 = ps.TestVoltage()
+        # runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+        runinfo.loop2 = ps.AverageScan(n_average + 1, dt=0)
 
     if (num_devices > 3):
-        devices.v4 = ps.TestVoltage()
-        runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+        # devices.v4 = ps.TestVoltage()
+        # runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+        runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0)
 
     if (num_devices > 4):
         assert False, "num_devices > 4 not implemented in testing"
@@ -101,6 +104,14 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose):
     return expt
 
 
+# for checking that the meta path is initialized properly
+def check_meta_path(expt):
+    expt.save_metadata()
+    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
+    assert meta_path.exists(), "meta_path not initialized"
+    assert meta_path.is_file(), "meta_path is not a file"
+
+
 # for checking that the voltage(s) as expected
 def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=1, loaded=False, string_modifier=''):
     is_loaded = loaded_modifier(loaded)
@@ -117,6 +128,32 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
 
 
+# for checking that the data results are as expected
+def check_data_results(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
+    is_loaded = loaded_modifier(loaded)
+    pre_string = is_loaded + "experiment x" + str(id) + " measurement "
+
+    if (dtype == float or shape == [1]):
+        assert isinstance(x, dtype), pre_string + "is not a float"
+    else:
+        assert isinstance(x, dtype), pre_string + "is not a numpy array"
+        assert x.dtype == 'float64', pre_string + "data is not a float"
+        assert list(x.shape) == shape, pre_string + "array does not have " + str(shape) + " elements"
+
+        if (shape == [2, 2] or shape == [2, 2, 2] or shape == [2, 2, 2, 2] or shape == [2, 2, 2, 2, 2]):
+            for i in x:
+                assert isinstance(i, np.ndarray), pre_string + "is not a numpy array of numpy arrays"
+
+
+# for checking that the multi data results are as expected
+def check_multi_data_results(expt, shape1=[2], shape2=[2, 2], shape3=[2, 2, 2]):
+    check_data_results(expt.x1, id=1, shape=shape1)
+    check_data_results(expt.x2, id=2, shape=shape2)
+    for i in expt.x3:
+        assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
+    check_data_results(expt.x3, id=3, shape=shape3)
+
+
 def test_averagesweep():
     """
     Testing AverageSweep
@@ -126,8 +163,8 @@ def test_averagesweep():
     None
     """
 
-    def test_variations(num_devices=1, measure_function=measure_point, data_dir=None, verbose=False):
-        expt = set_up_experiment(num_devices, measure_function, data_dir, verbose)
+    def test_variations(num_devices=1, measure_function=measure_point, data_dir=None, verbose=False, n_average=1):
+        expt = set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average)
 
         # check the experiment core attributes are initialized correctly
         assert hasattr(expt, 'runinfo'), "expt does not have runinfo attribute"
@@ -142,6 +179,9 @@ def test_averagesweep():
         # check the experiment runinfo
         expt.check_runinfo()
 
+        # check the meta path was set successfully
+        check_meta_path(expt)
+
         # run the experiment
         expt.run()
 
@@ -151,25 +191,27 @@ def test_averagesweep():
         elif measure_function == measure_up_to_3D:
             check_has_multi_data(expt)
 
-        # check voltage(s) are as expected
+        # check voltage is as expected
         check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
-        if num_devices > 1:
-            check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2)
-        if num_devices > 2:
-            check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3)
-        if num_devices > 3:
-            check_voltage_results(expt.v4_voltage, expected_value1=-0.1, expected_value2=0, voltage_id=4)
 
-        # add more testing here?
+        # check that average sweeps are as expected
+        print("expt.runinfo.loop1 is ", expt.runinfo.loop1)
+
+        # check the data results are as expected
+        if measure_function == measure_point:
+            check_data_results(expt.x)
+        elif measure_function == measure_up_to_3D:
+            check_multi_data_results(expt)
 
         # saves file name of the saved experiment data and deletes the experiment
         file_name = expt.runinfo.long_name
         del expt
 
-        # load the experiment we just ran
-        temp = ps.load_experiment('./backup/{}'.format(file_name))
-
-        
+        # basic check to load the experiment we just ran
+        if data_dir is None:
+            ps.load_experiment('./backup/{}'.format(file_name))
+        else:
+            ps.load_experiment('./' + str(Path(data_dir)) + '/{}'.format(file_name))
 
         # close and delete directories created from running this test
         if data_dir is None:
@@ -181,6 +223,7 @@ def test_averagesweep():
                 pass
 
     test_variations()
+    # test_variations(num_devices=2)
     # test_variations(num_devices=4)  # this is not working... should it be?
     test_variations(measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
