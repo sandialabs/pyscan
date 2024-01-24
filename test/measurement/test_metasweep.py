@@ -158,7 +158,6 @@ def test_meta_sweep():
         # print("temp dict is: ", temp.__dict__.keys())
 
         # test that preallocate and saves functioned as expected based on loaded experiment
-        ###### Note! These are all empty... is this working correctly since no data is saved from the save methods
         if allocate == 'preallocate':
             if list(data.__dict__.keys()) == ['x']:
                 assert temp.x.shape == (2, 5, 5)
