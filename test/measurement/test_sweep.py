@@ -84,6 +84,7 @@ def check_has_attributes(expt, intended_keys_length, additional=None, loaded=Fal
     assert len(expt.keys()) == intended_keys_length, error_string
 
     assert hasattr(expt, 'runinfo'), is_loaded + "experiment missing runinfo attribute"
+    assert hasattr(expt.runinfo, 'time'), is_loaded + "experiment missing runinfo time attribute"
     assert hasattr(expt, 'devices'), is_loaded + "experiment missing devices attribute"
 
     if (additional is not None):
