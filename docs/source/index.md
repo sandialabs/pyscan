@@ -1,4 +1,4 @@
-Welcome to pyscan's documentation!
+Welcome pyscan's documentation!
 ==================================
 
 ## Intro
