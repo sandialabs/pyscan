@@ -2,9 +2,11 @@
 Pytest functions to test the Scans class
 '''
 
+
 import pyscan as ps
 import numpy as np
 import pytest
+from time import sleep
 
 
 # for checking that the scans have the given attributes
@@ -21,15 +23,25 @@ def check_attribute_value(scan_name, attribute_name, attribute, expected_value):
 
 
 # for checking that the iterate function is working as expected
-def check_iterate_function(loop, scan_name):
+def check_iterate_function(loop, scan_name, devices=[]):
     # check that iterate is callable
     assert callable(loop.iterate), scan_name + " loop iterate function not callable"
 
     # check that iterate functions as expected
     try:
-        loop.iterate(0, [])  # This only tests if it runs, not if the results are desired.
+        loop.iterate(0, devices)  # This only tests if it runs, not if the results are desired.
     except Exception:
         assert False, scan_name + " loop iterate function error"
+
+
+# for setting up devices to test scans iterate functions
+def setup_devices():
+    devices = ps.ItemAttribute()
+    devices.v1 = ps.TestVoltage()
+    devices.v2 = ps.TestVoltage()
+    devices.v3 = ps.TestVoltage()
+    devices.v4 = ps.TestVoltage()
+    return devices
 
 
 # mostly a placeholder for now, meta scan has no init function
@@ -119,10 +131,18 @@ def test_property_scan():
         loops = [0, 1, 2, 3]
         self = ['v1', 'v2', 'v3', 'v4']
         prop = 'voltage'
-        loops[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=1)
-        loops[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=1)
-        loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=1)
-        loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=1)
+        loops[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=.1)
+        loops[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=.1)
+        loops[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.1)
+        loops[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.1)
+
+        # verifying the check same length function called by property scan will fail with bad runinfo
+        with pytest.raises(Exception):
+            bad_runinfo = ps.RunInfo()
+            bad_runinfo.loop1 = ps.PropertyScan({'v1': ps.drange(5, 5, 5), 'diff': ps.drange(0, 0.1, 0.1)}, 'voltage')
+
+        # setup devices for testing iterate function
+        devices = setup_devices()
 
         scan_name = "Property Scan loop"
 
@@ -187,18 +207,27 @@ def test_property_scan():
             err_string = "Property Scan loop" + str(loop_num) + " i not " + str(expected_i) + " when intialized"
             assert loops[loop_num].i == expected_i, err_string
 
-            # check that iterate functions as expected
-            check_iterate_function(loop, scan_name)
+            # check that iterate functions as expected (this adds a lot of runtime to the testing)
+            for loop in loops:
+                check_iterate_function(loop, scan_name)
+
+                for m in range(loop.n):
+                    loop.iterate(loop.i, devices)
+
+                    for dev in loop.device_names:
+                        devices[dev][loop.prop] == loop.scan_dict[dev + '_' + loop.prop][loop.i]
+
+                    sleep(loop.dt)  # Can we remove this to save time when running test cases, or is it important?
 
         # check each loop for expected attribute values
         check_loop_attributes(loops, 0, self[0], prop, expected_scan_dict1=0.0,
-                              expected_scan_dict2=0.1, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.1, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 1, self[1], prop, expected_scan_dict1=0.1,
-                              expected_scan_dict2=0.0, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 2, self[2], prop, expected_scan_dict1=0.3,
-                              expected_scan_dict2=0.2, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.2, expected_dt=.1, expected_i=0)
         check_loop_attributes(loops, 3, self[3], prop, expected_scan_dict1=-0.1,
-                              expected_scan_dict2=0.0, expected_dt=1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
 
     test_1D_property_scan_4loops()
 
@@ -265,11 +294,15 @@ def test_function_scan():
     test_empty_loop()
 
     # for testing a function scan loop initialized as populated
-    def test_loop():
+    def test_loop(return_value=0):
         # set up a basic function to pass as an input to the function scan
         def input_function(num):
             for i in range(num):
-                print(i)
+                pass
+            return return_value
+
+        # setup devices for testing iterate function
+        devices = setup_devices()
 
         # initialize the function scan loop
         loop = ps.FunctionScan(input_function, values=[0, 1, 2], dt=1)
@@ -305,13 +338,16 @@ def test_function_scan():
             check_attribute_value(scan_name, 'n', loop.n, expected_value=3)
 
             # check that iterate functions as expected
-            check_iterate_function(loop, scan_name)
+            check_iterate_function(loop, scan_name, devices=devices)
+            err_string = scan_name + " iterate function not as expected."
+            assert loop.function(loop.scan_dict[loop.function.__name__][0]) == return_value, err_string
 
         # check that the attributes are initialized correctly
         check_attributes()
 
     # test a function scan loop initialized as populated
     test_loop()
+    test_loop(return_value=1)
 
 
 def test_repeat_scan():
@@ -371,12 +407,15 @@ def test_repeat_scan():
 
         check_attributes(loop, dt)
 
-    test_num_repeat(-1)  # ###########do we want this to be allowed?
-    test_num_repeat(0)  # ##############do we want this to be allowed?
-    test_num_repeat(0, dt=1)
+    with pytest.raises(Exception):
+        test_num_repeat(-1), "Repeat scan num repeats can be negative when it is not allowed"
+    with pytest.raises(Exception):
+        test_num_repeat(0), "Repeat scan num repeats can be 0 when it is not allowed"
     test_num_repeat(1)
-    test_num_repeat(2)
-    test_num_repeat(np.inf)
+    test_num_repeat(1, dt=1)
+    test_num_repeat(1000000)
+    with pytest.raises(Exception):
+        test_num_repeat(np.inf), "Repeat scan num repeats can be np.inf when it is not allowed"
 
 
 def test_average_scan():
@@ -431,9 +470,12 @@ def test_average_scan():
 
         check_attributes(loop, dt)
 
-    test_num_average(-1)  # ###############do we want this to be allowable?
-    test_num_average(0)  # ################do we want this to be allowable?
+    with pytest.raises(Exception):
+        test_num_average(-1), "Average Scan n_average can be negative when it is not allowed"
+    with pytest.raises(Exception):
+        test_num_average(0), "Average Scan n_average can be 0 when it is not allowed"
     test_num_average(1)
     test_num_average(1, dt=1)
     test_num_average(100)
-    test_num_average(1000000)  # ################any upper limit here?
+    with pytest.raises(Exception):
+        test_num_average(np.inf), "Average Scan n_average can be np.inf when it is not allowed"
