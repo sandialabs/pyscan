@@ -1,2 +1,2 @@
 .. include::
-    ../demo_notebooks/01-example_property_scans
+    02-example_plotting_multiD_data
