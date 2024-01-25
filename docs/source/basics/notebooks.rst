@@ -7,6 +7,6 @@ You can find demo notebooks for basic examples on how to use pyscan
     :maxdepth: 2
 
     demo_notebooks/01-example_property_scans
-    01-example_link
-    01-example_link2
-    01-example_link3
+    demo_notebooks/01-example_link
+    demo_notebooks/01-example_link2
+    demo_notebooks/01-example_link3
