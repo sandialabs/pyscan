@@ -1,9 +1,4 @@
 # -*- coding:utf-8 -*-
-"""
-BKPrecision9130B
-================
-"""
-
 from .instrumentdriver import InstrumentDriver
 
 

@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Instrument Driver
-=================
-"""
-
-
 from pyscan.general.itemattribute import ItemAttribute
 from .newinstrument import new_instrument
 

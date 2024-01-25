@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-ThorlabsITC4001
-===============
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Runinfo
-=======
-"""
-
 from pyscan.general.itemattribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
 

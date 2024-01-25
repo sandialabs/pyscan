@@ -1,9 +1,4 @@
 # -*- coding:utf-8 -*-
-"""
-TPI1002A
-========
-"""
-
 from struct import unpack
 from .instrumentdriver import InstrumentDriver
 from pyvisa.errors import VisaIOError

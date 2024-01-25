@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Basic Plots
-===========
-"""
-
 import matplotlib.pyplot as plt
 import numpy as np
 from .plotgenerator import PlotGenerator

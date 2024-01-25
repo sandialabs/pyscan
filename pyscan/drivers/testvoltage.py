@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Test Voltage
-============
-"""
-
-
 from pyscan.general.itemattribute import ItemAttribute
 
 

@@ -1,9 +1,3 @@
-"""
-AmericanMagnetics430
-====================
-"""
-
-
 from .instrumentdriver import InstrumentDriver
 from time import sleep
 

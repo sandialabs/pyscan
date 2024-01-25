@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Chart Recorder
-==============
-"""
-
 import numpy as np
 from time import sleep
 from pyscan.general.stackorappend import stack_or_append

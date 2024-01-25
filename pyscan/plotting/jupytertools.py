@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Jupyter Tools
-=============
-"""
-
-
 import os
 import glob
 from pathlib import Path

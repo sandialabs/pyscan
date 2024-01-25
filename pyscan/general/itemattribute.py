@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Item Attribute
-==============
-"""
-
-
 class ItemAttribute(object):
     '''
     Class that has properties which can be called like dictionary
@@ -12,7 +6,7 @@ class ItemAttribute(object):
 
     Parameters
     ----------
-    dictionary : dice
+    dictionary : dict
         Dictionary object, defaults to None.
 
     '''

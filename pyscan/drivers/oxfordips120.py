@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-OxfordIPS120
-============
-"""
-
 from .instrumentdriver import InstrumentDriver
 
 

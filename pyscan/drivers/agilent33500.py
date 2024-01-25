@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Agilent33500
-============
-"""
-
 from .instrumentdriver import InstrumentDriver
 import re
 from pyscan.general.drange import drange

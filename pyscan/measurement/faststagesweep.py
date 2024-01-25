@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Fast Stage Sweep
-================
-"""
-
-
 from time import sleep
 from pyscan.measurement.metasweep import MetaSweep
 from pyscan.general.itemattribute import ItemAttribute

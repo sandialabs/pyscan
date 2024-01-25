@@ -1,103 +1,5 @@
-General
-=======
-
-.. automodule:: pyscan.general.itemattribute
-	:members:
-
-Functions
----------
-.. automodule:: pyscan.general.drange
-	:members:
-
-.. automodule:: pyscan.general.firststring
-	:members:
-
-.. automodule:: pyscan.general.islisttype
-	:members:
-
-.. automodule:: pyscan.general.isnumerictype
-	:members:
-
-.. automodule:: pyscan.general.quadraturesum
-	:members:
-
-.. automodule:: pyscan.general.recursivetodict
-	:members:
-
-.. automodule:: pyscan.general.recursivetoitemattribute
-	:members:
-
-.. automodule:: pyscan.general.samelength
-	:members:
-
-.. automodule:: pyscan.general.setdifference
-	:members:
-
-.. automodule:: pyscan.general.stackorappend
-	:members:
-
-Pulse Sequences
----------------
-.. automodule:: pyscan.general.makepulsingarbs
-	:members:
-
-Measurement
-===========
-.. automodule:: pyscan.measurement.runinfo
-	:members:
-
-.. automodule:: pyscan.measurement.scans
-	:members:
-
-Sweep
------
-.. automodule:: pyscan.measurement.metasweep
-	:members:
-
-.. automodule:: pyscan.measurement.averagesweep
-	:members:
-
-.. automodule:: pyscan.measurement.chartrecorder
-	:members:
-
-.. automodule:: pyscan.measurement.fastgalvosweep
-	:members:
-
-.. automodule:: pyscan.measurement.loadexperiment
-	:members:
-
-.. automodule:: pyscan.measurement.rastersweep
-	:members:
-
-.. automodule:: pyscan.measurement.sparsesweep
-	:members:
-
-.. automodule:: pyscan.measurement.sweep
-	:members:
-
-Plotting
-========
-
-.. automodule:: pyscan.plotting.basicplots
-	:members:
-
-.. automodule:: pyscan.plotting.liveplot
-	:members:
-
-.. automodule:: pyscan.plotting.oscilloscope
-	:members:
-
-.. automodule:: pyscan.plotting.plotgenerator
-	:members:
-
-.. automodule:: pyscan.plotting.jupytertools
-	:members:
-
-.. automodule:: pyscan.plotting.plotpulsesequences
-	:members:
-
-Drivers
-=======
+# Drivers
+```{eval-rst}
 .. automodule:: pyscan.drivers.instrumentdriver
 	:members:
 
@@ -106,10 +8,10 @@ Drivers
 
 .. automodule:: pyscan.drivers.testvoltage
 	:members:
+```
 
-Instruments
------------
-
+## Instruments
+```{eval-rst}
 .. automodule:: pyscan.drivers.actonsp2300
 	:members:
 
@@ -196,4 +98,4 @@ Instruments
 
 .. automodule:: pyscan.drivers.yokogawags200
 	:members:
-
+```

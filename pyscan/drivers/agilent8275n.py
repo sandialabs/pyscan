@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Agilent8275n
-============
-"""
-
 from .instrumentdriver import InstrumentDriver
 
 

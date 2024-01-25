@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Plot Generator
-==============
-"""
-
-
 from pyscan.general import set_difference, first_string
 import numpy as np
 

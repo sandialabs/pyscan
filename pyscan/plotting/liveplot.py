@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Live Plot
-=========
-"""
-
-
 import matplotlib.pyplot as plt
 from IPython import display
 from time import sleep

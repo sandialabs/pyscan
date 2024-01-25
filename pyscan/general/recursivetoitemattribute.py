@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-recursivetoitemattribute
-------------------------
-"""
-
-
 from .itemattribute import ItemAttribute
 
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Picoharp300
-===========
-"""
-
 import ctypes
 from ctypes import byref
 from pyscan.general import ItemAttribute

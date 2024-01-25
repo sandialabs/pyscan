@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-ThorlabsBSC203
-==============
-"""
-
 import numpy as np
 from pyscan.general.itemattribute import ItemAttribute
 from thorlabs_kinesis import benchtop_stepper_motor as bsm

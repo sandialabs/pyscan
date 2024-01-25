@@ -36,7 +36,13 @@ except ModuleNotFoundError:
     print('pylablib not found, AttocubeANC350 not loaded')
 
 try:
+    from .baslercamera import BaslerCamera
+except ModuleNotFoundError:
+    print('Basler Camera software not found, BaserCamera not loaded')
+
+try:
     from .helioscamera import HeliosCamera
+
 except ModuleNotFoundError:
     print('Helios Camera not installed')
 

@@ -1,8 +1,3 @@
-"""
-KepcoBOP
-========
-"""
-
 from .instrumentdriver import InstrumentDriver
 from time import sleep
 import math
