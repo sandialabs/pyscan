@@ -98,7 +98,6 @@ html_theme_options = {
     ],
     "primary_sidebar_end": [],
     "use_edit_page_button": True,
-    
 }
 
 html_context = {

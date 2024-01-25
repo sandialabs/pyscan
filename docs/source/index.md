@@ -39,6 +39,8 @@ api_index
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+To get started with contributing to pyscan, check out the pyscan [developers wiki](https://github.com/sandialabs/pyscan/wiki). 
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
