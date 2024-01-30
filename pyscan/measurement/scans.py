@@ -179,8 +179,8 @@ class AverageScan(MetaScan):
     '''
 
     def __init__(self, n_average, dt=0):
-        assert n_average > 0, "n_average must be > 0"
-        assert n_average != np.inf, "n_average must not be np.inf"
+        assert n_average > 1, "average scan's n_average must be 2 or more"
+        assert n_average != np.inf, "average scan's n_average must not be np.inf"
         self.scan_dict = {}
         self.n = n_average
         self.nrange = range(self.n)

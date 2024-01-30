@@ -8,6 +8,9 @@ import shutil
 from pathlib import Path
 from random import random
 import numpy as np
+import pytest
+# import imp
+# imp.reload(ps)
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -58,37 +61,41 @@ def loaded_modifier(loaded):
 
 
 # for setting up the experiments
-def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average=3):
+def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average, bad):
     # set up core attributes
     devices = ps.ItemAttribute()
     runinfo = ps.RunInfo()
     runinfo.measure_function = measure_function
 
     # set up based on num devices
-    if (num_devices < 0):
-        assert False, "Must have at least one device"
-    if (num_devices == 0):
-        runinfo.loop0 = ps.AverageScan(10, dt=0.01)
-    elif (num_devices == 1):
+    if bad is False:
+        if (num_devices < 0):
+            assert False, "Must have at least one device"
+        if (num_devices == 0):
+            runinfo.loop0 = ps.AverageScan(n_average, dt=0.01)
+        elif (num_devices == 1):
+            devices.v1 = ps.TestVoltage()
+            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.loop1 = ps.AverageScan(n_average, dt=0)
+        elif (num_devices == 2):
+            devices.v1 = ps.TestVoltage()
+            devices.v2 = ps.TestVoltage()
+            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.loop2 = ps.AverageScan(n_average + 1, dt=0)
+        elif (num_devices == 3):
+            devices.v1 = ps.TestVoltage()
+            devices.v2 = ps.TestVoltage()
+            devices.v3 = ps.TestVoltage()
+            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+            runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0.1)
+        if (num_devices > 4):
+            assert False, "num_devices > 4 not implemented in testing"
+    else:
         devices.v1 = ps.TestVoltage()
         runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-        runinfo.loop1 = ps.AverageScan(n_average, dt=0)
-    elif (num_devices == 2):
-        devices.v1 = ps.TestVoltage()
-        devices.v2 = ps.TestVoltage()
-        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-        runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-        runinfo.loop2 = ps.AverageScan(n_average + 1, dt=0)
-    elif (num_devices == 3):
-        devices.v1 = ps.TestVoltage()
-        devices.v2 = ps.TestVoltage()
-        devices.v3 = ps.TestVoltage()
-        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-        runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-        runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-        runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0.1)
-    if (num_devices > 4):
-        assert False, "num_devices > 4 not implemented in testing"
 
     # instantiate expt based on additional parameters
     if data_dir is None:
@@ -183,8 +190,9 @@ def test_averagesweep():
     None
     """
 
-    def test_variations(num_devices=0, measure_function=measure_point, data_dir=None, verbose=False, n_average=2):
-        expt = set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average)
+    def test_variations(num_devices=0, measure_function=measure_point, data_dir=None, verbose=False, n_average=2,
+                        bad=False):
+        expt = set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average, bad)
 
         # check the experiment core attributes are initialized correctly
         assert hasattr(expt, 'runinfo'), "expt does not have runinfo attribute"
@@ -257,3 +265,16 @@ def test_averagesweep():
     test_variations(num_devices=3, measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
+    test_variations(n_average=10)
+
+    with pytest.raises(Exception):
+        test_variations(bad=True), "Averagesweep ran without an averagescan"
+    with pytest.raises(Exception):
+        test_variations(n_average=-1), "Averagesweep's n_average must be more than 1"
+    with pytest.raises(Exception):
+        test_variations(n_average=0), "Averagesweep's n_average must be more than 1"
+    with pytest.raises(Exception):
+        test_variations(n_average=1), "Averagesweep's n_average must be more than 1"
+
+
+test_averagesweep()

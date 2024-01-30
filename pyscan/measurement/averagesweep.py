@@ -37,6 +37,8 @@ class AverageSweep(MetaSweep):
         '''
 
         self.check_runinfo()
+        assert -1 < self.runinfo.average_d < 4, "Averagesweep didn't register an averagescan with its runinfo average_d"
+
         self.setup_instruments()
         # save instrument settings
         self.save_metadata()
