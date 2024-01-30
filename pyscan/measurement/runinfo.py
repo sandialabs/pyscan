@@ -61,18 +61,26 @@ class RunInfo(ItemAttribute):
         Automatically sets self.average_d to the correct loop index (i.e., the loop which contains an
         instance of `.AverageScan`) to average over. Relevant for `.AverageSweep`.
         '''
+        num_av_scans = 0
         if issubclass(type(self.loop0), AverageScan):
             self.average_d = 0
-        # ############ this seems to only allow for one loop to be registered as average scan
-        # is this what we want???
-        elif issubclass(type(self.loop1), AverageScan):
+            num_av_scans += 1
+        if issubclass(type(self.loop1), AverageScan):
             self.average_d = 1
-        elif issubclass(type(self.loop2), AverageScan):
+            num_av_scans += 1
+        if issubclass(type(self.loop2), AverageScan):
             self.average_d = 2
-        elif issubclass(type(self.loop3), AverageScan):
+            num_av_scans += 1
+        if issubclass(type(self.loop3), AverageScan):
             self.average_d = 3
-        else:
+            num_av_scans += 1
+
+        if num_av_scans == 0:
             self.average_d = -1
+            assert False, "Must have at least one average scan."
+
+        if num_av_scans > 1:
+            assert False, "More than one average scan is not allowed"
 
     @property
     def version(self):
