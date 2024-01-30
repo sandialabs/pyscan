@@ -59,31 +59,38 @@ def loaded_modifier(loaded):
 
 # for setting up the experiments
 def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average=3):
+    # set up core attributes
     devices = ps.ItemAttribute()
-    devices.v1 = ps.TestVoltage()
-
     runinfo = ps.RunInfo()
     runinfo.measure_function = measure_function
-    runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
 
-    if (num_devices > 1):
-        # devices.v2 = ps.TestVoltage()
-        # runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+    # set up based on num devices
+    if (num_devices < 0):
+        assert False, "Must have at least one device"
+    if (num_devices == 0):
+        runinfo.loop0 = ps.AverageScan(10, dt=0.01)
+    elif (num_devices == 1):
+        devices.v1 = ps.TestVoltage()
+        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         runinfo.loop1 = ps.AverageScan(n_average, dt=0)
-
-    if (num_devices > 2):
-        # devices.v3 = ps.TestVoltage()
-        # runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+    elif (num_devices == 2):
+        devices.v1 = ps.TestVoltage()
+        devices.v2 = ps.TestVoltage()
+        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
         runinfo.loop2 = ps.AverageScan(n_average + 1, dt=0)
-
-    if (num_devices > 3):
-        # devices.v4 = ps.TestVoltage()
-        # runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+    elif (num_devices == 3):
+        devices.v1 = ps.TestVoltage()
+        devices.v2 = ps.TestVoltage()
+        devices.v3 = ps.TestVoltage()
+        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+        runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
         runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0)
-
     if (num_devices > 4):
         assert False, "num_devices > 4 not implemented in testing"
 
+    # instantiate expt based on additional parameters
     if data_dir is None:
         if verbose is False:
             expt = ps.AverageSweep(runinfo, devices)
@@ -129,7 +136,7 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
 
 
 # for checking that the data results are as expected
-def check_data_results(x, id=None, dtype=np.ndarray, shape=[2], loaded=False):
+def check_data_results(x, id='', dtype=np.ndarray, shape=[2], loaded=False):
     is_loaded = loaded_modifier(loaded)
     pre_string = is_loaded + "experiment x" + str(id) + " measurement "
 
@@ -163,7 +170,7 @@ def test_averagesweep():
     None
     """
 
-    def test_variations(num_devices=1, measure_function=measure_point, data_dir=None, verbose=False, n_average=1):
+    def test_variations(num_devices=0, measure_function=measure_point, data_dir=None, verbose=False, n_average=2):
         expt = set_up_experiment(num_devices, measure_function, data_dir, verbose, n_average)
 
         # check the experiment core attributes are initialized correctly
@@ -192,14 +199,19 @@ def test_averagesweep():
             check_has_multi_data(expt)
 
         # check voltage is as expected
-        check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
+        if num_devices > 1:
+            check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
+        # test additional voltages here
 
         # check that average sweeps are as expected
         print("expt.runinfo.loop1 is ", expt.runinfo.loop1)
 
         # check the data results are as expected
         if measure_function == measure_point:
-            check_data_results(expt.x)
+            if num_devices == 1:
+                check_data_results(expt.x)
+            if num_devices == 2:
+                check_data_results(expt.x, shape=[2, 2])
         elif measure_function == measure_up_to_3D:
             check_multi_data_results(expt)
 
@@ -223,8 +235,9 @@ def test_averagesweep():
                 pass
 
     test_variations()
-    # test_variations(num_devices=2)
-    # test_variations(num_devices=4)  # this is not working... should it be?
+    test_variations(num_devices=1)
+    test_variations(num_devices=2)
+    test_variations(num_devices=3)
     test_variations(measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
