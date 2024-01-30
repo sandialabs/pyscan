@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-quadraturesum
--------------
-"""
-
-
 import numpy as np
 
 

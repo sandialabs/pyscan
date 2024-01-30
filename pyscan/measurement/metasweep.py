@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Meta Sweep
-==========
-"""
-
-
 import h5py
 import json
 from pathlib import Path

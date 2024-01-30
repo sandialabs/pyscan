@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-new_instrument
-==============
-"""
-
-
 import pyvisa as visa
 import pyscan as ps
 

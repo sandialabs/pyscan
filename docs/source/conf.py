@@ -22,7 +22,7 @@ copyright = '2023, Andrew Mounce'
 author = 'Andrew Mounce'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.0'
+release = '0.0.1'
 
 # -- General configuration ---------------------------------------------------
 
@@ -32,15 +32,26 @@ release = '0.0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    'numpydoc']
+    'numpydoc',
+    'nbsphinx',
+    'myst_parser']
+# myst_parser allows you to use .md and .rst files for pages
 
+
+# numpydoc options
 numpydoc_show_inherited_class_members = False
 numpydoc_class_members_toctree = False
 
+# autodoc options
 autodoc_typehints = "none"
 autodoc_docstring_signature = True
 autodoc_default_options = {'members': None}
 
+# myst_parser options
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -56,7 +67,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'mpl_sphinx_theme'
+html_theme = 'pydata_sphinx_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -69,11 +80,32 @@ html_theme_options = {
     # collapse_navigation in pydata-sphinx-theme is slow, so skipped for local
     # and CI builds https://github.com/pydata/pydata-sphinx-theme/pull/386
     # "collapse_navigation": not is_release_build,
-    "show_prev_next": False,
+    "show_prev_next": True,
     # Determines the type of links produced in the navigation header:
     # - absolute: Links point to the URL https://matplotlib.org/...
     # - server-stable: Links point to top-level of the server /stable/...
     # - internal: Links point to the internal files as expanded by the `pathto`
     #   template function in Sphinx.
     "navbar_links": "absolute",
+    "navbar_align": "left",
+    # social media links
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/sandialabs/pyscan",
+            "icon": "fab fa-github-square",
+        }
+    ],
+    "primary_sidebar_end": [],
+    "use_edit_page_button": True,
+}
+
+html_context = {
+    "doc_path": "docs/source/",
+}
+
+html_sidebars = {
+    # default is
+    # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
+    "**": ["sidebar-nav-bs"]
 }

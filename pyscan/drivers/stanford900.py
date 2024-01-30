@@ -1,8 +1,4 @@
-"""
-Stanford900
-===========
-"""
-
+# -*- coding: utf-8 -*-
 from .instrumentdriver import InstrumentDriver
 import re
 import time

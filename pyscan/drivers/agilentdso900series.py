@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-AgilentDSO900Series
-===================
-"""
-
 import numpy as np
 from math import ceil
 from .instrumentdriver import InstrumentDriver

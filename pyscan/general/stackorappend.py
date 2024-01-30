@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-stack_or_append
----------------
-"""
-
-
 import numpy as np
 
 

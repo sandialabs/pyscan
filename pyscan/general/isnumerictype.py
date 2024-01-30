@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-isnumerictype
--------------
-"""
-
-
 def is_numeric_type(obj):
     '''Determines if input is an `int` or `float`.
 

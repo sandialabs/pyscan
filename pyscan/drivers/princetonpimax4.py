@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-PrincetonPiMax4
-===============
-"""
-
 from PrincetonInstruments.LightField.AddIns import Pulse
 from PrincetonInstruments.LightField.AddIns import ExperimentSettings
 from PrincetonInstruments.LightField.AddIns import CameraSettings

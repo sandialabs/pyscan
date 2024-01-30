@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-PulseBlaster
-============
-"""
-
-
 from pyscan.general.itemattribute import ItemAttribute
 import ctypes
 

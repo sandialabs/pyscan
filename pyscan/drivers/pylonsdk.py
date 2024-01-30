@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sept 23, 2020
-@author: amounce
-"""
-
-
 from pyscan.general.itemattribute import ItemAttribute
 
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Oct 1, 2020
-@author: amounce
-"""
-
 import sys
 import os
 from time import sleep

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Stanford928
-===========
-"""
 from pyscan.drivers.stanford900 import Stanford900
 from math import floor
 
