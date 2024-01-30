@@ -86,7 +86,7 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
         runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
         runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-        runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0)
+        runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0.1)
     if (num_devices > 4):
         assert False, "num_devices > 4 not implemented in testing"
 
@@ -136,12 +136,12 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
 
 
 # for checking that the data results are as expected
-def check_data_results(x, id='', dtype=np.ndarray, shape=[2], loaded=False):
+def check_data_results(x, id='', dtype=np.ndarray, shape=[2], loaded=False, num_devices=0):
     is_loaded = loaded_modifier(loaded)
-    pre_string = is_loaded + "experiment x" + str(id) + " measurement "
+    pre_string = is_loaded + str(num_devices) + " devices experiment x" + str(id) + " measurement "
 
     if (dtype == float or shape == [1]):
-        assert isinstance(x, dtype), pre_string + "is not a float"
+        assert isinstance(x, dtype), pre_string + "is not a " + str(dtype)
     else:
         assert isinstance(x, dtype), pre_string + "is not a numpy array"
         assert x.dtype == 'float64', pre_string + "data is not a float"
@@ -153,12 +153,25 @@ def check_data_results(x, id='', dtype=np.ndarray, shape=[2], loaded=False):
 
 
 # for checking that the multi data results are as expected
-def check_multi_data_results(expt, shape1=[2], shape2=[2, 2], shape3=[2, 2, 2]):
-    check_data_results(expt.x1, id=1, dtype=float, shape=shape1)
-    check_data_results(expt.x2, id=2, shape=shape2)
-    for i in expt.x3:
-        assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
-    check_data_results(expt.x3, id=3, shape=shape3)
+def check_multi_data_results(expt, num_devices, shape1=[2], shape2=[2, 2], shape3=[2, 2, 2], shape4=[2, 2, 2, 2]):
+    if num_devices == 0:
+        check_data_results(expt.x1, id=1, dtype=float, shape=shape1)
+        check_data_results(expt.x2, id=2, shape=shape1)
+        for i in expt.x3:
+            assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
+        check_data_results(expt.x3, id=3, shape=shape2)
+    if num_devices == 1:
+        check_data_results(expt.x1, id=1, shape=shape1, num_devices=1)
+        check_data_results(expt.x2, id=2, shape=shape2, num_devices=1)
+        for i in expt.x3:
+            assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
+        check_data_results(expt.x3, id=3, shape=shape3, num_devices=1)
+    if num_devices == 2:
+        check_data_results(expt.x1, id=1, shape=shape2, num_devices=2)
+        check_data_results(expt.x2, id=2, shape=shape3, num_devices=2)
+        for i in expt.x3:
+            assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
+        check_data_results(expt.x3, id=3, shape=shape4, num_devices=2)
 
 
 def test_averagesweep():
@@ -213,7 +226,7 @@ def test_averagesweep():
             if num_devices == 2:
                 check_data_results(expt.x, shape=[2, 2])
         elif measure_function == measure_up_to_3D:
-            check_multi_data_results(expt)
+            check_multi_data_results(expt, num_devices)
 
         # saves file name of the saved experiment data and deletes the experiment
         file_name = expt.runinfo.long_name
@@ -239,8 +252,8 @@ def test_averagesweep():
     test_variations(num_devices=2)
     test_variations(num_devices=3)
     test_variations(measure_function=measure_up_to_3D)
+    test_variations(num_devices=1, measure_function=measure_up_to_3D)
+    test_variations(num_devices=2, measure_function=measure_up_to_3D)
+    test_variations(num_devices=3, measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
-
-
-test_averagesweep()
