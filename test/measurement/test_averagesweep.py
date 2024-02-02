@@ -100,16 +100,16 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
     # instantiate expt based on additional parameters
     if data_dir is None:
         if verbose is False:
-            expt = ps.AverageSweep(runinfo, devices)
+            expt = ps.Sweep(runinfo, devices)
         elif verbose is True:
-            expt = ps.AverageSweep(runinfo, devices, verbose=verbose)
+            expt = ps.Sweep(runinfo, devices, verbose=verbose)
         else:
             assert False, "Invalid verbose entry. Must be boolean."
     elif type(data_dir) is str:
         if verbose is False:
-            expt = ps.AverageSweep(runinfo, devices, data_dir)
+            expt = ps.Sweep(runinfo, devices, data_dir)
         elif verbose is True:
-            expt = ps.AverageSweep(runinfo, devices, data_dir, verbose)
+            expt = ps.Sweep(runinfo, devices, data_dir, verbose)
         else:
             assert False, "Invalid verbose entry. Must be boolean."
     else:
@@ -207,6 +207,10 @@ def test_averagesweep():
         # check the experiment runinfo
         expt.check_runinfo()
 
+        # if no average scan was input, make sure runinfo_averaged is set correctly
+        if bad == True:
+            assert expt.runinfo.average_d == -1
+
         # check the meta path was set successfully
         check_meta_path(expt)
 
@@ -266,15 +270,11 @@ def test_averagesweep():
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
     test_variations(n_average=10)
+    test_variations(bad=True)
 
     with pytest.raises(Exception):
-        test_variations(bad=True), "Averagesweep ran without an averagescan"
+        test_variations(n_average=-1), "Averagesweep's n_average must be 2 or more"
     with pytest.raises(Exception):
-        test_variations(n_average=-1), "Averagesweep's n_average must be more than 1"
+        test_variations(n_average=0), "Averagesweep's n_average must be 2 or more"
     with pytest.raises(Exception):
-        test_variations(n_average=0), "Averagesweep's n_average must be more than 1"
-    with pytest.raises(Exception):
-        test_variations(n_average=1), "Averagesweep's n_average must be more than 1"
-
-
-test_averagesweep()
+        test_variations(n_average=1), "Averagesweep's n_average must be 2 or more"

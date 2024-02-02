@@ -62,34 +62,17 @@ class RunInfo(ItemAttribute):
         instance of `.AverageScan`) to average over. Relevant for `.AverageSweep`.
         '''
         # find the loop set to average scan (if any) and determine the index
+        index = 0
         num_av_scans = 0
-        if issubclass(type(self.loop0), AverageScan):
-            self.average_d = 0
-            num_av_scans += 1
-        if issubclass(type(self.loop1), AverageScan):
-            self.average_d = 1
-            num_av_scans += 1
-        if issubclass(type(self.loop2), AverageScan):
-            self.average_d = 2
-            num_av_scans += 1
-        if issubclass(type(self.loop3), AverageScan):
-            self.average_d = 3
-            num_av_scans += 1
+        for loop in self.loops:
+            if isinstance(loop, AverageScan):
+                self.average_d = index
+                num_av_scans += 1
+            index += 1
 
         # if no average scans found set average_d to -1
         if num_av_scans == 0:
             self.average_d = -1
-
-        # this asserts that repeat and average scans are mutually exclusive
-        if num_av_scans == 1:
-            if issubclass(type(self.loop0), RepeatScan):
-                assert False, "Average and repeat scans are mutually exclusive"
-            if issubclass(type(self.loop1), RepeatScan):
-                assert False, "Average and repeat scans are mutually exclusive"
-            if issubclass(type(self.loop2), RepeatScan):
-                assert False, "Average and repeat scans are mutually exclusive"
-            if issubclass(type(self.loop3), RepeatScan):
-                assert False, "Average and repeat scans are mutually exclusive"
 
         # throw an error if more than one average scan is found
         if num_av_scans > 1:

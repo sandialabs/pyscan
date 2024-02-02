@@ -36,21 +36,7 @@ class Sweep(MetaSweep):
 
         self.runinfo.time = time
 
-    def run(self):
-        '''Runs the experiment while locking the console
-        '''
-
-        self.check_runinfo()
-        self.setup_instruments()
-        # save instrument settings
-        self.save_metadata()
-
-        sleep(self.runinfo.initial_pause)
-
-        self.get_time()
-
-        self.runinfo.running = True
-
+    def generic_sweep(self):
         if self.runinfo.time:
             for i in range(6):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
@@ -152,3 +138,120 @@ class Sweep(MetaSweep):
 
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
+
+    def average_sweep(self):
+        # Use for loop, but break if self.runinfo.running=False
+        for m in range(self.runinfo.loop3.n):
+            self.runinfo.loop3.i = m
+            self.runinfo.loop3.iterate(m, self.devices)
+            sleep(self.runinfo.loop3.dt)
+
+            for k in range(self.runinfo.loop2.n):
+                self.runinfo.loop2.i = k
+                self.runinfo.loop2.iterate(k, self.devices)
+                sleep(self.runinfo.loop2.dt)
+
+                for j in range(self.runinfo.loop1.n):
+                    self.runinfo.loop1.i = j
+                    self.runinfo.loop1.iterate(j, self.devices)
+                    sleep(self.runinfo.loop1.dt)
+
+                    for i in range(self.runinfo.loop0.n):
+                        self.runinfo.loop0.i = i
+                        self.runinfo.loop0.iterate(i, self.devices)
+                        sleep(self.runinfo.loop0.dt)
+
+                        data = self.runinfo.measure_function(self)
+
+                        # if on the first row of data, log the data names in self.runinfo.measured
+                        if np.all(np.array(self.runinfo.indicies) == 0):
+                            for key, value in data.items():
+                                self.runinfo.measured.append(key)
+                            self.preallocate(data)
+
+                        self.rolling_average(data)
+
+                        if self.runinfo.running is False:
+                            self.runinfo.complete = 'stopped'
+                            break
+
+                        self.save_point()
+
+                    # self.save_row()
+
+                    # Check if complete, stopped early
+                    if self.runinfo.running is False:
+                        self.runinfo.complete = 'stopped'
+                        break
+
+                if self.runinfo.running is False:
+                    self.runinfo.complete = 'stopped'
+                    break
+
+            print('Scan {}/{} Complete'.format(m + 1, self.runinfo.loop3.n))
+            if self.runinfo.running is False:
+                self.runinfo.complete = 'stopped'
+                break
+
+        self.runinfo.complete = True
+        self.runinfo.running = False
+
+        if 'end_function' in list(self.runinfo.keys()):
+            self.runinfo.end_function(self)
+
+    def rolling_average(self, data):
+        '''Does a rolling average of newly measured data
+
+        Parameters
+        ----------
+        data :
+            ItemAttribute instance of newly measured data point
+        '''
+        for key, value in data.items():
+
+            # two cases: 1. self[key] is a list 2. self[key] is not a list
+            if is_list_type(self[key]):
+                if is_list_type(value):
+                    value = np.array(value).astype(float)
+
+                if self.runinfo.average_index == 0:
+                    self[key][self.runinfo.average_indicies] = value
+                else:
+                    self[key][self.runinfo.average_indicies] *= (
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
+                    self[key][self.runinfo.average_indicies] += (
+                        value / (self.runinfo.average_index + 1))
+            else:
+                if self.runinfo.average_index == 0:
+                    self[key] = value
+
+                else:
+                    self[key] *= (
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
+                    self[key] += (
+                        value / (self.runinfo.average_index + 1))
+
+    def run(self):
+        '''Runs the experiment while locking the console
+        '''
+
+        self.check_runinfo()
+
+        self.setup_instruments()
+        # save instrument settings
+        self.save_metadata()
+
+        sleep(self.runinfo.initial_pause)
+
+        self.get_time()
+
+        self.runinfo.running = True
+
+        if self.runinfo.average_d == -1:
+            self.generic_sweep()
+
+        elif -1 < self.runinfo.average_d < 4:
+            self.average_sweep()
+
+        else:
+            assert False, "self.average_d not setup correctly by check_runinfo method"
