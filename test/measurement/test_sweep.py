@@ -215,14 +215,13 @@ def check_loaded_expt_further(expt):
     assert isinstance(expt.runinfo.static, ps.ItemAttribute), "runinfo static is not loaded as an item attribute"
 
     # check that the devices are as expected
-    v_attributes = ['debug', '_voltage', '_other_voltage']
-    for device in expt.devices.__dict__.keys():
-        check_loaded_dev_attributes(expt.devices[device], device, v_attributes)
+    v_attributes = ['debug', '_voltage']
+    for device_name in expt.devices.__dict__.keys():
+        device = expt.devices[device_name]
+        check_loaded_dev_attributes(device, device, v_attributes)
 
-        assert type(expt.devices[device].debug) is bool, "devices " + device + " debug is not loaded as a boolean"
-        assert type(expt.devices[device]._voltage) is int, "devices " + device + " voltage is not loaded as an int"
-        err_string = "devices " + device + " other voltage is not loaded as an int"
-        assert type(expt.devices[device]._other_voltage) is int, err_string
+        assert type(device.debug) is bool, "devices " + device_name + " debug is not loaded as a boolean"
+        assert type(device._voltage) is float or type(device._voltage) is int, device_name + " voltage type error"
 
     # check the runinfo loops
     assert hasattr(expt.runinfo, 'loop0'), "loaded expt does not have loop0"
@@ -1030,7 +1029,7 @@ def test_underscore_property():
 
     runinfo = ps.RunInfo()
 
-    runinfo.loop0 = ps.PropertyScan({'v1_device': ps.drange(0, 0.1, 0.1)}, prop='other_voltage')
+    runinfo.loop0 = ps.PropertyScan({'v1_device': ps.drange(0, 0.1, 0.1)}, prop='voltage')
 
     runinfo.measure_function = measure_point
 
@@ -1056,7 +1055,7 @@ def test_underscore_property():
         check_has_attributes(expt, intended_keys_length=4, loaded=loaded)
 
         # check the experiment has the right voltage attribute
-        assert hasattr(expt, 'v1_device_other_voltage')
+        assert hasattr(expt, 'v1_device_voltage')
 
         # check the experiment has data measurement attribute
         check_has_data(expt)
@@ -1066,8 +1065,8 @@ def test_underscore_property():
     # for checking the experiments results formatting after running
     def check_expt_results(expt, loaded=False):
         # check voltage(s) are as expected
-        check_voltage_results(expt.v1_device_other_voltage, expected_value1=0, expected_value2=0.1,
-                              loaded=loaded, string_modifier='_device_other')
+        check_voltage_results(expt.v1_device_voltage, expected_value1=0, expected_value2=0.1,
+                              loaded=loaded, string_modifier='_device')
 
         # check the data results are as expected
         check_data_results(expt.x, loaded=loaded)
