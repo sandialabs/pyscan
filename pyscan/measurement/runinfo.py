@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.itemattribute import ItemAttribute
-from .scans import PropertyScan, AverageScan, RepeatScan
+from .scans import PropertyScan, AverageScan
 
 
 class RunInfo(ItemAttribute):
@@ -160,6 +160,22 @@ class RunInfo(ItemAttribute):
         '''
         self._average_index = self.indicies[self.average_d]
         return self._average_index
+
+    @property
+    def has_average_scan(self):
+        ''' Returns a boolean of whether or not an average scan is present.
+        '''
+        num_av_scans = 0
+        for loop in self.loops:
+            if isinstance(loop, AverageScan):
+                num_av_scans += 1
+
+        if num_av_scans > 0:
+            self._has_average_scan = True
+        else:
+            self._has_average_scan = False
+
+        return self._has_average_scan
 
 
 def new_runinfo(*arg, **kwarg):
