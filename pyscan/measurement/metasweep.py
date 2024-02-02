@@ -166,6 +166,14 @@ class MetaSweep(ItemAttribute):
 
         self.runinfo.check()
 
+        assert hasattr(self.runinfo, 'average_d'), "runinfo did not have average d attribute after checking runinfo"
+        if self.runinfo.average_d == -1:
+            assert self.runinfo.has_average_scan is False
+        elif 0 <= self.runinfo.average_d < 4:
+            assert self.runinfo.has_average_scan is True
+        else:
+            assert False, "runinfo average d incorrect while has average scan is: " + str(self.runinfo.has_average_scan)
+
         return 1
 
     def get_time(self):

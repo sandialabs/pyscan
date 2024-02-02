@@ -181,6 +181,8 @@ def check_multi_data_results(expt, num_devices, shape1=[2], shape2=[2, 2], shape
         check_data_results(expt.x3, id=3, shape=shape4, num_devices=2)
 
 
+##################### TEST CASES BEGIN HERE #####################
+
 def test_averagesweep():
     """
     Testing AverageSweep
@@ -208,7 +210,7 @@ def test_averagesweep():
         expt.check_runinfo()
 
         # if no average scan was input, make sure runinfo_averaged is set correctly
-        if bad == True:
+        if bad is True:
             assert expt.runinfo.average_d == -1
 
         # check the meta path was set successfully

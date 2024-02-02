@@ -250,7 +250,7 @@ class Sweep(MetaSweep):
         if self.runinfo.average_d == -1:
             self.generic_sweep()
 
-        elif -1 < self.runinfo.average_d < 4:
+        elif 0 <= self.runinfo.average_d < 4:
             self.average_sweep()
 
         else:
