@@ -93,7 +93,7 @@ class InstrumentDriver(ItemAttribute):
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
         else:
-            pass
+            assert False, "key used but not (yet) allowed"
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
@@ -113,7 +113,7 @@ class InstrumentDriver(ItemAttribute):
         settings : dict
             settings dictionary
         debug : bool
-            returns query sring instead of querying instrument
+            returns query string instead of querying instrument
 
         Returns
         -------
@@ -163,10 +163,10 @@ class InstrumentDriver(ItemAttribute):
                 setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            possible = []
             for string in values:
-                print('{}'.format(string))
+                possible.append('{}'.format(string))
+            assert False, "Value Error: {} must be one of: ".format(settings['name']) + str(possible)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -197,9 +197,7 @@ class InstrumentDriver(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Range error:')
-            print('{} must be between {} and {}'.format(
-                settings['name'], rng[0], rng[1]))
+            assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
 
     def set_range_properties(self, obj, new_value, settings):
         '''
@@ -309,7 +307,8 @@ class InstrumentDriver(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(key))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            possible = []
             for string in dictionary.values():
-                print('{}'.format(string))
+                possible.append('{}'.format(string))
+            err_string = "Value Error: {} must be one of: ".format(settings['name']) + str(possible)
+            assert False, err_string
