@@ -58,10 +58,6 @@ def test_testvoltage():
 
     # test output state attribute initialization
     assert hasattr(v1, 'output_state'), "TestVoltage missing output_state attribute"
-    ###### not sure why v1.output_state is not working below but _output_state is...
-    ############ These seem inconsistent and unpredictable in why the _output vs regular output
-    ####### is acting in the way it is. It's behavior seems different from the above properties.
-    ########## This _output_state should be an int and not a string.
     assert type(v1._output_state) is str, "TestVoltage _output_state is not initially a string"
     assert v1._output_state == 'off', "TestVoltage _output_state does not initially return expected output state"
     assert v1.query('OUTP?') == '0', "TestVoltage query of 'OUTP?' does not return expected result"

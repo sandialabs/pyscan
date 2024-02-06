@@ -34,7 +34,7 @@ def loaded_modifier(loaded):
 
 
 # for checking that the experiment has data measurement attribute
-def check_has_data(expt, loaded=False):
+def check_has_single_data(expt, loaded=False):
     is_loaded = loaded_modifier(loaded)
     assert hasattr(expt, 'x'), is_loaded + "experiment missing x attribute after running"
 
@@ -93,6 +93,7 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
             runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0.1)
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
+    # if bad runinfo it will have no average scan and thus should fail
     else:
         devices.v1 = ps.TestVoltage()
         runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
@@ -204,14 +205,14 @@ def test_averagesweep():
         if data_dir is None:
             assert str(expt.runinfo.data_path) == 'backup', "experiment data path does not equal 'backup'"
         else:
-            assert str(expt.runinfo.data_path) == str(Path(data_dir)), "bad"
+            assert str(expt.runinfo.data_path) == str(Path(data_dir)), "data path not setup to equal input data dir"
 
         # check the experiment runinfo
         expt.check_runinfo()
 
         # if no average scan was input, make sure runinfo_averaged is set correctly
         if bad is True:
-            assert expt.runinfo.average_d == -1
+            assert expt.runinfo.average_d == -1, "average_d not -1 even without average scan"
 
         # check the meta path was set successfully
         check_meta_path(expt)
@@ -221,12 +222,12 @@ def test_averagesweep():
 
         # check that the experiment has the data measurement attribute(s)
         if measure_function == measure_point:
-            check_has_data(expt)
+            check_has_single_data(expt)
         elif measure_function == measure_up_to_3D:
             check_has_multi_data(expt)
 
         # check voltage is as expected
-        if num_devices > 1:
+        if num_devices >= 1:
             check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
         # test additional voltages here
 
