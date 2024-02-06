@@ -26,6 +26,7 @@ def test_testvoltage():
     assert hasattr(v1, 'voltage')
     assert type(v1.voltage) is float
     assert v1.voltage == 0.0
+    assert v1._voltage == 0.0
     with pytest.raises(Exception):
         v1.voltage = -1
     with pytest.raises(Exception):
@@ -58,6 +59,9 @@ def test_testvoltage():
     # test output state attribute initialization
     assert hasattr(v1, 'output_state')
     ###### not sure why v1.output_state is not working below but _output_state is...
+    ############ These seem inconsistent and unpredictable in why the _output vs regular output
+    ####### is acting in the way it is. It's behavior seems different from the above properties.
+    ########## This _output_state should be an int and not a string.
     assert type(v1._output_state) is str
     assert v1._output_state == "'off', '0'"
     assert v1.query('OUTP?') == "'off', '0'"
