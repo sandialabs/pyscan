@@ -17,6 +17,8 @@ def test_testvoltage():
     None
     """
 
+    ############################ ADDDDDDDDD ERROR MESSAGES FOR THESE TESTS!!!! ###############
+
     # set up v1 as representative for testing
     v1 = ps.TestVoltage()
 
@@ -56,9 +58,9 @@ def test_testvoltage():
     # test output state attribute initialization
     assert hasattr(v1, 'output_state')
     ###### not sure why v1.output_state is not working below but _output_state is...
-    assert type(v1._output_state) is dict
-    assert v1._output_state == {'0': 0}
-    assert v1.query('OUTP?') == r"{'0': 0}"
+    assert type(v1._output_state) is str
+    assert v1._output_state == "'off', '0'"
+    assert v1.query('OUTP?') == "'off', '0'"
     with pytest.raises(Exception):
         v1.output_state = {'orkitty ork ork': 1}
     with pytest.raises(Exception):
@@ -67,5 +69,11 @@ def test_testvoltage():
         v1.output_state = -1
     with pytest.raises(Exception):
         v1.output_state = 2
-    v1.output_state = 1
-    v1.output_state = 0
+    with pytest.raises(Exception):
+        v1.output_state = '5'
+    v1.output_state = '1'
+    v1.output_state = '0'
+    v1.output_state = 'on'
+    assert v1._output_state == 1
+    v1.output_state = 'off'
+    assert v1._output_state == 0

@@ -123,10 +123,17 @@ class InstrumentDriver(ItemAttribute):
         if not obj.debug:
             value = obj.query(settings['query_string']).strip('\n')
             if 'dict_values' in settings:
-                key = settings['return_type'](value)
-                value = {key: settings['dict_values'][key]}
+                key_list = []
+                dictionary = settings['dict_values']
+                print("dictionary is: ", dictionary, " of type: ", type(dictionary))
+                for key, val in dictionary.items():
+                    if str(val) == value:
+                        key_list.append(key)
+                value = key_list
+                value = str(value).strip("[]")
             else:
                 value = settings['return_type'](value)
+
         else:
             value = settings['query_string']
 
@@ -166,7 +173,7 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in values:
                 possible.append('{}'.format(string))
-            assert False, "Value Error: {} must be one of: ".format(settings['name']) + str(possible)
+            assert False, "Value Error: {} must be one of: {}".format(settings['name'], possible)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -271,7 +278,7 @@ class InstrumentDriver(ItemAttribute):
             for string in values:
                 print('{}'.format(string))
 
-    def set_dict_values_property(self, obj, new_value, settings):
+    def set_dict_values_property(self, obj, input_key, settings):
         '''
         Generator function for settings dictionary with 'dict_values' item.
         Check that new_value is a value in settings['dict_values']. If so,
@@ -282,8 +289,8 @@ class InstrumentDriver(ItemAttribute):
         ----------
         obj :
             parent class object
-        new_value :
-            new_value whose associated dictionary key will be set on the
+        input_key :
+            input_key whose associated dictionary value will be set on the
             instrument
         settings : dict
             dictionary with ['dict_values'] item
@@ -295,20 +302,19 @@ class InstrumentDriver(ItemAttribute):
 
         dictionary = settings['dict_values']
 
-        if new_value in dictionary.values():
-            key = list(dictionary.keys())[
-                list(dictionary.values()).index(new_value)]
+        if input_key in dictionary.keys():
+            new_value = dictionary[input_key]
             if not self.debug:
-                print(settings['write_string'].format(key))
+                print(settings['write_string'].format(new_value))
 
-                obj.write(settings['write_string'].format(key))
+                obj.write(settings['write_string'].format(new_value))
                 setattr(self, '_' + settings['name'], new_value)
             else:
                 setattr(self, '_' + settings['name'],
-                        settings['write_string'].format(key))
+                        settings['write_string'].format(new_value))
         else:
             possible = []
-            for string in dictionary.values():
+            for string in dictionary.keys():
                 possible.append('{}'.format(string))
-            err_string = "Value Error: {} must be one of: ".format(settings['name']) + str(possible)
+            err_string = "Value Error: {} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
