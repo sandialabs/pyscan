@@ -25,6 +25,14 @@ def measure_point(expt):
     return d
 
 
+# for setting up prestring based on loaded to differentiate loaded experiment error strings
+def loaded_modifier(loaded):
+    if (loaded is True):
+        return 'loaded '
+    else:
+        return ''
+
+
 # for checking that the experiment has data measurement attribute
 def check_has_data(expt, loaded=False):
     is_loaded = loaded_modifier(loaded)
@@ -50,14 +58,6 @@ def check_has_multi_data(expt, loaded=False):
     assert hasattr(expt, 'x1'), pre_string + "1" + post_string
     assert hasattr(expt, 'x2'), pre_string + "2" + post_string
     assert hasattr(expt, 'x3'), pre_string + "3" + post_string
-
-
-# for setting up prestring based on loaded to differentiate loaded experiment error strings
-def loaded_modifier(loaded):
-    if (loaded is True):
-        return 'loaded '
-    else:
-        return ''
 
 
 # for setting up the experiments

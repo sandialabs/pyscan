@@ -21,7 +21,7 @@ class TestVoltage(InstrumentDriver):
         self.debug = debug
         self._voltage = 0
         self._power = 1
-        self._output_state = 0
+        self._output_state = 'off'
 
     def query(self, string):
         if string == 'VOLT?':
@@ -29,6 +29,11 @@ class TestVoltage(InstrumentDriver):
         elif string == 'POW?':
             return str(self._power)
         elif string == 'OUTP?':
+            if self._output_state == 'off':
+                return '0'
+            if self._output_state == 'on':
+                return '1'
+            # leave for the sake of your personal sanity, trust us
             return str(self._output_state)
 
     def write(self, string):

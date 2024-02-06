@@ -68,6 +68,11 @@ class InstrumentDriver(ItemAttribute):
 
         return self.instrument.read()
 
+    def find_first_key(self, dictionary, machine_value):
+        for key, val in dictionary.items():
+            if str(val) == str(machine_value):
+                return key
+
     def add_device_property(self, settings):
         '''
         Adds a property to the class based on a settings dictionary
@@ -122,15 +127,11 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string']).strip('\n')
+            print("value at first is: ", value)
             if 'dict_values' in settings:
-                key_list = []
                 dictionary = settings['dict_values']
-                print("dictionary is: ", dictionary, " of type: ", type(dictionary))
-                for key, val in dictionary.items():
-                    if str(val) == value:
-                        key_list.append(key)
-                value = key_list
-                value = str(value).strip("[]")
+                value = self.find_first_key(dictionary, value)
+                print("then value is set to: ", value, " by find first key.")
             else:
                 value = settings['return_type'](value)
 
@@ -302,16 +303,20 @@ class InstrumentDriver(ItemAttribute):
 
         dictionary = settings['dict_values']
 
+        # make sure that the input key is in the property's dictionary
         if input_key in dictionary.keys():
-            new_value = dictionary[input_key]
+            machine_value = dictionary[input_key]
             if not self.debug:
-                print(settings['write_string'].format(new_value))
-
-                obj.write(settings['write_string'].format(new_value))
-                setattr(self, '_' + settings['name'], new_value)
+                # send the machine the machine value corresponding to desired state
+                obj.write(settings['write_string'].format(machine_value))
+                # find the first corresponding key to the machine value
+                first_key = self.find_first_key(dictionary, machine_value)
+                # set the _ attribute to the priority key value found above
+                setattr(self, '_' + settings['name'], first_key)
             else:
                 setattr(self, '_' + settings['name'],
-                        settings['write_string'].format(new_value))
+                        settings['write_string'].format(machine_value))
+        # if not throw an error
         else:
             possible = []
             for string in dictionary.keys():
