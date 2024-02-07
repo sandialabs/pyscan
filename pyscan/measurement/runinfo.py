@@ -61,16 +61,22 @@ class RunInfo(ItemAttribute):
         Automatically sets self.average_d to the correct loop index (i.e., the loop which contains an
         instance of `.AverageScan`) to average over. Relevant for `.AverageSweep`.
         '''
-        if issubclass(type(self.loop0), AverageScan):
-            self.average_d = 0
-        elif issubclass(type(self.loop1), AverageScan):
-            self.average_d = 1
-        elif issubclass(type(self.loop2), AverageScan):
-            self.average_d = 2
-        elif issubclass(type(self.loop3), AverageScan):
-            self.average_d = 3
-        else:
+        # find the loop set to average scan (if any) and determine the index
+        index = 0
+        num_av_scans = 0
+        for loop in self.loops:
+            if isinstance(loop, AverageScan):
+                self.average_d = index
+                num_av_scans += 1
+            index += 1
+
+        # if no average scans found set average_d to -1
+        if num_av_scans == 0:
             self.average_d = -1
+
+        # throw an error if more than one average scan is found
+        if num_av_scans > 1:
+            assert False, "More than one average scan is not allowed"
 
     @property
     def version(self):
@@ -154,6 +160,22 @@ class RunInfo(ItemAttribute):
         '''
         self._average_index = self.indicies[self.average_d]
         return self._average_index
+
+    @property
+    def has_average_scan(self):
+        ''' Returns a boolean of whether or not an average scan is present.
+        '''
+        num_av_scans = 0
+        for loop in self.loops:
+            if isinstance(loop, AverageScan):
+                num_av_scans += 1
+
+        if num_av_scans > 0:
+            self._has_average_scan = True
+        else:
+            self._has_average_scan = False
+
+        return self._has_average_scan
 
 
 def new_runinfo(*arg, **kwarg):

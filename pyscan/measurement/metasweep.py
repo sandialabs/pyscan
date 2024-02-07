@@ -8,7 +8,7 @@ from time import strftime
 from pyscan.general import (ItemAttribute,
                             recursive_to_dict,
                             is_list_type)
-from pyscan.measurement.scans import PropertyScan
+from pyscan.measurement.scans import PropertyScan, RepeatScan
 
 
 class MetaSweep(ItemAttribute):
@@ -148,17 +148,31 @@ class MetaSweep(ItemAttribute):
         property formatted.
         '''
 
+        num_repeat_scans = 0
         for loop in self.runinfo.loops:
             loop.check_same_length()
             if isinstance(loop, PropertyScan):
                 for dev in loop.device_names:
                     prop = loop.prop
                     assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
+            if isinstance(loop, RepeatScan):
+                num_repeat_scans += 1
+
+        if num_repeat_scans > 1:
+            assert False, "More than one repeat scan detected. This is not allowed."
 
         self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
         self.runinfo.short_name = self.runinfo.long_name[8:]
 
         self.runinfo.check()
+
+        assert hasattr(self.runinfo, 'average_d'), "runinfo did not have average d attribute after checking runinfo"
+        if self.runinfo.average_d == -1:
+            assert self.runinfo.has_average_scan is False
+        elif 0 <= self.runinfo.average_d < 4:
+            assert self.runinfo.has_average_scan is True
+        else:
+            assert False, "runinfo average d incorrect while has average scan is: " + str(self.runinfo.has_average_scan)
 
         return 1
 

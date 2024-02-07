@@ -68,6 +68,11 @@ class InstrumentDriver(ItemAttribute):
 
         return self.instrument.read()
 
+    def find_first_key(self, dictionary, machine_value):
+        for key, val in dictionary.items():
+            if str(val) == str(machine_value):
+                return key
+
     def add_device_property(self, settings):
         '''
         Adds a property to the class based on a settings dictionary
@@ -93,7 +98,7 @@ class InstrumentDriver(ItemAttribute):
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
         else:
-            pass
+            assert False, "key used but not (yet) allowed"
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
@@ -113,7 +118,7 @@ class InstrumentDriver(ItemAttribute):
         settings : dict
             settings dictionary
         debug : bool
-            returns query sring instead of querying instrument
+            returns query string instead of querying instrument
 
         Returns
         -------
@@ -123,10 +128,11 @@ class InstrumentDriver(ItemAttribute):
         if not obj.debug:
             value = obj.query(settings['query_string']).strip('\n')
             if 'dict_values' in settings:
-                key = settings['return_type'](value)
-                value = {key: settings['dict_values'][key]}
+                dictionary = settings['dict_values']
+                value = self.find_first_key(dictionary, value)
             else:
                 value = settings['return_type'](value)
+
         else:
             value = settings['query_string']
 
@@ -163,10 +169,10 @@ class InstrumentDriver(ItemAttribute):
                 setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            possible = []
             for string in values:
-                print('{}'.format(string))
+                possible.append('{}'.format(string))
+            assert False, "Value Error: {} must be one of: {}".format(settings['name'], possible)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -197,9 +203,7 @@ class InstrumentDriver(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            print('Range error:')
-            print('{} must be between {} and {}'.format(
-                settings['name'], rng[0], rng[1]))
+            assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
 
     def set_range_properties(self, obj, new_value, settings):
         '''
@@ -273,7 +277,7 @@ class InstrumentDriver(ItemAttribute):
             for string in values:
                 print('{}'.format(string))
 
-    def set_dict_values_property(self, obj, new_value, settings):
+    def set_dict_values_property(self, obj, input_key, settings):
         '''
         Generator function for settings dictionary with 'dict_values' item.
         Check that new_value is a value in settings['dict_values']. If so,
@@ -284,8 +288,8 @@ class InstrumentDriver(ItemAttribute):
         ----------
         obj :
             parent class object
-        new_value :
-            new_value whose associated dictionary key will be set on the
+        input_key :
+            input_key whose associated dictionary value will be set on the
             instrument
         settings : dict
             dictionary with ['dict_values'] item
@@ -297,19 +301,23 @@ class InstrumentDriver(ItemAttribute):
 
         dictionary = settings['dict_values']
 
-        if new_value in dictionary.values():
-            key = list(dictionary.keys())[
-                list(dictionary.values()).index(new_value)]
+        # make sure that the input key is in the property's dictionary
+        if input_key in dictionary.keys():
+            machine_value = dictionary[input_key]
             if not self.debug:
-                print(settings['write_string'].format(key))
-
-                obj.write(settings['write_string'].format(key))
-                setattr(self, '_' + settings['name'], new_value)
+                # send the machine the machine value corresponding to desired state
+                obj.write(settings['write_string'].format(machine_value))
+                # find the first corresponding key to the machine value
+                first_key = self.find_first_key(dictionary, machine_value)
+                # set the _ attribute to the priority key value found above
+                setattr(self, '_' + settings['name'], first_key)
             else:
                 setattr(self, '_' + settings['name'],
-                        settings['write_string'].format(key))
+                        settings['write_string'].format(machine_value))
+        # if not throw an error
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
-            for string in dictionary.values():
-                print('{}'.format(string))
+            possible = []
+            for string in dictionary.keys():
+                possible.append('{}'.format(string))
+            err_string = "Value Error: {} must be one of: {}".format(settings['name'], possible)
+            assert False, err_string

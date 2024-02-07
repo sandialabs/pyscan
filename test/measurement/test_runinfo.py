@@ -5,6 +5,7 @@ Pytest functions to test the Runinfo class
 import pyscan as ps
 
 
+#  ######## need to add tests for runinfo's different @property definitions.
 def test_init_from_noparams():
     """
     Testing init from no paramaters in RunInfo
