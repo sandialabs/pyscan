@@ -70,7 +70,7 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
     # set up based on num devices
     if bad is False:
         if (num_devices < 0):
-            assert False, "Must have at least one device"
+            assert False, "Num devices shouldn't be negative"
         if (num_devices == 0):
             runinfo.loop0 = ps.AverageScan(n_average, dt=0.01)
         elif (num_devices == 1):
@@ -132,12 +132,9 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     is_loaded = loaded_modifier(loaded)
 
     pre_string = is_loaded + "experiment v" + str(voltage_id) + string_modifier + "_voltage "
-    assert (isinstance(voltage, np.ndarray) or isinstance(voltage, list)), pre_string + "is not a numpy array"
+    assert (isinstance(voltage, np.ndarray) or isinstance(voltage, list)), pre_string + "is not a numpy array or a list"
     for i in voltage:
-        try:
-            assert i.dtype == 'float64', pre_string + "data is not a float"
-        except Exception:
-            assert isinstance(i, float), pre_string + "data is not a float"
+        assert (i.dtype == 'float64') or (isinstance(i, float)), pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
@@ -229,10 +226,9 @@ def test_averagesweep():
         # check voltage is as expected
         if num_devices >= 1:
             check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
-        # test additional voltages here
+        # ############# test additional voltages here
 
-        # check that average sweeps are as expected
-        print("expt.runinfo.loop1 is ", expt.runinfo.loop1)
+        # check that average sweeps are as expected ###### may add more test cases here?
 
         # check the data results are as expected
         if measure_function == measure_point:
@@ -257,10 +253,7 @@ def test_averagesweep():
         if data_dir is None:
             shutil.rmtree('./backup')
         else:
-            try:
-                shutil.rmtree(data_dir)
-            except (Exception):
-                pass
+            shutil.rmtree(data_dir)
 
     test_variations()
     test_variations(num_devices=1)
