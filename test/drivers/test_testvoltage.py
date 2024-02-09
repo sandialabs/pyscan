@@ -17,8 +17,6 @@ def test_testvoltage():
     None
     """
 
-    ############################ ADDDDDDDDD ERROR MESSAGES FOR THESE TESTS!!!! ###############
-
     # set up v1 as representative for testing
     v1 = ps.TestVoltage()
 

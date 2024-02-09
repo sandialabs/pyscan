@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from time import sleep
+import pyscan as ps
 from pyscan.measurement.metasweep import MetaSweep
 from pyscan.general.islisttype import is_list_type
 import numpy as np
@@ -140,6 +141,12 @@ class Sweep(MetaSweep):
             self.runinfo.end_function(self)
 
     def average_sweep(self):
+        for loop in self.runinfo.loops:
+            if isinstance(loop, ps.AverageScan) and (loop.n == 1):
+                print("n_average for average scan is 1. Running generic sweep instead of average sweep.")
+                self.generic_sweep()
+                return
+
         # Use for loop, but break if self.runinfo.running=False
         for m in range(self.runinfo.loop3.n):
             self.runinfo.loop3.i = m

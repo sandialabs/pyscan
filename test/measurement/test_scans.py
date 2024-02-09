@@ -471,11 +471,10 @@ def test_average_scan():
         check_attributes(loop, dt)
 
     with pytest.raises(Exception):
-        test_num_average(-1), "Average Scan n_average can be negative when it should be 2 or more"
+        test_num_average(-1), "Average Scan n_average can be negative when it should be 1 or more"
     with pytest.raises(Exception):
-        test_num_average(0), "Average Scan n_average can be 0 when it should be 2 or more"
-    with pytest.raises(Exception):
-        test_num_average(1), "Average Scan n_average can be 1 when it should be 2 or more"
+        test_num_average(0), "Average Scan n_average can be 0 when it should be 1 or more"
+    test_num_average(1)
     test_num_average(2)
     test_num_average(2, dt=1)
     test_num_average(100)

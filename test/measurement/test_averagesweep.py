@@ -233,9 +233,8 @@ def test_averagesweep():
             check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2)
         if num_devices >= 3:
             check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3)
-        # ############# test additional voltages here
 
-        # check that average sweeps are as expected ###### may add more test cases here?
+        # ######### check that average scan is as expected ###### may add more test cases here?
 
         # check the data results are as expected
         if measure_function == measure_point:
@@ -272,12 +271,11 @@ def test_averagesweep():
     test_variations(num_devices=3, measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
+    test_variations(n_average=1)
     test_variations(n_average=10)
     test_variations(bad=True)
 
     with pytest.raises(Exception):
-        test_variations(n_average=-1), "Averagesweep's n_average must be 2 or more"
+        test_variations(n_average=-1), "Averagesweep's n_average must be 1 or more"
     with pytest.raises(Exception):
-        test_variations(n_average=0), "Averagesweep's n_average must be 2 or more"
-    with pytest.raises(Exception):
-        test_variations(n_average=1), "Averagesweep's n_average must be 2 or more"
+        test_variations(n_average=0), "Averagesweep's n_average must be 1 or more"
