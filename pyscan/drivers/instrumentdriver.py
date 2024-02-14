@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.itemattribute import ItemAttribute
 from .newinstrument import new_instrument
+from collections import OrderedDict
 
 
 class InstrumentDriver(ItemAttribute):
@@ -300,6 +301,16 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         dictionary = settings['dict_values']
+
+        # convert all dictionaries to ordered dictionaries to preference first key (user value) for
+        # same (machine) values when queried
+        ordered_list = []
+        for key, value in dictionary.items():
+            ordered_list.append((key, value))
+
+        settings['dict_values'] = OrderedDict(ordered_list)
+        dictionary = settings['dict_values']
+        # dictionary = OrderedDict(ordered_list)
 
         # make sure that the input key is in the property's dictionary
         if input_key in dictionary.keys():
