@@ -173,7 +173,7 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in values:
                 possible.append('{}'.format(string))
-            assert False, "Value Error: {} must be one of: {}".format(settings['name'], possible)
+            assert False, "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -236,8 +236,7 @@ class InstrumentDriver(ItemAttribute):
             else:
                 setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
-            print('Range error:')
-            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs, new_value))
+            assert False, 'Range error:\nParameters must be in ranges {}\n\tYou passed{}'.format(rngs, new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -273,10 +272,10 @@ class InstrumentDriver(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(index))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            possible = []
             for string in values:
-                print('{}'.format(string))
+                possible.append(string)
+            assert False, "Value error:\n{} must be one of: {}".format(settings['name'], possible)
 
     def set_dict_values_property(self, obj, input_key, settings):
         '''
@@ -330,5 +329,5 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in dictionary.keys():
                 possible.append('{}'.format(string))
-            err_string = "Value Error: {} must be one of: {}".format(settings['name'], possible)
+            err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
