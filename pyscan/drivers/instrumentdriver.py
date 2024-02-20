@@ -101,6 +101,8 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "key used but not (yet) allowed"
 
+        self['_{}_settings'.format(settings['name'])] = settings
+
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
             fset=lambda obj, new_value: set_function(obj, new_value, settings))
