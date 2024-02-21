@@ -16,13 +16,13 @@ class InstrumentDriver(ItemAttribute):
         :func:`.new_instrument`)
     '''
 
-    def __init__(self, instrument, test=False):
+    def __init__(self, instrument, debug=False):
         if isinstance(instrument, str):
             self.instrument = new_instrument(instrument)
         else:
             self.instrument = instrument
 
-        self.test = test
+        self.debug = debug
 
     def query(self, string):
         '''
@@ -88,6 +88,8 @@ class InstrumentDriver(ItemAttribute):
         None
         '''
 
+        self['_{}_settings'.format(settings['name'])] = settings
+
         if 'values' in settings:
             set_function = self.set_values_property
         elif 'range' in settings:
@@ -100,8 +102,6 @@ class InstrumentDriver(ItemAttribute):
             set_function = self.set_dict_values_property
         else:
             assert False, "key used but not (yet) allowed"
-
-        self['_{}_settings'.format(settings['name'])] = settings
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
