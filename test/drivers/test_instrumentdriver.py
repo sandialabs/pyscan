@@ -2,6 +2,8 @@
 from pyscan.drivers import InstrumentDriver
 import pytest
 import math
+import string
+from collections import OrderedDict
 
 class TestInstrumentDriver(InstrumentDriver):
     '''Class that exhausts the possible properties of instrument driver to test instrument driver.
@@ -100,7 +102,7 @@ class TestInstrumentDriver(InstrumentDriver):
         })
         with pytest.raises(Exception):
             self.add_device_property({
-                'name': 'dict_values',
+                'name': 'bad_values',
                 'write_string': 'DICT_VALUES {}',
                 'query_string': 'DICT_VALUES?',
                 'invalid_key_name': {'on': 1, 'off': 0, '1': 1, '0': 0},
@@ -135,7 +137,7 @@ def test_instrumentdriver():
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',
              'indexed_values': ['A', 'B', 'C', 'D'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
-             'invalid_key_name': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
+             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
     expected_values = [None, False, vs, rgs, rgss, idxvs, dicts, 1, 0, (1, 15), 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
@@ -221,10 +223,62 @@ def test_instrumentdriver():
                 assert test_instrument._ranges == (r1, r2)
                 assert test_instrument.query('RANGES?') == '({}, {})'.format(r1, r2)
 
-    def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1, total_att=8):
+    # check the set_indexed_values_property behavior
+    def check_indexed_property(key):
+        name = test_instrument[key]['name']
+        for letter in string.ascii_letters:
+            if letter not in test_instrument[key]['indexed_values']:
+                with pytest.raises(Exception):
+                    test_instrument[name] = letter
+
+        step = 0
+        for i in range(0, 1000):
+            if i not in test_instrument[key]['indexed_values']:
+                with pytest.raises(Exception):
+                    test_instrument[name] = step
+            step += .1
+        
+        with pytest.raises(Exception):
+            test_instrument[name] = True
+
+        for iv in test_instrument._indexed_values_settings['indexed_values']:
+            test_instrument[name] = iv
+            assert test_instrument["_{}".format(name)] == iv
+            assert test_instrument.query('INDEXED_VALUES?') == iv
+
+    # check the set_dict_values_property behavior
+    def check_dict_property(key):
+        name = test_instrument[key]['name']
+        ord_dict = OrderedDict(test_instrument[key]['dict_values'])
+        for k in test_instrument[key]['dict_values']:
+            test_instrument[name] = k
+            assert test_instrument["_{}".format(name)] == test_instrument.find_first_key(ord_dict, ord_dict[k])
+            assert test_instrument.query('DICT_VALUES?') == test_instrument.find_first_key(ord_dict, ord_dict[k])
+
+        name = test_instrument[key]['name']
+        for letter in string.ascii_letters:
+            if letter not in test_instrument[key]['dict_values']:
+                with pytest.raises(Exception):
+                    test_instrument[name] = letter
+
+        step = 0
+        for i in range(0, 1000):
+            if i not in test_instrument[key]['dict_values']:
+                with pytest.raises(Exception):
+                    test_instrument[name] = step
+            step += .1
+
+        with pytest.raises(Exception):
+            test_instrument[name] = True
+
+    check_dict_property('_dict_values_settings')
+
+
+    def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
         # iterate over all attributes to test accordingly using predefined functions
-        values_counter, range_counter, ranges_counter = 0, 0, 0
-        values_idx, range_idx, ranges_idx = [], [], []
+        values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
+        values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
         for key in test_instrument.__dict__.keys():
             try:
                 if 'values' in test_instrument[key].keys():
@@ -247,32 +301,36 @@ def test_instrumentdriver():
                     check_ranges_property(key)
             except:
                 ranges_counter += 1
+            try:
+                if 'indexed_values' in test_instrument[key].keys():
+                    idx_vals_counter += 1
+                    idx_vals_idx.append(idx_vals_counter)
+                    check_indexed_property(key)
+            except:
+                idx_vals_counter += 1
+            try:
+                if 'dict_values' in test_instrument[key].keys():
+                    dict_vals_counter += 1
+                    dict_vals_idx.append(dict_vals_counter)
+                    check_dict_property(key)
+            except:
+                dict_vals_counter += 1
+
 
         print("{} range properties found and tested out of {} total attributes.".format(len(range_idx), range_counter))
         print("{} ranges properties found and tested out of {} total attributes.".format(len(ranges_idx), ranges_counter))
         print("{} values properties found and tested out of {} total attributes.".format(len(values_idx), values_counter))
+        print("{} indexed values properties found and tested out of {} total attributes.".format(len(idx_vals_idx), idx_vals_counter))
+        print("{} dict values properties found and tested out of {} total attributes.".format(len(dict_vals_idx), dict_vals_counter))
 
-        assert range_counter == ranges_counter == values_counter == total_att
-        assert num_val_props == num_range_props == num_ranges_props == 1
+        assert num_val_props == len(values_idx)
+        assert num_range_props == len(range_idx)
+        assert num_ranges_props == len(ranges_idx)
+        assert num_idx_vals_props == len(idx_vals_idx)
+        assert num_dict_vals_props == len(dict_vals_idx)
+        assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
     
     check_properties(test_instrument)
-
-    # check the set_indexed_values_property behavior
-    with pytest.raises(Exception):
-        test_instrument.indexed_values = 'E'
-    with pytest.raises(Exception):
-        test_instrument.indexed_values = 1
-    with pytest.raises(Exception):
-        test_instrument.indexed_values = 2.0
-    with pytest.raises(Exception):
-        test_instrument.indexed_values = 'AB'
-    with pytest.raises(Exception):
-        test_instrument.indexed_values = True
-
-    for iv in test_instrument._indexed_values_settings['indexed_values']:
-        test_instrument.indexed_values = iv
-        assert test_instrument._indexed_values == iv
-        assert test_instrument.query('INDEXED_VALUES?') == iv
 
     print("ALL TESTS PASSED BABY!!! WOOT WOOT!!!!!!!!!")
 
