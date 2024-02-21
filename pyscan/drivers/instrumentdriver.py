@@ -200,7 +200,7 @@ class InstrumentDriver(ItemAttribute):
 
         assert len(rng) == 2, "range setting requires 2 values"
         for val in rng:
-                assert type(val) == int, "range settings must be integers"
+            assert type(val) is int, "range settings must be integers"
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:

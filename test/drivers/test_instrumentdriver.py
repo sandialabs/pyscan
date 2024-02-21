@@ -5,6 +5,7 @@ import math
 import string
 from collections import OrderedDict
 
+
 class TestInstrumentDriver(InstrumentDriver):
     '''Class that exhausts the possible properties of instrument driver to test instrument driver.
 
@@ -126,7 +127,8 @@ def test_instrumentdriver():
     # check that the initialized attributes have the expected values
     def check_attribute_values(device, attributes, ev):
         for i in range(len(ev)):
-            assert device[attributes[i]] == ev[i], "test device {} attribute does not equal {}".format(device[attributes[i]], ev[i])
+            err_string = "test device {} attribute does not equal {}".format(device[attributes[i]], ev[i])
+            assert device[attributes[i]] == ev[i], err_string
 
     vs = {'name': 'values', 'write_string': 'VALUES {}', 'query_string': 'VALUES?',
           'values': [1, 10], 'return_type': int}
@@ -156,7 +158,7 @@ def test_instrumentdriver():
             test_instrument.values = 'not ok'
         with pytest.raises(Exception):
             test_instrument.values = False
-    
+
         for val in test_instrument[key]['values']:
             test_instrument[name] = val
             assert test_instrument["_{}".format(name)] == val
@@ -175,11 +177,11 @@ def test_instrumentdriver():
             test_instrument[name] = max_range + .001
         with pytest.raises(Exception):
             test_instrument[name] = max_range + 1
-        
+
         step = 1
         if abs(test_instrument[key]['range'][0] - test_instrument[key]['range'][0]) > 10000:
             step = math.ceil(abs(test_instrument[key]['range'][0] - test_instrument[key]['range'][0]) / 1000)
-        
+
         for r in range(test_instrument[key]['range'][0], test_instrument[key]['range'][0], step):
             test_instrument[name] = r
             assert test_instrument['_{}'.format(name)] == r
@@ -237,7 +239,7 @@ def test_instrumentdriver():
                 with pytest.raises(Exception):
                     test_instrument[name] = step
             step += .1
-        
+
         with pytest.raises(Exception):
             test_instrument[name] = True
 
@@ -273,7 +275,7 @@ def test_instrumentdriver():
 
     check_dict_property('_dict_values_settings')
 
-
+    # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
                          num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
         # iterate over all attributes to test accordingly using predefined functions
@@ -316,12 +318,12 @@ def test_instrumentdriver():
             except:
                 dict_vals_counter += 1
 
-
-        print("{} range properties found and tested out of {} total attributes.".format(len(range_idx), range_counter))
-        print("{} ranges properties found and tested out of {} total attributes.".format(len(ranges_idx), ranges_counter))
-        print("{} values properties found and tested out of {} total attributes.".format(len(values_idx), values_counter))
-        print("{} indexed values properties found and tested out of {} total attributes.".format(len(idx_vals_idx), idx_vals_counter))
-        print("{} dict values properties found and tested out of {} total attributes.".format(len(dict_vals_idx), dict_vals_counter))
+        mid_string = 'properties found and tested out of'
+        print("{} range {} {} total attributes.".format(len(range_idx), mid_string, range_counter))
+        print("{} ranges {} {} total attributes.".format(len(ranges_idx), mid_string, ranges_counter))
+        print("{} values {} {} total attributes.".format(len(values_idx), mid_string, values_counter))
+        print("{} indexed values {} {} total attributes.".format(len(idx_vals_idx), mid_string, idx_vals_counter))
+        print("{} dict values {} {} total attributes.".format(len(dict_vals_idx), mid_string, dict_vals_counter))
 
         assert num_val_props == len(values_idx)
         assert num_range_props == len(range_idx)
@@ -329,9 +331,10 @@ def test_instrumentdriver():
         assert num_idx_vals_props == len(idx_vals_idx)
         assert num_dict_vals_props == len(dict_vals_idx)
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
-    
+
     check_properties(test_instrument)
 
     print("ALL TESTS PASSED BABY!!! WOOT WOOT!!!!!!!!!")
+
 
 test_instrumentdriver()
