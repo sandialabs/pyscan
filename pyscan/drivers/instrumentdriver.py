@@ -198,6 +198,10 @@ class InstrumentDriver(ItemAttribute):
 
         rng = settings['range']
 
+        assert len(rng) == 2, "range setting requires 2 values"
+        for val in rng:
+                assert type(val) == int, "range settings must be integers"
+
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
                 obj.write(settings['write_string'].format(new_value))
@@ -228,6 +232,11 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         rngs = settings['ranges']
+
+        for rng in rngs:
+            assert len(rng) == 2, "each range for ranges settings must have 2 values"
+            for val in rng:
+                assert type(val) is int, "range inputs for ranges settings must be integers"
 
         if len(rngs) != len(new_value):
             print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
