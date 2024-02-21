@@ -5,6 +5,8 @@ import math
 import string
 from collections import OrderedDict
 
+# #################### still need to add error flags for this file...
+
 
 class TestInstrumentDriver(InstrumentDriver):
     '''Class that exhausts the possible properties of instrument driver to test instrument driver.
