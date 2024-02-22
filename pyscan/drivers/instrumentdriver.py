@@ -164,7 +164,7 @@ class InstrumentDriver(ItemAttribute):
 
         values = settings['values']
 
-        if new_value in values:
+        if values.count(new_value) > 0:
             if not self.debug:
                 obj.write(settings['write_string'].format(new_value))
                 setattr(obj, '_' + settings['name'], new_value)
@@ -175,7 +175,8 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in values:
                 possible.append('{}'.format(string))
-            assert False, "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
+            assert False, "Value Error:\n{} must be one of: {}. You submitted: {}".format(settings['name'],
+                                                                                          possible, new_value)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -200,7 +201,8 @@ class InstrumentDriver(ItemAttribute):
 
         assert len(rng) == 2, "range setting requires 2 values"
         for val in rng:
-            assert type(val) is int, "range settings must be integers"
+            assert (type(val) is int) or (type(val) is float), "range settings must be integers or floats"
+        assert (type(new_value) is int) or (type(new_value) is float), "range values must be integers or floats"
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
@@ -236,7 +238,9 @@ class InstrumentDriver(ItemAttribute):
         for rng in rngs:
             assert len(rng) == 2, "each range for ranges settings must have 2 values"
             for val in rng:
-                assert type(val) is int, "range inputs for ranges settings must be integers"
+                assert (type(val) is int) or (type(val) is float), "inputs for ranges settings must be ints or floats"
+        for val in new_value:
+            assert (type(val) is int) or (type(val) is float), "inputs for ranges values must be int or float"
 
         if len(rngs) != len(new_value):
             print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
@@ -270,6 +274,11 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         values = settings['indexed_values']
+
+        if (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is str):
+            pass
+        else:
+            assert False
 
         if new_value in values:
             index = values.index(new_value)

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import pyscan
+from importlib import reload
+reload(pyscan)
 from pyscan.drivers import InstrumentDriver
 import pytest
 import math
@@ -30,6 +33,7 @@ class TestInstrumentDriver(InstrumentDriver):
         super().__init__(instrument=None, *arg, **kwarg)
         self.initialize_properties()
 
+        self.instrument = 'instrument#123'
         self.debug = debug
         self._values = 1
         self._range = 0
@@ -68,7 +72,7 @@ class TestInstrumentDriver(InstrumentDriver):
             'name': 'values',
             'write_string': 'VALUES {}',
             'query_string': 'VALUES?',
-            'values': [1, 10],
+            'values': [2, 'x', False, (1, 10), ['1', '10']],
             'return_type': int
         })
 
@@ -84,7 +88,7 @@ class TestInstrumentDriver(InstrumentDriver):
             'name': 'ranges',
             'write_string': 'RANGES {}',
             'query_string': 'RANGES?',
-            'ranges': ([0, 10], [15, 20]),
+            'ranges': [[0, 10], [15, 20], [-1, 1]],
             'return_type': float
         })
 
@@ -92,7 +96,7 @@ class TestInstrumentDriver(InstrumentDriver):
             'name': 'indexed_values',
             'write_string': 'INDEXED_VALUES {}',
             'query_string': 'INDEXED_VALUES?',
-            'indexed_values': ['A', 'B', 'C', 'D'],
+            'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'],
             'return_type': str
         })
 
@@ -130,24 +134,23 @@ def test_instrumentdriver():
     def check_attribute_values(device, attributes, ev):
         for i in range(len(ev)):
             err_string = "test device {} attribute does not equal {}".format(device[attributes[i]], ev[i])
-            assert device[attributes[i]] == ev[i], err_string
+            assert (device[attributes[i]] == ev[i]), err_string
 
     vs = {'name': 'values', 'write_string': 'VALUES {}', 'query_string': 'VALUES?',
-          'values': [1, 10], 'return_type': int}
+          'values': [2, 'x', False, (1, 10), ['1', '10']], 'return_type': int}
     rgs = {'name': 'range', 'write_string': 'RANGE {}', 'query_string': 'RANGE?',
            'range': [0, 10], 'return_type': float}
     rgss = {'name': 'ranges', 'write_string': 'RANGES {}', 'query_string': 'RANGES?',
-            'ranges': ([0, 10], [15, 20]), 'return_type': float}
+            'ranges': [[0, 10], [15, 20], [-1, 1]], 'return_type': float}
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',
-             'indexed_values': ['A', 'B', 'C', 'D'], 'return_type': str}
+             'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
              'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
-    expected_values = [None, False, vs, rgs, rgss, idxvs, dicts, 1, 0, (1, 15), 'A', 'off']
+    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 1, 0, (1, 15), 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
     # check the set_values_property behavior
     def check_values_property(key):
-        print("entered check_values_property()")
         name = test_instrument[key]['name']
         test_val = 0
         for i in range(-10, 10000):
@@ -158,8 +161,9 @@ def test_instrumentdriver():
 
         with pytest.raises(Exception):
             test_instrument.values = 'not ok'
+        # could be in data set and could be interpreted as 0
         with pytest.raises(Exception):
-            test_instrument.values = False
+            test_instrument.values = True
 
         for val in test_instrument[key]['values']:
             test_instrument[name] = val
@@ -180,6 +184,7 @@ def test_instrumentdriver():
         with pytest.raises(Exception):
             test_instrument[name] = max_range + 1
 
+        # set fixed number of steps to divide the overall range by for step size for actual drivers
         step = 1
         if abs(test_instrument[key]['range'][0] - test_instrument[key]['range'][0]) > 10000:
             step = math.ceil(abs(test_instrument[key]['range'][0] - test_instrument[key]['range'][0]) / 1000)
@@ -187,35 +192,60 @@ def test_instrumentdriver():
         for r in range(test_instrument[key]['range'][0], test_instrument[key]['range'][0], step):
             test_instrument[name] = r
             assert test_instrument['_{}'.format(name)] == r
-            # I do not expect this would be ubiquitous and will likely need to be reconsidered.
+            # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
             assert test_instrument.query('RANGE?') == str(r)
 
     # check the set_range_properties behavior
     def check_ranges_property(key):
-        min1_range = min(test_instrument[key]['ranges'][0])
-        max1_range = max(test_instrument[key]['ranges'][0])
-        min2_range = min(test_instrument[key]['ranges'][1])
-        max2_range = max(test_instrument[key]['ranges'][1])
+        # ######### update to be able take in x number of ranges rather than 2
         name = test_instrument[key]['name']
-        with pytest.raises(Exception):
-            test_instrument[name] = 1
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range, min2_range - .001)
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range, min2_range - 1)
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range, max2_range + .001)
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range, max2_range + 1)
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range - .001, min2_range)
-        with pytest.raises(Exception):
-            test_instrument[name] = (min1_range - 1, min2_range)
-        with pytest.raises(Exception):
-            test_instrument[name] = (max1_range + .001, min2_range)
-        with pytest.raises(Exception):
-            test_instrument[name] = (max1_range + 1, min2_range)
+        ranges = test_instrument[key]['ranges']
+        num_ranges = len(ranges)
+        if num_ranges < 1:
+            assert False, "No ranges detected in ranges property"
+        min_max_list = []
+        for rng in ranges:
+            min_range = min(rng)
+            max_range = max(rng)
+            min_max_list.append((min_range, max_range))
 
+        # iterate over ranges to generate all faulty input combinations with 1 item out of range for each
+        entry_attempts = []
+        for i in range(num_ranges):
+            current_min_entry1 = []
+            current_min_entry2 = []
+            current_max_entry1 = []
+            current_max_entry2 = []
+            count = 0
+            for mn, mx in min_max_list:
+                current_min1 = mn
+                current_min2 = mn
+                current_max1 = mx
+                current_max2 = mx
+                if i == count:
+                    current_min1 = mn - .001
+                    current_min2 = mn - 1
+                    current_max1 = mx + .001
+                    current_max2 = mx + 1
+                current_min_entry1.append(current_min1)
+                current_min_entry2.append(current_min2)
+                current_max_entry1.append(current_max1)
+                current_max_entry2.append(current_max2)
+                count += 1
+            entry_attempts.append(current_min_entry1)
+            entry_attempts.append(current_min_entry2)
+            entry_attempts.append(current_max_entry1)
+            entry_attempts.append(current_max_entry2)
+
+        # make sure each of those faulty entries fails because they are out of range
+        for entry in entry_attempts:
+            with pytest.raises(Exception):
+                test_instrument[name] = entry
+
+        step_size_list = []
+        for min, max in min_max_list:
+            current_step_size = math.ceil(abs(max - min)) / 30
+        
         step1, step2 = 1, 1
         if abs(test_instrument[key][name][0][0] - test_instrument[key][name][0][1]) > 1000:
             step1 = math.ceil(abs(test_instrument[key][name][0][0] - test_instrument[key][name][0][1]) / 1000)
@@ -227,8 +257,11 @@ def test_instrumentdriver():
                 assert test_instrument._ranges == (r1, r2)
                 assert test_instrument.query('RANGES?') == '({}, {})'.format(r1, r2)
 
+    check_ranges_property('_ranges_settings')
+
     # check the set_indexed_values_property behavior
     def check_indexed_property(key):
+        # check a random string rather than a for loop
         name = test_instrument[key]['name']
         for letter in string.ascii_letters:
             if letter not in test_instrument[key]['indexed_values']:
@@ -244,14 +277,19 @@ def test_instrumentdriver():
 
         with pytest.raises(Exception):
             test_instrument[name] = True
+        with pytest.raises(Exception):
+            test_instrument[name] = [1, 5]
+        with pytest.raises(Exception):
+            test_instrument[name] = {'key1': 'bad boy', 'key2': 'badder girl'}
 
         for iv in test_instrument._indexed_values_settings['indexed_values']:
             test_instrument[name] = iv
             assert test_instrument["_{}".format(name)] == iv
-            assert test_instrument.query('INDEXED_VALUES?') == iv
+            assert test_instrument.query('INDEXED_VALUES?') == str(iv)
 
     # check the set_dict_values_property behavior
     def check_dict_property(key):
+        # key must be string or number, set property to include lists, arrays, arbritray values of diversity
         name = test_instrument[key]['name']
         ord_dict = OrderedDict(test_instrument[key]['dict_values'])
         for k in test_instrument[key]['dict_values']:
@@ -260,6 +298,7 @@ def test_instrumentdriver():
             assert test_instrument.query('DICT_VALUES?') == test_instrument.find_first_key(ord_dict, ord_dict[k])
 
         name = test_instrument[key]['name']
+        to_test = ['organsdhjfjs', 'white bunny', 'z']
         for letter in string.ascii_letters:
             if letter not in test_instrument[key]['dict_values']:
                 with pytest.raises(Exception):
@@ -274,8 +313,6 @@ def test_instrumentdriver():
 
         with pytest.raises(Exception):
             test_instrument[name] = True
-
-    check_dict_property('_dict_values_settings')
 
     # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
