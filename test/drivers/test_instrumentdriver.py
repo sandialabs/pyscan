@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-import pyscan
-from importlib import reload
-reload(pyscan)
 from pyscan.drivers import InstrumentDriver
 import pytest
 import math
@@ -197,7 +194,6 @@ def test_instrumentdriver():
 
     # check the set_range_properties behavior
     def check_ranges_property(key):
-        # ######### update to be able take in x number of ranges rather than 2
         name = test_instrument[key]['name']
         ranges = test_instrument[key]['ranges']
         num_ranges = len(ranges)
@@ -210,7 +206,7 @@ def test_instrumentdriver():
             min_max_list.append((min_range, max_range))
 
         # iterate over ranges to generate all faulty input combinations with 1 item out of range for each
-        entry_attempts = []
+        bad_entries = []
         for i in range(num_ranges):
             current_min_entry1 = []
             current_min_entry2 = []
@@ -232,32 +228,48 @@ def test_instrumentdriver():
                 current_max_entry1.append(current_max1)
                 current_max_entry2.append(current_max2)
                 count += 1
-            entry_attempts.append(current_min_entry1)
-            entry_attempts.append(current_min_entry2)
-            entry_attempts.append(current_max_entry1)
-            entry_attempts.append(current_max_entry2)
+            bad_entries.append(current_min_entry1)
+            bad_entries.append(current_min_entry2)
+            bad_entries.append(current_max_entry1)
+            bad_entries.append(current_max_entry2)
 
         # make sure each of those faulty entries fails because they are out of range
-        for entry in entry_attempts:
+        for entry in bad_entries:
             with pytest.raises(Exception):
                 test_instrument[name] = entry
 
-        step_size_list = []
-        for min, max in min_max_list:
-            current_step_size = math.ceil(abs(max - min)) / 30
-        
-        step1, step2 = 1, 1
-        if abs(test_instrument[key][name][0][0] - test_instrument[key][name][0][1]) > 1000:
-            step1 = math.ceil(abs(test_instrument[key][name][0][0] - test_instrument[key][name][0][1]) / 1000)
-        if abs(test_instrument[key][name][1][0] - test_instrument[key][name][1][1]) > 1000:
-            step2 = math.ceil(abs(test_instrument[key][name][1][0] - test_instrument[key][name][1][1]) / 1000)
-        for r1 in range(test_instrument[key][name][0][0], test_instrument[key][name][0][1], step1):
-            for r2 in range(test_instrument[key][name][1][0], test_instrument[key][name][1][1], step2):
-                test_instrument.ranges = (r1, r2)
-                assert test_instrument._ranges == (r1, r2)
-                assert test_instrument.query('RANGES?') == '({}, {})'.format(r1, r2)
+        # ######### consider updating step size/num steps
+        num_steps = []
+        for mn, mx in min_max_list:
+            current_num_steps = math.floor(abs(mx - mn))
+            num_steps.append(current_num_steps)
 
-    check_ranges_property('_ranges_settings')
+        # compile a list of good entries that are within the provided ranges
+        good_entries = []
+        for i in range(num_ranges):
+            min_entry = []
+            max_entry = []
+            for mn, mx in min_max_list:
+                min_entry.append(mn)
+                max_entry.append(mx)
+            good_entries.append(min_entry)
+            for j in range(num_steps[i]):
+                current_entry_list = []
+                count = 0
+                for mn, mx in min_max_list:
+                    current_entry = mn
+                    if i == count:
+                        current_entry = mn + j + 1
+                    current_entry_list.append(current_entry)
+                    count += 1
+                good_entries.append(current_entry_list)
+            good_entries.append(max_entry)
+
+        # make sure each of the good entries succeeds
+        for entry in good_entries:
+            test_instrument[name] = entry
+            assert test_instrument._ranges == entry
+            assert test_instrument.query('RANGES?') == str(entry)
 
     # check the set_indexed_values_property behavior
     def check_indexed_property(key):
@@ -297,8 +309,6 @@ def test_instrumentdriver():
             assert test_instrument["_{}".format(name)] == test_instrument.find_first_key(ord_dict, ord_dict[k])
             assert test_instrument.query('DICT_VALUES?') == test_instrument.find_first_key(ord_dict, ord_dict[k])
 
-        name = test_instrument[key]['name']
-        to_test = ['organsdhjfjs', 'white bunny', 'z']
         for letter in string.ascii_letters:
             if letter not in test_instrument[key]['dict_values']:
                 with pytest.raises(Exception):
@@ -372,8 +382,3 @@ def test_instrumentdriver():
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
     check_properties(test_instrument)
-
-    print("ALL TESTS PASSED BABY!!! WOOT WOOT!!!!!!!!!")
-
-
-test_instrumentdriver()
