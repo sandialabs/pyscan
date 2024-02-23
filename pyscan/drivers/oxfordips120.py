@@ -22,7 +22,7 @@ class OxfordIPS120(InstrumentDriver):
         self.set_remote_unlocked()
 
         self.field_limit = 8
-        self.field_rate_limit = 0.1
+        self.field_rate_limit = 0.2
 
         self.debug = False
         self.initialize_properties()
