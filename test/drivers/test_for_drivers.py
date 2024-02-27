@@ -6,10 +6,10 @@ from collections import OrderedDict
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
 BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 890992238.2345,
-                  'not ok', 'bad value', 'Andy is cool',
-                  [1, 2412, 19], [1, 191, 13, -5.3],
-                  {'Alfred': "Batman's uncle", 'or': 'imposter'},
-                  {'key1': 'bad boy', 'key2': 'badder girl'}]
+              'not ok', 'bad value', 'Andy is cool',
+              [1, 2412, 19], [1, 191, 13, -5.3],
+              {'Alfred': "Batman's uncle", 'or': 'imposter'},
+              {'key1': 'bad boy', 'key2': 'badder girl'}]
 
 
 # check that the initialized state has the expected attributes
@@ -238,6 +238,7 @@ def check_properties(test_instrument, num_val_props, num_range_props, num_ranges
     assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
 
+# implement the above sections to test your drivers properties with the device
 def test_driver(device, expected_attributes, expected_values, num_val_props, num_range_props,
                 num_ranges_props, num_idx_vals_props, num_dict_vals_props, total_att):
     check_has_attributes(device, expected_attributes)
