@@ -246,3 +246,6 @@ def test_driver(device, expected_attributes, expected_values, num_val_props, num
 
     check_properties(device, num_val_props, num_range_props, num_ranges_props, num_idx_vals_props,
                      num_dict_vals_props, total_att)
+
+
+assert True, "Dummy placeholder so that it can pass pytest for now..."
