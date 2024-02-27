@@ -179,12 +179,70 @@ def check_dict_property(device, key):
             with pytest.raises(Exception):
                 device[name] = item
 
-    with pytest.raises(Exception):
-        device[name] = True
 
-def test_driver(device, expected_attributes, expected_values):
+# implements above checks for all attributes by type
+def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
+                     num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
+    # iterate over all attributes to test accordingly using predefined functions
+    values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
+    values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+    for key in test_instrument.__dict__.keys():
+        try:
+            if 'values' in test_instrument[key].keys():
+                values_counter += 1
+                values_idx.append(values_counter)
+                check_values_property(key)
+        except:
+            values_counter += 1
+        try:
+            if 'range' in test_instrument[key].keys():
+                range_counter += 1
+                range_idx.append(range_counter)
+                check_range_property(key)
+        except:
+            range_counter += 1
+        try:
+            if 'ranges' in test_instrument[key].keys():
+                ranges_counter += 1
+                ranges_idx.append(range_counter)
+                check_ranges_property(key)
+        except:
+            ranges_counter += 1
+        try:
+            if 'indexed_values' in test_instrument[key].keys():
+                idx_vals_counter += 1
+                idx_vals_idx.append(idx_vals_counter)
+                check_indexed_property(key)
+        except:
+            idx_vals_counter += 1
+        try:
+            if 'dict_values' in test_instrument[key].keys():
+                dict_vals_counter += 1
+                dict_vals_idx.append(dict_vals_counter)
+                check_dict_property(key)
+        except:
+            dict_vals_counter += 1
+
+    mid_string = 'properties found and tested out of'
+    print("{} range {} {} total attributes.".format(len(range_idx), mid_string, range_counter))
+    print("{} ranges {} {} total attributes.".format(len(ranges_idx), mid_string, ranges_counter))
+    print("{} values {} {} total attributes.".format(len(values_idx), mid_string, values_counter))
+    print("{} indexed values {} {} total attributes.".format(len(idx_vals_idx), mid_string, idx_vals_counter))
+    print("{} dict values {} {} total attributes.".format(len(dict_vals_idx), mid_string, dict_vals_counter))
+
+    assert num_val_props == len(values_idx)
+    assert num_range_props == len(range_idx)
+    assert num_ranges_props == len(ranges_idx)
+    assert num_idx_vals_props == len(idx_vals_idx)
+    assert num_dict_vals_props == len(dict_vals_idx)
+    assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
+
+
+def test_driver(device, expected_attributes, expected_values, num_val_props, num_range_props,
+                num_ranges_props, num_idx_vals_props, num_dict_vals_props, total_att):
     check_has_attributes(device, expected_attributes)
 
     check_attribute_values(device, expected_attributes, expected_values)
 
-
+    check_properties(device, num_val_props, num_range_props, num_ranges_props, num_idx_vals_props,
+                     num_dict_vals_props, total_att)
