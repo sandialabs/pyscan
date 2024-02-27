@@ -73,8 +73,6 @@ class Stanford830(InstrumentDriver):
 
         super().__init__(instrument)
 
-        self.gain = 1
-
         self.debug = False
         self.initialize_properties()
 

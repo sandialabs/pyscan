@@ -35,6 +35,7 @@ def check_values_property(device, key):
 
     for val in device[key]['values']:
         device[name] = val
+        # ################ consider within a range here since may not return perfect value.
         assert device["_{}".format(name)] == val
         assert device.query('VALUES?') == str(val)
 
@@ -54,6 +55,7 @@ def check_range_property(device, key):
         device[name] = max_range + 1
 
     # set fixed number of steps to divide the overall range by for step size for actual drivers
+    # ################# change these number of steps to follow ranges.
     step = 1
     if abs(device[key]['range'][0] - device[key]['range'][0]) > 10000:
         step = math.ceil(abs(device[key]['range'][0] - device[key]['range'][0]) / 1000)
@@ -179,7 +181,6 @@ def check_dict_property(device, key):
                 device[name] = item
 
 
-@pytest.mark.skip(reason="must be tested with specific drivers and their corresponding inputs.")
 # implements above checks for all attributes by type
 def check_properties(test_instrument, num_val_props, num_range_props, num_ranges_props,
                      num_idx_vals_props, num_dict_vals_props, total_att):
@@ -238,7 +239,9 @@ def check_properties(test_instrument, num_val_props, num_range_props, num_ranges
     assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
 
+@pytest.mark.skip(reason="must be tested with specific drivers and their corresponding inputs.")
 # implement the above sections to test your drivers properties with the device
+# ###################### automatically identify and test _settings properties
 def test_driver(device, expected_attributes, expected_values, num_val_props, num_range_props,
                 num_ranges_props, num_idx_vals_props, num_dict_vals_props, total_att):
     check_has_attributes(device, expected_attributes)
