@@ -181,8 +181,8 @@ def check_dict_property(device, key):
 
 
 # implements above checks for all attributes by type
-def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
-                     num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
+def check_properties(test_instrument, num_val_props, num_range_props, num_ranges_props,
+                     num_idx_vals_props, num_dict_vals_props, total_att):
     # iterate over all attributes to test accordingly using predefined functions
     values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
     values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
