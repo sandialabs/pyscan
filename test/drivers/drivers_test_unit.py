@@ -179,6 +179,7 @@ def check_dict_property(device, key):
                 device[name] = item
 
 
+@pytest.mark.skip(reason="must be tested with specific drivers and their corresponding inputs.")
 # implements above checks for all attributes by type
 def check_properties(test_instrument, num_val_props, num_range_props, num_ranges_props,
                      num_idx_vals_props, num_dict_vals_props, total_att):
