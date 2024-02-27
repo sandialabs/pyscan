@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
 import math
-import string
 from collections import OrderedDict
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
