@@ -2,11 +2,12 @@
 import numpy as np
 from time import sleep
 from pyscan.general.stackorappend import stack_or_append
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import AbstractExperiment
 
 
-class ChartRecorder(MetaSweep):
-    '''Class to run single loop repeatedly. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+class ChartRecorder(AbstractExperiment):
+    '''Class to run single loop repeatedly.
+    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------

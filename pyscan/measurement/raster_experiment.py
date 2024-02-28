@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.islisttype import is_list_type
 import numpy as np
 from datetime import datetime
 
 
-class RasterSweep(MetaSweep):
+class RasterExperiment(AbstractExperiment):
     '''Experiment class that takes data after each loop0 iteration but reverses
-    loop0's direction after each loop1 iteration. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+    loop0's direction after each loop1 iteration.
+    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -153,3 +154,8 @@ class RasterSweep(MetaSweep):
 
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
+
+
+# legacy naming convention
+class RasterSweep(RasterExperiment):
+    pass

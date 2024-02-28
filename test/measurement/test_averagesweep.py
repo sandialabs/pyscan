@@ -72,31 +72,31 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
         if (num_devices < 0):
             assert False, "Num devices shouldn't be negative"
         if (num_devices == 0):
-            runinfo.loop0 = ps.AverageScan(n_average, dt=0.01)
+            runinfo.scan0 = ps.AverageScan(n_average, dt=0.01)
         elif (num_devices == 1):
             devices.v1 = ps.TestVoltage()
-            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-            runinfo.loop1 = ps.AverageScan(n_average, dt=0)
+            runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.scan1 = ps.AverageScan(n_average, dt=0)
         elif (num_devices == 2):
             devices.v1 = ps.TestVoltage()
             devices.v2 = ps.TestVoltage()
-            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-            runinfo.loop2 = ps.AverageScan(n_average + 1, dt=0)
+            runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan2 = ps.AverageScan(n_average + 1, dt=0)
         elif (num_devices == 3):
             devices.v1 = ps.TestVoltage()
             devices.v2 = ps.TestVoltage()
             devices.v3 = ps.TestVoltage()
-            runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
-            runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
-            runinfo.loop3 = ps.AverageScan(n_average + 2, dt=0.1)
+            runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+            runinfo.scan3 = ps.AverageScan(n_average + 2, dt=0.1)
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
     # if bad runinfo it will have no average scan and thus should fail
     else:
         devices.v1 = ps.TestVoltage()
-        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
 
     # instantiate expt based on additional parameters
     if data_dir is None:

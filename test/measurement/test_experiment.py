@@ -1,5 +1,5 @@
 '''
-Pytest functions to test the Sweep experiment class and the load experiment function from loadexperiment.py
+Pytest functions to test the Experiment experiment class and the load experiment function from loadexperiment.py
 '''
 
 
@@ -49,28 +49,28 @@ def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1)
     runinfo = ps.RunInfo()
 
     if (repeat is True):
-        runinfo.loop0 = ps.RepeatScan(repeat_num)
+        runinfo.scan0 = ps.RepeatScan(repeat_num)
     else:
-        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
 
         if (num_devices > 1):
             devices.v2 = ps.TestVoltage()
-            runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
 
         if (num_devices > 2):
             devices.v3 = ps.TestVoltage()
-            runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
 
         if (num_devices > 3):
             devices.v4 = ps.TestVoltage()
-            runinfo.loop3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
 
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
 
     runinfo.measure_function = measure_function
 
-    expt = ps.Sweep(runinfo, devices)
+    expt = ps.Experiment(runinfo, devices)
     return expt
 
 
@@ -223,16 +223,16 @@ def check_loaded_expt_further(expt):
         assert type(device.debug) is bool, "devices " + device_name + " debug is not loaded as a boolean"
         assert type(device._voltage) is float or type(device._voltage) is int, device_name + " voltage type error"
 
-    # check the runinfo loops
-    assert hasattr(expt.runinfo, 'loop0'), "loaded expt does not have loop0"
-    assert hasattr(expt.runinfo, 'loop1'), "loaded expt does not have loop1"
-    assert hasattr(expt.runinfo, 'loop2'), "loaded expt does not have loop2"
-    assert hasattr(expt.runinfo, 'loop3'), "loaded expt does not have loop3"
+    # check the runinfo scans
+    assert hasattr(expt.runinfo, 'scan0'), "loaded expt does not have scan0"
+    assert hasattr(expt.runinfo, 'scan1'), "loaded expt does not have scan1"
+    assert hasattr(expt.runinfo, 'scan2'), "loaded expt does not have scan2"
+    assert hasattr(expt.runinfo, 'scan3'), "loaded expt does not have scan3"
 
     for key in expt.runinfo.__dict__.keys():
-        if key.startswith('loop'):
-            loop = key
-            assert isinstance(expt.runinfo[loop], ps.ItemAttribute), "loaded runinfo " + loop + " not item attribute"
+        if key.startswith('scan'):
+            scan = key
+            assert isinstance(expt.runinfo[scan], ps.ItemAttribute), "loaded runinfo " + scan + " not item attribute"
 
     # check other attributes for proper type when loaded
     assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"
@@ -1029,11 +1029,11 @@ def test_underscore_property():
 
     runinfo = ps.RunInfo()
 
-    runinfo.loop0 = ps.PropertyScan({'v1_device': ps.drange(0, 0.1, 0.1)}, prop='voltage')
+    runinfo.scan0 = ps.PropertyScan({'v1_device': ps.drange(0, 0.1, 0.1)}, prop='voltage')
 
     runinfo.measure_function = measure_point
 
-    expt = ps.Sweep(runinfo, devices)
+    expt = ps.Experiment(runinfo, devices)
 
     # check the experiment was initialized correctly
     check_expt_init(expt)

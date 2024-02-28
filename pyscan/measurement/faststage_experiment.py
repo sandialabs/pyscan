@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 # import nidaqmx
 
 
-class FastStageSweep(MetaSweep):
-    '''Setup a point by point measurement. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+class FastStageExperiment(AbstractExperiment):
+    '''Setup a point by point measurement.
+    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -182,3 +183,8 @@ class FastStageSweep(MetaSweep):
         devices.stage.reset_speed()
 
         return d
+
+
+# legacy naming convention
+class FastStageSweep(FastStageExperiment):
+    pass

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.itemattribute import ItemAttribute
 import numpy as np
 # import nidaqmx
 
 
-class FastGalvoSweep(MetaSweep):
-    '''Setup a point by point measurement. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+class FastGalvoExperiment(AbstractExperiment):
+    '''Setup a point by point measurement.
+    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -43,6 +44,7 @@ class FastGalvoSweep(MetaSweep):
         dev = devices[self.runinfo.loop0['device_names'][0]]
         xrange = list(self.runinfo.loop0.scan_dict.values())[0]
 
+        # ######### should this be sweep or experiment?
         dev.legacy_sweep_mode(xrange, runinfo.srate, 5)
         devices.pb.setup_single_ttl(
             ['counter', 'awg'],
@@ -150,3 +152,8 @@ class FastGalvoSweep(MetaSweep):
         devices.pb.reset()
 
         return d
+
+
+# legacy naming convention
+class FastGalvoSweep(FastGalvoExperiment):
+    pass

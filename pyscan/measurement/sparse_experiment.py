@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.islisttype import is_list_type
 import numpy as np
 
 
-class SparseSweep(MetaSweep):
+class SparseExperiment(AbstractExperiment):
     '''Experiment class that takes data after each loop0 iteration if
     runinfo.sparse_points[self.runinfo.indicies] = 1, allowing the experiment
-    to skip taking data points. Inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+    to skip taking data points. Inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -110,3 +110,8 @@ class SparseSweep(MetaSweep):
 
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
+
+
+# legacy naming convention
+class SparseSweep(SparseExperiment):
+    pass
