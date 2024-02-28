@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.itemattribute import ItemAttribute
 from .newinstrument import new_instrument
+from collections import OrderedDict
+import numpy as np
 
 
 class InstrumentDriver(ItemAttribute):
@@ -15,13 +17,13 @@ class InstrumentDriver(ItemAttribute):
         :func:`.new_instrument`)
     '''
 
-    def __init__(self, instrument, test=False):
+    def __init__(self, instrument, debug=False):
         if isinstance(instrument, str):
             self.instrument = new_instrument(instrument)
         else:
             self.instrument = instrument
 
-        self.test = test
+        self.debug = debug
 
     def query(self, string):
         '''
@@ -86,6 +88,8 @@ class InstrumentDriver(ItemAttribute):
         -------
         None
         '''
+
+        self['_{}_settings'.format(settings['name'])] = settings
 
         if 'values' in settings:
             set_function = self.set_values_property
@@ -161,7 +165,7 @@ class InstrumentDriver(ItemAttribute):
 
         values = settings['values']
 
-        if new_value in values:
+        if values.count(new_value) > 0:
             if not self.debug:
                 obj.write(settings['write_string'].format(new_value))
                 setattr(obj, '_' + settings['name'], new_value)
@@ -172,7 +176,8 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in values:
                 possible.append('{}'.format(string))
-            assert False, "Value Error: {} must be one of: {}".format(settings['name'], possible)
+            assert False, "Value Error:\n{} must be one of: {}. You submitted: {}".format(settings['name'],
+                                                                                          possible, new_value)
 
     def set_range_property(self, obj, new_value, settings):
         '''
@@ -194,6 +199,12 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         rng = settings['range']
+
+        assert len(rng) == 2, "range setting requires 2 values"
+        for val in rng:
+            assert (type(val) is int) or (type(val) is float), "range settings must be integers or floats"
+        err_string = "range values must be integers or floats"
+        assert (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is np.float64), err_string
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
@@ -226,6 +237,13 @@ class InstrumentDriver(ItemAttribute):
 
         rngs = settings['ranges']
 
+        for rng in rngs:
+            assert len(rng) == 2, "each range for ranges settings must have 2 values"
+            for val in rng:
+                assert (type(val) is int) or (type(val) is float), "inputs for ranges settings must be ints or floats"
+        for val in new_value:
+            assert (type(val) is int) or (type(val) is float), "inputs for ranges values must be int or float"
+
         if len(rngs) != len(new_value):
             print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
         elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
@@ -235,8 +253,7 @@ class InstrumentDriver(ItemAttribute):
             else:
                 setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
-            print('Range error:')
-            print('Parameters must be in ranges {}\n\tYou passed {}.'.format(rngs, new_value))
+            assert False, 'Range error:\nParameters must be in ranges {}\n\tYou passed{}'.format(rngs, new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -260,6 +277,11 @@ class InstrumentDriver(ItemAttribute):
 
         values = settings['indexed_values']
 
+        if (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is str):
+            pass
+        else:
+            assert False
+
         if new_value in values:
             index = values.index(new_value)
             if not self.debug:
@@ -272,10 +294,10 @@ class InstrumentDriver(ItemAttribute):
                 setattr(self, '_' + settings['name'],
                         settings['write_string'].format(index))
         else:
-            print('Value Error:')
-            print('{} must be one of:'.format(settings['name']))
+            possible = []
             for string in values:
-                print('{}'.format(string))
+                possible.append(string)
+            assert False, "Value error:\n{} must be one of: {}".format(settings['name'], possible)
 
     def set_dict_values_property(self, obj, input_key, settings):
         '''
@@ -301,6 +323,16 @@ class InstrumentDriver(ItemAttribute):
 
         dictionary = settings['dict_values']
 
+        # convert all dictionaries to ordered dictionaries to preference first key (user value) for
+        # same (machine) values when queried
+        ordered_list = []
+        for key, value in dictionary.items():
+            ordered_list.append((key, value))
+
+        settings['dict_values'] = OrderedDict(ordered_list)
+        dictionary = settings['dict_values']
+        # dictionary = OrderedDict(ordered_list)
+
         # make sure that the input key is in the property's dictionary
         if input_key in dictionary.keys():
             machine_value = dictionary[input_key]
@@ -319,5 +351,5 @@ class InstrumentDriver(ItemAttribute):
             possible = []
             for string in dictionary.keys():
                 possible.append('{}'.format(string))
-            err_string = "Value Error: {} must be one of: {}".format(settings['name'], possible)
+            err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string

@@ -134,7 +134,10 @@ def check_voltage_results(voltage, expected_value1, expected_value2, voltage_id=
     pre_string = is_loaded + "experiment v" + str(voltage_id) + string_modifier + "_voltage "
     assert (isinstance(voltage, np.ndarray) or isinstance(voltage, list)), pre_string + "is not a numpy array or a list"
     for i in voltage:
-        assert (i.dtype == 'float64') or (isinstance(i, float)), pre_string + "data is not a float"
+        try:
+            assert i.dtype == 'float64'
+        except (Exception):
+            assert isinstance(i, float), pre_string + "data is not a float"
     assert len(voltage) == 2, pre_string + "array does not have 2 elements"
     assert voltage[0] == expected_value1, pre_string + "value[0] is not " + str(expected_value1)
     assert voltage[1] == expected_value2, pre_string + "value[1] is not " + str(expected_value2)
@@ -226,9 +229,12 @@ def test_averagesweep():
         # check voltage is as expected
         if num_devices >= 1:
             check_voltage_results(expt.v1_voltage, expected_value1=0, expected_value2=0.1)
-        # ############# test additional voltages here
+        if num_devices >= 2:
+            check_voltage_results(expt.v2_voltage, expected_value1=0.1, expected_value2=0, voltage_id=2)
+        if num_devices >= 3:
+            check_voltage_results(expt.v3_voltage, expected_value1=0.3, expected_value2=0.2, voltage_id=3)
 
-        # check that average sweeps are as expected ###### may add more test cases here?
+        # ######### check that average scan is as expected ###### may add more test cases here?
 
         # check the data results are as expected
         if measure_function == measure_point:
@@ -265,12 +271,11 @@ def test_averagesweep():
     test_variations(num_devices=3, measure_function=measure_up_to_3D)
     test_variations(data_dir='./bakeep')
     test_variations(verbose=True)
+    test_variations(n_average=1)
     test_variations(n_average=10)
     test_variations(bad=True)
 
     with pytest.raises(Exception):
-        test_variations(n_average=-1), "Averagesweep's n_average must be 2 or more"
+        test_variations(n_average=-1), "Averagesweep's n_average must be 1 or more"
     with pytest.raises(Exception):
-        test_variations(n_average=0), "Averagesweep's n_average must be 2 or more"
-    with pytest.raises(Exception):
-        test_variations(n_average=1), "Averagesweep's n_average must be 2 or more"
+        test_variations(n_average=0), "Averagesweep's n_average must be 1 or more"

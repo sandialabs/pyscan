@@ -36,6 +36,7 @@ class TestVoltage(InstrumentDriver):
             # leave for the sake of your personal sanity, trust us
             return str(self._output_state)
 
+    # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
     def write(self, string):
         if 'VOLT' in string:
             return string.strip('VOLT ')
