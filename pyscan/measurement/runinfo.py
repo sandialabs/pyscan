@@ -184,17 +184,33 @@ class RunInfo(ItemAttribute):
     def loop0(self):
         return self.scan0
 
+    @loop0.setter
+    def loop0(self, value):
+        self.scan0 = value
+
     @property
     def loop1(self):
         return self.scan1
+
+    @loop1.setter
+    def loop1(self, value):
+        self.scan1 = value
 
     @property
     def loop2(self):
         return self.scan2
 
+    @loop2.setter
+    def loop2(self, value):
+        self.scan2 = value
+
     @property
     def loop3(self):
         return self.scan3
+
+    @loop3.setter
+    def loop3(self, value):
+        self.scan3 = value
 
 
 def new_runinfo(*arg, **kwarg):
