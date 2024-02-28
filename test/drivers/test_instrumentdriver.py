@@ -114,7 +114,7 @@ class TestInstrumentDriver(InstrumentDriver):
             })
 
 
-def test_instrumentdriver():
+def test_testinstrumentdriver():
     test_instrument = TestInstrumentDriver()
 
     # check that the initialized state has the expected attributes
@@ -192,7 +192,7 @@ def test_instrumentdriver():
             # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
             assert test_instrument.query('RANGE?') == str(r)
 
-    # check the set_range_properties behavior
+    # check the set_ranges_properties behavior
     def check_ranges_property(key):
         name = test_instrument[key]['name']
         ranges = test_instrument[key]['ranges']
@@ -382,3 +382,4 @@ def test_instrumentdriver():
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
     check_properties(test_instrument)
+    # #### further implement drivers_test_unit to test
