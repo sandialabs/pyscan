@@ -19,7 +19,7 @@ class OxfordIPS120(InstrumentDriver):
 
         self.instrument.read_termination = '\r'
         self.instrument.write_termination = '\r'
-        self.set_remote_unlocked()
+        self.remote()
 
         self.field_limit = 8
         self.field_rate_limit = 0.2
@@ -28,12 +28,36 @@ class OxfordIPS120(InstrumentDriver):
         self.initialize_properties()
 
     def initialize_properties(self):
-        self.target_field
-        self.field_sweep_rate
+        self.field_set_point
+        self.target_field # legacy
+        self.field_rate
+        self.field_sweep_rate # legacy
         self.get_current
-        self.get_target_current
-        self.get_current_sweep_rate
+        self.get_current_set_point
+        self.get_target_current # legacy
+        self.get_current_rate
+        self.get_current_sweep_rate # legacy
         self.get_field
+
+    def __repr__(self):
+        status = self.status()
+        if status.heater():
+            value = "heater on"
+        else:
+            value = "heater off"
+        value += "\n"
+        if status.sweeping():
+            value += "sweeping"
+        else:
+            value += "at rest"
+        value += "\n"
+        value += f"field = {self.get_field()}"
+        value += "\n"
+        value += f"field_set_point = {self.field_set_point}"
+        value += "\n"
+        value += f"field_rate = {self.field_rate}"
+
+        return value
 
     def hold(self):
         self.write('$A0')
@@ -47,26 +71,93 @@ class OxfordIPS120(InstrumentDriver):
     def clamp(self):
         self.write('$A4')
 
-    def set_local_locked(self):
-        self.write('$C0')
+    def local(self, locked=False):
+        '''
+        Set local mode.
+        Keyword arguments:
+            locked: boolean, defaults to unlocked
+        '''
 
-    def set_remote_lock(self):
-        self.write('$C1')
+        if locked:
+            self.write('$C0')
+        else:
+            self.write('$C2')
 
-    def set_local_unlocked(self):
-        self.write('$C2')
+    def remote(self, locked=False):
+        '''
+        Set remote mode.
+        Keyword arguments:
+            locked: boolean, defaults to unlocked
+        '''
 
-    def set_remote_unlocked(self):
-        self.write('$C3')
+        if locked:
+            self.write('$C1')
+        else:
+            self.write('$C3')
+
+    def heater(self, state):
+        '''
+        Set the state of the heater.  Record the time when the heater was changed
+        '''
+
+        if state == 'on':
+            _ = self.query('&H1')
+        elif state == 'off':
+            _ = self.query('&H0')
+        elif state == 'force':
+            # need to add some checks before allowing heater to be forced
+            _ = self.query('&H2')
+        else:
+            print("State must be 'on', 'off' or 'force'")
+
+    @property
+    def field_set_point(self):
+        self._target_field = float(self.query_until_return('R8').replace('R', ''))
+        return self._target_field
+
+    @field_set_point.setter
+    def field_set_point(self, new_value):
+        if (new_value >= -self.field_limit) and (new_value <= self.field_limit):
+            # normal resolution 0.0001 T
+            self.write('$J{}'.format(round(new_value, 4)))
+            self._target_field = round(new_value, 4)
+            # extended resolution 0.00001 T (see Q4 to set extended resolution)
+        else:
+            print(f'Target field out of range, must be {-self.field_limit} <= set point <= {self.field_limit}')
+
+    @property
+    def field_rate(self):
+        self._field_rate = float(self.query_until_return('R9').replace('R', ''))
+        return self._field_rate
+
+    @field_rate.setter
+    def field_rate(self, new_value):
+        if (new_value > 0) and (new_value <= self.field_rate_limit):
+            # normal resolution 0.001 T/min
+            self.write('$T{}'.format(round(new_value, 3)))
+            self._field_sweep_rate = round(new_value, 3)
+            # extended resolution 0.0001 T/min (see Q4 to set extended resolution)
+        else:
+            print(f'Sweep rate out of range, must be 0 < rate <= {self.field_rate_limit}')
 
     def get_current(self):
         self._current = float(self.query_until_return('R2').replace('R', ''))
         return self._current
 
+    def get_current_set_point(self):
+        self._current_set_point = float(self.query_until_return('R5').replace('R', ''))
+        return self._current_set_point
+
+    # legacy, use get_current_set_point
     def get_target_current(self):
         self._target_current = float(self.query_until_return('R5').replace('R', ''))
         return self._target_current
 
+    def get_current_rate(self):
+        self._current_rate = float(self.query_until_return('R6').replace('R', ''))
+        return self._current_rate
+
+    # legacy, use get_current_rate
     def get_current_sweep_rate(self):
         self._current_sweep_rate = float(self.query_until_return('R6').replace('R', ''))
         return self._current_sweep_rate
@@ -75,6 +166,7 @@ class OxfordIPS120(InstrumentDriver):
         self._field = float(self.query_until_return('R7').replace('R', ''))
         return self._field
 
+    # legacy, use field_set_point()
     @property
     def target_field(self):
         self._target_field = float(self.query_until_return('R8').replace('R', ''))
@@ -101,14 +193,10 @@ class OxfordIPS120(InstrumentDriver):
         else:
             print('Sweep rate out of range, must be 0 < rate < {}'.format(self.field_rate_limit))
 
-    def set_heat_on(self):
-        return self.query('&H0')
+    def status(self):
 
-    def set_heat_off(self):
-        return self.query('&H1')
-
-    def set_target_field(self, new_value):
-        self.write('$J{}'.format(round(new_value, 4)))
+        status_string = self.query_until_return('X')
+        return Status(status_string)
 
     def get_status(self):
 
@@ -188,3 +276,190 @@ class OxfordIPS120(InstrumentDriver):
                 return message
             else:
                 message = self.query('&')
+
+    # --- legacy commands below here ---
+    # legacy
+    def set_local_locked(self):
+        self.write('$C0')
+
+    # legacy
+    def set_remote_lock(self):
+        self.write('$C1')
+
+    # legacy
+    def set_local_unlocked(self):
+        self.write('$C2')
+
+    # legacy
+    def set_remote_unlocked(self):
+        self.write('$C3')
+
+    # legacy, use heater('on') and these are reversed
+    def set_heat_on(self):
+        return self.query('&H0')
+
+    # legacy, use heater('off') and these are reversed
+    def set_heat_off(self):
+        return self.query('&H1')
+
+    # legacy, must use field_set_point attribute
+    def set_target_field(self, new_value):
+        self.write('$J{}'.format(round(new_value, 4)))
+        print("deprecated: use 'field_set_point = value'")
+
+class Status():
+    def __init__(self, status_string='X00A1C3H1M10P03'):
+        '''
+        Returns:
+            Tuple of dictionaries, X1, X2, A, C, H, M1 and M2
+            Each dictionary has a 
+                'description': what status is reported
+                'value': integer from status string
+                'states': text explanation of the status from the integer value
+        '''
+
+        # get index values
+        self.X1 = int(status_string[1])
+        self.X2 = int(status_string[2])
+        self.A = int(status_string[4])
+        self.C = int(status_string[6])
+        self.H = int(status_string[8])
+        self.M1 = int(status_string[10])
+        self.M2 = int(status_string[11])
+
+    def __repr__(self):
+        value = f"X1: {self.X1}; {self.X1_value()}"
+        value += "\n"
+        value += f"X2: {self.X2}; {self.X2_value()}"
+        value += "\n"
+        value += f"A: {self.A}; {self.A_value()}"
+        value += "\n"
+        value += f"C: {self.C}; {self.C_value()}"
+        value += "\n"
+        value += f"H: {self.H}; {self.H_value()}"
+        value += "\n"
+        value += f"M1: {self.M1}; {self.M1_value()}"
+        value += "\n"
+        value += f"M2: {self.M2}; {self.M2_value()}"
+
+        return value
+
+    def X1_value(self):
+        name = 'system status (operation)'
+        indexed_values = {
+            0: 'Normal',
+            1: 'Quenched',
+            2: 'Over Heated',
+            4: 'Warming Up',
+            8: 'Fault'}
+        return indexed_values[self.X1]
+
+    def X2_value(self):
+        name = 'system status (voltage)'
+        indexed_values = {
+            0: 'Normal',
+            1: 'On Positive Voltage Limit',
+            2: 'On Negative Voltage Limit',
+            4: 'Outside Negative Current Limit',
+            8: 'Outside Positive Current Limit'}
+        return indexed_values[self.X2]
+
+    def A_value(self):
+        name = 'Activity'
+        indexed_values = {
+            0: 'Hold',
+            1: 'To Set Point',
+            2: 'To Zero',
+            4: 'Clamped'}
+        return indexed_values[self.A]
+
+    def C_value(self):
+        name = 'Activity'
+        indexed_values = {
+            0: 'Local & Locked',
+            1: 'Remote & Locked',
+            2: 'Local & Unlocked',
+            3: 'Remote & Unlocked',
+            4: 'Auto-Run-Down',
+            5: 'Auto-Run-Down',
+            6: 'Auto-Run-Down',
+            7: 'Auto-Run-Down' }
+        return indexed_values[self.C]
+
+    def C_value(self):
+        name = 'LOC/REM status'
+        indexed_values = {
+            0: 'Local & Locked',
+            1: 'Remote & Locked',
+            2: 'Local & Unlocked',
+            3: 'Remote & Unlocked',
+            4: 'Auto-Run-Down',
+            5: 'Auto-Run-Down',
+            6: 'Auto-Run-Down',
+            7: 'Auto-Run-Down' }
+        return indexed_values[self.C]
+
+    def H_value(self):
+        name = 'Heater'
+        indexed_values = {
+            0: 'Off Magnet at Zero',
+            1: 'On',
+            2: 'Off Magnet at Field',
+            5: 'Heater Fault',
+            8: 'No Switch Fitted' }
+        return indexed_values[self.H]
+
+    def M1_value(self):
+        name = 'Mode (rate)'
+        indexed_values = {
+            0: 'Amps, Immediate, Fast',
+            1: 'Tesla, Immediate, Fast',
+            2: 'Amps, Sweep, Fast',
+            3: 'Tesla, Sweep, Fast',
+            4: 'Amps, Immediate, Slow',
+            5: 'Tesla, Immediate, Slow',
+            6: 'Amps, Sweep, Slow',
+            7: 'Tesla, Sweep, Slow', }
+        return indexed_values[self.M1]
+
+    def M2_value(self):
+        name = 'Mode (sweep)'
+        indexed_values = {
+            0: 'At Rest',
+            1: 'Sweeping',
+            2: 'Sweep Limiting',
+            3: 'Sweeping & Sweep Limiting',
+            4: 'Polarity Fault',
+            5: 'Sweeping & Polarity Fault',
+            6: 'Amps, Sweep, Slow',
+            7: 'Tesla, Sweep, Slow', }
+        return indexed_values[self.M2]
+
+    def heater(self):
+        '''
+        heater() True for on and False for off
+        '''
+        if self.H==0:
+            return False
+        elif self.H==1:
+            return True
+        else:
+            # magnet persistant
+            return False
+
+    def sweeping(self):
+        '''
+        True when the field is changing, False when the field is at rest
+        '''
+
+        if self.M2 == 0:
+            return False
+        else:
+            return True
+
+    def persistent(self):
+        if self.H==2:
+            return True
+        else:
+            return False
+
