@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 import pyscan as ps
-from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.islisttype import is_list_type
+from pyscan.measurement.abstract_experiment import AbstractExperiment
+from pyscan.general.is_list_type import is_list_type
 import numpy as np
 from datetime import datetime
 
 
-class Sweep(MetaSweep):
+class Experiment(AbstractExperiment):
     '''
-    Experiment class that takes data after each loop0 iteration. Inherits from
-    `.MetaSweep`.
+    Experiment class that takes data after each scan0 iteration. Inherits from
+    `.AbstractExperiment`.
 
     Parameters
     ----------
     runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
-        Runinfo instance. The Runinfo loop containing the dependent variable
+        Runinfo instance. The Runinfo scan containing the dependent variable
         that you want to average should be an instance of
         :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
         There should be only one dependent variable to be averaged.
-        The loops representing independent variables can be instances of
+        The scans representing independent variables can be instances of
         :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
     devices :
         ItemAttribute instance containing all experiment devices
@@ -37,41 +37,41 @@ class Sweep(MetaSweep):
 
         self.runinfo.time = time
 
-    def generic_sweep(self):
+    def generic_experiment(self):
         if self.runinfo.time:
             for i in range(6):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
 
         t0 = (datetime.now()).timestamp()
-        # Use for loop, but break if self.runinfo.running=False
-        for m in range(self.runinfo.loop3.n):
-            self.runinfo.loop3.i = m
-            self.runinfo.loop3.iterate(m, self.devices)
-            sleep(self.runinfo.loop3.dt)
+        # Use for scan, but break if self.runinfo.running=False
+        for m in range(self.runinfo.scan3.n):
+            self.runinfo.scan3.i = m
+            self.runinfo.scan3.iterate(m, self.devices)
+            sleep(self.runinfo.scan3.dt)
 
-            for k in range(self.runinfo.loop2.n):
-                self.runinfo.loop2.i = k
-                self.runinfo.loop2.iterate(k, self.devices)
-                sleep(self.runinfo.loop2.dt)
+            for k in range(self.runinfo.scan2.n):
+                self.runinfo.scan2.i = k
+                self.runinfo.scan2.iterate(k, self.devices)
+                sleep(self.runinfo.scan2.dt)
 
-                for j in range(self.runinfo.loop1.n):
-                    self.runinfo.loop1.i = j
-                    self.runinfo.loop1.iterate(j, self.devices)
-                    sleep(self.runinfo.loop1.dt)
+                for j in range(self.runinfo.scan1.n):
+                    self.runinfo.scan1.i = j
+                    self.runinfo.scan1.iterate(j, self.devices)
+                    sleep(self.runinfo.scan1.dt)
 
-                    for i in range(self.runinfo.loop0.n):
-                        self.runinfo.loop0.i = i
+                    for i in range(self.runinfo.scan0.n):
+                        self.runinfo.scan0.i = i
                         indicies = self.runinfo.indicies
 
                         if self.runinfo.time:
                             self.runinfo.t0[indicies] = (datetime.now()).timestamp()
 
-                        self.runinfo.loop0.iterate(i, self.devices)
+                        self.runinfo.scan0.iterate(i, self.devices)
 
                         if self.runinfo.time:
                             self.runinfo.t1[indicies] = (datetime.now()).timestamp()
 
-                        sleep(self.runinfo.loop0.dt)
+                        sleep(self.runinfo.scan0.dt)
 
                         if self.runinfo.time:
                             self.runinfo.t2[indicies] = (datetime.now()).timestamp()
@@ -113,7 +113,7 @@ class Sweep(MetaSweep):
                     break
 
             if self.runinfo.verbose:
-                print('Scan {}/{} Complete'.format(m + 1, self.runinfo.loop3.n))
+                print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
@@ -140,33 +140,33 @@ class Sweep(MetaSweep):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-    def average_sweep(self):
-        for loop in self.runinfo.loops:
-            if isinstance(loop, ps.AverageScan) and (loop.n == 1):
-                print("n_average for average scan is 1. Running generic sweep instead of average sweep.")
-                self.generic_sweep()
+    def average_experiment(self):
+        for scan in self.runinfo.scans:
+            if isinstance(scan, ps.AverageScan) and (scan.n == 1):
+                print("n_average for average scan is 1. Running generic experiment instead of average experiment.")
+                self.generic_experiment()
                 return
 
-        # Use for loop, but break if self.runinfo.running=False
-        for m in range(self.runinfo.loop3.n):
-            self.runinfo.loop3.i = m
-            self.runinfo.loop3.iterate(m, self.devices)
-            sleep(self.runinfo.loop3.dt)
+        # Use for scan, but break if self.runinfo.running=False
+        for m in range(self.runinfo.scan3.n):
+            self.runinfo.scan3.i = m
+            self.runinfo.scan3.iterate(m, self.devices)
+            sleep(self.runinfo.scan3.dt)
 
-            for k in range(self.runinfo.loop2.n):
-                self.runinfo.loop2.i = k
-                self.runinfo.loop2.iterate(k, self.devices)
-                sleep(self.runinfo.loop2.dt)
+            for k in range(self.runinfo.scan2.n):
+                self.runinfo.scan2.i = k
+                self.runinfo.scan2.iterate(k, self.devices)
+                sleep(self.runinfo.scan2.dt)
 
-                for j in range(self.runinfo.loop1.n):
-                    self.runinfo.loop1.i = j
-                    self.runinfo.loop1.iterate(j, self.devices)
-                    sleep(self.runinfo.loop1.dt)
+                for j in range(self.runinfo.scan1.n):
+                    self.runinfo.scan1.i = j
+                    self.runinfo.scan1.iterate(j, self.devices)
+                    sleep(self.runinfo.scan1.dt)
 
-                    for i in range(self.runinfo.loop0.n):
-                        self.runinfo.loop0.i = i
-                        self.runinfo.loop0.iterate(i, self.devices)
-                        sleep(self.runinfo.loop0.dt)
+                    for i in range(self.runinfo.scan0.n):
+                        self.runinfo.scan0.i = i
+                        self.runinfo.scan0.iterate(i, self.devices)
+                        sleep(self.runinfo.scan0.dt)
 
                         data = self.runinfo.measure_function(self)
 
@@ -195,7 +195,7 @@ class Sweep(MetaSweep):
                     self.runinfo.complete = 'stopped'
                     break
 
-            print('Scan {}/{} Complete'.format(m + 1, self.runinfo.loop3.n))
+            print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
@@ -255,10 +255,15 @@ class Sweep(MetaSweep):
         self.runinfo.running = True
 
         if self.runinfo.average_d == -1:
-            self.generic_sweep()
+            self.generic_experiment()
 
         elif 0 <= self.runinfo.average_d < 4:
-            self.average_sweep()
+            self.average_experiment()
 
         else:
             assert False, "self.average_d not setup correctly by check_runinfo method"
+
+
+# legacy naming convention
+class Sweep(Experiment):
+    pass

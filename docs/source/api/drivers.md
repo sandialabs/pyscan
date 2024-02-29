@@ -1,12 +1,12 @@
 # Drivers
 ```{eval-rst}
-.. automodule:: pyscan.drivers.instrumentdriver
+.. automodule:: pyscan.drivers.instrument_driver
 	:members:
 
-.. automodule:: pyscan.drivers.newinstrument
+.. automodule:: pyscan.drivers.new_instrument
 	:members:
 
-.. automodule:: pyscan.drivers.testvoltage
+.. automodule:: pyscan.drivers.test_voltage
 	:members:
 ```
 

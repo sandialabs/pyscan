@@ -11,8 +11,8 @@ from pyscan.general import (ItemAttribute,
 from pyscan.measurement.scans import PropertyScan, RepeatScan
 
 
-class MetaSweep(ItemAttribute):
-    '''The base class for sweep experiments.
+class AbstractExperiment(ItemAttribute):
+    '''The base class for experiments.
 
     Parameters
     ----------
@@ -26,9 +26,9 @@ class MetaSweep(ItemAttribute):
     Attributes
     ----------
     runinfo : :class:`~pyscan.measurement.runinfo.RunInfo`
-        RunInfo instance passed into :class:`MetaSweep`.
+        RunInfo instance passed into :class:`AbstractExperiment`.
     devices : :class:`~pyscan.general.itemattribute.ItemAttribute`
-        ItemAttribute instance passed into :class:`MetaSweep`.
+        ItemAttribute instance passed into :class:`AbstractExperiment`.
 
     '''
 
@@ -73,9 +73,9 @@ class MetaSweep(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        # Create loop arrays
+        # Create scan arrays
         with h5py.File(save_name, 'a') as f:
-            for s in self.runinfo.loops:
+            for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
                     self[key] = values
                     f[key] = values
@@ -86,20 +86,20 @@ class MetaSweep(ItemAttribute):
         #             3. data is list , dims are 0
         #             4. datais a float, dims are 0
         if self.runinfo.average_d == -1:
-            loop_dims = self.runinfo.dims
+            scan_dims = self.runinfo.dims
             ndim = self.runinfo.ndim
         else:
-            loop_dims = self.runinfo.average_dims
+            scan_dims = self.runinfo.average_dims
             ndim = self.runinfo.n_average_dim
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
                 if is_list_type(data[name]) and ndim > 0:
-                    dims = (*loop_dims, * np.array(data[name]).shape)
+                    dims = (*scan_dims, * np.array(data[name]).shape)
                     self[name] = np.zeros(dims) * np.nan
                     f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
                 elif (not is_list_type(data[name])) and (ndim > 0):
-                    dims = loop_dims
+                    dims = scan_dims
                     self[name] = np.zeros(dims) * np.nan
                     f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
                 elif is_list_type(data[name]) and (ndim == 0):
@@ -122,9 +122,9 @@ class MetaSweep(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        # Create loop arrays
+        # Create scan arrays
         with h5py.File(save_name, 'a') as f:
-            for s in self.runinfo.loops:
+            for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
                     self[key] = values
                     f[key] = values
@@ -134,11 +134,11 @@ class MetaSweep(ItemAttribute):
         #             2. data is a float, dims are list,
         #             3. data is list , dims are 0
         #             4. datais a float, dims are 0
-        loop_dims = self.runinfo.dims
+        scan_dims = self.runinfo.dims
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
-                dims = loop_dims
+                dims = scan_dims
                 self[name] = np.zeros(dims) * np.nan
                 f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
 
@@ -149,13 +149,13 @@ class MetaSweep(ItemAttribute):
         '''
 
         num_repeat_scans = 0
-        for loop in self.runinfo.loops:
-            loop.check_same_length()
-            if isinstance(loop, PropertyScan):
-                for dev in loop.device_names:
-                    prop = loop.prop
+        for scan in self.runinfo.scans:
+            scan.check_same_length()
+            if isinstance(scan, PropertyScan):
+                for dev in scan.device_names:
+                    prop = scan.prop
                     assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
-            if isinstance(loop, RepeatScan):
+            if isinstance(scan, RepeatScan):
                 num_repeat_scans += 1
 
         if num_repeat_scans > 1:
@@ -185,7 +185,7 @@ class MetaSweep(ItemAttribute):
 
     def save_point(self):
         '''
-        Saves single point of data for current loop indicies. Does not return anything.
+        Saves single point of data for current scan indicies. Does not return anything.
         '''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
@@ -203,7 +203,7 @@ class MetaSweep(ItemAttribute):
                     f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
 
     def save_row(self):
-        '''Saves full loop0 of data at once. Does not return anything.
+        '''Saves full scan0 of data at once. Does not return anything.
         '''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
@@ -251,32 +251,37 @@ class MetaSweep(ItemAttribute):
         print('Stopping Experiment')
 
     def run(self):
-        '''Meta function the runs the experiment. It is not implemented in MetaSweep,
-        but must be implemented by its inheriting classes such as AverageSweep.
+        '''Meta function the runs the experiment. It is not implemented in AbstractExperiment,
+        but must be implemented by its inheriting classes such as AverageExperiment.
         '''
 
         pass
 
     def setup_runinfo(self):
         '''Meta function that setups runinfo based on experiment type.
-        It is not implemented in MetaSweep, but must be implemented
-        by its inheriting classes such as AverageSweep.
+        It is not implemented in AbstractExperiment, but must be implemented
+        by its inheriting classes such as AverageExperiment.
         '''
 
         pass
 
     def setup_instruments(self):
         '''Meta Function that sets up devices based on experiment type.
-        It is not implemented in MetaSweep, but must be implemented
-        by its inheriting classes such as AverageSweep.
+        It is not implemented in AbstractExperiment, but must be implemented
+        by its inheriting classes such as AverageExperiment.
         '''
 
         pass
 
     def default_trigger_function(self):
-        '''Default trigger function that is called every loop0 iteration
+        '''Default trigger function that is called every scan0 iteration
         '''
 
         devices = self.devices
 
         devices.trigger.trigger()
+
+
+# legacy naming convention
+class MetaSweep(AbstractExperiment):
+    pass

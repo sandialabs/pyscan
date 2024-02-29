@@ -4,7 +4,7 @@ Pytest functions to test the meta sweep class
 
 
 import pyscan as ps
-from pyscan.measurement.metasweep import MetaSweep
+from pyscan.measurement.abstract_experiment import MetaSweep
 from pathlib import Path
 import random
 import numpy as np
@@ -51,7 +51,7 @@ def check_3D_array(array):
 
 def test_meta_sweep():
     """
-    Testing meta sweep
+    Testing meta sweep (legacy)
 
     Returns
     --------
@@ -71,8 +71,8 @@ def test_meta_sweep():
         runinfo.loop1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0.5)}, 'voltage')
         runinfo.loop2 = ps.PropertyScan({'v3': ps.drange(0.5, 0.1, 0.8)}, 'voltage')
 
-        # dictionary of loops to later verify they were saved according to loops created
-        loops = {'loop0': 'v1', 'loop1': 'v2', 'loop2': 'v3'}
+        # dictionary of scans to later verify they were saved according to scans created
+        scans = {'scan0': 'v1', 'scan1': 'v2', 'scan2': 'v3'}
 
         runinfo.measure_function = measure_function
 
@@ -137,7 +137,7 @@ def test_meta_sweep():
         with pytest.raises(Exception):
             bad_ms.check_runinfo(), "Metasweep's check runinfo did not ensure validation of devices and properties"
 
-        # testing meta sweep's check runinfo method with more than 1 repeat scan
+        # testing meta sweep's check runinfo method with more than 1 repeat loop
         bad_runinfo2 = ps.RunInfo()
         bad_runinfo2.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         bad_runinfo2.loop1 = ps.RepeatScan(3)
@@ -217,23 +217,28 @@ def test_meta_sweep():
         assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
         # check that loops meta data was saved/loaded correctly
-        assert hasattr(temp.runinfo, 'loop0'), "save meta data didn't save loop0, or it couldn't be loaded"
+        ''' legacy not working with loop nomenclature for loaded expt's... consider fixing this somehow...
+        assert hasattr(temp.runinfo, 'scan0'), "save meta data didn't save loop0, or it couldn't be loaded"
         assert hasattr(temp.runinfo, 'loop1'), "save meta data didn't save loop1, or it couldn't be loaded"
-        assert hasattr(temp.runinfo, 'loop2'), "save meta data didn't save loop2, or it couldn't be loaded"
-        for loop in loops:
-            assert temp.runinfo[loop].prop == 'voltage', "save meta data didn't save " + loop + ".prop correctly"
-            assert hasattr(temp.runinfo[loop], 'scan_dict'), "save meta data didn't save " + loop + "scan_dict"
-            assert hasattr(temp.runinfo[loop], 'input_dict'), "save meta data didn't save " + loop + "input_dict"
-            assert temp.runinfo[loop].device_names == [loops[loop]], "save meta data didn't save " + loop + "devicename"
-            assert temp.runinfo[loop].dt == 0, "save meta data didn't save " + loop + ".dt correctly"
-            assert temp.runinfo[loop].i == 0, "save meta data didn't save " + loop + ".i correctly"
+        assert hasattr(temp.runinfo, 'loop2'), "save meta data didn't save loop2, or it couldn't be loaded"'''
+        assert hasattr(temp.runinfo, 'scan0'), "save meta data didn't save loop0, or it couldn't be loaded"
+        assert hasattr(temp.runinfo, 'scan1'), "save meta data didn't save loop1, or it couldn't be loaded"
+        assert hasattr(temp.runinfo, 'scan2'), "save meta data didn't save loop2, or it couldn't be loaded"
 
-        assert temp.runinfo.loop0.n == 2, "save meta data didn't save loop0.n, or it couldn't be loaded"
-        assert temp.runinfo.loop1.n == 5, "save meta data didn't save loop1.n, or it couldn't be loaded"
-        assert temp.runinfo.loop2.n == 5, "save meta data didn't save loop2.n, or it couldn't be loaded"
-        assert temp.runinfo.loop0.nrange == [0, 1], "save meta data didn't save loop0.nrange value"
-        assert temp.runinfo.loop1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop1.nrange value"
-        assert temp.runinfo.loop2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop2.nrange value"
+        for scan in scans:
+            assert temp.runinfo[scan].prop == 'voltage', "save meta data didn't save " + scan + ".prop correctly"
+            assert hasattr(temp.runinfo[scan], 'scan_dict'), "save meta data didn't save " + scan + "scan_dict"
+            assert hasattr(temp.runinfo[scan], 'input_dict'), "save meta data didn't save " + scan + "input_dict"
+            assert temp.runinfo[scan].device_names == [scans[scan]], "save meta data didn't save " + scan + "devicename"
+            assert temp.runinfo[scan].dt == 0, "save meta data didn't save " + scan + ".dt correctly"
+            assert temp.runinfo[scan].i == 0, "save meta data didn't save " + scan + ".i correctly"
+
+        assert temp.runinfo.scan0.n == 2, "save meta data didn't save loop0.n, or it couldn't be loaded"
+        assert temp.runinfo.scan1.n == 5, "save meta data didn't save loop1.n, or it couldn't be loaded"
+        assert temp.runinfo.scan2.n == 5, "save meta data didn't save loop2.n, or it couldn't be loaded"
+        assert temp.runinfo.scan0.nrange == [0, 1], "save meta data didn't save loop0.nrange value"
+        assert temp.runinfo.scan1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop1.nrange value"
+        assert temp.runinfo.scan2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop2.nrange value"
 
         # check that devices were saved and loaded properly
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"

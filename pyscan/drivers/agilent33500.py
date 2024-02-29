@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 import re
-from pyscan.general.drange import drange
+from pyscan.general.d_range import drange
 import numpy as np
 
 

@@ -3,7 +3,7 @@ from PrincetonInstruments.LightField.AddIns import Pulse
 from PrincetonInstruments.LightField.AddIns import ExperimentSettings
 from PrincetonInstruments.LightField.AddIns import CameraSettings
 from PrincetonInstruments.LightField.Automation import Automation
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 
 import clr
 import sys

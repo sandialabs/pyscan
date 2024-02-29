@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.itemattribute import ItemAttribute
-from .newinstrument import new_instrument
+from pyscan.general.item_attribute import ItemAttribute
+from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
 

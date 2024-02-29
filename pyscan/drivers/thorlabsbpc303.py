@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 from thorlabs_kinesis import benchtop_piezo as bp
 from ctypes import c_char_p, c_ushort, c_ulong, c_short
 from time import sleep

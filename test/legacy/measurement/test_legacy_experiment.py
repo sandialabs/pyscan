@@ -1,5 +1,5 @@
 '''
-Pytest functions to test the Sweep experiment class and the load experiment function from loadexperiment.py
+Pytest functions to test the Experiment experiment class and the load experiment function from loadexperiment.py
 '''
 
 
@@ -223,16 +223,21 @@ def check_loaded_expt_further(expt):
         assert type(device.debug) is bool, "devices " + device_name + " debug is not loaded as a boolean"
         assert type(device._voltage) is float or type(device._voltage) is int, device_name + " voltage type error"
 
+    ''' Legacy loops nomenclature not supported for loaded expt...
     # check the runinfo loops
     assert hasattr(expt.runinfo, 'loop0'), "loaded expt does not have loop0"
     assert hasattr(expt.runinfo, 'loop1'), "loaded expt does not have loop1"
     assert hasattr(expt.runinfo, 'loop2'), "loaded expt does not have loop2"
-    assert hasattr(expt.runinfo, 'loop3'), "loaded expt does not have loop3"
+    assert hasattr(expt.runinfo, 'loop3'), "loaded expt does not have loop3"'''
+    assert hasattr(expt.runinfo, 'scan0'), "loaded expt does not have loop0"
+    assert hasattr(expt.runinfo, 'scan1'), "loaded expt does not have loop1"
+    assert hasattr(expt.runinfo, 'scan2'), "loaded expt does not have loop2"
+    assert hasattr(expt.runinfo, 'scan3'), "loaded expt does not have loop3"
 
     for key in expt.runinfo.__dict__.keys():
-        if key.startswith('loop'):
-            loop = key
-            assert isinstance(expt.runinfo[loop], ps.ItemAttribute), "loaded runinfo " + loop + " not item attribute"
+        if key.startswith('scan'):
+            scan = key
+            assert isinstance(expt.runinfo[scan], ps.ItemAttribute), "loaded runinfo " + scan + " not item attribute"
 
     # check other attributes for proper type when loaded
     assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"

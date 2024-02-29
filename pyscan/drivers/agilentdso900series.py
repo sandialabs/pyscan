@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from math import ceil
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 
 
 class AgilentDSO900Series(InstrumentDriver):
