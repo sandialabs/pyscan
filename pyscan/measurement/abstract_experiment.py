@@ -282,8 +282,6 @@ class AbstractExperiment(ItemAttribute):
         devices.trigger.trigger()
 
 
-'''
-This could be breaking if someone implemented this prior to naming changes.
 # legacy naming convention
 class MetaSweep(AbstractExperiment):
-    pass'''
+    pass

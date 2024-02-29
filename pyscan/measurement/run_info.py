@@ -212,6 +212,12 @@ class RunInfo(ItemAttribute):
     def loop3(self, value):
         self.scan3 = value
 
+    @property
+    def loops(self):
+        ''' Returns array of all scans
+        '''
+        return [self.scan0, self.scan1, self.scan2, self.scan3]
+
 
 def new_runinfo(*arg, **kwarg):
     ''' Creates a new instance of Runinfo
