@@ -102,6 +102,9 @@ html_theme_options = {
 
 html_context = {
     "doc_path": "docs/source/",
+    "github_user": "plesiopterys",
+    "github_repo": "https://github.com/sandialabs/pyscan",
+    "github_version": "main",
 }
 
 html_sidebars = {
