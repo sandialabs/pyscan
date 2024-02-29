@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 
 
 class Stanford396(InstrumentDriver):

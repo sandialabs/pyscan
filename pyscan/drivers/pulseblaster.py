@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 import ctypes
 
 PULSE_PROGRAM = 0

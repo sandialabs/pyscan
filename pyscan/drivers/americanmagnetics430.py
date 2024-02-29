@@ -1,4 +1,4 @@
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 from time import sleep
 
 

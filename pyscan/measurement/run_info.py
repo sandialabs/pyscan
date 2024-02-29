@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
 
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .itemattribute import ItemAttribute
+from .item_attribute import ItemAttribute
 
 
 def recursive_to_itemattribute(data):
