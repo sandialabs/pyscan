@@ -209,9 +209,9 @@ class InstrumentDriver(ItemAttribute):
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
                 obj.write(settings['write_string'].format(new_value))
-                setattr(self, '_' + settings['name'], new_value)
+                setattr(obj, '_' + settings['name'], new_value)
             else:
-                setattr(self, '_' + settings['name'],
+                setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
             assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
@@ -249,9 +249,9 @@ class InstrumentDriver(ItemAttribute):
         elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
             if not self.debug:
                 obj.write(settings['write_string'].format(*new_value))
-                setattr(self, '_' + settings['name'], new_value)
+                setattr(obj, '_' + settings['name'], new_value)
             else:
-                setattr(self, '_' + settings['name'], settings['write_string'].format(*new_value))
+                setattr(obj, '_' + settings['name'], settings['write_string'].format(*new_value))
         else:
             assert False, 'Range error:\nParameters must be in ranges {}\n\tYou passed{}'.format(rngs, new_value)
 
@@ -289,9 +289,9 @@ class InstrumentDriver(ItemAttribute):
                 print(settings['write_string'].format(index))
 
                 obj.write(settings['write_string'].format(index))
-                setattr(self, '_' + settings['name'], new_value)
+                setattr(obj, '_' + settings['name'], new_value)
             else:
-                setattr(self, '_' + settings['name'],
+                setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(index))
         else:
             possible = []
@@ -342,9 +342,9 @@ class InstrumentDriver(ItemAttribute):
                 # find the first corresponding key to the machine value
                 first_key = self.find_first_key(dictionary, machine_value)
                 # set the _ attribute to the priority key value found above
-                setattr(self, '_' + settings['name'], first_key)
+                setattr(obj, '_' + settings['name'], first_key)
             else:
-                setattr(self, '_' + settings['name'],
+                setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(machine_value))
         # if not throw an error
         else:
