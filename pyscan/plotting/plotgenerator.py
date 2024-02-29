@@ -7,8 +7,8 @@ class PlotGenerator(object):
     """
     Helper class to generate standarized figures
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     expt :
         The experiment object
     d :
