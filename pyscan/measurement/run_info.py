@@ -15,7 +15,7 @@ class RunInfo(ItemAttribute):
     ----------
     scan0, scan1, scan2, scan3 : `PropertyScan`, `AverageScan`, `RepeatScan` or `FunctionScan`
         Set each scan to a scan object representing one experimental variable. The scan property or
-        function will be scaned during the experiment, with scan0 being the innermost scan.
+        function will be scanned during the experiment, with scan0 being the innermost scan.
         Defaults to `PropertyScan({}, prop=None)<pyscan.measurement.scans.PropertyScan>`,
         which indicates that the scan will not be used.
     measured :

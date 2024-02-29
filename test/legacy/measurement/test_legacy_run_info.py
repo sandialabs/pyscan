@@ -52,7 +52,7 @@ def test_init_from_noparams():
         # check that each loops attributes are initialized correctly
         counter = 0
         for loop in init_runinfo.loops:
-            # check that loop_dict initialized as empty {}
+            # check that scan_dict initialized as empty {}
             err_string = "runinfo loop" + str(counter) + " (Property Scan) scan_dict not empty when intialized"
             assert loop.scan_dict == {}, err_string
 
