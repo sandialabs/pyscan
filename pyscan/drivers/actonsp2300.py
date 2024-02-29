@@ -1,6 +1,6 @@
 import serial
 import time
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 
 
 class ActonSP2300(InstrumentDriver):

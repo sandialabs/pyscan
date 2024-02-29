@@ -15,7 +15,7 @@ except BaseException as err:
     print('Path Error' + str(err))
 
 from libHeLIC import LibHeLIC
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 
 
 class HeliosSDK(ItemAttribute):

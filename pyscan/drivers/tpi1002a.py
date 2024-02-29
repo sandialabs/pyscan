@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from struct import unpack
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 from pyvisa.errors import VisaIOError
 
 

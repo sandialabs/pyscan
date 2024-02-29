@@ -1,6 +1,6 @@
 # Methods
-from .basicplots import *
+from .basic_plots import *
 from .oscilloscope import oscilloscope
 
 # Objects
-from .jupytertools import JupyterTools
+from .jupyter_tools import JupyterTools

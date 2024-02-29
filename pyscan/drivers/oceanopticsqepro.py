@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from seabreeze.spectrometers import Spectrometer
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 
 
 class OceanOpticsQEPro(ItemAttribute):

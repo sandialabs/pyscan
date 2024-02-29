@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from pyscan.general.samelength import same_length
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.same_length import same_length
+from pyscan.general.item_attribute import ItemAttribute
 
 
-class MetaScan(ItemAttribute):
+class AbstractScan(ItemAttribute):
     '''
     Meta class for different scan types. Inherits from `.ItemAttribute`.
     '''
@@ -20,10 +20,10 @@ class MetaScan(ItemAttribute):
         pass
 
 
-class PropertyScan(MetaScan):
+class PropertyScan(AbstractScan):
     '''
     Class for iterating a property of an intruments inside an
-    experimental loop. Inherits from `pyscan.measurement.scans.MetaScan`.
+    experimental loop. Inherits from `pyscan.measurement.scans.AbstractScan`.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ class PropertyScan(MetaScan):
     prop : str
         String that indicates the property of the device(s) to be changed
     dt : float
-        Wait time in seconds after changing a single property value. Used by sweep classes, defaults to 0.
+        Wait time in seconds after changing a single property value. Used by experiment classes, defaults to 0.
     '''
 
     def __init__(self, input_dict, prop, dt=0):
@@ -81,9 +81,9 @@ class PropertyScan(MetaScan):
             self.nrange = range(1)
 
 
-class FunctionScan(MetaScan):
+class FunctionScan(AbstractScan):
     '''Class for iterating a function with input values inside an
-    experimental loop. Inherits from `pyscan.measurement.scans.MetaScan`.
+    experimental loop. Inherits from `pyscan.measurement.scans.AbstractScan`.
 
     Parameters
     ----------
@@ -93,7 +93,7 @@ class FunctionScan(MetaScan):
     values : list
         An array of values to run the function on.
     dt: float
-        Wait time in seconds after running function once. Used by sweep classes, defaults to 0.
+        Wait time in seconds after running function once. Used by experiment classes, defaults to 0.
     '''
 
     def __init__(self, function, values, dt=0):
@@ -109,7 +109,7 @@ class FunctionScan(MetaScan):
 
     def iterate(self, index, devices):
         '''
-        Executes function(self.values[index]). Used by a Sweep class's run() function.
+        Executes function(self.values[index]). Used by a Experiment class's run() function.
 
         Parameters
         ----------
@@ -125,7 +125,7 @@ class FunctionScan(MetaScan):
         pass
 
 
-class RepeatScan(MetaScan):
+class RepeatScan(AbstractScan):
     '''Class for repeating inner loops.
 
     Parameters
@@ -133,7 +133,7 @@ class RepeatScan(MetaScan):
     n_repeat : int
         Number of times to repeat inner loops.
     dt : float
-        Wait time in seconds after repeat. Used by sweep classes, defaults to 0.
+        Wait time in seconds after repeat. Used by experiment classes, defaults to 0.
     '''
 
     def __init__(self, nrepeat, dt=0):
@@ -167,7 +167,7 @@ class RepeatScan(MetaScan):
         return 1
 
 
-class AverageScan(MetaScan):
+class AverageScan(AbstractScan):
     '''Class for averaging inner loops.
 
     Parameters
@@ -175,7 +175,7 @@ class AverageScan(MetaScan):
     n_average : int
         Number of times to average data from inner loops
     dt : float
-        Wait time in seconds after each measurement. Used by Sweep classes, defaults to 0.
+        Wait time in seconds after each measurement. Used by Experiment classes, defaults to 0.
     '''
 
     def __init__(self, n_average, dt=0):

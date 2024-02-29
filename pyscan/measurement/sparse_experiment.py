@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.measurement.abstract_experiment import AbstractExperiment
+from pyscan.general.is_list_type import is_list_type
 import numpy as np
-# import nidaqmx
 
 
-class FastGalvoSweep(MetaSweep):
-    '''Setup a point by point measurement. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+class SparseExperiment(AbstractExperiment):
+    '''Experiment class that takes data after each loop0 iteration if
+    runinfo.sparse_points[self.runinfo.indicies] = 1, allowing the experiment
+    to skip taking data points. Inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -31,37 +32,6 @@ class FastGalvoSweep(MetaSweep):
         '''Constructor method
         '''
         super().__init__(runinfo, devices, data_dir)
-
-        self.runinfo.measure_function = self.line_counts
-
-    def setup_instruments(self):
-        '''TODO
-        '''
-        runinfo = self.runinfo
-        devices = self.devices
-
-        dev = devices[self.runinfo.loop0['device_names'][0]]
-        xrange = list(self.runinfo.loop0.scan_dict.values())[0]
-
-        dev.legacy_sweep_mode(xrange, runinfo.srate, 5)
-        devices.pb.setup_single_ttl(
-            ['counter', 'awg'],
-            ['aom'],
-            total_time=runinfo.loop0.n / runinfo.srate * 1.05)
-        devices.counter.setup_timed_buffer(
-            1 / runinfo.srate, runinfo.loop0.n, runinfo.loop1.n)
-
-        sleep(0.2)
-
-    def end_function(self):
-        '''TODO
-        '''
-        devices = self.devices
-
-        devices.x.dc_mode(0)
-        devices.y.dc_mode(0)
-
-        devices.counter.get_counts(1e-6)
 
     def run(self):
         '''Runs the experiment while locking the console
@@ -93,26 +63,38 @@ class FastGalvoSweep(MetaSweep):
                     self.runinfo.loop1.iterate(j, self.devices)
                     sleep(self.runinfo.loop1.dt)
 
-                    data = self.runinfo.measure_function(self)
+                    for i in range(self.runinfo.loop0.n):
+                        self.runinfo.loop0.i = i
+                        sample = self.runinfo.sparse_points[self.runinfo.indicies]
 
-                    if np.all(np.array(self.runinfo.indicies) == 0):
-                        for key, value in data.items():
-                            self.runinfo.measured.append(key)
-                        self.preallocate_line(data)
+                        if (sample) or (np.all(np.array(self.runinfo.indicies) == 0)):
+                            self.runinfo.loop0.iterate(i, self.devices)
+                            sleep(self.runinfo.loop0.dt)
 
-                    for key, value in data.items():
-                        if self.runinfo.ndim == 1:
-                            self[key] = np.array(value)
-                        else:
-                            self[key][:, self.runinfo.indicies[1::]] = np.reshape(np.array(value), (-1, 1))
+                            data = self.runinfo.measure_function(self)
+                            if np.all(np.array(self.runinfo.indicies) == 0):
+                                for key in data.keys():
+                                    self.runinfo.measured.append(key)
+                                self.preallocate(data)
 
-                    self.save_row()
+                            if sample:
+                                for key, value in data.items():
+                                    if is_list_type(self[key]):
+                                        self[key][self.runinfo.indicies] = value
+                                    else:
+                                        self[key] = value
 
+                                self.save_point()
+
+                        if self.runinfo.running is False:
+                            self.runinfo.complete = 'stopped'
+                            break
+
+                    # Check if complete, stopped early
                     if self.runinfo.running is False:
                         self.runinfo.complete = 'stopped'
                         break
 
-                    # Check if complete, stopped early
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
@@ -129,24 +111,7 @@ class FastGalvoSweep(MetaSweep):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-    def line_counts(self, expt):
-        '''TODO
-        '''
-        runinfo = expt.runinfo
-        devices = expt.devices
 
-        d = ItemAttribute()
-
-        devices.pb.start()
-
-        sleep(runinfo.loop0.n / runinfo.srate * 1.01)
-
-        for i in range(5):
-            if int(devices.counter.query('DATA:POIN?')) == runinfo.loop0.n:
-                d.data = devices.counter.read_data_points()
-                break
-            else:
-                sleep(0.05)
-        devices.pb.reset()
-
-        return d
+# legacy naming convention
+class SparseSweep(SparseExperiment):
+    pass

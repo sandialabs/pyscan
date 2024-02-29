@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 from thorlabs_kinesis import benchtop_stepper_motor as bsm
 from ctypes import c_char_p, c_int, c_double, c_ushort, c_ulong, c_short
 from time import sleep

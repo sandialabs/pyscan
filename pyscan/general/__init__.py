@@ -1,15 +1,15 @@
 
 # methods
-from .drange import drange
-from .firststring import first_string
-from .islisttype import is_list_type
-from .isnumerictype import is_numeric_type
-from .quadraturesum import quadrature_sum
-from .recursivetodict import recursive_to_dict
-from .recursivetoitemattribute import recursive_to_itemattribute
-from .samelength import same_length
-from .setdifference import set_difference
-from .stackorappend import stack_or_append
+from .d_range import drange
+from .first_string import first_string
+from .is_list_type import is_list_type
+from .is_numeric_type import is_numeric_type
+from .quadrature_sum import quadrature_sum
+from .recursive_to_dict import recursive_to_dict
+from .recursive_to_item_attribute import recursive_to_itemattribute
+from .same_length import same_length
+from .set_difference import set_difference
+from .stack_or_append import stack_or_append
 
 # objects
-from .itemattribute import ItemAttribute
+from .item_attribute import ItemAttribute
