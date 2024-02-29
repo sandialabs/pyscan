@@ -73,8 +73,6 @@ class Stanford830(InstrumentDriver):
 
         super().__init__(instrument)
 
-        self.gain = 1
-
         self.debug = False
         self.initialize_properties()
 
@@ -197,7 +195,7 @@ class Stanford830(InstrumentDriver):
             'name': 'synchronous_filter',
             'write_string': 'SYNC {}',
             'query_string': 'SYNC?',
-            'indexed_values': ['off', 'on'],
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.add_device_property({
@@ -222,7 +220,7 @@ class Stanford830(InstrumentDriver):
             'name': 'trigger_mode',
             'write_string': 'TSTR {}',
             'query_string': 'TSTR?',
-            'indexed_values': ['off', 'on'],
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.update_properties()

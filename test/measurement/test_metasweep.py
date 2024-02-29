@@ -129,13 +129,23 @@ def test_meta_sweep():
             else:
                 assert False, "allocate input variable for test not acceptable"
 
-        # testing meta sweep's check runinfo method with bad inputs
+        # testing meta sweep's check runinfo method with bad loop inputs
         bad_runinfo = ps.RunInfo()
         bad_runinfo.loop0 = ps.PropertyScan({'v8': ps.drange(0, 0.1, 0.1)}, 'voltage')
         bad_ms = MetaSweep(bad_runinfo, devices, data_dir)
 
         with pytest.raises(Exception):
-            bad_ms.check_runinfo()
+            bad_ms.check_runinfo(), "Metasweep's check runinfo did not ensure validation of devices and properties"
+
+        # testing meta sweep's check runinfo method with more than 1 repeat scan
+        bad_runinfo2 = ps.RunInfo()
+        bad_runinfo2.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        bad_runinfo2.loop1 = ps.RepeatScan(3)
+        bad_runinfo2.loop2 = ps.RepeatScan(3)
+        bad_ms2 = MetaSweep(bad_runinfo, devices, data_dir)
+
+        with pytest.raises(Exception):
+            bad_ms2.check_runinfo(), "Metasweep's check runinfo did not flag runinfo with more than one repeat scan"
 
         # testing meta sweep's get time method *placeholder*
         assert callable(ms.get_time)
@@ -158,7 +168,6 @@ def test_meta_sweep():
         # print("temp dict is: ", temp.__dict__.keys())
 
         # test that preallocate and saves functioned as expected based on loaded experiment
-        ###### Note! These are all empty... is this working correctly since no data is saved from the save methods
         if allocate == 'preallocate':
             if list(data.__dict__.keys()) == ['x']:
                 assert temp.x.shape == (2, 5, 5)
