@@ -101,6 +101,8 @@ html_theme_options = {
 }
 
 html_context = {
+    # these seemed to be necessary in order to create proper links to "edit on github"
+    # may reconsider at a later time to see if it's really necessary to add a user
     "doc_path": "docs/source/",
     "github_user": "plesiopterys",
     "github_repo": "https://github.com/sandialabs/pyscan",
