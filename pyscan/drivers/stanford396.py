@@ -43,8 +43,7 @@ class Stanford396(InstrumentDriver):
         modulation_subtype : int
             Range: [0, 15]
         iq_modulation_function : int
-            Range: [0, 11]=
-
+            Range: [0, 11]
     '''
 
     def __init__(self, instrument):
