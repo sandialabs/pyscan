@@ -33,9 +33,6 @@
 .. automodule:: pyscan.drivers.americanmagnetics430
 	:members:
 
-.. automodule:: pyscan.drivers.arduinohelmholtz
-	:members:
-
 .. automodule:: pyscan.drivers.bkprecision9130b
 	:members:
 
@@ -58,9 +55,6 @@
 	:members:
 
 .. automodule:: pyscan.drivers.keysitem3302adaq
-	:members:
-
-.. automodule:: pyscan.drivers.nationalinstruments6361
 	:members:
 
 .. automodule:: pyscan.drivers.oxfordigh
