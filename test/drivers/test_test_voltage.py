@@ -20,6 +20,8 @@ def test_testvoltage():
     # set up v1 as representative for testing
     v1 = ps.TestVoltage()
 
+    # ########## add 2 more test voltages for testing...
+
     # test voltage attribute
     assert hasattr(v1, 'voltage'), "TestVoltage missing voltage attribute"
     assert type(v1.voltage) is float, "TestVoltage voltage attribute is not a float"

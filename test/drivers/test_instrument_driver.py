@@ -6,6 +6,9 @@ import string
 from collections import OrderedDict
 
 # #################### still need to add error flags for this file...
+# ##################### test more thouroughly with multiple instances to make sure
+# ######## this works and doesn't bug out like it did with multiple testvoltage instances
+# ######### on 2_29_24
 
 
 class TestInstrumentDriver(InstrumentDriver):
