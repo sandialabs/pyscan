@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+from time import sleep
 from .instrumentdriver import InstrumentDriver
 
 
@@ -28,6 +30,7 @@ class OxfordIPS120(InstrumentDriver):
         self.initialize_properties()
 
     def initialize_properties(self):
+        self.get_field
         self.field_set_point
         self.target_field # legacy
         self.field_rate
@@ -37,21 +40,22 @@ class OxfordIPS120(InstrumentDriver):
         self.get_target_current # legacy
         self.get_current_rate
         self.get_current_sweep_rate # legacy
-        self.get_field
 
     def __repr__(self):
         status = self.status()
         if status.heater():
-            value = "heater on"
+            value = "Heater on (status.heater()=True)"
         else:
-            value = "heater off"
+            value = "Heater off (status.heater()=False)"
         value += "\n"
         if status.sweeping():
-            value += "sweeping"
+            value += "Field is changing (status.sweeping=True)"
         else:
-            value += "at rest"
+            value += "At rest (status.sweeping=False)"
         value += "\n"
-        value += f"field = {self.get_field()}"
+        value += f"activity: {status.A_value()}"
+        value += "\n"
+        value += f"get_field() = {self.get_field()}"
         value += "\n"
         value += f"field_set_point = {self.field_set_point}"
         value += "\n"
@@ -100,15 +104,25 @@ class OxfordIPS120(InstrumentDriver):
         Set the state of the heater.  Record the time when the heater was changed
         '''
 
+        status = self.status()
+
         if state == 'on':
-            _ = self.query('&H1')
+            if not status.heater:
+                self.time_heater_toggle = datetime.now()
+                _ = self.query('&H1')
         elif state == 'off':
-            _ = self.query('&H0')
+            if status.heater:
+                self.time_heater_toggle = datetime.now()
+                _ = self.query('&H0')
         elif state == 'force':
             # need to add some checks before allowing heater to be forced
             _ = self.query('&H2')
         else:
             print("State must be 'on', 'off' or 'force'")
+
+    def get_field(self):
+        self._field = float(self.query_until_return('R7').replace('R', ''))
+        return self._field
 
     @property
     def field_set_point(self):
@@ -140,6 +154,11 @@ class OxfordIPS120(InstrumentDriver):
         else:
             print(f'Sweep rate out of range, must be 0 < rate <= {self.field_rate_limit}')
 
+    def status(self):
+
+        status_string = self.query_until_return('X')
+        return Status(status_string)
+
     def get_current(self):
         self._current = float(self.query_until_return('R2').replace('R', ''))
         return self._current
@@ -148,23 +167,61 @@ class OxfordIPS120(InstrumentDriver):
         self._current_set_point = float(self.query_until_return('R5').replace('R', ''))
         return self._current_set_point
 
-    # legacy, use get_current_set_point
-    def get_target_current(self):
-        self._target_current = float(self.query_until_return('R5').replace('R', ''))
-        return self._target_current
-
     def get_current_rate(self):
         self._current_rate = float(self.query_until_return('R6').replace('R', ''))
         return self._current_rate
 
-    # legacy, use get_current_rate
-    def get_current_sweep_rate(self):
-        self._current_sweep_rate = float(self.query_until_return('R6').replace('R', ''))
-        return self._current_sweep_rate
+    def goto_field(self, B):
+        '''
+        Setup the magnet to sweep to a magnetic field.
 
-    def get_field(self):
-        self._field = float(self.query_until_return('R7').replace('R', ''))
-        return self._field
+        Arguments
+            B:  field set point
+        '''
+
+        pass
+        # check if heater is on
+
+    def query_until_return(self, query, n=10):
+
+        message = self.query(query)
+
+        for i in range(n):
+
+            if len(message) != 0:
+                return message
+            else:
+                message = self.query('&')
+
+    # --- legacy commands below here ---
+    # legacy
+    def set_local_locked(self):
+        self.write('$C0')
+
+    # legacy
+    def set_remote_lock(self):
+        self.write('$C1')
+
+    # legacy
+    def set_local_unlocked(self):
+        self.write('$C2')
+
+    # legacy
+    def set_remote_unlocked(self):
+        self.write('$C3')
+
+    # legacy, use heater('on') and these are reversed
+    def set_heat_on(self):
+        return self.query('&H0')
+
+    # legacy, use heater('off') and these are reversed
+    def set_heat_off(self):
+        return self.query('&H1')
+
+    # legacy, must use field_set_point attribute
+    def set_target_field(self, new_value):
+        self.write('$J{}'.format(round(new_value, 4)))
+        print("deprecated: use 'field_set_point = value'")
 
     # legacy, use field_set_point()
     @property
@@ -180,6 +237,17 @@ class OxfordIPS120(InstrumentDriver):
         else:
             print('Target field out of range, must be 0 < set point < {}'.format(self.field_limit))
 
+    # legacy, use get_current_set_point
+    def get_target_current(self):
+        self._target_current = float(self.query_until_return('R5').replace('R', ''))
+        return self._target_current
+
+    # legacy, use get_current_rate
+    def get_current_sweep_rate(self):
+        self._current_sweep_rate = float(self.query_until_return('R6').replace('R', ''))
+        return self._current_sweep_rate
+
+    # legacy, use field_rate
     @property
     def field_sweep_rate(self):
         self._field_sweep_rate = float(self.query_until_return('R9').replace('R', ''))
@@ -193,11 +261,7 @@ class OxfordIPS120(InstrumentDriver):
         else:
             print('Sweep rate out of range, must be 0 < rate < {}'.format(self.field_rate_limit))
 
-    def status(self):
-
-        status_string = self.query_until_return('X')
-        return Status(status_string)
-
+    # legacy, use status()
     def get_status(self):
 
         status = self.query_until_return('X')
@@ -266,46 +330,6 @@ class OxfordIPS120(InstrumentDriver):
 
         print('Mode: {}; {}'.format(mode1, mode2))
 
-    def query_until_return(self, query, n=10):
-
-        message = self.query(query)
-
-        for i in range(n):
-
-            if len(message) != 0:
-                return message
-            else:
-                message = self.query('&')
-
-    # --- legacy commands below here ---
-    # legacy
-    def set_local_locked(self):
-        self.write('$C0')
-
-    # legacy
-    def set_remote_lock(self):
-        self.write('$C1')
-
-    # legacy
-    def set_local_unlocked(self):
-        self.write('$C2')
-
-    # legacy
-    def set_remote_unlocked(self):
-        self.write('$C3')
-
-    # legacy, use heater('on') and these are reversed
-    def set_heat_on(self):
-        return self.query('&H0')
-
-    # legacy, use heater('off') and these are reversed
-    def set_heat_off(self):
-        return self.query('&H1')
-
-    # legacy, must use field_set_point attribute
-    def set_target_field(self, new_value):
-        self.write('$J{}'.format(round(new_value, 4)))
-        print("deprecated: use 'field_set_point = value'")
 
 class Status():
     def __init__(self, status_string='X00A1C3H1M10P03'):
