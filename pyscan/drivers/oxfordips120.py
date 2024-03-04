@@ -32,14 +32,14 @@ class OxfordIPS120(InstrumentDriver):
     def initialize_properties(self):
         self.get_field
         self.field_set_point
-        self.target_field # legacy
+        # self.target_field # legacy
         self.field_rate
-        self.field_sweep_rate # legacy
+        # self.field_sweep_rate # legacy
         self.get_current
         self.get_current_set_point
-        self.get_target_current # legacy
+        # self.get_target_current # legacy
         self.get_current_rate
-        self.get_current_sweep_rate # legacy
+        # self.get_current_sweep_rate # legacy
 
     def __repr__(self):
         status = self.status()
@@ -126,18 +126,18 @@ class OxfordIPS120(InstrumentDriver):
 
     @property
     def field_set_point(self):
-        self._target_field = float(self.query_until_return('R8').replace('R', ''))
-        return self._target_field
+        self._field_set_point = float(self.query_until_return('R8').replace('R', ''))
+        return self._field_set_point
 
     @field_set_point.setter
     def field_set_point(self, new_value):
         if (new_value >= -self.field_limit) and (new_value <= self.field_limit):
             # normal resolution 0.0001 T
             self.write('$J{}'.format(round(new_value, 4)))
-            self._target_field = round(new_value, 4)
+            self._field_set_point = round(new_value, 4)
             # extended resolution 0.00001 T (see Q4 to set extended resolution)
         else:
-            print(f'Target field out of range, must be {-self.field_limit} <= set point <= {self.field_limit}')
+            print(f'field_set_point out of range, must be {-self.field_limit} <= set point <= {self.field_limit}')
 
     @property
     def field_rate(self):
@@ -149,10 +149,10 @@ class OxfordIPS120(InstrumentDriver):
         if (new_value > 0) and (new_value <= self.field_rate_limit):
             # normal resolution 0.001 T/min
             self.write('$T{}'.format(round(new_value, 3)))
-            self._field_sweep_rate = round(new_value, 3)
+            self._field_rate = round(new_value, 3)
             # extended resolution 0.0001 T/min (see Q4 to set extended resolution)
         else:
-            print(f'Sweep rate out of range, must be 0 < rate <= {self.field_rate_limit}')
+            print(f'field_rate out of range, must be 0 < rate <= {self.field_rate_limit}')
 
     def status(self):
 
@@ -170,17 +170,6 @@ class OxfordIPS120(InstrumentDriver):
     def get_current_rate(self):
         self._current_rate = float(self.query_until_return('R6').replace('R', ''))
         return self._current_rate
-
-    def goto_field(self, B):
-        '''
-        Setup the magnet to sweep to a magnetic field.
-
-        Arguments
-            B:  field set point
-        '''
-
-        pass
-        # check if heater is on
 
     def query_until_return(self, query, n=10):
 
@@ -396,19 +385,6 @@ class Status():
             2: 'To Zero',
             4: 'Clamped'}
         return indexed_values[self.A]
-
-    def C_value(self):
-        name = 'Activity'
-        indexed_values = {
-            0: 'Local & Locked',
-            1: 'Remote & Locked',
-            2: 'Local & Unlocked',
-            3: 'Remote & Unlocked',
-            4: 'Auto-Run-Down',
-            5: 'Auto-Run-Down',
-            6: 'Auto-Run-Down',
-            7: 'Auto-Run-Down' }
-        return indexed_values[self.C]
 
     def C_value(self):
         name = 'LOC/REM status'
