@@ -1,12 +1,12 @@
 # Drivers
 ```{eval-rst}
-.. automodule:: pyscan.drivers.instrumentdriver
+.. automodule:: pyscan.drivers.instrument_driver
 	:members:
 
-.. automodule:: pyscan.drivers.newinstrument
+.. automodule:: pyscan.drivers.new_instrument
 	:members:
 
-.. automodule:: pyscan.drivers.testvoltage
+.. automodule:: pyscan.drivers.test_voltage
 	:members:
 ```
 
@@ -33,9 +33,6 @@
 .. automodule:: pyscan.drivers.americanmagnetics430
 	:members:
 
-.. automodule:: pyscan.drivers.arduinohelmholtz
-	:members:
-
 .. automodule:: pyscan.drivers.bkprecision9130b
 	:members:
 
@@ -58,9 +55,6 @@
 	:members:
 
 .. automodule:: pyscan.drivers.keysitem3302adaq
-	:members:
-
-.. automodule:: pyscan.drivers.nationalinstruments6361
 	:members:
 
 .. automodule:: pyscan.drivers.oxfordigh

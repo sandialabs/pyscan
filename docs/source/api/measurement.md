@@ -1,6 +1,6 @@
 # Measurement
 ```{eval-rst}
-.. automodule:: pyscan.measurement.runinfo
+.. automodule:: pyscan.measurement.run_info
 	:members:
 ```
 
@@ -12,27 +12,24 @@
 
 ## Sweep
 ```{eval-rst}
-.. automodule:: pyscan.measurement.metasweep
+.. automodule:: pyscan.measurement.abstract_experiment
 	:members:
 
-.. automodule:: pyscan.measurement.averagesweep
+.. automodule:: pyscan.measurement.chart_recorder
 	:members:
 
-.. automodule:: pyscan.measurement.chartrecorder
+.. automodule:: pyscan.measurement.experiment
 	:members:
 
-.. automodule:: pyscan.measurement.fastgalvosweep
+.. automodule:: pyscan.measurement.fast_galvo_experiment
 	:members:
 
-.. automodule:: pyscan.measurement.loadexperiment
+.. automodule:: pyscan.measurement.load_experiment
 	:members:
 
-.. automodule:: pyscan.measurement.rastersweep
+.. automodule:: pyscan.measurement.raster_experiment
 	:members:
 
-.. automodule:: pyscan.measurement.sparsesweep
-	:members:
-
-.. automodule:: pyscan.measurement.sweep
+.. automodule:: pyscan.measurement.sparse_experiment
 	:members:
 ```

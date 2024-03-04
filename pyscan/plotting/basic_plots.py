@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import numpy as np
-from .plotgenerator import PlotGenerator
-from .liveplot import live_plot
+from .plot_generator import PlotGenerator
+from .live_plot import live_plot
 
 
 def plot1D(expt, **kwarg):

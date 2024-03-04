@@ -17,10 +17,10 @@ def test_testvoltage():
     None
     """
 
-    ############################ ADDDDDDDDD ERROR MESSAGES FOR THESE TESTS!!!! ###############
-
     # set up v1 as representative for testing
     v1 = ps.TestVoltage()
+
+    # ########## add 2 more test voltages for testing...
 
     # test voltage attribute
     assert hasattr(v1, 'voltage'), "TestVoltage missing voltage attribute"

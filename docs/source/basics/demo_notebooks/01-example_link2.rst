@@ -1,2 +1,0 @@
-.. include::
-    ../../demo_notebooks/01-example_property_scans

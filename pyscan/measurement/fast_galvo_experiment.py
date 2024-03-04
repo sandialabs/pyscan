@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from pyscan.measurement.metasweep import MetaSweep
-from pyscan.general.itemattribute import ItemAttribute
+from pyscan.measurement.abstract_experiment import AbstractExperiment
+from pyscan.general.item_attribute import ItemAttribute
 import numpy as np
 # import nidaqmx
 
 
-class FastStageSweep(MetaSweep):
-    '''Setup a point by point measurement. It inherits from :class:`pyscan.measurement.metasweep.MetaSweep`.
+class FastGalvoExperiment(AbstractExperiment):
+    '''Setup a point by point measurement.
+    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
 
     Parameters
     ----------
@@ -40,32 +41,29 @@ class FastStageSweep(MetaSweep):
         runinfo = self.runinfo
         devices = self.devices
 
-        chan = self.runinfo.loop0.prop
-
-        if chan == 'x':
-            chan = 1
-        elif chan == 'y':
-            chan = 2
-        elif chan == 'z':
-            chan = 3
-
+        dev = devices[self.runinfo.loop0['device_names'][0]]
         xrange = list(self.runinfo.loop0.scan_dict.values())[0]
-        runinfo.fast_values = xrange
 
-        runinfo.start = xrange[0]
-        runinfo.stop = xrange[-1]
-        delta = xrange[1] - xrange[0]
-        d = runinfo.stop - runinfo.start
+        # ######### should this be sweep or experiment?
+        dev.legacy_sweep_mode(xrange, runinfo.srate, 5)
+        devices.pb.setup_single_ttl(
+            ['counter', 'awg'],
+            ['aom'],
+            total_time=runinfo.loop0.n / runinfo.srate * 1.05)
+        devices.counter.setup_timed_buffer(
+            1 / runinfo.srate, runinfo.loop0.n, runinfo.loop1.n)
 
-        runinfo.vel0, runinfo.acc = devices.stage.get_channel_velocity_parameters(1)  # in mm/s
+        sleep(0.2)
 
-        n_points = int(np.abs((runinfo.start - runinfo.stop) / delta))
+    def end_function(self):
+        '''TODO
+        '''
+        devices = self.devices
 
-        t = n_points / runinfo.srate
-        runinfo.vel = round(np.abs(d / t), 5)
+        devices.x.dc_mode(0)
+        devices.y.dc_mode(0)
 
-        runinfo.scan_time = t
-        runinfo.fast_chan = chan
+        devices.counter.get_counts(1e-6)
 
     def run(self):
         '''Runs the experiment while locking the console
@@ -139,46 +137,23 @@ class FastStageSweep(MetaSweep):
         runinfo = expt.runinfo
         devices = expt.devices
 
-        if runinfo.fast_chan == 1:
-            chan = 'x'
-            chan_fast = 'xfast'
-        elif runinfo.fast_chan == 2:
-            chan = 'y'
-            chan_fast = 'yfast'
-        elif runinfo.fast_chan == 3:
-            chan = 'z'
-            chan_fast = 'zfast'
-
         d = ItemAttribute()
 
-        devices.stage.reset_speed()
+        devices.pb.start()
 
-        devices.stage[chan] = runinfo.start
+        sleep(runinfo.loop0.n / runinfo.srate * 1.01)
 
-        sleep(2)
-
-        devices.stage.set_channel_velocity_parameters(
-            runinfo.fast_chan,
-            runinfo.vel,
-            runinfo.acc)
-
-        devices.stage[chan_fast] = runinfo.stop
-
-        if runinfo.counter == 'picoharp':
-            d.counts0 = []
-            # d.counts1 = []
-            # d.counts_sum = []
-            for i in range(runinfo.loop0.n):
-                counts0 = devices.ph.get_count_rate_0()
-                # counts1 = devices.ph.get_count_rate_1()
-                # counts_sum = counts0 + counts1
-                d.counts0.append(counts0)
-                # d.counts1.append(counts1)
-                # d.counts_sum.append(counts_sum)
-                sleep(1 / runinfo.srate)
-        else:
-            d.counts = devices.counter.get_n_binary_points(runinfo.loop0.n)
-
-        devices.stage.reset_speed()
+        for i in range(5):
+            if int(devices.counter.query('DATA:POIN?')) == runinfo.loop0.n:
+                d.data = devices.counter.read_data_points()
+                break
+            else:
+                sleep(0.05)
+        devices.pb.reset()
 
         return d
+
+
+# legacy naming convention
+class FastGalvoSweep(FastGalvoExperiment):
+    pass

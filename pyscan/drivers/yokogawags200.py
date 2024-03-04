@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from .instrumentdriver import InstrumentDriver
+from .instrument_driver import InstrumentDriver
 import numpy as np
 from time import sleep
-from pyscan.general.drange import drange
+from pyscan.general.d_range import drange
 
 
 class YokogawaGS200(InstrumentDriver):

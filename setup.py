@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name="pyscan",
-    version="0.0.1",
+    version="0.1.0",
     author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah",
     author_email="amounce@sandia.gov",
     description=(

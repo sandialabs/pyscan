@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from pyscan.drivers.instrumentdriver import InstrumentDriver
+from pyscan.drivers.instrument_driver import InstrumentDriver
 import numpy as np
 from time import sleep
-from pyscan.general.drange import drange
+from pyscan.general.d_range import drange
 
 
 class Keithley2400(InstrumentDriver):
