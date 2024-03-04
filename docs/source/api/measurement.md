@@ -4,13 +4,14 @@
 	:members:
 ```
 
-## Scan
+## Scans
+
 ```{eval-rst}
 .. automodule:: pyscan.measurement.scans
 	:members:
 ```
 
-## Sweep
+## Experiments
 ```{eval-rst}
 .. automodule:: pyscan.measurement.abstract_experiment
 	:members:

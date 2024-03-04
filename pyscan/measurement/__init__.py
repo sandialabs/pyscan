@@ -1,5 +1,4 @@
 # Functions
-from .run_info import new_runinfo
 from .load_experiment import load_experiment
 
 # Scans/Experiments
