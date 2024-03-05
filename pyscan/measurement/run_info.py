@@ -5,34 +5,38 @@ from .scans import PropertyScan, AverageScan
 
 class RunInfo(ItemAttribute):
     '''
-    Object that contains information of how to run the experiment. Inherits from `.ItemAttribute`.
+    Object that contains information of how to run the experiment. Inherits from :class:`.ItemAttribute`.
     This is generally used as an input parameter to Experiment classes.
 
-    You must set the desired number of scans to a type of Scan before using RunInfo in a Experiment class.
+    You must set the desired number of scans to a type of Scan before setting RunInfo as a parameter
+    in a Experiment class.
     Set the scans in order from `scan0` to `scan3` - for example, if you are experimenting over 2 variables,
     set `scan0` and `scan1`. Do not set `scan0` and `scan2`.
+
     Attributes
     ----------
-    scan0, scan1, scan2, scan3 : `PropertyScan`, `AverageScan`, `RepeatScan` or `FunctionScan`
-        Set each scan to a scan object representing one experimental variable. The scan property or
+    scan0, scan1, scan2, scan3 : :class:`.PropertyScan`, :class:`.AverageScan`, :class:`.RepeatScan`
+     or :class:`.FunctionScan`
+        Set each scan to a scan object representing one independent experimental variable. The scan property or
         function will be scanned during the experiment, with scan0 being the innermost scan.
-        Defaults to `PropertyScan({}, prop=None)<pyscan.measurement.scans.PropertyScan>`,
+        Defaults to :class:`PropertyScan({}, prop=None)<.PropertyScan>`,
         which indicates that the scan will not be used.
     measured :
-        Array that contains the names of measured dataset,
-        assigned by an Experiment object's `.AbstractExperiment.run` method.
+        Array that contains the names of collected data, defined by the `measure_function` return object.
     measure_function : func
         User-defined function that controls how to measure data.
-        It should accept a Experiment object as its only parameter,
-        and returns an `.ItemAttribute` object containing the measured data.
+        It should accept a :class:`.Experiment` object as its only parameter,
+        and returns an :class:`.ItemAttribute` object containing the measured data. The names of the measured data,
+        each being an attribute of the return object, will appear as keys of the experiment after it is run.
     trigger_function : func
         User-defined function that controls triggering of instruments
     initial_pause : float
         Pause before first setting instruments in seconds, defaults to 0.1.
     average_d : int
-        scan index used by AverageExperiment to track which scan to average over, defaults to -1.
-        Automatically is set to the correct index by `RunInfo.check()` method, which is automatically
-        called by Experiment `.MetaExperiment.run` methods.
+        scan index used by an Experiment with one of its scans being :class:`.AverageScan`.
+        It is used to track which scan to average over, defaults to -1.
+        Automatically is set to the correct index by :meth:`.RunInfo.check` method, which is automatically
+        called by Experiment objects `run()` methods.
     verbose : bool
         Flag to print status information, defaults to `False`.
 
@@ -58,10 +62,10 @@ class RunInfo(ItemAttribute):
         self.verbose = False
 
     def check(self):
-        '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run` methods.
+        '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
 
-        Automatically sets self.average_d to the correct scan index (i.e., the scan which contains an
-        instance of `.AverageScan`) to average over. Relevant for `.AverageExperiment`.
+        Automatically sets `self.average_d` to the correct scan index (i.e., the scan which contains an
+        instance of `.AverageScan`) to average over.
         '''
         # find the scan set to average scan (if any) and determine the index
         index = 0
@@ -217,12 +221,6 @@ class RunInfo(ItemAttribute):
         ''' Returns array of all scans
         '''
         return [self.scan0, self.scan1, self.scan2, self.scan3]
-
-
-def new_runinfo(*arg, **kwarg):
-    ''' Creates a new instance of Runinfo
-    '''
-    return RunInfo(*arg, **kwarg)
 
 
 def drop(array, index):
