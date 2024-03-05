@@ -2,8 +2,9 @@
 import pytest
 import math
 from collections import OrderedDict
-import pyscan as ps
 import typing
+from pyscan.drivers.test_drivers.test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.test_drivers.test_voltage import TestVoltage
 
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
@@ -39,7 +40,8 @@ def check_values_property(device, key):
         device[name] = val
         # ################ consider within a range here since may not return perfect value.
         assert device["_{}".format(name)] == val
-        assert device.query('VALUES?') == str(val)
+        if not isinstance(device, TestVoltage):
+            assert device.query('VALUES?') == str(val)
 
 
 # check the set_range_property behavior for a range item
@@ -66,7 +68,8 @@ def check_range_property(device, key):
         device[name] = r
         assert device['_{}'.format(name)] == r
         # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
-        assert device.query('RANGE?') == str(r)
+        if not isinstance(device, TestVoltage):
+            assert device.query('RANGE?') == str(r)
 
 
 # check the set_range_properties behavior
@@ -148,7 +151,8 @@ def check_ranges_property(device, key):
     for entry in good_entries:
         device[name] = entry
         assert device._ranges == entry
-        assert device.query('RANGES?') == str(entry)
+        if not isinstance(device, TestVoltage):
+            assert device.query('RANGES?') == str(entry)
 
 
 # check the set_indexed_values_property behavior
@@ -164,7 +168,8 @@ def check_indexed_property(device, key):
     for iv in device._indexed_values_settings['indexed_values']:
         device[name] = iv
         assert device["_{}".format(name)] == iv
-        assert device.query('INDEXED_VALUES?') == str(iv)
+        if not isinstance(device, TestVoltage):
+            assert device.query('INDEXED_VALUES?') == str(iv)
 
 
 # check the set_dict_values_property behavior
@@ -175,7 +180,8 @@ def check_dict_property(device, key):
     for k in device[key]['dict_values']:
         device[name] = k
         assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
-        assert device.query('DICT_VALUES?') == device.find_first_key(ord_dict, ord_dict[k])
+        if not isinstance(device, TestVoltage):
+            assert device.query('DICT_VALUES?') == device.find_first_key(ord_dict, ord_dict[k])
 
     for item in BAD_INPUTS:
         if isinstance(item, typing.Hashable):
@@ -189,6 +195,7 @@ def check_properties(test_instrument):
     # iterate over all attributes to test accordingly using predefined functions
     values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
     # values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+    print("Beginning tests for: ", test_instrument.__class__.__name__)
     settings = []
     total_settings = 0
     for attribute_name in test_instrument.__dict__.keys():
@@ -228,12 +235,12 @@ def check_properties(test_instrument):
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
 
-    if isinstance(test_instrument, ps.TestInstrumentDriver):
+    if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == ranges_counter == idx_vals_counter == dict_vals_counter == 1
-        print("TestInstrumentDriver tested successfully. Drivers test unit seems to be working as expected.")
+        print("Drivers test unit seems to be working as expected.")
 
 
-def test_driver(device, expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
@@ -241,8 +248,3 @@ def test_driver(device, expected_attributes=None, expected_values=None):
             check_attribute_values(device, expected_attributes, expected_values)
 
     check_properties(device)
-
-
-test_instrument = ps.TestInstrumentDriver()
-
-test_driver(test_instrument)

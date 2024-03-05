@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import pyscan as ps
 import pytest
 import math
 import string
 from collections import OrderedDict
+from pyscan.drivers.test_drivers.test_instrument_driver import TestInstrumentDriver
 
 # #################### still need to add error flags for this file...
 # ##################### test more thouroughly with multiple instances to make sure
@@ -12,7 +12,7 @@ from collections import OrderedDict
 
 
 def test_testinstrumentdriver():
-    test_instrument = ps.TestInstrumentDriver()
+    test_instrument = TestInstrumentDriver()
 
     # check that the initialized state has the expected attributes
     def check_has_attributes(device, attributes):
@@ -277,3 +277,6 @@ def test_testinstrumentdriver():
         assert num_idx_vals_props == len(idx_vals_idx)
         assert num_dict_vals_props == len(dict_vals_idx)
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
+
+
+test_testinstrumentdriver()
