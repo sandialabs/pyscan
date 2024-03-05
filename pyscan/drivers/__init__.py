@@ -78,3 +78,5 @@ from .new_instrument import new_instrument
 
 # Test Devices
 from .test_voltage import TestVoltage
+
+from .test_instrument_driver import TestInstrumentDriver

@@ -2,13 +2,15 @@
 import pytest
 import math
 from collections import OrderedDict
+import pyscan as ps
+import typing
+
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
 BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 890992238.2345,
               'not ok', 'bad value', 'Andy is cool',
               [1, 2412, 19], [1, 191, 13, -5.3],
-              {'Alfred': "Batman's uncle", 'or': 'imposter'},
-              {'key1': 'bad boy', 'key2': 'badder girl'}]
+              {'Alfred': "Batman's uncle", 'or': 'imposter'}]
 
 
 # check that the initialized state has the expected attributes
@@ -176,77 +178,71 @@ def check_dict_property(device, key):
         assert device.query('DICT_VALUES?') == device.find_first_key(ord_dict, ord_dict[k])
 
     for item in BAD_INPUTS:
-        if item not in device[key]['dict_values']:
-            with pytest.raises(Exception):
-                device[name] = item
+        if isinstance(item, typing.Hashable):
+            if item not in device[key]['dict_values']:
+                with pytest.raises(Exception):
+                    device[name] = item
 
 
 # implements above checks for all attributes by type
-def check_properties(test_instrument, num_val_props, num_range_props, num_ranges_props,
-                     num_idx_vals_props, num_dict_vals_props, total_att):
+def check_properties(test_instrument):
     # iterate over all attributes to test accordingly using predefined functions
     values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
-    values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
-    for key in test_instrument.__dict__.keys():
-        try:
-            if 'values' in test_instrument[key].keys():
-                values_counter += 1
-                values_idx.append(values_counter)
-                check_values_property(key)
-        except:
+    # values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+    settings = []
+    total_settings = 0
+    for attribute_name in test_instrument.__dict__.keys():
+        if "_settings" in attribute_name:
+            settings.append(attribute_name)
+            total_settings += 1
+
+    for name in settings:
+        if 'values' in test_instrument[name].keys():
             values_counter += 1
-        try:
-            if 'range' in test_instrument[key].keys():
-                range_counter += 1
-                range_idx.append(range_counter)
-                check_range_property(key)
-        except:
+            # values_idx.append(values_counter)
+            check_values_property(test_instrument, name)
+        elif 'range' in test_instrument[name].keys():
             range_counter += 1
-        try:
-            if 'ranges' in test_instrument[key].keys():
-                ranges_counter += 1
-                ranges_idx.append(range_counter)
-                check_ranges_property(key)
-        except:
+            # range_idx.append(range_counter)
+            check_range_property(test_instrument, name)
+        elif 'ranges' in test_instrument[name].keys():
             ranges_counter += 1
-        try:
-            if 'indexed_values' in test_instrument[key].keys():
-                idx_vals_counter += 1
-                idx_vals_idx.append(idx_vals_counter)
-                check_indexed_property(key)
-        except:
+            # ranges_idx.append(range_counter)
+            check_ranges_property(test_instrument, name)
+        elif 'indexed_values' in test_instrument[name].keys():
             idx_vals_counter += 1
-        try:
-            if 'dict_values' in test_instrument[key].keys():
-                dict_vals_counter += 1
-                dict_vals_idx.append(dict_vals_counter)
-                check_dict_property(key)
-        except:
+            # idx_vals_idx.append(idx_vals_counter)
+            check_indexed_property(test_instrument, name)
+        elif 'dict_values' in test_instrument[name].keys():
             dict_vals_counter += 1
+            # dict_vals_idx.append(dict_vals_counter)
+            check_dict_property(test_instrument, name)
+        else:
+            assert False, "no valid type present in setting: {}. Must be one of {}.".format(
+                name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
 
     mid_string = 'properties found and tested out of'
-    print("{} range {} {} total attributes.".format(len(range_idx), mid_string, range_counter))
-    print("{} ranges {} {} total attributes.".format(len(ranges_idx), mid_string, ranges_counter))
-    print("{} values {} {} total attributes.".format(len(values_idx), mid_string, values_counter))
-    print("{} indexed values {} {} total attributes.".format(len(idx_vals_idx), mid_string, idx_vals_counter))
-    print("{} dict values {} {} total attributes.".format(len(dict_vals_idx), mid_string, dict_vals_counter))
+    print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
+    print("{} ranges {} {} total settings found.".format(ranges_counter, mid_string, total_settings))
+    print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
+    print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
+    print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
 
-    assert num_val_props == len(values_idx)
-    assert num_range_props == len(range_idx)
-    assert num_ranges_props == len(ranges_idx)
-    assert num_idx_vals_props == len(idx_vals_idx)
-    assert num_dict_vals_props == len(dict_vals_idx)
-    assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
+    if isinstance(test_instrument, ps.TestInstrumentDriver):
+        assert values_counter == range_counter == ranges_counter == idx_vals_counter == dict_vals_counter == 1
+        print("TestInstrumentDriver tested successfully. Drivers test unit seems to be working as expected.")
 
 
-@pytest.mark.skip(reason="must be tested with specific drivers and their corresponding inputs.")
-# implement the above sections to test your drivers properties with the device
-# ###################### automatically identify and test _settings properties
-def test_driver(device, expected_attributes, expected_values, num_val_props, num_range_props,
-                num_ranges_props, num_idx_vals_props, num_dict_vals_props, total_att):
-    check_has_attributes(device, expected_attributes)
+def test_driver(device, expected_attributes=None, expected_values=None):
+    if expected_attributes is not None:
+        check_has_attributes(device, expected_attributes)
 
-    check_attribute_values(device, expected_attributes, expected_values)
+        if expected_values is not None:
+            check_attribute_values(device, expected_attributes, expected_values)
 
-    check_properties(device, num_val_props, num_range_props, num_ranges_props, num_idx_vals_props,
-                     num_dict_vals_props, total_att)
+    check_properties(device)
+
+
+test_instrument = ps.TestInstrumentDriver()
+
+test_driver(test_instrument)

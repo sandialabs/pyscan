@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.drivers import InstrumentDriver
+import pyscan as ps
 import pytest
 import math
 import string
@@ -11,114 +11,8 @@ from collections import OrderedDict
 # ######### on 2_29_24
 
 
-class TestInstrumentDriver(InstrumentDriver):
-    '''Class that exhausts the possible properties of instrument driver to test instrument driver.
-
-    Properties
-    ----------
-    values :
-        for testing values property
-    range :
-        for testing range property
-    ranges :
-        for testing ranges property
-    indexed_values :
-        for testing indexed_values property
-    dict_values :
-        for testing dict_values property
-    '''
-
-    def __init__(self, debug=False, instrument=None, *arg, **kwarg):
-
-        super().__init__(instrument=None, *arg, **kwarg)
-        self.initialize_properties()
-
-        self.instrument = 'instrument#123'
-        self.debug = debug
-        self._values = 1
-        self._range = 0
-        self._ranges = (1, 15)
-        self._indexed_values = 'A'
-        self._dict_values = 'off'
-
-    def query(self, string):
-        if string == 'VALUES?':
-            return str(self._values)
-        elif string == 'RANGE?':
-            return str(self._range)
-        elif string == 'RANGES?':
-            return str(self._ranges)
-        elif string == 'INDEXED_VALUES?':
-            return str(self._indexed_values)
-        elif string == 'DICT_VALUES?':
-            return str(self._dict_values)
-
-    # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
-    def write(self, string):
-        if 'VALUES' in string:
-            return string.strip('VALUES ')
-        elif ('RANGE' in string) and not ('RANGES' in string):
-            return string.strip('RANGE ')
-        elif 'RANGES' in string:
-            return string.strip('RANGES ')
-        elif 'INDEXED_VALUES' in string:
-            return string.strip('INDEXED_VALUES ')
-        elif 'DICT_VALUES' in string:
-            return string.strip('DICT_VALUES ')
-
-    def initialize_properties(self):
-
-        self.add_device_property({
-            'name': 'values',
-            'write_string': 'VALUES {}',
-            'query_string': 'VALUES?',
-            'values': [2, 'x', False, (1, 10), ['1', '10']],
-            'return_type': int
-        })
-
-        self.add_device_property({
-            'name': 'range',
-            'write_string': 'RANGE {}',
-            'query_string': 'RANGE?',
-            'range': [0, 10],
-            'return_type': float
-        })
-
-        self.add_device_property({
-            'name': 'ranges',
-            'write_string': 'RANGES {}',
-            'query_string': 'RANGES?',
-            'ranges': [[0, 10], [15, 20], [-1, 1]],
-            'return_type': float
-        })
-
-        self.add_device_property({
-            'name': 'indexed_values',
-            'write_string': 'INDEXED_VALUES {}',
-            'query_string': 'INDEXED_VALUES?',
-            'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'],
-            'return_type': str
-        })
-
-        self.add_device_property({
-            'name': 'dict_values',
-            'write_string': 'DICT_VALUES {}',
-            'query_string': 'DICT_VALUES?',
-            'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
-            'return_type': str
-        })
-        with pytest.raises(Exception):
-            self.add_device_property({
-                'name': 'bad_values',
-                'write_string': 'DICT_VALUES {}',
-                'query_string': 'DICT_VALUES?',
-                'invalid_key_name': {'on': 1, 'off': 0, '1': 1, '0': 0},
-                'return_type': str
-            })
-
-
 def test_testinstrumentdriver():
-    test_instrument = TestInstrumentDriver()
+    test_instrument = ps.TestInstrumentDriver()
 
     # check that the initialized state has the expected attributes
     def check_has_attributes(device, attributes):
@@ -383,6 +277,3 @@ def test_testinstrumentdriver():
         assert num_idx_vals_props == len(idx_vals_idx)
         assert num_dict_vals_props == len(dict_vals_idx)
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
-
-    check_properties(test_instrument)
-    # #### further implement drivers_test_unit to test
