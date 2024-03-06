@@ -24,15 +24,25 @@ def live_plot(plotting_function, dt=1):
     '''
 
     def live_plot_function(expt=None, *arg, **kwarg):
+        try:
+            while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
+                sleep(1)
 
-        while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
-            sleep(1)
+            plt.axis()
+            plt.ion()
+        except KeyboardInterrupt:
+            return 0
 
-        plt.axis()
-        plt.ion()
+        try:
+            while expt.runinfo.running:
+                sleep(dt)
 
-        while expt.runinfo.running:
-            sleep(dt)
+                plt.gca().cla()
+
+                plotting_function(expt, *arg, **kwarg)
+
+                display.display(plt.gcf())
+                display.clear_output(wait=True)
 
             plt.gca().cla()
 
@@ -40,12 +50,7 @@ def live_plot(plotting_function, dt=1):
 
             display.display(plt.gcf())
             display.clear_output(wait=True)
-
-        plt.gca().cla()
-
-        plotting_function(expt, *arg, **kwarg)
-
-        display.display(plt.gcf())
-        display.clear_output(wait=True)
+        except KeyboardInterrupt:
+            return 0
 
     return live_plot_function
