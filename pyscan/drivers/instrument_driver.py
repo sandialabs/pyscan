@@ -3,6 +3,7 @@ from pyscan.general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
+from .test_drivers.drivers_test_unit import test_driver
 
 
 class InstrumentDriver(ItemAttribute):
@@ -353,3 +354,6 @@ class InstrumentDriver(ItemAttribute):
                 possible.append('{}'.format(string))
             err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
+
+    def test_properties(self):
+        test_driver(self)

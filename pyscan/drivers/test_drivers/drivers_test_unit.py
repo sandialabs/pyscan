@@ -248,3 +248,5 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
             check_attribute_values(device, expected_attributes, expected_values)
 
     check_properties(device)
+
+    print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))

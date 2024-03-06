@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from .instrument_driver import InstrumentDriver
-from .test_drivers.drivers_test_unit import test_driver
 import numpy as np
 from time import sleep
 
@@ -76,6 +75,7 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
+        self.test_properties()
 
     def initialize_properties(self):
 
@@ -225,9 +225,6 @@ class Stanford830(InstrumentDriver):
             'return_type': int})
 
         self.update_properties()
-
-    def test_properties(self):
-        test_driver(self)
 
     def update_properties(self):
         # Reference and phase
