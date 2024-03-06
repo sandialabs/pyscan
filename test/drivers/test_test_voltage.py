@@ -85,5 +85,4 @@ def test_testvoltage():
     assert v1._output_state == 'off', "TestVoltage _output_state does not get machine value after 'off' key user input"
     assert v1.output_state == 'off', "TestVoltage output_state does not get machine value after 'off' key user input"
 
-
-test_testvoltage()
+    v1.test_properties()

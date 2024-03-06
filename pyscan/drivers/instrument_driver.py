@@ -3,7 +3,6 @@ from pyscan.general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
-from .test_drivers.drivers_test_unit import test_driver
 
 
 class InstrumentDriver(ItemAttribute):
@@ -356,4 +355,5 @@ class InstrumentDriver(ItemAttribute):
             assert False, err_string
 
     def test_properties(self):
+        from pyscan.drivers.test_drivers.drivers_test_unit import test_driver
         test_driver(self)

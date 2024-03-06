@@ -278,5 +278,9 @@ def test_testinstrumentdriver():
         assert num_dict_vals_props == len(dict_vals_idx)
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
+    check_properties(test_instrument)
+
+    test_instrument.test_properties()
+
 
 test_testinstrumentdriver()
