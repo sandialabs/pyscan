@@ -45,6 +45,9 @@
 .. automodule:: pyscan.drivers.hp34401a
 	:members:
 
+.. automodule:: pyscan.drivers.keithley2260b
+	:members:
+
 .. automodule:: pyscan.drivers.keithley2400
 	:members:
 
