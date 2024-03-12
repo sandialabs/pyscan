@@ -1,6 +1,6 @@
-from pyscan.drivers.test_drivers.test_instrument_driver import TestInstrumentDriver
-from pyscan.drivers.test_drivers.test_voltage import TestVoltage
-from pyscan.drivers.test_drivers.drivers_test_unit import test_driver
+from test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.test_voltage import TestVoltage
+from drivers_test_unit import test_driver
 
 
 def test_drivers_test_unit():

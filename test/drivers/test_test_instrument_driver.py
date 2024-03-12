@@ -3,7 +3,7 @@ import pytest
 import math
 import string
 from collections import OrderedDict
-from pyscan.drivers.test_drivers.test_instrument_driver import TestInstrumentDriver
+from test_instrument_driver import TestInstrumentDriver
 
 # #################### still need to add error flags for this file...
 # ##################### test more thouroughly with multiple instances to make sure
@@ -279,8 +279,6 @@ def test_testinstrumentdriver():
         assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
     check_properties(test_instrument)
-
-    test_instrument.test_properties()
 
 
 test_testinstrumentdriver()

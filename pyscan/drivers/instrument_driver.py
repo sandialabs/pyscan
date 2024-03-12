@@ -353,7 +353,3 @@ class InstrumentDriver(ItemAttribute):
                 possible.append('{}'.format(string))
             err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
-
-    def test_properties(self):
-        from pyscan.drivers.test_drivers.drivers_test_unit import test_driver
-        test_driver(self)

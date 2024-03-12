@@ -3,8 +3,8 @@ import pytest
 import math
 from collections import OrderedDict
 import typing
-from pyscan.drivers.test_drivers.test_instrument_driver import TestInstrumentDriver
-from pyscan.drivers.test_drivers.test_voltage import TestVoltage
+from test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.test_voltage import TestVoltage
 
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?

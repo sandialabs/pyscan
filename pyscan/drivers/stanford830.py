@@ -75,7 +75,6 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-        self.test_properties()
 
     def initialize_properties(self):
 

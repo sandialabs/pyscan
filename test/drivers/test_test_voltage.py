@@ -2,11 +2,11 @@
 Pytest functions to test the Runinfo class
 '''
 
-from pyscan.drivers.test_drivers.test_voltage import TestVoltage
+from pyscan.drivers.test_voltage import TestVoltage
 import pytest
 
 
-def test_testvoltage():
+def test_test_voltage():
     """
     Testing TestVoltage class
 
@@ -84,5 +84,3 @@ def test_testvoltage():
     v1.output_state = 'off'
     assert v1._output_state == 'off', "TestVoltage _output_state does not get machine value after 'off' key user input"
     assert v1.output_state == 'off', "TestVoltage output_state does not get machine value after 'off' key user input"
-
-    v1.test_properties()
