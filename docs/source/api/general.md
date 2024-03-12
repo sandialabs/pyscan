@@ -1,39 +1,39 @@
 # General
 
 ```{eval-rst}
-.. automodule:: pyscan.general.itemattribute
+.. automodule:: pyscan.general.item_attribute
 	:members:
 ```
 
 ## Functions
 ```{eval-rst}
-.. automodule:: pyscan.general.drange
+.. automodule:: pyscan.general.d_range
 	:members:
 
-.. automodule:: pyscan.general.firststring
+.. automodule:: pyscan.general.first_string
 	:members:
 
-.. automodule:: pyscan.general.islisttype
+.. automodule:: pyscan.general.is_list_type
 	:members:
 
-.. automodule:: pyscan.general.isnumerictype
+.. automodule:: pyscan.general.is_numeric_type
 	:members:
 
-.. automodule:: pyscan.general.quadraturesum
+.. automodule:: pyscan.general.quadrature_sum
 	:members:
 
-.. automodule:: pyscan.general.recursivetodict
+.. automodule:: pyscan.general.recursive_to_dict
 	:members:
 
-.. automodule:: pyscan.general.recursivetoitemattribute
+.. automodule:: pyscan.general.recursive_to_item_attribute
 	:members:
 
-.. automodule:: pyscan.general.samelength
+.. automodule:: pyscan.general.same_length
 	:members:
 
-.. automodule:: pyscan.general.setdifference
+.. automodule:: pyscan.general.set_difference
 	:members:
 
-.. automodule:: pyscan.general.stackorappend
+.. automodule:: pyscan.general.stack_or_append
 	:members:
 ```

@@ -18,7 +18,6 @@ A selection of instrument drivers are included, but drivers from other libraries
   - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Install](#install)
-    - [Make your virtual environment accessible in Jupyter Lab](#make-your-virtual-environment-accessible-in-jupyter-lab)
     - [Usage](#usage)
   - [Contribute](#contribute)
   - [License](#license)
@@ -43,14 +42,14 @@ Pyscan can be installed by downloading this repository and following the instruc
 3. Install pyscan with
 
 ```
-pip install ./
+pip install .
 ```
 
 ### Usage
 
 Sample Jupyter Notebooks running dummy experiments are located in the demo_notebooks folder.
 
-For the full instructions on how to use pyscan library, read the docs! (Coming Soon)
+For the full instructions on how to use pyscan library, [read the docs](https://pyscan.readthedocs.io/en/latest/)!
 
 ## Contribute
 

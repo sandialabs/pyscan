@@ -22,3 +22,7 @@ git clone https://github.com/sandialabs/pyscan
 ```
 pip install .
 ```
+
+## Additional Requirements
+
+Some instruments require extra installations in order to use them. For example, Ocean Optics (now known as Ocean Insight) spectrometers require the python package `seabreeze`.  Thorlabs drivers may also require the installation of proprietary .dll files available on their website by installing Thorlabs Kinesis.

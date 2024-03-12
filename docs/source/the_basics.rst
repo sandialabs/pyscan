@@ -6,8 +6,5 @@ The Basics
 
    basics/installation
    basics/how_it_works
-   basics/basic_example
+   basics/basic_example_nb/basic_example
    basics/notebooks
-   basics/demo_notebooks/01-example_link
-   basics/demo_notebooks/01-example_link2
-   basics/demo_notebooks/01-example_link3
