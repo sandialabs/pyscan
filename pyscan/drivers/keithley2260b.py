@@ -1,4 +1,4 @@
-from pyscan.drivers.instrumentdriver import InstrumentDriver
+from pyscan.drivers.instrument_driver import InstrumentDriver
 
 
 class Keithley2260B(InstrumentDriver):
