@@ -4,24 +4,25 @@ from pyscan.drivers.instrumentdriver import InstrumentDriver
 class Keithley2260B(InstrumentDriver):
 
     '''
-    Class to control the Kiehtley 2200B DC power supply
+    Class to control the Kiethley 2260B DC power supply.
 
-    Limits are currently set for the 2260B-80-27 720W 
+    Limits are currently set for the 2260B-80-27 720W
     model, later we can use the *IDN query to determine the
-    specific model and auto populate limits
+    specific model and auto populate limits.
 
     Parameters
     ----------
     instrument :
         Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        :func:`.new_instrument`)
 
     Properties
     ----------
     output : int or str
-        Turns the output on or off. Values: [0, 1, 'On', 'OFF']
+        Turns the output on or off. Values: [0, 1, 'ON', 'OFF']
     current : int
-        Sets the value of the output current. Range: [0, 27] amps
+        Sets the value of the output current. Range: [0, 27] Amps.
+        Use the method measure_current() to get the actual current.
     current_rising_slew_rate : float
         Sets the value of the rising slew rate for current
         Range : [0.01, 54] Amps/s
@@ -29,15 +30,19 @@ class Keithley2260B(InstrumentDriver):
         Sets the value of the falling slew rate for current
         Range : [0.01, 54] Amps/s
     voltage : float
-        Sets the value of the output voltage. Range: [0, 80] volts
+        Sets the value of the output voltage. Range: [0, 80] Volts.
+        Use the method measure_voltage() to get the actual voltage.
     resistance : float
         Sets the value of the internal resistance. Range: [0, 2.963]
 
     Methods
     -------
-    measure_current() - returns the measured current in amps
-    measure_voltage() - returns the measured voltage in volts
-    measure_power() - returns the measured power in watts
+    measure_current()
+        Returns the measured current in Amps
+    measure_voltage()
+        Returns the measured voltage in Volts
+    measure_power()
+        Returns the measured power in Watts
     '''
 
     def __init__(self, instrument, debug=False):
