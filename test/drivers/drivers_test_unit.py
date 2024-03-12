@@ -165,7 +165,7 @@ def check_indexed_property(device, key):
             with pytest.raises(Exception):
                 device[name] = item
 
-    for iv in device._indexed_values_settings['indexed_values']:
+    for iv in device[key]['indexed_values']:
         device[name] = iv
         assert device["_{}".format(name)] == iv
         if not isinstance(device, TestVoltage):

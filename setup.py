@@ -36,6 +36,8 @@ setup(
         'ipywidgets',
         'h5py',
         'matplotlib',
+        'ipykernel',
+        'pytest',
     ],
     extras_require={'oceanoptics': ['seabreeze']},
     classifiers=[
