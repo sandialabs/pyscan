@@ -364,8 +364,11 @@ def check_properties(test_instrument):
     print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
-    print("{} blacklisted settings not testing (likely due to interdependencies not suitable for automated testing)"
-          .format(len(test_instrument.black_list_for_testing)))
+    try:
+        print("{} blacklisted settings not testing (likely due to interdependencies not suitable for automated testing)"
+              .format(len(test_instrument.black_list_for_testing)))
+    except Exception:
+        pass
     total_tested = range_counter + ranges_counter + values_counter + idx_vals_counter + dict_vals_counter
     print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
