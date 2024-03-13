@@ -148,13 +148,15 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['none', 'line', '2xline', 'both'],
             'return_type': int})
 
+        # NEED TO CORRECT FOR CONSISTENT VALUES, need one for current and one for voltage?
+        # make another named current_sensitivity
         self.add_device_property({
-            'name': 'sensitivity',
+            'name': 'voltage_sensitivity',
             'write_string': 'SENS {}',
             'query_string': 'SENS?',
             'indexed_values': [
                 2e-9, 5e-9,
-                10e-9, 20e-9, 50e-5,
+                10e-9, 20e-9, 50e-9,
                 100e-9, 200e-9, 500e-9,
                 1e-6, 2e-6, 5e-6,
                 10e-6, 20e-6, 50e-6,

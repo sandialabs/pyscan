@@ -14,6 +14,17 @@ BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 89
               {'Alfred': "Batman's uncle", 'or': 'imposter'}]
 
 
+def save_initial_state(device):
+    saved_settings = []
+    for attribute_name in device.__dict__.keys():
+        if "_settings" in attribute_name:
+            name = "_{}".format(device[attribute_name]['name'])
+            val = device[name]
+            saved_settings.append((name, val))
+
+    return saved_settings
+    
+
 # check that the initialized state has the expected attributes
 def check_has_attributes(device, attributes):
     for a in attributes:
@@ -29,6 +40,7 @@ def check_attribute_values(device, attributes, ev):
 
 # check the set_values_property behavior
 def check_values_property(device, key):
+    device[key]['values'] = device[key]['values'][0]
     name = device[key]['name']
 
     for val in BAD_INPUTS:
@@ -64,7 +76,7 @@ def check_range_property(device, key):
     if abs(device[key]['range'][0] - device[key]['range'][0]) > 10000:
         step = math.ceil(abs(device[key]['range'][0] - device[key]['range'][0]) / 1000)
 
-    for r in range(device[key]['range'][0], device[key]['range'][0], step):
+    for r in range(int(device[key]['range'][0]), int(device[key]['range'][0]), step):
         device[name] = r
         assert device['_{}'.format(name)] == r
         # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
@@ -165,11 +177,15 @@ def check_indexed_property(device, key):
             with pytest.raises(Exception):
                 device[name] = item
 
-    for iv in device[key]['indexed_values']:
+    for idx, iv in enumerate(device[key]['indexed_values']):
+        print(str(iv), str(idx), name, device[name])
         device[name] = iv
         assert device["_{}".format(name)] == iv
+        print("underscore property is: ", device["_{}".format(name)])
         if not isinstance(device, TestVoltage):
-            assert device.query('INDEXED_VALUES?') == str(iv)
+            query_string = device[key]['query_string']
+            err_string = "query returns: {} is not the idx: {} for: {}".format(device.query(query_string), str(idx), key)
+            assert device.query(query_string).strip('\n') == str(idx), err_string
 
 
 # check the set_dict_values_property behavior
@@ -194,7 +210,11 @@ def check_dict_property(device, key):
 def check_properties(test_instrument):
     # iterate over all attributes to test accordingly using predefined functions
     values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
+    instrument_name = test_instrument.__class__.__name__
     # values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+    saved_settings = save_initial_state(test_instrument)
+    print("Initial state for the {} was: {}".format(instrument_name, saved_settings))
+
     print("Beginning tests for: ", test_instrument.__class__.__name__)
     settings = []
     total_settings = 0

@@ -18,6 +18,8 @@ class TestInstrumentDriver(InstrumentDriver):
     dict_values :
         for testing dict_values property
     '''
+    # tells pytest this is not a test case
+    __test__ = False
 
     def __init__(self, debug=False, instrument=None, *arg, **kwarg):
 

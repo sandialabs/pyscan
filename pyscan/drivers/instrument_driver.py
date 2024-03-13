@@ -131,7 +131,10 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string']).strip('\n')
-            if 'dict_values' in settings:
+            if 'indexed_values' in settings:
+                values = settings['indexed_values']
+                value = values[int(value)]
+            elif 'dict_values' in settings:
                 dictionary = settings['dict_values']
                 value = self.find_first_key(dictionary, value)
             else:
