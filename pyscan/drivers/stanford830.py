@@ -75,6 +75,7 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
+        self.black_list_for_testing = ['_input_configuration', "_time_constant"]
 
     def initialize_properties(self):
 
@@ -149,9 +150,9 @@ class Stanford830(InstrumentDriver):
             'return_type': int})
 
         # NEED TO CORRECT FOR CONSISTENT VALUES, need one for current and one for voltage?
-        # make another named current_sensitivity
+        # this one will be voltage sensitivity, then make another named current_sensitivity
         self.add_device_property({
-            'name': 'voltage_sensitivity',
+            'name': 'sensitivity',
             'write_string': 'SENS {}',
             'query_string': 'SENS?',
             'indexed_values': [
@@ -174,6 +175,8 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['high', 'normal', 'low'],
             'return_type': int})
 
+        # This setter doesn't seem to be working as intended. Setting to too low (below min) value
+        # does not set to the minimum allowable (as suggested in docs) but rather leaves it unchanged.
         self.add_device_property({
             'name': 'time_constant',
             'write_string': 'OFLT {}',
@@ -188,7 +191,7 @@ class Stanford830(InstrumentDriver):
 
         self.add_device_property({
             'name': 'filter_slope',
-            'write_string': 'OFSL{} {}',
+            'write_string': 'OFSL {}',
             'query_string': 'OFSL?',
             'indexed_values': [6, 12, 18, 24],
             'return_type': int})
@@ -232,13 +235,14 @@ class Stanford830(InstrumentDriver):
         self.phase
         self.reference_source
         self.frequency
-        self.reference_source
+        self.reference_slope
         self.harmonic
         self.instrument_amplitude
 
         # Input configuration
         self.input_configuration
         self.input_ground
+        self.input_coupling
         self.input_line_filter
         self.input_line_filter
 

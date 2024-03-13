@@ -16,11 +16,17 @@ BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 89
 
 def save_initial_state(device):
     saved_settings = []
+    # print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
-            name = "_{}".format(device[attribute_name]['name'])
+            '''try:
+                name = "_{}".format(device[attribute_name]['name'])
+                val = device[name]
+            except (Exception):'''
+            name = "{}".format(device[attribute_name]['name'])
             val = device[name]
             saved_settings.append((name, val))
+            # print(device.__dict__.keys())
 
     return saved_settings
 
@@ -28,8 +34,23 @@ def save_initial_state(device):
 def restore_initial_state(device, saved_settings):
     restored_settings = []
     for setting in saved_settings:
-        setter = setting[0].strip('_')
-        device[setter] = setting[1]
+        setter = setting[0]
+        val = setting[1]
+        try:
+            device[setter] = val
+        except Exception:
+            device[setter] = str(val)
+        query_string = device["_{}_settings".format(setter)]['query_string']
+        query_result = device.query(query_string)
+        try:
+            query_result = query_result.strip(" \n")
+        except Exception:
+            pass
+        try:
+            query_result = int(query_result)
+        except Exception:
+            pass
+        restored_settings.append((setter, query_result))
 
     return restored_settings
 
@@ -249,9 +270,6 @@ def check_indexed_property(device, key):
     device[name] = device[key]['indexed_values'][0]
 
 
-check_indexed_property(TestInstrumentDriver(), '_indexed_values_settings')
-
-
 # check the set_dict_values_property behavior
 def check_dict_property(device, key):
     # key must be string or number, set property to include lists, arrays, arbritray values of diversity
@@ -264,10 +282,13 @@ def check_dict_property(device, key):
         break
 
     for k in device[key]['dict_values']:
+        # print(k)
         device[name] = k
         assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
         if not isinstance(device, TestVoltage):
-            assert device.query('DICT_VALUES?') == device.find_first_key(ord_dict, ord_dict[k])
+            query_string = device[key]['query_string']
+            # print(key, device[key]['dict_values'][k], device.query(query_string))
+            assert str(device.query(query_string)).strip(' \n') == str(device[key]['dict_values'][k])
 
     for item in BAD_INPUTS:
         if isinstance(item, typing.Hashable):
@@ -303,6 +324,11 @@ def check_properties(test_instrument):
             total_settings += 1
 
     for name in settings:
+        if hasattr(test_instrument, 'black_list_for_testing'):
+            base_name = name.replace('_settings', '')
+            # base_name = test_instrument[name]['name']
+            if base_name in test_instrument['black_list_for_testing']:
+                continue
         keys = test_instrument[name].keys()
         if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
@@ -329,6 +355,8 @@ def check_properties(test_instrument):
                 name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
 
     restored_settings = restore_initial_state(test_instrument, saved_settings)
+    s = set(restored_settings)
+    diff = [x for x in saved_settings if x not in s]
 
     mid_string = 'properties found and tested out of'
     print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
@@ -336,11 +364,17 @@ def check_properties(test_instrument):
     print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
+    print("{} blacklisted settings not testing (likely due to interdependencies not suitable for automated testing)"
+          .format(len(test_instrument.black_list_for_testing)))
+    total_tested = range_counter + ranges_counter + values_counter + idx_vals_counter + dict_vals_counter
+    print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == ranges_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
     print("Settings restored to: {}".format(restored_settings))
+    if (len(diff) > 0):
+        print("Restored settings are different for the following: ", diff)
 
 
 def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):

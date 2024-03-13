@@ -35,12 +35,12 @@ def test_testinstrumentdriver():
     rgs = {'name': 'range', 'write_string': 'RANGE {}', 'query_string': 'RANGE?',
            'range': [0, 10], 'return_type': float}
     rgss = {'name': 'ranges', 'write_string': 'RANGES {}', 'query_string': 'RANGES?',
-            'ranges': [[0, 10], [15, 20], [-1, 1]], 'return_type': float}
+            'ranges': [[0, 10], [15, 20], [-1, 1]], 'return_type': list}
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',
              'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
              'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
-    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 2, 0, (1, 15), 'A', 'off']
+    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 2, 0, [0, 15, -1], 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
     # check the set_values_property behavior
@@ -204,7 +204,7 @@ def test_testinstrumentdriver():
         for k in test_instrument[key]['dict_values']:
             test_instrument[name] = k
             assert test_instrument["_{}".format(name)] == test_instrument.find_first_key(ord_dict, ord_dict[k])
-            assert test_instrument.query('DICT_VALUES?') == test_instrument.find_first_key(ord_dict, ord_dict[k])
+            assert test_instrument.query('DICT_VALUES?') == test_instrument[key]['dict_values'][k]
 
         for letter in string.ascii_letters:
             if letter not in test_instrument[key]['dict_values']:

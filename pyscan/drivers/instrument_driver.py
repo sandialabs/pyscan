@@ -3,6 +3,7 @@ from pyscan.general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
+import ast
 
 
 class InstrumentDriver(ItemAttribute):
@@ -130,13 +131,31 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         if not obj.debug:
-            value = obj.query(settings['query_string']).strip('\n')
-            if 'indexed_values' in settings:
+            value = obj.query(settings['query_string'])
+            try:
+                value = value.strip(" \n")
+            except Exception:
+                pass
+            if 'ranges' in settings:
+                pass
+            elif 'indexed_values' in settings:
                 values = settings['indexed_values']
                 value = values[int(value)]
             elif 'dict_values' in settings:
                 dictionary = settings['dict_values']
+                # this is the human value
+                #print(value)
                 value = self.find_first_key(dictionary, value)
+                '''try:
+                    nv = self.find_first_key(dictionary, value)
+                    if nv is None:
+                        assert False
+                    value = nv
+                except Exception:
+                    assert str(value) in settings['dict_values'].keys(), "_{}_".format(value)'''
+                # this then gets the machine value
+                value = dictionary[value]
+                #print(value)
             else:
                 value = settings['return_type'](value)
 
@@ -239,6 +258,9 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         rngs = settings['ranges']
+
+        if type(new_value) is str:
+            new_value = ast.literal_eval(new_value)
 
         for rng in rngs:
             assert len(rng) == 2, "each range for ranges settings must have 2 values"

@@ -30,7 +30,7 @@ class TestInstrumentDriver(InstrumentDriver):
         self.debug = debug
         self._values = 2
         self._range = 0
-        self._ranges = (1, 15)
+        self._ranges = [0, 15, -1]
         self._indexed_values = 'A'
         self._dict_values = 'off'
 
@@ -45,7 +45,8 @@ class TestInstrumentDriver(InstrumentDriver):
             idx = self._indexed_values_settings['indexed_values'].index(self._indexed_values)
             return str(idx)
         elif string == 'DICT_VALUES?':
-            return str(self._dict_values)
+            val = self._dict_values_settings['dict_values'][self._dict_values]
+            return val
 
     # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
     def write(self, string):
@@ -83,7 +84,7 @@ class TestInstrumentDriver(InstrumentDriver):
             'write_string': 'RANGES {}',
             'query_string': 'RANGES?',
             'ranges': [[0, 10], [15, 20], [-1, 1]],
-            'return_type': float
+            'return_type': list
         })
 
         self.add_device_property({
@@ -110,3 +111,13 @@ class TestInstrumentDriver(InstrumentDriver):
                 'return_type': str
             })
         delattr(self, "_bad_values_settings")
+
+        '''self.update_properties()
+
+    def update_properties(self):
+        # Reference and phase
+        self.values
+        self.range
+        self.ranges
+        self.indexed_values
+        self.dict_values'''
