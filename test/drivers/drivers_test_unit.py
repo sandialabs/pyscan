@@ -23,7 +23,42 @@ def save_initial_state(device):
             saved_settings.append((name, val))
 
     return saved_settings
-    
+
+
+def restore_initial_state(device, saved_settings):
+    restored_settings = []
+    for setting in saved_settings:
+        setter = setting[0].strip('_')
+        device[setter] = setting[1]
+
+    return restored_settings
+
+
+def reset_device_properties(device):
+    settings = []
+    for attribute_name in device.__dict__.keys():
+        if "_settings" in attribute_name:
+            settings.append(attribute_name)
+
+    for name in settings:
+        var_name = name.replace('_settings', '')
+        if 'values' in device[name].keys():
+            device[var_name] = device[name]['values'][0]
+        elif 'range' in device[name].keys():
+            device[var_name] = device[name]['range'][0]
+        elif 'ranges' in device[name].keys():
+            # write to reset val later
+            pass
+        elif 'indexed_values' in device[name].keys():
+            device[var_name] = device[name]['indexed_values'][0]
+        elif 'dict_values' in device[name].keys():
+            for key in device[name]['dict_values'].keys():
+                device[var_name] = key
+                break
+        else:
+            assert False, "no valid type present in setting: {}. Must be one of {}.".format(
+                name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+
 
 # check that the initialized state has the expected attributes
 def check_has_attributes(device, attributes):
@@ -40,8 +75,10 @@ def check_attribute_values(device, attributes, ev):
 
 # check the set_values_property behavior
 def check_values_property(device, key):
-    device[key]['values'] = device[key]['values'][0]
     name = device[key]['name']
+
+    # reset value to baseline for consistency between tests
+    device[name] = device[key]['values'][0]
 
     for val in BAD_INPUTS:
         if val not in device[key]['values']:
@@ -55,12 +92,19 @@ def check_values_property(device, key):
         if not isinstance(device, TestVoltage):
             assert device.query('VALUES?') == str(val)
 
+    # reset value to baseline for consistency between tests
+    device[name] = device[key]['values'][0]
+
 
 # check the set_range_property behavior for a range item
 def check_range_property(device, key):
     min_range = min(device[key]['range'])
     max_range = max(device[key]['range'])
     name = device[key]['name']
+
+    # reset range to baseline for consistency between tests
+    device[name] = device[key]['range'][0]
+
     with pytest.raises(Exception):
         device[name] = min_range - .001
     with pytest.raises(Exception):
@@ -83,10 +127,17 @@ def check_range_property(device, key):
         if not isinstance(device, TestVoltage):
             assert device.query('RANGE?') == str(r)
 
+    # reset range to baseline for consistency between tests
+    device[name] = device[key]['range'][0]
+
 
 # check the set_range_properties behavior
 def check_ranges_property(device, key):
     name = device[key]['name']
+
+    # reset ranges to baseline for consistency between tests
+    device[name] = device[key]['ranges'][0]
+
     ranges = device[key]['ranges']
     num_ranges = len(ranges)
     if num_ranges < 1:
@@ -166,11 +217,17 @@ def check_ranges_property(device, key):
         if not isinstance(device, TestVoltage):
             assert device.query('RANGES?') == str(entry)
 
+    # reset ranges to baseline for consistency between tests
+    device[name] = device[key]['ranges'][0]
+
 
 # check the set_indexed_values_property behavior
 def check_indexed_property(device, key):
     # check a random string rather than a for loop
     name = device[key]['name']
+
+    # reset value to baseline for consistency between tests
+    device[name] = device[key]['indexed_values'][0]
 
     for item in BAD_INPUTS:
         if item not in device[key]['indexed_values']:
@@ -178,14 +235,21 @@ def check_indexed_property(device, key):
                 device[name] = item
 
     for idx, iv in enumerate(device[key]['indexed_values']):
-        print(str(iv), str(idx), name, device[name])
+        # print(str(iv), str(idx), name, device[name])
         device[name] = iv
         assert device["_{}".format(name)] == iv
-        print("underscore property is: ", device["_{}".format(name)])
+        # print("underscore property is: ", device["_{}".format(name)])
         if not isinstance(device, TestVoltage):
             query_string = device[key]['query_string']
-            err_string = "query returns: {} is not the idx: {} for: {}".format(device.query(query_string), str(idx), key)
+            err_string = ("query returns: {} is not the idx: {} for: {}"
+                          .format(device.query(query_string), str(idx), key))
             assert device.query(query_string).strip('\n') == str(idx), err_string
+
+    # reset value to baseline for consistency between tests
+    device[name] = device[key]['indexed_values'][0]
+
+
+check_indexed_property(TestInstrumentDriver(), '_indexed_values_settings')
 
 
 # check the set_dict_values_property behavior
@@ -193,6 +257,12 @@ def check_dict_property(device, key):
     # key must be string or number, set property to include lists, arrays, arbritray values of diversity
     name = device[key]['name']
     ord_dict = OrderedDict(device[key]['dict_values'])
+
+    # reset the dict value to the first value for consistency between tests
+    for k in ord_dict:
+        device[name] = k
+        break
+
     for k in device[key]['dict_values']:
         device[name] = k
         assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
@@ -205,6 +275,11 @@ def check_dict_property(device, key):
                 with pytest.raises(Exception):
                     device[name] = item
 
+    # reset the dict value to the first value for consistency between tests
+    for k in ord_dict:
+        device[name] = k
+        break
+
 
 # implements above checks for all attributes by type
 def check_properties(test_instrument):
@@ -215,6 +290,10 @@ def check_properties(test_instrument):
     saved_settings = save_initial_state(test_instrument)
     print("Initial state for the {} was: {}".format(instrument_name, saved_settings))
 
+    reset_device_properties(test_instrument)
+    reset_settings = save_initial_state(test_instrument)
+    print("Reset state for the {} was: {}".format(instrument_name, reset_settings))
+
     print("Beginning tests for: ", test_instrument.__class__.__name__)
     settings = []
     total_settings = 0
@@ -224,29 +303,32 @@ def check_properties(test_instrument):
             total_settings += 1
 
     for name in settings:
-        if 'values' in test_instrument[name].keys():
+        keys = test_instrument[name].keys()
+        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
             check_values_property(test_instrument, name)
-        elif 'range' in test_instrument[name].keys():
+        elif 'range' in keys and ('ranges' not in keys):
             range_counter += 1
             # range_idx.append(range_counter)
             check_range_property(test_instrument, name)
-        elif 'ranges' in test_instrument[name].keys():
+        elif 'ranges' in keys:
             ranges_counter += 1
             # ranges_idx.append(range_counter)
             check_ranges_property(test_instrument, name)
-        elif 'indexed_values' in test_instrument[name].keys():
+        elif 'indexed_values' in keys:
             idx_vals_counter += 1
             # idx_vals_idx.append(idx_vals_counter)
             check_indexed_property(test_instrument, name)
-        elif 'dict_values' in test_instrument[name].keys():
+        elif 'dict_values' in keys:
             dict_vals_counter += 1
             # dict_vals_idx.append(dict_vals_counter)
             check_dict_property(test_instrument, name)
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
                 name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+
+    restored_settings = restore_initial_state(test_instrument, saved_settings)
 
     mid_string = 'properties found and tested out of'
     print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
@@ -258,6 +340,7 @@ def check_properties(test_instrument):
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == ranges_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
+    print("Settings restored to: {}".format(restored_settings))
 
 
 def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):

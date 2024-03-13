@@ -40,7 +40,7 @@ def test_testinstrumentdriver():
              'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
              'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
-    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 1, 0, (1, 15), 'A', 'off']
+    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 2, 0, (1, 15), 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
     # check the set_values_property behavior
@@ -191,10 +191,10 @@ def test_testinstrumentdriver():
         with pytest.raises(Exception):
             test_instrument[name] = {'key1': 'bad boy', 'key2': 'badder girl'}
 
-        for iv in test_instrument._indexed_values_settings['indexed_values']:
+        for idx, iv in enumerate(test_instrument._indexed_values_settings['indexed_values']):
             test_instrument[name] = iv
             assert test_instrument["_{}".format(name)] == iv
-            assert test_instrument.query('INDEXED_VALUES?') == str(iv)
+            assert test_instrument.query('INDEXED_VALUES?').strip('\n') == str(idx)
 
     # check the set_dict_values_property behavior
     def check_dict_property(key):

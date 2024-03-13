@@ -28,7 +28,7 @@ class TestInstrumentDriver(InstrumentDriver):
 
         self.instrument = 'instrument#123'
         self.debug = debug
-        self._values = 1
+        self._values = 2
         self._range = 0
         self._ranges = (1, 15)
         self._indexed_values = 'A'
@@ -42,7 +42,8 @@ class TestInstrumentDriver(InstrumentDriver):
         elif string == 'RANGES?':
             return str(self._ranges)
         elif string == 'INDEXED_VALUES?':
-            return str(self._indexed_values)
+            idx = self._indexed_values_settings['indexed_values'].index(self._indexed_values)
+            return str(idx)
         elif string == 'DICT_VALUES?':
             return str(self._dict_values)
 
