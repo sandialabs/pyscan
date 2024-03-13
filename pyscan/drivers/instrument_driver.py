@@ -144,7 +144,7 @@ class InstrumentDriver(ItemAttribute):
             elif 'dict_values' in settings:
                 dictionary = settings['dict_values']
                 # this is the human value
-                #print(value)
+                # print(value)
                 value = self.find_first_key(dictionary, value)
                 '''try:
                     nv = self.find_first_key(dictionary, value)
@@ -155,7 +155,7 @@ class InstrumentDriver(ItemAttribute):
                     assert str(value) in settings['dict_values'].keys(), "_{}_".format(value)'''
                 # this then gets the machine value
                 value = dictionary[value]
-                #print(value)
+                # print(value)
             else:
                 value = settings['return_type'](value)
 
