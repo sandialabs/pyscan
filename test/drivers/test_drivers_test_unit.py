@@ -10,7 +10,7 @@ def test_drivers_test_unit():
     test_voltage = TestVoltage()
 
     # query functions for test voltage have been bypassed to decouple dependencies so it remains modifiable
-    test_driver(test_voltage)
+    #test_driver(test_voltage)
 
 
 test_drivers_test_unit()

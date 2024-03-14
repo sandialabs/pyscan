@@ -5,6 +5,7 @@ from collections import OrderedDict
 import typing
 from test_instrument_driver import TestInstrumentDriver
 from pyscan.drivers.test_voltage import TestVoltage
+import ast
 
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
@@ -38,6 +39,8 @@ def restore_initial_state(device, saved_settings):
     for setting in saved_settings:
         setter = setting[0]
         val = setting[1]
+        if 'ranges' in device["_{}_settings".format(setter)].keys():
+            val = device["_{}_settings".format(setter)]['return_type'](val)
         try:
             device[setter] = val
         except Exception:
@@ -46,18 +49,9 @@ def restore_initial_state(device, saved_settings):
             except Exception:
                 assert False, ("setter is: {} saved setting is: {} val is: {}"
                                .format(setter, setting, val))
+        query_result = device[setter]
         if 'ranges' in device["_{}_settings".format(setter)].keys():
-                val = tuple(val)
-        query_string = device["_{}_settings".format(setter)]['query_string']
-        query_result = device.query(query_string)
-        try:
-            query_result = query_result.strip(" \n")
-        except Exception:
-            pass
-        try:
-            query_result = int(query_result)
-        except Exception:
-            pass
+            query_result = tuple(query_result)
         restored_settings.append((setter, query_result))
 
     return restored_settings
