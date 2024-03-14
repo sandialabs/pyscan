@@ -49,7 +49,7 @@ pip install .
 
 Sample Jupyter Notebooks running dummy experiments are located in the demo_notebooks folder.
 
-For the full instructions on how to use pyscan library, read the docs! (Coming Soon)
+For the full instructions on how to use pyscan library, [read the docs](https://pyscan.readthedocs.io/en/latest/)!
 
 ## Contribute
 

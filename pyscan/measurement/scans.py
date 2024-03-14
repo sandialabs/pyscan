@@ -33,7 +33,8 @@ class PropertyScan(AbstractScan):
     prop : str
         String that indicates the property of the device(s) to be changed
     dt : float
-        Wait time in seconds after changing a single property value. Used by experiment classes, defaults to 0.
+        Wait time in seconds after changing a single property value, and before the measure_function
+        is called. Used by experiment classes, defaults to 0.
     '''
 
     def __init__(self, input_dict, prop, dt=0):
@@ -93,7 +94,8 @@ class FunctionScan(AbstractScan):
     values : list
         An array of values to run the function on.
     dt: float
-        Wait time in seconds after running function once. Used by experiment classes, defaults to 0.
+        Wait time in seconds after running `function` once, and before the ``runinfo.measure_function``
+        is called. Used by experiment classes, defaults to 0.
     '''
 
     def __init__(self, function, values, dt=0):
@@ -175,7 +177,7 @@ class AverageScan(AbstractScan):
     n_average : int
         Number of times to average data from inner loops
     dt : float
-        Wait time in seconds after each measurement. Used by Experiment classes, defaults to 0.
+        Wait time in seconds before each measurement. Used by Experiment classes, defaults to 0.
     '''
 
     def __init__(self, n_average, dt=0):

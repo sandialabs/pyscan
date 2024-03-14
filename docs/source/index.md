@@ -13,7 +13,7 @@ Get started and [install pyscan](./basics/installation)!
 
 ## Usage
 
-Sample Jupyter Notebooks running dummy experiments are located in the [demo notebooks](./basics/demo_notebooks) folder.
+Sample Jupyter Notebooks running dummy experiments are located in the [demo_notebooks](./basics/notebooks) folder.
 
 For the full instructions on how to use pyscan library, read the docs!
 

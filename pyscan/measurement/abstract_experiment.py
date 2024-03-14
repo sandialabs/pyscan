@@ -16,26 +16,25 @@ class AbstractExperiment(ItemAttribute):
 
     Parameters
     ----------
-    runinfo : :class:`~pyscan.measurement.runinfo.RunInfo`
+    runinfo : :class:`.RunInfo`
         RunInfo instance
-    devices : :class:`~pyscan.general.itemattribute.ItemAttribute`
+    devices : :class:`.ItemAttribute`
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional
         The path to save the data, defaults to './backup'
 
     Attributes
     ----------
-    runinfo : :class:`~pyscan.measurement.runinfo.RunInfo`
-        RunInfo instance passed into :class:`AbstractExperiment`.
-    devices : :class:`~pyscan.general.itemattribute.ItemAttribute`
-        ItemAttribute instance passed into :class:`AbstractExperiment`.
-
+    runinfo : :class:`.RunInfo`
+        RunInfo instance passed into :class:`.AbstractExperiment`.
+    devices : :class:`.ItemAttribute`
+        ItemAttribute instance passed into :class:`.AbstractExperiment`.
     '''
 
     def __init__(self, runinfo, devices,
                  data_dir):
-        """Constructor method
-        """
+        '''Constructor method
+        '''
 
         self.runinfo = runinfo
         self.devices = devices
@@ -252,7 +251,7 @@ class AbstractExperiment(ItemAttribute):
 
     def run(self):
         '''Meta function the runs the experiment. It is not implemented in AbstractExperiment,
-        but must be implemented by its inheriting classes such as AverageExperiment.
+        but must be implemented by its inheriting classes such as :class:`.Experiment`.
         '''
 
         pass
@@ -260,7 +259,7 @@ class AbstractExperiment(ItemAttribute):
     def setup_runinfo(self):
         '''Meta function that setups runinfo based on experiment type.
         It is not implemented in AbstractExperiment, but must be implemented
-        by its inheriting classes such as AverageExperiment.
+        by its inheriting classes such as :class:`.Experiment`.
         '''
 
         pass
@@ -268,7 +267,7 @@ class AbstractExperiment(ItemAttribute):
     def setup_instruments(self):
         '''Meta Function that sets up devices based on experiment type.
         It is not implemented in AbstractExperiment, but must be implemented
-        by its inheriting classes such as AverageExperiment.
+        by its inheriting classes such as :class:`.Experiment`.
         '''
 
         pass
@@ -284,4 +283,6 @@ class AbstractExperiment(ItemAttribute):
 
 # legacy naming convention
 class MetaSweep(AbstractExperiment):
+    ''' Present for backwards compatibility. Renamed to :class:`.AbstractExperiment`.
+    '''
     pass
