@@ -133,29 +133,21 @@ class InstrumentDriver(ItemAttribute):
         if not obj.debug:
             value = obj.query(settings['query_string'])
             try:
-                value = value.strip(" \n")
+                # test without space and try to get it working. Ask Andy if issue w/out space
+                value = value.strip("\n")
             except Exception:
                 pass
-            if 'ranges' in settings:
+            if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
+                value = settings['return_type'](value)
                 pass
+            elif 'ranges' in settings:
+                value = ast.literal_eval(value)
             elif 'indexed_values' in settings:
                 values = settings['indexed_values']
                 value = values[int(value)]
             elif 'dict_values' in settings:
                 dictionary = settings['dict_values']
-                # this is the human value
-                # print(value)
                 value = self.find_first_key(dictionary, value)
-                '''try:
-                    nv = self.find_first_key(dictionary, value)
-                    if nv is None:
-                        assert False
-                    value = nv
-                except Exception:
-                    assert str(value) in settings['dict_values'].keys(), "_{}_".format(value)'''
-                # this then gets the machine value
-                value = dictionary[value]
-                # print(value)
             else:
                 value = settings['return_type'](value)
 
@@ -196,8 +188,8 @@ class InstrumentDriver(ItemAttribute):
                         settings['write_string'].format(new_value))
         else:
             possible = []
-            for string in values:
-                possible.append('{}'.format(string))
+            for val in values:
+                possible.append(val)
             assert False, "Value Error:\n{} must be one of: {}. You submitted: {}".format(settings['name'],
                                                                                           possible, new_value)
 

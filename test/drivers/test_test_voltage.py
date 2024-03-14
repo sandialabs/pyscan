@@ -56,8 +56,8 @@ def test_test_voltage():
 
     # test output state attribute initialization
     assert hasattr(v1, 'output_state'), "TestVoltage missing output_state attribute"
-    assert type(v1._output_state) is int, "TestVoltage _output_state is not initially an int"
-    assert v1._output_state == 0, "TestVoltage _output_state does not initially return expected output state"
+    assert type(v1._output_state) is str, "TestVoltage _output_state is not initially a string"
+    assert v1._output_state == 'off', "TestVoltage _output_state does not initially return expected output state"
     assert v1.query('OUTP?') == '0', "TestVoltage query of 'OUTP?' does not return expected result"
     with pytest.raises(Exception):
         v1.output_state = {'orkitty ork ork': 1}, "TestVoltage output_state can be set to invalid dict"
@@ -74,13 +74,13 @@ def test_test_voltage():
     v1.output_state = '1'
     assert v1.query('OUTP?') == '1', "TestVoltage query of 'OUTP?' does not return expected result"
     assert v1._output_state == 'on', "TestVoltage _output_state does not get machine value after '1' key user input"
-    assert v1.output_state == 1, "TestVoltage output_state does not get machine value after 'on' key user input"
+    assert v1.output_state == 'on', "TestVoltage output_state does not get machine value after 'on' key user input"
     v1.output_state = '0'
     assert v1._output_state == 'off', "TestVoltage _output_state does not get machine value after 'off' key user input"
-    assert v1.output_state == 0, "TestVoltage output_state does not get machine value after 'off' key user input"
+    assert v1.output_state == 'off', "TestVoltage output_state does not get machine value after 'off' key user input"
     v1.output_state = 'on'
     assert v1._output_state == 'on', "TestVoltage _output_state does not get machine value after 'on' key user input"
-    assert v1.output_state == 1, "TestVoltage output_state does not get machine value after 'on' key user input"
+    assert v1.output_state == 'on', "TestVoltage output_state does not get machine value after 'on' key user input"
     v1.output_state = 'off'
     assert v1._output_state == 'off', "TestVoltage _output_state does not get machine value after 'off' key user input"
-    assert v1.output_state == 0, "TestVoltage output_state does not get machine value after 'off' key user input"
+    assert v1.output_state == 'off', "TestVoltage output_state does not get machine value after 'off' key user input"

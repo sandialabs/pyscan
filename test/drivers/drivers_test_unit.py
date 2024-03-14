@@ -25,6 +25,8 @@ def save_initial_state(device):
             except (Exception):'''
             name = "{}".format(device[attribute_name]['name'])
             val = device[name]
+            if 'ranges' in device[attribute_name].keys():
+                val = tuple(val)
             saved_settings.append((name, val))
             # print(device.__dict__.keys())
 
@@ -39,7 +41,13 @@ def restore_initial_state(device, saved_settings):
         try:
             device[setter] = val
         except Exception:
-            device[setter] = str(val)
+            try:
+                device[setter] = device["_{}_settings".format(setter)]['return_type'](val)
+            except Exception:
+                assert False, ("setter is: {} saved setting is: {} val is: {}"
+                               .format(setter, setting, val))
+        if 'ranges' in device["_{}_settings".format(setter)].keys():
+                val = tuple(val)
         query_string = device["_{}_settings".format(setter)]['query_string']
         query_result = device.query(query_string)
         try:
@@ -355,8 +363,8 @@ def check_properties(test_instrument):
                 name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
 
     restored_settings = restore_initial_state(test_instrument, saved_settings)
-    s = set(restored_settings)
-    diff = [x for x in saved_settings if x not in s]
+
+    diff = set(restored_settings) ^ set(saved_settings)
 
     mid_string = 'properties found and tested out of'
     print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))

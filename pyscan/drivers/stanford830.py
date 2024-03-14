@@ -175,8 +175,6 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['high', 'normal', 'low'],
             'return_type': int})
 
-        # This setter doesn't seem to be working as intended. Setting to too low (below min) value
-        # does not set to the minimum allowable (as suggested in docs) but rather leaves it unchanged.
         self.add_device_property({
             'name': 'time_constant',
             'write_string': 'OFLT {}',
