@@ -5,7 +5,6 @@ from collections import OrderedDict
 import typing
 from test_instrument_driver import TestInstrumentDriver
 from pyscan.drivers.test_voltage import TestVoltage
-import ast
 
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
