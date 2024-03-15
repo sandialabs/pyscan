@@ -10,9 +10,41 @@ class OxfordIPS120(InstrumentDriver):
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value
-        from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument (return value from
+        :func:`.new_instrument`)
 
+    Properties
+    ----------
+    field_set_point
+    field_set_rate
+
+    Methods
+    -------
+    get_field()
+        returns the magnetic field
+    get_persistent_field()
+        returns the magnetic field where the heater was turned off 
+        and the magnet put in persistent mode
+    remote()
+        put the power supply in remote mode, keyword argument: locked=False
+    local()
+        put the power supply in local mode, keyword argument: locked=False
+    heater()
+        "on", "off" or "force"
+    hold()
+        hold the magnetic field
+    to_zero()
+        sweep the field to zero
+    to_set_point()
+        sweep hte field to the set point
+    heater_status()
+        True if the heater is on
+    remote_status()
+        True if the power supply is in remote mode (required to issue control commands)
+    sweeping_status()
+        True if the field is changing
+    persistent_status()
+        True if the magnet is in persisent mode
     '''
 
     def __init__(self, instrument):
