@@ -6,5 +6,5 @@ The Basics
 
    basics/installation
    basics/how_it_works
-   basics/basic_example
+   basics/basic_example_nb/basic_example
    basics/notebooks

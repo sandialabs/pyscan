@@ -11,6 +11,7 @@ from .americanmagnetics430 import AmericanMagnetics430
 from .blueforslog import BlueForsLog
 from .bkprecision9130b import BKPrecision9130B
 from .hp34401a import HP34401A
+from .keithley2260b import Keithley2260B
 from .keithley2400 import Keithley2400
 from .kepcoBOP import KepcoBOP
 from .keysitem3302adaq import KeysiteM3302ADAQ

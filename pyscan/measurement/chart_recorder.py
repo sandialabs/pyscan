@@ -7,17 +7,17 @@ from pyscan.measurement.abstract_experiment import AbstractExperiment
 
 class ChartRecorder(AbstractExperiment):
     '''Class to run single loop repeatedly.
-    It inherits from :class:`pyscan.measurement.abstract_experiment.AbstractExperiment`.
+    It inherits from :class:`.AbstractExperiment`.
 
     Parameters
     ----------
-    runinfo: :class:`pyscan.measurement.runinfo.Runinfo`
+    runinfo: :class:`.Runinfo`
         Runinfo instance. The Runinfo loop containing the dependent variable
         that you want to average should be an instance of
-        :class:`AverageScan<pyscan.measurement.scans.AverageScan>`.
+        :class:`.AverageScan`.
         There should be only one dependent variable to be averaged.
         The loops representing independent variables can be instances of
-        :class:`PropertyScan<pyscan.measurement.scans.PropertyScan>`.
+        :class:`.PropertyScan`.
     devices :
         ItemAttribute instance containing all experiment devices
     data_dir : str, optional

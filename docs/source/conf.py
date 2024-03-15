@@ -81,12 +81,6 @@ html_theme_options = {
     # and CI builds https://github.com/pydata/pydata-sphinx-theme/pull/386
     # "collapse_navigation": not is_release_build,
     "show_prev_next": True,
-    # Determines the type of links produced in the navigation header:
-    # - absolute: Links point to the URL https://matplotlib.org/...
-    # - server-stable: Links point to top-level of the server /stable/...
-    # - internal: Links point to the internal files as expanded by the `pathto`
-    #   template function in Sphinx.
-    "navbar_links": "absolute",
     "navbar_align": "left",
     # social media links
     "icon_links": [
