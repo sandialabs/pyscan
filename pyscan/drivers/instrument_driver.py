@@ -133,13 +133,12 @@ class InstrumentDriver(ItemAttribute):
         if not obj.debug:
             value = obj.query(settings['query_string'])
             try:
-                # test without space and try to get it working. Ask Andy if issue w/out space
+                # might change to if type(value) is str:
                 value = value.strip("\n")
             except Exception:
                 pass
             if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
                 value = settings['return_type'](value)
-                pass
             elif 'ranges' in settings:
                 value = ast.literal_eval(value)
             elif 'indexed_values' in settings:

@@ -36,7 +36,9 @@ setup(
         'ipywidgets',
         'h5py',
         'matplotlib',
-        'ipykernel',
+        # need to look into this, consider moving to extras_require, Jasmine ran into error with ipykernel and python
+        # version incompatibility and may want to minimize dependencies
+        # 'ipykernel',
         'pytest',
     ],
     extras_require={'oceanoptics': ['seabreeze']},
