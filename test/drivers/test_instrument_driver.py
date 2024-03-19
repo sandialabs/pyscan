@@ -34,6 +34,8 @@ class TestInstrumentDriver(InstrumentDriver):
         self._indexed_values = 'A'
         self._dict_values = 'off'
 
+        self.update_properties()
+
     def query(self, string):
         if string == 'VALUES?':
             return str(self._values)
@@ -112,12 +114,9 @@ class TestInstrumentDriver(InstrumentDriver):
             })
         delattr(self, "_bad_values_settings")
 
-        '''self.update_properties()
-
     def update_properties(self):
-        # Reference and phase
         self.values
         self.range
         self.ranges
         self.indexed_values
-        self.dict_values'''
+        self.dict_values
