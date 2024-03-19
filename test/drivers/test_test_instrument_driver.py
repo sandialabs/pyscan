@@ -194,7 +194,7 @@ def test_testinstrumentdriver():
         for idx, iv in enumerate(test_instrument._indexed_values_settings['indexed_values']):
             test_instrument[name] = iv
             assert test_instrument["_{}".format(name)] == iv
-            assert test_instrument.query('INDEXED_VALUES?').strip('\n') == str(idx)
+            assert test_instrument.query('INDEXED_VALUES?') == str(idx)
 
     # check the set_dict_values_property behavior
     def check_dict_property(key):
@@ -204,7 +204,7 @@ def test_testinstrumentdriver():
         for k in test_instrument[key]['dict_values']:
             test_instrument[name] = k
             assert test_instrument["_{}".format(name)] == test_instrument.find_first_key(ord_dict, ord_dict[k])
-            assert test_instrument.query('DICT_VALUES?') == test_instrument[key]['dict_values'][k]
+            assert test_instrument.query('DICT_VALUES?') == str(test_instrument[key]['dict_values'][k])
 
         for letter in string.ascii_letters:
             if letter not in test_instrument[key]['dict_values']:

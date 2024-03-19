@@ -265,7 +265,7 @@ def check_indexed_property(device, key):
             query_string = device[key]['query_string']
             err_string = ("query returns: {} is not the idx: {} for: {}"
                           .format(device.query(query_string), str(idx), key))
-            assert device.query(query_string).strip('\n') == str(idx), err_string
+            assert device.query(query_string) == str(idx), err_string
 
     # reset value to baseline for consistency between tests
     device[name] = device[key]['indexed_values'][0]
@@ -289,7 +289,7 @@ def check_dict_property(device, key):
         if not isinstance(device, TestVoltage):
             query_string = device[key]['query_string']
             # print(key, device[key]['dict_values'][k], device.query(query_string))
-            assert str(device.query(query_string)).strip(' \n') == str(device[key]['dict_values'][k])
+            assert device.query(query_string) == str(device[key]['dict_values'][k])
 
     for item in BAD_INPUTS:
         if isinstance(item, typing.Hashable):

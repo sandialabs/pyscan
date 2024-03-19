@@ -46,7 +46,7 @@ class TestInstrumentDriver(InstrumentDriver):
             return str(idx)
         elif string == 'DICT_VALUES?':
             val = self._dict_values_settings['dict_values'][self._dict_values]
-            return val
+            return str(val)
 
     # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
     def write(self, string):
