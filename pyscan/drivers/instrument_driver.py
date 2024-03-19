@@ -132,11 +132,9 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string'])
-            try:
-                # might change to if type(value) is str:
-                value = value.strip("\n")
-            except Exception:
-                pass
+            assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
+            value = value.strip("\n")
+
             if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
                 value = settings['return_type'](value)
             elif 'ranges' in settings:
