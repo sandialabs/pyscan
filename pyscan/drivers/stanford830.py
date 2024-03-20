@@ -91,7 +91,7 @@ class Stanford830(InstrumentDriver):
             'write_string': 'FMOD {}',
             'query_string': 'FMOD?',
             'indexed_values': ['external', 'internal'],
-            'return_type': float})
+            'return_type': int})
 
         self.add_device_property({
             'name': 'frequency',

@@ -25,6 +25,7 @@ class TestVoltage(InstrumentDriver):
         self._voltage = 0
         self._power = 1
         self._output_state = 'off'
+        self.black_list_for_testing = []
 
     def query(self, string):
         if string == 'VOLT?':

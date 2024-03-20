@@ -21,7 +21,7 @@ def test_testinstrumentdriver():
 
     attributes = ['instrument', 'debug', '_values_settings', '_range_settings', '_ranges_settings',
                   '_indexed_values_settings', '_dict_values_settings', '_values', '_range', '_ranges',
-                  '_indexed_values', "_dict_values"]
+                  '_indexed_values', "_dict_values", "black_list_for_testing"]
     check_has_attributes(test_instrument, attributes)
 
     # check that the initialized attributes have the expected values
@@ -223,13 +223,14 @@ def test_testinstrumentdriver():
 
     # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=9):
         # iterate over all attributes to test accordingly using predefined functions
         values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
         values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
         for key in test_instrument.__dict__.keys():
             try:
-                if 'values' in test_instrument[key].keys():
+                keys = test_instrument[key].keys()
+                if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
                     values_counter += 1
                     values_idx.append(values_counter)
                     check_values_property(key)

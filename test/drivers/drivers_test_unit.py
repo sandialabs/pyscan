@@ -6,12 +6,51 @@ import typing
 from test_instrument_driver import TestInstrumentDriver
 from pyscan.drivers.test_voltage import TestVoltage
 
+'''
+WARNING!
+If used without first creating a proper blacklist of _properties that cannot be safely
+changed to any value in their range of options based on the driver settings may
+cause instruments to self destruct, or lead to significant injury and even DEATH.
+ONLY RUN THIS TEST UNIT IF YOU ARE CERTAIN ALL SUCH ATTRIBUTES HAVE BEEN PROPERLY BLACKLISTED!
+'''
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
 BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 890992238.2345,
               'not ok', 'bad value', 'Andy is cool',
               [1, 2412, 19], [1, 191, 13, -5.3],
               {'Alfred': "Batman's uncle", 'or': 'imposter'}]
+
+
+# This function is critical step to ensuring safety when testing drivers with actual instruments
+def validate_blacklist(test_instrument):
+    settings = []
+    settings_names = []
+    total_settings = 0
+    for attribute_name in test_instrument.__dict__.keys():
+        if "_settings" in attribute_name:
+            settings.append(attribute_name)
+            _name = "_{}".format(test_instrument[attribute_name]['name'])
+            settings_names.append(_name)
+            total_settings += 1
+
+    if hasattr(test_instrument, 'black_list_for_testing'):
+        for blacklisted in test_instrument.black_list_for_testing:
+            err_msg = "WARNING, blacklisted attribute could not be validated and does not match a driver property"
+            assert blacklisted in settings_names, err_msg
+            count = 0
+            for i in test_instrument.black_list_for_testing:
+                if i == blacklisted:
+                    count += 1
+            if count > 1:
+                assert False, "There appear to be duplicates in your blacklist."
+    else:
+        err_msg = str("Warning, driver needs black_list_for_testing attribute, please double check if there are \n"
+                      + "any attributes that need to be blacklisted for safety purposes, as non-blacklisted settings \n"
+                      + "will be iterated through the entirety of their range and could cause significant injury or \n"
+                      + "even death to nearby users and permanently damage instruments if used improperly. \n"
+                      + "If no properties are to be blacklisted for testing, please set the black_list_for_testing \n"
+                      "attribute to an empty list as acknowledgment of this warning to continue.")
+        assert False, err_msg
 
 
 def save_initial_state(device):
@@ -37,7 +76,16 @@ def restore_initial_state(device, saved_settings):
     restored_settings = []
     for setting in saved_settings:
         setter = setting[0]
+        _name = "_{}".format(setter)
         val = setting[1]
+
+        if _name in device.black_list_for_testing:
+            err_msg = ("WARNING! BLACKLISTED PROPERTY WAS SOMEHOW CHANGED. Was {}, now {}\n".format(val, device[setter])
+                       + "PROCEED WITH CAUTION!")
+            assert val == device[setter], err_msg
+            restored_settings.append((setter, device[setter]))
+            continue
+
         if 'ranges' in device["_{}_settings".format(setter)].keys():
             val = device["_{}_settings".format(setter)]['return_type'](val)
         try:
@@ -62,9 +110,14 @@ def reset_device_properties(device):
         if "_settings" in attribute_name:
             settings.append(attribute_name)
 
+    blacklisted = []
     for name in settings:
+        keys = device[name].keys()
         var_name = name.replace('_settings', '')
-        if 'values' in device[name].keys():
+        if var_name in device.black_list_for_testing:
+            blacklisted.append((var_name, device[var_name]))
+            continue
+        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             device[var_name] = device[name]['values'][0]
         elif 'range' in device[name].keys():
             device[var_name] = device[name]['range'][0]
@@ -80,6 +133,9 @@ def reset_device_properties(device):
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
                 name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+
+    if len(blacklisted) > 0:
+        print("These blacklisted settings and their corresponding values were not reset: ", blacklisted)
 
 
 # check that the initialized state has the expected attributes
@@ -305,6 +361,9 @@ def check_dict_property(device, key):
 
 # implements above checks for all attributes by type
 def check_properties(test_instrument):
+    # This is a critical step to ensuring safety when testing drivers with actual instruments
+    validate_blacklist(test_instrument)
+
     # iterate over all attributes to test accordingly using predefined functions
     values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
     instrument_name = test_instrument.__class__.__name__
@@ -317,6 +376,7 @@ def check_properties(test_instrument):
     print("Reset state for the {} was: {}".format(instrument_name, reset_settings))
 
     print("Beginning tests for: ", test_instrument.__class__.__name__)
+
     settings = []
     total_settings = 0
     for attribute_name in test_instrument.__dict__.keys():
