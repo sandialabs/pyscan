@@ -35,11 +35,15 @@ class TestInstrumentDriver(InstrumentDriver):
         self._dict_values = 'off'
 
         self.update_properties()
-        self.black_list_for_testing = []
+        self.black_list_for_testing = ['_str_values']
 
     def query(self, string):
-        if string == 'VALUES?':
-            return str(self._values)
+        if string == 'FLOAT_VALUES?':
+            return str(self._float_values)
+        elif string == 'STR_VALUES?':
+            return str(self._str_values)
+        elif string == 'BOOL_VALUES?':
+            return str(self._bool_values)
         elif string == 'RANGE?':
             return str(self._range)
         elif string == 'INDEXED_VALUES?':
@@ -49,10 +53,13 @@ class TestInstrumentDriver(InstrumentDriver):
             val = self._dict_values_settings['dict_values'][self._dict_values]
             return str(val)
 
-    # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
     def write(self, string):
-        if 'VALUES' in string:
-            return string.strip('VALUES ')
+        if 'FLOAT_VALUES' in string:
+            return string.strip('FLOAT_VALUES ')
+        if 'STR_VALUES' in string:
+            return string.strip('STR_VALUES ')
+        if 'BOOL_VALUES' in string:
+            return string.strip('BOOL_VALUES ')
         elif 'RANGE' in string:
             return string.strip('RANGE ')
         elif 'INDEXED_VALUES' in string:
@@ -64,26 +71,18 @@ class TestInstrumentDriver(InstrumentDriver):
 
         self.add_device_property({
             'name': 'float_values',
-            'write_string': 'VALUES {}',
-            'query_string': 'VALUES?',
+            'write_string': 'FLOAT_VALUES {}',
+            'query_string': 'FLOAT_VALUES?',
             'values': [2, 2.2339340249, 89.129398],
             'return_type': float
         })
 
         self.add_device_property({
             'name': 'str_values',
-            'write_string': 'VALUES {}',
-            'query_string': 'VALUES?',
+            'write_string': 'STR_VALUES {}',
+            'query_string': 'STR_VALUES?',
             'values': ['2', 'x', 'False', '(1, 10)', "['1', '10']"],
             'return_type': str
-        })
-
-        self.add_device_property({
-            'name': 'bool_values',
-            'write_string': 'VALUES {}',
-            'query_string': 'VALUES?',
-            'values': [True, False],
-            'return_type': bool
         })
 
         self.add_device_property({
@@ -132,7 +131,7 @@ class TestInstrumentDriver(InstrumentDriver):
     def update_properties(self):
         self.float_values
         self.str_values
-        self.bool_values
+        self.bool_values = False
         self.range
         self.indexed_values
         self.dict_values

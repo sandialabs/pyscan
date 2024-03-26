@@ -3,7 +3,7 @@ import pytest
 import math
 from collections import OrderedDict
 import typing
-from test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
 
 '''
 WARNING!

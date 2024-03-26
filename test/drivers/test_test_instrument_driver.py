@@ -3,7 +3,7 @@ import pytest
 import math
 import string
 from collections import OrderedDict
-from test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
 
 # #################### still need to add error flags for this file...
 # ##################### test more thouroughly with multiple instances to make sure
@@ -19,9 +19,9 @@ def test_testinstrumentdriver():
         for a in attributes:
             assert hasattr(test_instrument, a), "test device does not have {} attribute when initialized".format(a)
 
-    attributes = ['instrument', 'debug', '_values_settings', '_range_settings',
-                  '_indexed_values_settings', '_dict_values_settings', '_values', '_range',
-                  '_indexed_values', "_dict_values", "black_list_for_testing"]
+    attributes = ['instrument', 'debug', '_float_values_settings', '_str_values_settings',
+                  '_range_settings', '_indexed_values_settings', '_dict_values_settings', '_float_values',
+                  '_str_values', '_range', '_indexed_values', "_dict_values", "black_list_for_testing"]
     check_has_attributes(test_instrument, attributes)
 
     # check that the initialized attributes have the expected values
@@ -30,15 +30,17 @@ def test_testinstrumentdriver():
             err_string = "test device {} attribute does not equal {}".format(device[attributes[i]], ev[i])
             assert (device[attributes[i]] == ev[i]), err_string
 
-    vs = {'name': 'values', 'write_string': 'VALUES {}', 'query_string': 'VALUES?',
-          'values': [2, 'x', False, (1, 10), ['1', '10']], 'return_type': str}
+    floatvs = {'name': 'float_values', 'write_string': 'FLOAT_VALUES {}', 'query_string': 'FLOAT_VALUES?',
+               'values': [2, 2.2339340249, 89.129398], 'return_type': float}
+    strvs = {'name': 'str_values', 'write_string': 'STR_VALUES {}', 'query_string': 'STR_VALUES?',
+             'values': ['2', 'x', 'False', '(1, 10)', "['1', '10']"], 'return_type': str}
     rgs = {'name': 'range', 'write_string': 'RANGE {}', 'query_string': 'RANGE?',
            'range': [0, 10], 'return_type': float}
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',
              'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
              'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
-    expected_values = ['instrument#123', False, vs, rgs, idxvs, dicts, 2, 0, 'A', 'off']
+    expected_values = ['instrument#123', False, floatvs, strvs, rgs, idxvs, dicts, 2, '2', 0, 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
     # check the set_values_property behavior
@@ -52,15 +54,12 @@ def test_testinstrumentdriver():
             test_val += .1
 
         with pytest.raises(Exception):
-            test_instrument.values = 'not ok'
-        # could be in data set and could be interpreted as 0
-        with pytest.raises(Exception):
-            test_instrument.values = True
+            test_instrument[name] = 'not ok'
 
         for val in test_instrument[key]['values']:
             test_instrument[name] = val
+            assert test_instrument[name] == val, "{} not equal {}".format(test_instrument[name], val)
             assert test_instrument["_{}".format(name)] == val
-            assert test_instrument.query('VALUES?') == str(val)
 
     # check the set_range_property behavior for a range item
     def check_range_property(key):
@@ -83,9 +82,8 @@ def test_testinstrumentdriver():
 
         for r in range(test_instrument[key]['range'][0], test_instrument[key]['range'][0], step):
             test_instrument[name] = r
+            assert test_instrument[name] == r
             assert test_instrument['_{}'.format(name)] == r
-            # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
-            assert test_instrument.query('RANGE?') == str(r)
 
     # check the set_indexed_values_property behavior
     def check_indexed_property(key):
@@ -141,10 +139,10 @@ def test_testinstrumentdriver():
             test_instrument[name] = True
 
     # implements above checks for all attributes by type
-    def check_properties(test_instrument, num_val_props=1, num_range_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
+    def check_properties(test_instrument, num_val_props=2, num_range_props=1,
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=12):
         # iterate over all attributes to test accordingly using predefined functions
-        values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0
+        values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 1, 1, 1
         values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
         for key in test_instrument.__dict__.keys():
             try:
