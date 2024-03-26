@@ -3,7 +3,6 @@ from pyscan.general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
-import ast
 
 
 class InstrumentDriver(ItemAttribute):
@@ -92,22 +91,30 @@ class InstrumentDriver(ItemAttribute):
 
         self['_{}_settings'.format(settings['name'])] = settings
 
+        prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
-        elif 'range' in settings:
+            prop_type = 'values'
+        elif ('range' in settings) and ('ranges' not in settings):
             set_function = self.set_range_property
+            prop_type = 'range'
         elif 'ranges' in settings:
             assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
+            prop_type = 'indexed_values'
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
+            prop_type = 'dict_values'
         else:
-            assert False, "key used but not (yet) allowed"
+            assert False, "key used but not allowed"
+
+        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'], prop_type, settings[prop_type])
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
-            fset=lambda obj, new_value: set_function(obj, new_value, settings))
+            fset=lambda obj, new_value: set_function(obj, new_value, settings),
+            doc=doc_string)
 
         setattr(self.__class__, settings['name'], property_definition)
 
@@ -137,8 +144,6 @@ class InstrumentDriver(ItemAttribute):
 
             if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
                 value = settings['return_type'](value)
-            elif 'ranges' in settings:
-                value = ast.literal_eval(value)
             elif 'indexed_values' in settings:
                 values = settings['indexed_values']
                 value = values[int(value)]
