@@ -83,7 +83,7 @@ class InstrumentDriver(ItemAttribute):
         Parameters
         ----------
         settings : dict
-            dict containing settings for property. Must have the key "values", "range", "ranges" or "indexed_values".
+            dict containing settings for property. Must have the key "values", "range", or "indexed_values".
 
         Returns
         -------
@@ -97,7 +97,7 @@ class InstrumentDriver(ItemAttribute):
         elif 'range' in settings:
             set_function = self.set_range_property
         elif 'ranges' in settings:
-            set_function = self.set_range_properties
+            assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
         elif 'dict_values' in settings:
@@ -226,48 +226,6 @@ class InstrumentDriver(ItemAttribute):
                         settings['write_string'].format(new_value))
         else:
             assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
-
-    def set_range_properties(self, obj, new_value, settings):
-        '''
-        Generator function for settings dictionary with 'ranges' item
-        Check that new_value is in settings['ranges'], if not, rejects command
-
-        Parameters
-        ----------
-        obj :
-            parent class object
-        new_value :
-            new_value to be set on instrument
-        settings : dict
-            dictionary with ['ranges'] item
-
-        Returns
-        -------
-        None
-        '''
-
-        rngs = settings['ranges']
-
-        if type(new_value) is str:
-            new_value = ast.literal_eval(new_value)
-
-        for rng in rngs:
-            assert len(rng) == 2, "each range for ranges settings must have 2 values"
-            for val in rng:
-                assert (type(val) is int) or (type(val) is float), "inputs for ranges settings must be ints or floats"
-        for val in new_value:
-            assert (type(val) is int) or (type(val) is float), "inputs for ranges values must be int or float"
-
-        if len(rngs) != len(new_value):
-            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
-        elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
-            if not self.debug:
-                obj.write(settings['write_string'].format(*new_value))
-                setattr(obj, '_' + settings['name'], new_value)
-            else:
-                setattr(obj, '_' + settings['name'], settings['write_string'].format(*new_value))
-        else:
-            assert False, 'Range error:\nParameters must be in ranges {}\n\tYou passed{}'.format(rngs, new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''

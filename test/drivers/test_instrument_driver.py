@@ -11,8 +11,6 @@ class TestInstrumentDriver(InstrumentDriver):
         for testing values property
     range :
         for testing range property
-    ranges :
-        for testing ranges property
     indexed_values :
         for testing indexed_values property
     dict_values :
@@ -30,7 +28,6 @@ class TestInstrumentDriver(InstrumentDriver):
         self.debug = debug
         self._values = 2
         self._range = 0
-        self._ranges = [0, 15, -1]
         self._indexed_values = 'A'
         self._dict_values = 'off'
 
@@ -42,8 +39,6 @@ class TestInstrumentDriver(InstrumentDriver):
             return str(self._values)
         elif string == 'RANGE?':
             return str(self._range)
-        elif string == 'RANGES?':
-            return str(self._ranges)
         elif string == 'INDEXED_VALUES?':
             idx = self._indexed_values_settings['indexed_values'].index(self._indexed_values)
             return str(idx)
@@ -55,10 +50,8 @@ class TestInstrumentDriver(InstrumentDriver):
     def write(self, string):
         if 'VALUES' in string:
             return string.strip('VALUES ')
-        elif ('RANGE' in string) and not ('RANGES' in string):
+        elif 'RANGE' in string:
             return string.strip('RANGE ')
-        elif 'RANGES' in string:
-            return string.strip('RANGES ')
         elif 'INDEXED_VALUES' in string:
             return string.strip('INDEXED_VALUES ')
         elif 'DICT_VALUES' in string:
@@ -82,13 +75,15 @@ class TestInstrumentDriver(InstrumentDriver):
             'return_type': float
         })
 
-        self.add_device_property({
-            'name': 'ranges',
-            'write_string': 'RANGES {}',
-            'query_string': 'RANGES?',
-            'ranges': [[0, 10], [15, 20], [-1, 1]],
-            'return_type': list
-        })
+        with pytest.raises(Exception):
+            self.add_device_property({
+                'name': 'ranges',
+                'write_string': 'RANGES {}',
+                'query_string': 'RANGES?',
+                'ranges': [[0, 10], [15, 20], [-1, 1]],
+                'return_type': list
+            })
+        delattr(self, "_ranges_settings")
 
         self.add_device_property({
             'name': 'indexed_values',
@@ -118,7 +113,6 @@ class TestInstrumentDriver(InstrumentDriver):
     def update_properties(self):
         self.values
         self.range
-        self.ranges
         self.indexed_values
         self.dict_values
 
@@ -132,8 +126,6 @@ class BadInstrumentDriver(InstrumentDriver):
         for testing values property
     range :
         for testing range property
-    ranges :
-        for testing ranges property
     indexed_values :
         for testing indexed_values property
     dict_values :
@@ -151,7 +143,6 @@ class BadInstrumentDriver(InstrumentDriver):
         self.debug = debug
         self._values = 2
         self._range = 0
-        self._ranges = [0, 15, -1]
         self._indexed_values = 'A'
         self._dict_values = 'off'
 
@@ -163,8 +154,6 @@ class BadInstrumentDriver(InstrumentDriver):
             return str(self._values)
         elif string == 'RANGE?':
             return str(self._range)
-        elif string == 'RANGES?':
-            return str(self._ranges)
         elif string == 'INDEXED_VALUES?':
             idx = self._indexed_values_settings['indexed_values'].index(self._indexed_values)
             return str(idx)
@@ -176,10 +165,8 @@ class BadInstrumentDriver(InstrumentDriver):
     def write(self, string):
         if 'VALUES' in string:
             return string.strip('VALUES ')
-        elif ('RANGE' in string) and not ('RANGES' in string):
+        elif 'RANGE' in string:
             return string.strip('RANGE ')
-        elif 'RANGES' in string:
-            return string.strip('RANGES ')
         elif 'INDEXED_VALUES' in string:
             return string.strip('INDEXED_VALUES ')
         elif 'DICT_VALUES' in string:
@@ -201,14 +188,6 @@ class BadInstrumentDriver(InstrumentDriver):
             'query_string': 'RANGE?',
             'range': [0, 10],
             'return_type': float
-        })
-
-        self.add_device_property({
-            'name': 'ranges',
-            'write_string': 'RANGES {}',
-            'query_string': 'RANGES?',
-            'ranges': [[0, 10], [15, 20], [-1, 1]],
-            'return_type': list
         })
 
         self.add_device_property({
@@ -239,6 +218,5 @@ class BadInstrumentDriver(InstrumentDriver):
     def update_properties(self):
         self.values
         self.range
-        self.ranges
         self.indexed_values
         self.dict_values

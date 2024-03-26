@@ -19,8 +19,8 @@ def test_testinstrumentdriver():
         for a in attributes:
             assert hasattr(test_instrument, a), "test device does not have {} attribute when initialized".format(a)
 
-    attributes = ['instrument', 'debug', '_values_settings', '_range_settings', '_ranges_settings',
-                  '_indexed_values_settings', '_dict_values_settings', '_values', '_range', '_ranges',
+    attributes = ['instrument', 'debug', '_values_settings', '_range_settings',
+                  '_indexed_values_settings', '_dict_values_settings', '_values', '_range',
                   '_indexed_values', "_dict_values", "black_list_for_testing"]
     check_has_attributes(test_instrument, attributes)
 
@@ -34,13 +34,11 @@ def test_testinstrumentdriver():
           'values': [2, 'x', False, (1, 10), ['1', '10']], 'return_type': int}
     rgs = {'name': 'range', 'write_string': 'RANGE {}', 'query_string': 'RANGE?',
            'range': [0, 10], 'return_type': float}
-    rgss = {'name': 'ranges', 'write_string': 'RANGES {}', 'query_string': 'RANGES?',
-            'ranges': [[0, 10], [15, 20], [-1, 1]], 'return_type': list}
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',
              'indexed_values': ['A', 'B', 'C', 'D', 196, 2.0, '101001'], 'return_type': str}
     dicts = {'name': 'dict_values', 'write_string': 'DICT_VALUES {}', 'query_string': 'DICT_VALUES?',
              'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0}, 'return_type': str}
-    expected_values = ['instrument#123', False, vs, rgs, rgss, idxvs, dicts, 2, 0, [0, 15, -1], 'A', 'off']
+    expected_values = ['instrument#123', False, vs, rgs, idxvs, dicts, 2, 0, 'A', 'off']
     check_attribute_values(test_instrument, attributes, expected_values)
 
     # check the set_values_property behavior
@@ -88,85 +86,6 @@ def test_testinstrumentdriver():
             assert test_instrument['_{}'.format(name)] == r
             # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
             assert test_instrument.query('RANGE?') == str(r)
-
-    # check the set_ranges_properties behavior
-    def check_ranges_property(key):
-        name = test_instrument[key]['name']
-        ranges = test_instrument[key]['ranges']
-        num_ranges = len(ranges)
-        if num_ranges < 1:
-            assert False, "No ranges detected in ranges property"
-        min_max_list = []
-        for rng in ranges:
-            min_range = min(rng)
-            max_range = max(rng)
-            min_max_list.append((min_range, max_range))
-
-        # iterate over ranges to generate all faulty input combinations with 1 item out of range for each
-        bad_entries = []
-        for i in range(num_ranges):
-            current_min_entry1 = []
-            current_min_entry2 = []
-            current_max_entry1 = []
-            current_max_entry2 = []
-            count = 0
-            for mn, mx in min_max_list:
-                current_min1 = mn
-                current_min2 = mn
-                current_max1 = mx
-                current_max2 = mx
-                if i == count:
-                    current_min1 = mn - .001
-                    current_min2 = mn - 1
-                    current_max1 = mx + .001
-                    current_max2 = mx + 1
-                current_min_entry1.append(current_min1)
-                current_min_entry2.append(current_min2)
-                current_max_entry1.append(current_max1)
-                current_max_entry2.append(current_max2)
-                count += 1
-            bad_entries.append(current_min_entry1)
-            bad_entries.append(current_min_entry2)
-            bad_entries.append(current_max_entry1)
-            bad_entries.append(current_max_entry2)
-
-        # make sure each of those faulty entries fails because they are out of range
-        for entry in bad_entries:
-            with pytest.raises(Exception):
-                test_instrument[name] = entry
-
-        # ######### consider updating step size/num steps
-        num_steps = []
-        for mn, mx in min_max_list:
-            current_num_steps = math.floor(abs(mx - mn))
-            num_steps.append(current_num_steps)
-
-        # compile a list of good entries that are within the provided ranges
-        good_entries = []
-        for i in range(num_ranges):
-            min_entry = []
-            max_entry = []
-            for mn, mx in min_max_list:
-                min_entry.append(mn)
-                max_entry.append(mx)
-            good_entries.append(min_entry)
-            for j in range(num_steps[i]):
-                current_entry_list = []
-                count = 0
-                for mn, mx in min_max_list:
-                    current_entry = mn
-                    if i == count:
-                        current_entry = mn + j + 1
-                    current_entry_list.append(current_entry)
-                    count += 1
-                good_entries.append(current_entry_list)
-            good_entries.append(max_entry)
-
-        # make sure each of the good entries succeeds
-        for entry in good_entries:
-            test_instrument[name] = entry
-            assert test_instrument._ranges == entry
-            assert test_instrument.query('RANGES?') == str(entry)
 
     # check the set_indexed_values_property behavior
     def check_indexed_property(key):
@@ -222,11 +141,11 @@ def test_testinstrumentdriver():
             test_instrument[name] = True
 
     # implements above checks for all attributes by type
-    def check_properties(test_instrument, num_val_props=1, num_range_props=1, num_ranges_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=9):
+    def check_properties(test_instrument, num_val_props=1, num_range_props=1,
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=8):
         # iterate over all attributes to test accordingly using predefined functions
-        values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
-        values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+        values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0
+        values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
         for key in test_instrument.__dict__.keys():
             try:
                 keys = test_instrument[key].keys()
@@ -244,13 +163,6 @@ def test_testinstrumentdriver():
             except:
                 range_counter += 1
             try:
-                if 'ranges' in test_instrument[key].keys():
-                    ranges_counter += 1
-                    ranges_idx.append(range_counter)
-                    check_ranges_property(key)
-            except:
-                ranges_counter += 1
-            try:
                 if 'indexed_values' in test_instrument[key].keys():
                     idx_vals_counter += 1
                     idx_vals_idx.append(idx_vals_counter)
@@ -267,17 +179,15 @@ def test_testinstrumentdriver():
 
         mid_string = 'properties found and tested out of'
         print("{} range {} {} total attributes.".format(len(range_idx), mid_string, range_counter))
-        print("{} ranges {} {} total attributes.".format(len(ranges_idx), mid_string, ranges_counter))
         print("{} values {} {} total attributes.".format(len(values_idx), mid_string, values_counter))
         print("{} indexed values {} {} total attributes.".format(len(idx_vals_idx), mid_string, idx_vals_counter))
         print("{} dict values {} {} total attributes.".format(len(dict_vals_idx), mid_string, dict_vals_counter))
 
         assert num_val_props == len(values_idx)
         assert num_range_props == len(range_idx)
-        assert num_ranges_props == len(ranges_idx)
         assert num_idx_vals_props == len(idx_vals_idx)
         assert num_dict_vals_props == len(dict_vals_idx)
-        assert range_counter == ranges_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
+        assert range_counter == values_counter == idx_vals_counter == dict_vals_counter == total_att
 
     check_properties(test_instrument)
 

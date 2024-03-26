@@ -213,96 +213,6 @@ def check_range_property(device, key):
     device[name] = device[key]['range'][0]
 
 
-# check the set_range_properties behavior
-def check_ranges_property(device, key):
-    name = device[key]['name']
-
-    # reset ranges to baseline for consistency between tests
-    device[name] = device[key]['ranges'][0]
-
-    ranges = device[key]['ranges']
-    num_ranges = len(ranges)
-    if num_ranges < 1:
-        assert False, "No ranges detected in ranges property"
-    min_max_list = []
-    for rng in ranges:
-        min_range = min(rng)
-        max_range = max(rng)
-        min_max_list.append((min_range, max_range))
-
-    # iterate over ranges to generate all faulty input combinations with 1 item out of range for each
-    bad_entries = []
-    for i in range(num_ranges):
-        current_min_entry1 = []
-        current_min_entry2 = []
-        current_max_entry1 = []
-        current_max_entry2 = []
-        count = 0
-        for mn, mx in min_max_list:
-            current_min1 = mn
-            current_min2 = mn
-            current_max1 = mx
-            current_max2 = mx
-            if i == count:
-                current_min1 = mn - .001
-                current_min2 = mn - 1
-                current_max1 = mx + .001
-                current_max2 = mx + 1
-            current_min_entry1.append(current_min1)
-            current_min_entry2.append(current_min2)
-            current_max_entry1.append(current_max1)
-            current_max_entry2.append(current_max2)
-            count += 1
-        bad_entries.append(current_min_entry1)
-        bad_entries.append(current_min_entry2)
-        bad_entries.append(current_max_entry1)
-        bad_entries.append(current_max_entry2)
-
-    # make sure each of those faulty entries fails because they are out of range
-    for entry in bad_entries:
-        with pytest.raises(Exception):
-            device[name] = entry
-
-    # ######### consider updating step size/num steps
-    num_steps = []
-    for mn, mx in min_max_list:
-        current_num_steps = math.floor(abs(mx - mn))
-        if current_num_steps > 5:
-            current_num_steps = 5
-        num_steps.append(current_num_steps)
-
-    # compile a list of good entries that are within the provided ranges
-    good_entries = []
-    for i in range(num_ranges):
-        min_entry = []
-        max_entry = []
-        for mn, mx in min_max_list:
-            min_entry.append(mn)
-            max_entry.append(mx)
-        good_entries.append(min_entry)
-        for j in range(num_steps[i]):
-            current_entry_list = []
-            count = 0
-            for mn, mx in min_max_list:
-                current_entry = mn
-                if i == count:
-                    current_entry = mn + j + 1
-                current_entry_list.append(current_entry)
-                count += 1
-            good_entries.append(current_entry_list)
-        good_entries.append(max_entry)
-
-    # make sure each of the good entries succeeds
-    for entry in good_entries:
-        device[name] = entry
-        assert device._ranges == entry
-        if not isinstance(device, TestVoltage):
-            assert device.query('RANGES?') == str(entry)
-
-    # reset ranges to baseline for consistency between tests
-    device[name] = device[key]['ranges'][0]
-
-
 # check the set_indexed_values_property behavior
 def check_indexed_property(device, key):
     # check a random string rather than a for loop
@@ -351,11 +261,11 @@ def check_dict_property(device, key):
             # print(key, device[key]['dict_values'][k], device.query(query_string))
             assert device.query(query_string).strip('\n') == str(device[key]['dict_values'][k])
 
-    for item in BAD_INPUTS:
-        if isinstance(item, typing.Hashable):
-            if item not in device[key]['dict_values']:
+    for bad_input in BAD_INPUTS:
+        if isinstance(bad_input, typing.Hashable):
+            if bad_input not in device[key]['dict_values']:
                 with pytest.raises(Exception):
-                    device[name] = item
+                    device[name] = bad_input
 
     # reset the dict value to the first value for consistency between tests
     for k in ord_dict:
@@ -369,9 +279,9 @@ def check_properties(test_instrument):
     validate_blacklist(test_instrument)
 
     # iterate over all attributes to test accordingly using predefined functions
-    values_counter, range_counter, ranges_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0, 0
+    values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 0, 0, 0
     instrument_name = test_instrument.__class__.__name__
-    # values_idx, range_idx, ranges_idx, idx_vals_idx, dict_vals_idx = [], [], [], [], []
+    # values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
     saved_settings = save_initial_state(test_instrument)
     print("Initial state for the {} was: {}".format(instrument_name, saved_settings))
 
@@ -399,14 +309,10 @@ def check_properties(test_instrument):
             values_counter += 1
             # values_idx.append(values_counter)
             check_values_property(test_instrument, name)
-        elif 'range' in keys and ('ranges' not in keys):
+        elif 'range' in keys:
             range_counter += 1
             # range_idx.append(range_counter)
             check_range_property(test_instrument, name)
-        elif 'ranges' in keys:
-            ranges_counter += 1
-            # ranges_idx.append(range_counter)
-            check_ranges_property(test_instrument, name)
         elif 'indexed_values' in keys:
             idx_vals_counter += 1
             # idx_vals_idx.append(idx_vals_counter)
@@ -417,7 +323,7 @@ def check_properties(test_instrument):
             check_dict_property(test_instrument, name)
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
-                name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+                name, ['values', 'range', 'indexed_values', 'dict_values'])
 
     restored_settings = restore_initial_state(test_instrument, saved_settings)
 
@@ -425,7 +331,6 @@ def check_properties(test_instrument):
 
     mid_string = 'properties found and tested out of'
     print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
-    print("{} ranges {} {} total settings found.".format(ranges_counter, mid_string, total_settings))
     print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
@@ -434,11 +339,11 @@ def check_properties(test_instrument):
               .format(len(test_instrument.black_list_for_testing)))
     except Exception:
         pass
-    total_tested = range_counter + ranges_counter + values_counter + idx_vals_counter + dict_vals_counter
+    total_tested = range_counter + values_counter + idx_vals_counter + dict_vals_counter
     print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
     if isinstance(test_instrument, TestInstrumentDriver):
-        assert values_counter == range_counter == ranges_counter == idx_vals_counter == dict_vals_counter == 1
+        assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
     print("Settings restored to: {}".format(restored_settings))
     if (len(diff) > 0):
