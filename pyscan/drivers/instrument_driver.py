@@ -109,7 +109,8 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "key used but not allowed"
 
-        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'], prop_type, settings[prop_type])
+        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
+                                               prop_type, settings[prop_type])
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
