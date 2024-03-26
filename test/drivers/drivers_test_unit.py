@@ -11,6 +11,10 @@ WARNING!
 If used without first creating a proper blacklist of _properties that cannot be safely
 changed to any value in their range of options based on the driver settings may
 cause instruments to self destruct, or lead to significant injury and even DEATH.
+Depending on the instrument and how it's set up this may or may not be a relevant issue.
+If there are any settings that could be changed to risk harming some or the instrument
+blacklist them before proceeding by adding a self.black_list_for_testing property at the end
+of the instrument driver's __init__.
 ONLY RUN THIS TEST UNIT IF YOU ARE CERTAIN ALL SUCH ATTRIBUTES HAVE BEEN PROPERLY BLACKLISTED!
 '''
 
@@ -385,11 +389,11 @@ def check_properties(test_instrument):
             total_settings += 1
 
     for name in settings:
-        if hasattr(test_instrument, 'black_list_for_testing'):
-            base_name = name.replace('_settings', '')
-            # base_name = test_instrument[name]['name']
-            if base_name in test_instrument['black_list_for_testing']:
-                continue
+        # if hasattr(test_instrument, 'black_list_for_testing'):
+        base_name = name.replace('_settings', '')
+        # base_name = test_instrument[name]['name']
+        if base_name in test_instrument['black_list_for_testing']:
+            continue
         keys = test_instrument[name].keys()
         if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
