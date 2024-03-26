@@ -13,10 +13,13 @@ class OxfordIPS120(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`.new_instrument`)
 
-    Properties
+    Yields
     ----------
-    field_set_point
-    field_set_rate
+    Properties which can be get and set:
+        field_set_point: float
+            range defined by property field_limit (T): [-8, 8]
+        field_set_rate: float
+            range defined by property field_rate_limit (T/min): [0, 0.2]
 
     Methods
     -------
