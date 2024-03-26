@@ -175,7 +175,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_current_level',
             'write_string': 'CURR:PROT {}',
             'query_string': 'CURR:PROT?',
-            'range': [self.min_over_current_level, 
+            'range': [self.min_over_current_level,
                       self.max_over_current_level],
             'return_type': float})
 
@@ -234,7 +234,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_voltage_level',
             'write_string': 'VOLT:PROT {}',
             'query_string': 'VOLT:PROT?',
-            'range': [self.min_over_voltage_level, 
+            'range': [self.min_over_voltage_level,
                       self.max_over_voltage_level],
             'return_type': float})
 
