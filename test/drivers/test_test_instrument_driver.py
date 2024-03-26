@@ -31,7 +31,7 @@ def test_testinstrumentdriver():
             assert (device[attributes[i]] == ev[i]), err_string
 
     vs = {'name': 'values', 'write_string': 'VALUES {}', 'query_string': 'VALUES?',
-          'values': [2, 'x', False, (1, 10), ['1', '10']], 'return_type': int}
+          'values': [2, 'x', False, (1, 10), ['1', '10']], 'return_type': str}
     rgs = {'name': 'range', 'write_string': 'RANGE {}', 'query_string': 'RANGE?',
            'range': [0, 10], 'return_type': float}
     idxvs = {'name': 'indexed_values', 'write_string': 'INDEXED_VALUES {}', 'query_string': 'INDEXED_VALUES?',

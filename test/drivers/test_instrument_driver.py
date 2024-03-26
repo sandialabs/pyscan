@@ -27,7 +27,9 @@ class TestInstrumentDriver(InstrumentDriver):
 
         self.instrument = 'instrument#123'
         self.debug = debug
-        self._values = 2
+        self._float_values = 2
+        self._str_values = '2'
+        self._bool_values = False
         self._range = 0
         self._indexed_values = 'A'
         self._dict_values = 'off'
@@ -61,11 +63,27 @@ class TestInstrumentDriver(InstrumentDriver):
     def initialize_properties(self):
 
         self.add_device_property({
-            'name': 'values',
+            'name': 'float_values',
             'write_string': 'VALUES {}',
             'query_string': 'VALUES?',
-            'values': [2, 'x', False, (1, 10), ['1', '10']],
-            'return_type': int
+            'values': [2, 2.2339340249, 89.129398],
+            'return_type': float
+        })
+
+        self.add_device_property({
+            'name': 'str_values',
+            'write_string': 'VALUES {}',
+            'query_string': 'VALUES?',
+            'values': ['2', 'x', 'False', '(1, 10)', "['1', '10']"],
+            'return_type': str
+        })
+
+        self.add_device_property({
+            'name': 'bool_values',
+            'write_string': 'VALUES {}',
+            'query_string': 'VALUES?',
+            'values': [True, False],
+            'return_type': bool
         })
 
         self.add_device_property({
@@ -112,7 +130,9 @@ class TestInstrumentDriver(InstrumentDriver):
         delattr(self, "_bad_values_settings")
 
     def update_properties(self):
-        self.values
+        self.float_values
+        self.str_values
+        self.bool_values
         self.range
         self.indexed_values
         self.dict_values
@@ -180,7 +200,7 @@ class BadInstrumentDriver(InstrumentDriver):
             'write_string': 'VALUES {}',
             'query_string': 'VALUES?',
             'values': [2, 'x', False, (1, 10), ['1', '10']],
-            'return_type': int
+            'return_type': str
         })
 
         self.add_device_property({
