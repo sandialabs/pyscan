@@ -170,9 +170,8 @@ def check_values_property(device, key):
     for val in device[key]['values']:
         device[name] = val
         # ################ consider within a range here since may not return perfect value.
+        assert device[name] == val
         assert device["_{}".format(name)] == val
-        if not isinstance(device, TestVoltage):
-            assert device.query('VALUES?') == str(val)
 
     # reset value to baseline for consistency between tests
     device[name] = device[key]['values'][0]
@@ -204,10 +203,9 @@ def check_range_property(device, key):
 
     for r in range(int(device[key]['range'][0]), int(device[key]['range'][0]), step):
         device[name] = r
+        assert device[name] == r
         assert device['_{}'.format(name)] == r
         # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
-        if not isinstance(device, TestVoltage):
-            assert device.query('RANGE?') == str(r)
 
     # reset range to baseline for consistency between tests
     device[name] = device[key]['range'][0]
@@ -229,13 +227,9 @@ def check_indexed_property(device, key):
     for idx, iv in enumerate(device[key]['indexed_values']):
         # print(str(iv), str(idx), name, device[name])
         device[name] = iv
+        assert device[name] == iv
         assert device["_{}".format(name)] == iv
         # print("underscore property is: ", device["_{}".format(name)])
-        if not isinstance(device, TestVoltage):
-            query_string = device[key]['query_string']
-            err_string = ("query returns: {} is not the idx: {} for: {}"
-                          .format(device.query(query_string), str(idx), key))
-            assert device.query(query_string).strip("\n") == str(idx), err_string
 
     # reset value to baseline for consistency between tests
     device[name] = device[key]['indexed_values'][0]
@@ -255,11 +249,8 @@ def check_dict_property(device, key):
     for k in device[key]['dict_values']:
         # print(k)
         device[name] = k
+        assert device[name] == device.find_first_key(ord_dict, ord_dict[k])
         assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
-        if not isinstance(device, TestVoltage):
-            query_string = device[key]['query_string']
-            # print(key, device[key]['dict_values'][k], device.query(query_string))
-            assert device.query(query_string).strip('\n') == str(device[key]['dict_values'][k])
 
     for bad_input in BAD_INPUTS:
         if isinstance(bad_input, typing.Hashable):

@@ -102,7 +102,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.initialize_properties()
 
-        self.black_list_for_testing = ['_current', "_voltage"]
+        self.black_list_for_testing = ['_current', "_voltage", "_output"]
 
     def initialize_properties(self):
 
@@ -164,7 +164,7 @@ class Keithley2260B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'curret_trigger_amplitude',
+            'name': 'current_trigger_amplitude',
             'write_string': 'CURR:TRIG {}',
             'query_string': 'CURR:TRIG?',
             'range': [self.min_current_trigger_ampliutde,
@@ -283,8 +283,8 @@ class Keithley2260B(InstrumentDriver):
         self.smoothing
 
         self.current
-        self.curret_trigger_amplitude
-        self.max_over_current_level
+        self.current_trigger_amplitude
+        self.over_current_level
         self.current_protection_state
         self.current_rising_slew_rate
         self.current_falling_slew_rate

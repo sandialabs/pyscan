@@ -264,8 +264,6 @@ class InstrumentDriver(ItemAttribute):
             index = values.index(new_value)
             if not self.debug:
 
-                print(settings['write_string'].format(index))
-
                 obj.write(settings['write_string'].format(index))
                 setattr(obj, '_' + settings['name'], new_value)
             else:
