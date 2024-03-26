@@ -1,6 +1,7 @@
 # Objects
 from .instrument_driver import InstrumentDriver
 
+
 # Instrument Drivers
 from .agilent33500 import Agilent33500
 from .agilent34410 import Agilent34410
@@ -74,8 +75,11 @@ try:
 except ModuleNotFoundError:
     print('Thorlabs Kinesis not found, ThorlabsMFF101 not loaded')
 
+
 # Methods
 from .new_instrument import new_instrument
 
+
 # Test Devices
-from .test_voltage import TestVoltage
+from .testing.test_voltage import TestVoltage
+from .testing.test_instrument_driver import TestInstrumentDriver
