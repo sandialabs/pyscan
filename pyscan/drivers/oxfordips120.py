@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from time import sleep, time
+from time import time
 from .instrument_driver import InstrumentDriver
 
 
