@@ -36,9 +36,6 @@ setup(
         'ipywidgets',
         'h5py',
         'matplotlib',
-        # if ipykernel fails, force specific python version that will work rather than omitting ipykernel requirement.
-        'ipykernel',
-        'pytest',
     ],
     extras_require={'oceanoptics': ['seabreeze']},
     classifiers=[

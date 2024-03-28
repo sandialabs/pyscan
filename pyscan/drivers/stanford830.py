@@ -75,7 +75,6 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-        self.black_list_for_testing = ['_input_configuration', "_time_constant"]
 
     def initialize_properties(self):
 
@@ -91,7 +90,7 @@ class Stanford830(InstrumentDriver):
             'write_string': 'FMOD {}',
             'query_string': 'FMOD?',
             'indexed_values': ['external', 'internal'],
-            'return_type': int})
+            'return_type': float})
 
         self.add_device_property({
             'name': 'frequency',
@@ -149,15 +148,13 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['none', 'line', '2xline', 'both'],
             'return_type': int})
 
-        # NEED TO CORRECT FOR CONSISTENT VALUES, need one for current and one for voltage?
-        # this one will be voltage sensitivity, then make another named current_sensitivity
         self.add_device_property({
             'name': 'sensitivity',
             'write_string': 'SENS {}',
             'query_string': 'SENS?',
             'indexed_values': [
                 2e-9, 5e-9,
-                10e-9, 20e-9, 50e-9,
+                10e-9, 20e-9, 50e-5,
                 100e-9, 200e-9, 500e-9,
                 1e-6, 2e-6, 5e-6,
                 10e-6, 20e-6, 50e-6,
@@ -189,7 +186,7 @@ class Stanford830(InstrumentDriver):
 
         self.add_device_property({
             'name': 'filter_slope',
-            'write_string': 'OFSL {}',
+            'write_string': 'OFSL{} {}',
             'query_string': 'OFSL?',
             'indexed_values': [6, 12, 18, 24],
             'return_type': int})
@@ -233,14 +230,13 @@ class Stanford830(InstrumentDriver):
         self.phase
         self.reference_source
         self.frequency
-        self.reference_slope
+        self.reference_source
         self.harmonic
         self.instrument_amplitude
 
         # Input configuration
         self.input_configuration
         self.input_ground
-        self.input_coupling
         self.input_line_filter
         self.input_line_filter
 

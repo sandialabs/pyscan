@@ -82,7 +82,7 @@ class InstrumentDriver(ItemAttribute):
         Parameters
         ----------
         settings : dict
-            dict containing settings for property. Must have the key "values", "range", or "indexed_values".
+            dict containing settings for property. Must have the key "values", "range", "ranges" or "indexed_values".
 
         Returns
         -------
@@ -91,31 +91,22 @@ class InstrumentDriver(ItemAttribute):
 
         self['_{}_settings'.format(settings['name'])] = settings
 
-        prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
-            prop_type = 'values'
-        elif ('range' in settings) and ('ranges' not in settings):
+        elif 'range' in settings:
             set_function = self.set_range_property
-            prop_type = 'range'
         elif 'ranges' in settings:
-            assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
+            set_function = self.set_range_properties
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
-            prop_type = 'indexed_values'
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
-            prop_type = 'dict_values'
         else:
-            assert False, "key used but not allowed"
-
-        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
+            assert False, "key used but not (yet) allowed"
 
         property_definition = property(
             fget=lambda obj: self.get_instrument_property(obj, settings),
-            fset=lambda obj, new_value: set_function(obj, new_value, settings),
-            doc=doc_string)
+            fset=lambda obj, new_value: set_function(obj, new_value, settings))
 
         setattr(self.__class__, settings['name'], property_definition)
 
@@ -139,16 +130,8 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         if not obj.debug:
-            value = obj.query(settings['query_string'])
-            assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
-            value = value.strip("\n")
-
-            if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
-                value = settings['return_type'](value)
-            elif 'indexed_values' in settings:
-                values = settings['indexed_values']
-                value = values[int(value)]
-            elif 'dict_values' in settings:
+            value = obj.query(settings['query_string']).strip('\n')
+            if 'dict_values' in settings:
                 dictionary = settings['dict_values']
                 value = self.find_first_key(dictionary, value)
             else:
@@ -191,8 +174,8 @@ class InstrumentDriver(ItemAttribute):
                         settings['write_string'].format(new_value))
         else:
             possible = []
-            for val in values:
-                possible.append(val)
+            for string in values:
+                possible.append('{}'.format(string))
             assert False, "Value Error:\n{} must be one of: {}. You submitted: {}".format(settings['name'],
                                                                                           possible, new_value)
 
@@ -233,6 +216,45 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
 
+    def set_range_properties(self, obj, new_value, settings):
+        '''
+        Generator function for settings dictionary with 'ranges' item
+        Check that new_value is in settings['ranges'], if not, rejects command
+
+        Parameters
+        ----------
+        obj :
+            parent class object
+        new_value :
+            new_value to be set on instrument
+        settings : dict
+            dictionary with ['ranges'] item
+
+        Returns
+        -------
+        None
+        '''
+
+        rngs = settings['ranges']
+
+        for rng in rngs:
+            assert len(rng) == 2, "each range for ranges settings must have 2 values"
+            for val in rng:
+                assert (type(val) is int) or (type(val) is float), "inputs for ranges settings must be ints or floats"
+        for val in new_value:
+            assert (type(val) is int) or (type(val) is float), "inputs for ranges values must be int or float"
+
+        if len(rngs) != len(new_value):
+            print('Error: {} takes {} parameters, you passed {}.'.format(settings['name'], len(rngs), len(new_value)))
+        elif all(rngi[0] <= new_valuei <= rngi[1] for new_valuei, rngi in zip(new_value, rngs)):
+            if not self.debug:
+                obj.write(settings['write_string'].format(*new_value))
+                setattr(obj, '_' + settings['name'], new_value)
+            else:
+                setattr(obj, '_' + settings['name'], settings['write_string'].format(*new_value))
+        else:
+            assert False, 'Range error:\nParameters must be in ranges {}\n\tYou passed{}'.format(rngs, new_value)
+
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
         Generator function for settings dictionary with 'indexed_values' item
@@ -263,6 +285,8 @@ class InstrumentDriver(ItemAttribute):
         if new_value in values:
             index = values.index(new_value)
             if not self.debug:
+
+                print(settings['write_string'].format(index))
 
                 obj.write(settings['write_string'].format(index))
                 setattr(obj, '_' + settings['name'], new_value)

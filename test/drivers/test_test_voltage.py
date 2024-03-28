@@ -2,11 +2,13 @@
 Pytest functions to test the Runinfo class
 '''
 
-from pyscan.drivers.testing.test_voltage import TestVoltage
+import pyscan as ps
 import pytest
+import importlib
+importlib.reload(ps)
 
 
-def test_test_voltage():
+def test_testvoltage():
     """
     Testing TestVoltage class
 
@@ -16,7 +18,7 @@ def test_test_voltage():
     """
 
     # set up v1 as representative for testing
-    v1 = TestVoltage()
+    v1 = ps.TestVoltage()
 
     # ########## add 2 more test voltages for testing...
 

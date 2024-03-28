@@ -13,9 +13,6 @@ class TestVoltage(InstrumentDriver):
         more storage for an arbitrary value
     '''
 
-    # tells pytest this is not a test case. Was necessary only on lab computer for some reason.
-    __test__ = False
-
     def __init__(self, debug=False, instrument=None, *arg, **kwarg):
 
         super().__init__(instrument=None, *arg, **kwarg)
@@ -25,7 +22,6 @@ class TestVoltage(InstrumentDriver):
         self._voltage = 0
         self._power = 1
         self._output_state = 'off'
-        self.black_list_for_testing = []
 
     def query(self, string):
         if string == 'VOLT?':
