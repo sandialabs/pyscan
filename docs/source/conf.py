@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.coverage',
     'numpydoc',
     'nbsphinx',
+    'nbsphinx_link',
     'myst_parser']
 # myst_parser allows you to use .md and .rst files for pages
 
