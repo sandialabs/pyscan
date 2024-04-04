@@ -79,6 +79,28 @@ class OxfordIPS120(InstrumentDriver):
         self.initialize_properties()
 
     def initialize_properties(self):
+        """
+        The IPS120 does not have traditional get/set parameters.  The control
+        parameters are set using command.  Getting values is accomplished with
+        either "examine status", X or "read parameter" R {}.
+        """
+
+        # control commands
+
+        # self.add_device_property({
+        #                          'name': '',
+        #                          'write_string': '',
+        #                          'query_string': '',
+        #                          'range': [],
+        #                          'return_type': float})
+
+        # self.add_device_property({
+        #                          'name': 'activity',
+        #                          'write_string': 'A{}',
+        #                          'query_string': 'A{}',
+        #                          'range': [],
+        #                          'return_type': float})
+
         self.get_field
         self.field_set_point
         # self.target_field # legacy
@@ -90,7 +112,10 @@ class OxfordIPS120(InstrumentDriver):
         self.get_current_rate
         # self.get_current_sweep_rate # legacy
 
-    def __repr__(self):
+    def print_state(self):
+        """
+        Print operating state of the IPS120 power supply
+        """
         status = self.status()
         value = ""
         if self.quench_status():
@@ -119,6 +144,11 @@ class OxfordIPS120(InstrumentDriver):
         value += f"field_rate = {self.field_rate}"
 
         return value
+
+    def print_status(self):
+        """
+        Print current status of the IPS120 power supply
+        """
 
     def hold(self):
         if not self.remote_status():
