@@ -55,9 +55,16 @@ For the full instructions on how to use pyscan library, [read the docs](https://
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+Current development team:
+Andy Mounce amounce@sandia.gov
+Jasmine Mah jjmah@sandia.gov
+Ryan Brost rsbrost@sandia.gov
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Citing Pyscan
 
-If Pyscan contributes to a project that leads to publication, please acknowledge this by citing Pyscan.
+If Pyscan contributes to a project that leads to publication, please let us know and acknowledging pyscan use as:
+
+"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), software made available by the Center for Integrated Nanotechnologies, which is an Office of Science User Facility operated for the U.S. Department of Energy."
