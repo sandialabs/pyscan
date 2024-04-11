@@ -20,6 +20,7 @@ A selection of instrument drivers are included, but drivers from other libraries
     - [Install](#install)
     - [Usage](#usage)
   - [Contribute](#contribute)
+  - [Contributors](#contributors)
   - [License](#license)
   - [Citing Pyscan](#citing-pyscan)
 
@@ -55,16 +56,21 @@ For the full instructions on how to use pyscan library, [read the docs](https://
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Current development team:
+**Current development team:**
 Andy Mounce amounce@sandia.gov
 Jasmine Mah jjmah@sandia.gov
 Ryan Brost rsbrost@sandia.gov
+
+## Contributors
+
+Special thanks to all who have contributed code to pyscan and its drivers:
+Andrew Mounce, Mike Lilly, Jasmine Mah, Ryan Brost, Maziar Ziabari, Heejun Byeon
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Citing Pyscan
 
-If Pyscan contributes to a project that leads to publication, please let us know and acknowledging pyscan use as:
+If Pyscan contributes to a project that leads to publication, please acknowledge this using:
 
 "Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), software made available by the Center for Integrated Nanotechnologies, which is an Office of Science User Facility operated for the U.S. Department of Energy."
