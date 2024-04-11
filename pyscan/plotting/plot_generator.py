@@ -141,7 +141,16 @@ class PlotGenerator(object):
 
         if (self.d == 2) and (self.data.ndim > 2):
             if self.index3D is None:
-                self.index3D = 0
+                # perform auto indexing: take first level if there is only one or two scans with multi-D data, 
+                # take the latest level if there are three scans and point data
+                ndim = self.expt.runinfo.ndim
+                if ndim == 3:
+                    # take the latest index with data
+                    for i in range(self.data.shape[2]):
+                        if self.data[0][0][i]:
+                            self.index3D = i
+                else: 
+                    self.index3D = 0
             self.data_name = self.data_name + '[{}/{}]'.format(self.index3D, self.data.shape[2])
             self.data = self.data[:, :, self.index3D]
 
