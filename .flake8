@@ -11,9 +11,10 @@
 # W503: Line breaks should occur after the binary operator
 # to keep all variable names aligned. (we're doing the opposite)
 # C901 too complex, change this later
-ignore=E266,E722,W503,C901
+ignore = E266, E722, W503, C901
 
-; exclude=
+exclude =
+    node_modules
 
 # F401: module imported but unused
 #F403 unable to detect undefined names
@@ -25,4 +26,4 @@ per-file-ignores =
     pyscan/plotting/__init__.py:F401,F403
 
 # 120 characters is a more agreeable max line length for modern displays
-max-line-length=120
+max-line-length = 120
