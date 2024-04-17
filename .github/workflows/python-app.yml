@@ -21,6 +21,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Conventional Changelog Action
+      id: changelog
+      uses: TriPSs/conventional-changelog-action@v3.7.1
+      with:
+        github-token: ${{ secrets.CHANGELOG_RELEASE }}
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      if: ${{ steps.changelog.outputs.skipped == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.CHANGELOG_RELEASE }}
+      with:
+        tag_name: ${{ steps.changelog.outputs.tag }}
+        release_name: ${{ steps.changelog.outputs.tag }}
+        body: ${{ steps.changelog.outputs.clean_changelog }}
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
