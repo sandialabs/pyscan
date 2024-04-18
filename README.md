@@ -61,11 +61,6 @@ Andy Mounce amounce@sandia.gov
 Jasmine Mah jjmah@sandia.gov
 Ryan Brost rsbrost@sandia.gov
 
-## Contributors
-
-Special thanks to all who have contributed code to pyscan and its drivers:
-Andrew Mounce, Mike Lilly, Jasmine Mah, Ryan Brost, Maziar Ziabari, Heejun Byeon
-
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
@@ -73,4 +68,4 @@ Andrew Mounce, Mike Lilly, Jasmine Mah, Ryan Brost, Maziar Ziabari, Heejun Byeon
 
 If Pyscan contributes to a project that leads to publication, please acknowledge this using:
 
-"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), software made available by the Center for Integrated Nanotechnologies, which is an Office of Science User Facility operated for the U.S. Department of Energy."
+"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), software made available by the Center for Integrated Nanotechnologies, an Office of Science User Facility operated for the U.S. Department of Energy."
