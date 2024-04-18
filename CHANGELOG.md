@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/sandialabs/pyscan/compare/v0.2.0...v0.2.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* updated new_release.yml to only auto version on pull request approval to main or dev. ([5ab2722](https://github.com/sandialabs/pyscan/commit/5ab272271bf833f013105c837aff3d096b5a661e))
+
+
+
 # [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.2.0) (2024-04-18)
 
 
