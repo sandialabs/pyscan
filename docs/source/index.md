@@ -44,11 +44,6 @@ Andy Mounce amounce@sandia.gov
 Jasmine Mah jjmah@sandia.gov
 Ryan Brost rsbrost@sandia.gov
 
-## Contributors
-
-Special thanks to all who have contributed code to pyscan and its drivers:
-Andrew Mounce, Mike Lilly, Jasmine Mah, Ryan Brost, Maziar Ziabari, Heejun Byeon
-
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
