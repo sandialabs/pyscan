@@ -1,3 +1,17 @@
+# [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.2.0) (2024-04-18)
+
+
+### Bug Fixes
+
+* updated python-app.yml to only perform versioning and update changelog after the build passes all tests. ([1a47452](https://github.com/sandialabs/pyscan/commit/1a47452e0e73a32f0e5a83dac3cf27ef1b442ac0))
+
+
+### Features
+
+* added and updated workflows for more refined control in addition to auto versioning. ([7cc1541](https://github.com/sandialabs/pyscan/commit/7cc1541e6c4357a21bfad7198a8a151affa2dbff))
+
+
+
 # [0.1.0](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.1.0) (2024-04-18)
 
 
