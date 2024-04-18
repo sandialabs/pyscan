@@ -1,10 +1,11 @@
-# This workflow checks for successful install
+# This workflow will perform .flake8 checks
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Basic Build
+name: Python application
 
 on:
   push:
+  # Allow running manually from Actions tab
   workflow_dispatch:
 
 permissions:
@@ -31,3 +32,8 @@ jobs:
         python -m pip install pytest
         python -m pip install nbmake
         python -m pip install -e .
+        
+    - name: Lint with flake8
+      run: |
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
