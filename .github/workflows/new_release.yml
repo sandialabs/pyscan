@@ -5,21 +5,18 @@ name: Build, Lint, Complete Test, and Version for Release
 
 on:
   push:
-    branches: [ "main", "dev"]
+    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
+  pull_request_review:
+    branches: [ "main", "dev" ]
+    types: [submitted]
 
 permissions:
   contents: read
 
 jobs:
   build:
-
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-
     runs-on: ubuntu-latest
 
     steps:
@@ -52,19 +49,29 @@ jobs:
       run: |
         pytest --nbmake "./demo_notebooks/" 
 
-    # Autoversioning and updating changelog:
-    - name: Conventional Changelog Action
-      id: changelog
-      uses: TriPSs/conventional-changelog-action@v3.7.1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+  approved:
+    if: github.event.review.state == 'APPROVED'
 
-    - name: Create Release
-      uses: actions/create-release@v1
-      if: ${{ steps.changelog.outputs.skipped == 'false' }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.changelog.outputs.tag }}
-        release_name: ${{ steps.changelog.outputs.tag }}
-        body: ${{ steps.changelog.outputs.clean_changelog }}
+      permissions:
+        contents: write
+        issues: write
+        pull-requests: write
+
+        runs-on: ubuntu-latest
+
+      # Autoversioning and updating changelog:
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3.7.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          release_name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
