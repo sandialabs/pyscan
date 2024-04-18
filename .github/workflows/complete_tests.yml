@@ -40,3 +40,8 @@ jobs:
     - name: Test notebooks
       run: |
         pytest --nbmake "./demo_notebooks/" 
+
+    - name: Lint with flake8
+      run: |
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
