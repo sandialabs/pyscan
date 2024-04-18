@@ -4,7 +4,6 @@
 name: Basic Tests
 
 on:
-  push:
   # Allow running manually from Actions tab
   workflow_dispatch:
 

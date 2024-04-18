@@ -4,7 +4,6 @@
 name: Manually Update Pyscan Version for New Release
 
 on:
-  push:
   # Allow running manually from Actions tab
   workflow_dispatch:
 
