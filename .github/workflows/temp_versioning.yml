@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+    
     # Autoversioning and updating changelog:
     - name: Conventional Changelog Action
       id: changelog
