@@ -1,4 +1,4 @@
-name: Manually Update Pyscan Version for New Release
+name: Temp Versioning for Testing
 
 on:
   # Allow running manually from Actions tab
