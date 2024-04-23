@@ -18,9 +18,7 @@ jobs:
       id: changelog
       uses: TriPSs/conventional-changelog-action@v3.7.1
       with:
-        github-token: ${{ secrets.VERSIONING_SECRET }}
-        branch: main
-        unprotect_reviews: true
+        token: ${{ secrets.VERSIONING_SECRET }}
 
     - name: Create Release
       uses: actions/create-release@v1
@@ -31,6 +29,3 @@ jobs:
         tag_name: ${{ steps.changelog.outputs.tag }}
         release_name: ${{ steps.changelog.outputs.tag }}
         body: ${{ steps.changelog.outputs.clean_changelog }}
-        branch: main
-        unprotect_reviews: true
-  
