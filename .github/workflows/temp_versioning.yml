@@ -18,7 +18,7 @@ jobs:
       id: changelog
       uses: TriPSs/conventional-changelog-action@v3.7.1
       with:
-        token: ${{ secrets.VERSIONING_SECRET }}
+        github-token: ${{ secrets.VERSIONING_SECRET }}
 
     - name: Create Release
       uses: actions/create-release@v1
