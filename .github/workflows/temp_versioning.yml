@@ -16,7 +16,7 @@ jobs:
     # Autoversioning and updating changelog:
     - name: Conventional Changelog Action
       id: changelog
-      uses: TriPSs/conventional-changelog-action@v3.7.1
+      uses: TriPSs/conventional-changelog-action@v5.2.1
       with:
         github-token: ${{ secrets.VERSIONING_SECRET }}
 
