@@ -1,7 +1,7 @@
 # This workflow will perform .flake8 checks
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Lint with Flake8
 
 on:
   # Allow running manually from Actions tab

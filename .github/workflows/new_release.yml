@@ -1,58 +1,26 @@
 # This workflow will install Python dependencies, lint, run all tests and update the version + changelog
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Build, Lint, Test, and Version for Release
+name: Version New Release
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: "main"
   pull_request:
-    branches: [ "main", "dev" ]
-  pull_request_review:
-    branches: [ "main", "dev" ]
-    types: [submitted]
+    branches: "main"
+    types:
+      - closed
+  # remove this once tested successfully
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  merged:
+    if: github.event.pull_request.merged == true
 
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-
-    - name: Install package
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install wheel
-        python -m pip install flake8
-        python -m pip install pytest
-        python -m pip install nbmake
-        python -m pip install -e .
-
-    - name: Lint with flake8
-      run: |
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
-
-    - name: Test with pytest
-      run: |
-        pytest
-        
-    - name: Test notebooks
-      run: |
-        pytest --nbmake "./demo_notebooks/" 
-
-  approved:
-    if: github.event.review.state == 'APPROVED'
-
-      permissions:
+      permissions: write-all
         contents: write
         issues: write
         pull-requests: write
