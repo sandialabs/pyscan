@@ -10,6 +10,8 @@ on:
     branches: "main"
     types:
       - closed
+  # remove this once tested successfully
+  workflow_dispatch:
 
 permissions:
   contents: read
