@@ -18,13 +18,13 @@ jobs:
       id: changelog
       uses: TriPSs/conventional-changelog-action@v5.2.1
       with:
-        github-token: ${{ secrets.VERSIONING_SECRET }}
+        github-token: ${{ secrets.REPO_TOKEN_SECRET }}
 
     - name: Create Release
       uses: actions/create-release@v1
       if: ${{ steps.changelog.outputs.skipped == 'false' }}
       env:
-        GITHUB_TOKEN: ${{ secrets.VERSIONING_SECRET }}
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN_SECRET }}
       with:
         tag_name: ${{ steps.changelog.outputs.tag }}
         release_name: ${{ steps.changelog.outputs.tag }}
