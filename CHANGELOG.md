@@ -1,3 +1,21 @@
+# [0.4.0](https://github.com/sandialabs/pyscan/compare/v0.3.0...v0.4.0) (2024-04-23)
+
+
+### Bug Fixes
+
+* deleted new_release.yml since it is not running on push. Will replace with two separate workflows. ([04ac6e2](https://github.com/sandialabs/pyscan/commit/04ac6e206311d02cdaf03200014a8e2150baee0c))
+* fixing new_release.yml workflow to have proper permissions for auto versioning. ([d434314](https://github.com/sandialabs/pyscan/commit/d434314c2df54acb8c34a9f33f14ae141b67e025))
+* updated manual_versioning.yml to enable workflow run on main. ([08b7401](https://github.com/sandialabs/pyscan/commit/08b7401ebd8f5d0eab1fbff399bb746474fdd0d4))
+* updated new_release.yml syntax to try and fix not running on push to main. ([71b3bba](https://github.com/sandialabs/pyscan/commit/71b3bba9ce1c0395e8469294e62a0d1831dcbc1d))
+* updated workflow permissions for versioning files. ([4b9da2e](https://github.com/sandialabs/pyscan/commit/4b9da2efae19774653529ef348ea2786e17c600c))
+
+
+### Features
+
+* added 2 workflows, one to auto version on merge from pull request, and one to auto version on push to main. ([a679f12](https://github.com/sandialabs/pyscan/commit/a679f12b3051824ca0f4d4fa9a9c31a359ad3848))
+
+
+
 # [0.3.0](https://github.com/sandialabs/pyscan/compare/v0.2.1...v0.3.0) (2024-04-23)
 
 
@@ -64,10 +82,6 @@
 ### Features
 
 * added basic_build.yml to ensure install success on every build. ([3e791fb](https://github.com/sandialabs/pyscan/commit/3e791fb93146d5d0e16c1a269d6feb80fac142eb))
-
-
-
-## 0.0.1 (2023-11-28)
 
 
 
