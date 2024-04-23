@@ -19,6 +19,7 @@ jobs:
       uses: TriPSs/conventional-changelog-action@v5.2.1
       with:
         github-token: ${{ secrets.REPO_TOKEN_SECRET }}
+        git-branch: pre-release
 
     - name: Create Release
       uses: actions/create-release@v1
