@@ -2,13 +2,16 @@
 from pyscan.general.item_attribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
 import json
+import os
 
 
 def get_version():
-    with open('../../package.json') as version_file:
+    runinfo_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(runinfo_dir, "../../package.json")
+    with open(path) as version_file:
         version = json.load(version_file)['version']
         if type(version) is str:
-            return version
+            return 'v' + version
         else:
             return "no valid version found"
 
