@@ -91,7 +91,6 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         }
     ],
-    "primary_sidebar_end": [],
     "use_edit_page_button": True,
 }
 
@@ -102,10 +101,4 @@ html_context = {
     "github_user": "plesiopterys",
     "github_repo": "https://github.com/sandialabs/pyscan",
     "github_version": "main",
-}
-
-html_sidebars = {
-    # default is
-    # "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
-    "**": ["sidebar-nav-bs"]
 }
