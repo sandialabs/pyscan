@@ -25,7 +25,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
     channel : int
         channel of DAQ
 
-    Properties
+    Attributes
     ----------
     coupling :
         queries input coupling

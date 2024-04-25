@@ -13,7 +13,7 @@ class Agilent8275N(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Properties
+    Attributes
     ----------
     frequency : float
         Sets/queries frequency. Range: [1e6, 2e10]
