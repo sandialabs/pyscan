@@ -16,18 +16,33 @@ class OxfordIPS120(InstrumentDriver):
     Yields
     ----------
     Properties which can be get and set:
+        current_rate: float
+        current_set_point: float
         field_set_point: float
-            range defined by property field_limit (T): [-8, 8]
-        field_set_rate: float
-            range defined by property field_rate_limit (T/min): [0, 0.2]
+            range defined by property _field_limit (T): [-8, 8]
+        field_rate: float
+            range defined by property _field_rate_limit (T/min): [0, 0.2]
 
     Methods
     -------
+    print_state()
+    print_status()
+    get_current()
+    get_voltage()
+    get_measured_current()
+    get_current_set_point()
+    get_current_rate()
     get_field()
         returns the magnetic field
+    get_field_set_point()
+    get_field_rate()
+    get_persistent_current()
     get_persistent_field()
         returns the magnetic field where the heater was turned off
         and the magnet put in persistent mode
+    get_trip_field()
+    get_safe_current_limit_negative()
+    get_safe_current_limit_positive()
     remote()
         put the power supply in remote mode, keyword argument: locked=False
     local()
@@ -57,9 +72,6 @@ class OxfordIPS120(InstrumentDriver):
         self.instrument.write_termination = "\r"
         self.remote()
 
-        # setup timeout for query_until_return
-        self.timeout = 1
-
         # make sure the buffer is empty:
         # read status byte by performing a serial poll
         # bit 1: byte available
@@ -72,8 +84,8 @@ class OxfordIPS120(InstrumentDriver):
             message = self.instrument.read()
             print(f"Message in buffer: {message}")
 
-        self.field_limit = 8
-        self.field_rate_limit = 0.2
+        self._field_limit = 8
+        self._field_rate_limit = 0.2
 
         self.debug = False
         self.initialize_properties()
@@ -94,23 +106,78 @@ class OxfordIPS120(InstrumentDriver):
         #                          'range': [],
         #                          'return_type': float})
 
+        self.add_device_property(
+            {
+                "name": "field_set_point",
+                "write_string": "J{}",
+                "query_string": "R8",
+                "range": [-self._field_limit, self._field_limit],
+                "return_type": float,
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "field_rate",
+                "write_string": "T{}",
+                "query_string": "R9",
+                "range": [-self._field_rate_limit, self._field_rate_limit],
+                "return_type": float,
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "current_set_point",
+                "write_string": "I{}",
+                "query_string": "R5",
+                "range": [-self._field_limit, self._field_limit],
+                "return_type": float,
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "current_rate",
+                "write_string": "S{}",
+                "query_string": "R6",
+                "range": [-self._field_rate_limit, self._field_rate_limit],
+                "return_type": float,
+            }
+        )
+
         # self.add_device_property({
-        #                          'name': 'activity',
-        #                          'write_string': 'A{}',
-        #                          'query_string': 'A{}',
-        #                          'range': [],
-        #                          'return_type': float})
+        #     'name': 'extended',
+        #     'write_string': 'Q{}',
+        #     'query_string': '',
+        #     'dict_values': {'normal':0, 'extended':4},
+        #     'return_type': int})
 
         self.get_field
         self.field_set_point
-        # self.target_field # legacy
         self.field_rate
-        # self.field_sweep_rate # legacy
-        self.get_current
-        self.get_current_set_point
-        # self.get_target_current # legacy
-        self.get_current_rate
-        # self.get_current_sweep_rate # legacy
+
+    def query_until_return(self, query, timeout=1, debug=False):
+        # message = self.query(query)
+        self.write(query)
+        stb = self.instrument.read_stb()
+        # wait for message
+        i = 0
+        start_time = time()
+        while (time() - start_time) < timeout:
+            while not (stb & 16):
+                if debug:
+                    if stb & 2:
+                        print("byte available but not message")
+                stb = self.instrument.read_stb()
+                i += 1
+            if debug:
+                # typically i=4, time = 0.01
+                print(f"needed to wait {i}; {time()-start_time} seconds")
+            message = self.read()
+            return message
+
+        raise IPS120Error("query_until_return Timeout")
 
     def print_state(self):
         """
@@ -149,6 +216,7 @@ class OxfordIPS120(InstrumentDriver):
         """
         Print current status of the IPS120 power supply
         """
+        pass
 
     def hold(self):
         if not self.remote_status():
@@ -237,14 +305,14 @@ class OxfordIPS120(InstrumentDriver):
 
     @field_set_point.setter
     def field_set_point(self, new_value):
-        if (new_value >= -self.field_limit) and (new_value <= self.field_limit):
+        if (new_value >= -self._field_limit) and (new_value <= self._field_limit):
             # normal resolution 0.0001 T
             self.write("$J{}".format(round(new_value, 4)))
             self._field_set_point = round(new_value, 4)
             # extended resolution 0.00001 T (see Q4 to set extended resolution)
         else:
             print(
-                f"field_set_point out of range, must be {-self.field_limit} <= set point <= {self.field_limit}"
+                f"field_set_point out of range, must be {-self._field_limit} <= set point <= {self._field_limit}"
             )
 
     @property
@@ -254,23 +322,73 @@ class OxfordIPS120(InstrumentDriver):
 
     @field_rate.setter
     def field_rate(self, new_value):
-        if (new_value > 0) and (new_value <= self.field_rate_limit):
+        if (new_value > 0) and (new_value <= self._field_rate_limit):
             # normal resolution 0.001 T/min
             self.write("$T{}".format(round(new_value, 3)))
             self._field_rate = round(new_value, 3)
             # extended resolution 0.0001 T/min (see Q4 to set extended resolution)
         else:
             print(
-                f"field_rate out of range, must be 0 < rate <= {self.field_rate_limit}"
+                f"field_rate out of range, must be 0 < rate <= {self._field_rate_limit}"
             )
+
+    def get_current(self):
+        self._current = float(self.query_until_return("R0").replace("R", ""))
+        return self._current
+
+    def get_voltage(self):
+        self._voltage = float(self.query_until_return("R1").replace("R", ""))
+        return self._voltage
+
+    def get_measured_current(self):
+        self._measured_current = float(self.query_until_return("R2").replace("R", ""))
+        return self._measured_current
+
+    def get_current_set_point(self):
+        self._current_set_point = float(self.query_until_return("R5").replace("R", ""))
+        return self._current_set_point
+
+    def get_current_rate(self):
+        self._current_rate = float(self.query_until_return("R6").replace("R", ""))
+        return self._current_rate
 
     def get_field(self):
         self._field = float(self.query_until_return("R7").replace("R", ""))
         return self._field
 
+    def get_field_set_point(self):
+        self._field_set_point = float(self.query_until_return("R8").replace("R", ""))
+        return self._field_set_point
+
+    def get_field_rate(self):
+        self._field_rate = float(self.query_until_return("R9").replace("R", ""))
+        return self._field_rate
+
+    def get_persistent_current(self):
+        self._persistent_current = float(
+            self.query_until_return("R16").replace("R", "")
+        )
+        return self._persistent_current
+
     def get_persistent_field(self):
-        self._field = float(self.query_until_return("R18").replace("R", ""))
-        return self._field
+        self._persistent_field = float(self.query_until_return("R18").replace("R", ""))
+        return self._persistent_field
+
+    def get_trip_field(self):
+        self._trip_field = float(self.query_until_return("R19").replace("R", ""))
+        return self._trip_field
+
+    def get_safe_current_limit_negative(self):
+        self._safe_current_limit_negative = float(
+            self.query_until_return("R21").replace("R", "")
+        )
+        return self._safe_current_limit_negative
+
+    def get_safe_current_limit_positive(self):
+        self._safe_current_limit_positive = float(
+            self.query_until_return("R22").replace("R", "")
+        )
+        return self._safe_current_limit_positive
 
     def status(self):
         status_string = self.query_until_return("X")
@@ -332,40 +450,6 @@ class OxfordIPS120(InstrumentDriver):
         else:
             return False
 
-    def get_current(self):
-        self._current = float(self.query_until_return("R2").replace("R", ""))
-        return self._current
-
-    def get_current_set_point(self):
-        self._current_set_point = float(self.query_until_return("R5").replace("R", ""))
-        return self._current_set_point
-
-    def get_current_rate(self):
-        self._current_rate = float(self.query_until_return("R6").replace("R", ""))
-        return self._current_rate
-
-    def query_until_return(self, query, n=10, debug=False):
-        # message = self.query(query)
-        self.write(query)
-        stb = self.instrument.read_stb()
-        # wait for message
-        i = 0
-        start_time = time()
-        while (time() - start_time) < self.timeout:
-            while not (stb & 16):
-                if debug:
-                    if stb & 2:
-                        print("byte available but not message")
-                stb = self.instrument.read_stb()
-                i += 1
-            if debug:
-                # typically i=4, time = 0.01
-                print(f"needed to wait {i}; {time()-start_time} seconds")
-            message = self.read()
-            return message
-
-        raise IPS120Error("query_until_return Timeout")
-
         # for i in range(n):
         #
         #     if len(message) != 0:
@@ -413,13 +497,13 @@ class OxfordIPS120(InstrumentDriver):
 
     @target_field.setter
     def target_field(self, new_value):
-        if (new_value >= -self.field_limit) and (new_value < self.field_limit):
+        if (new_value >= -self._field_limit) and (new_value < self._field_limit):
             self.write("$J{}".format(round(new_value, 4)))
             self._target_field = round(new_value, 4)
         else:
             print(
                 "Target field out of range, must be 0 < set point < {}".format(
-                    self.field_limit
+                    self._field_limit
                 )
             )
 
@@ -441,13 +525,13 @@ class OxfordIPS120(InstrumentDriver):
 
     @field_sweep_rate.setter
     def field_sweep_rate(self, new_value):
-        if (new_value >= 0) and (new_value < self.field_rate_limit):
+        if (new_value >= 0) and (new_value < self._field_rate_limit):
             self.write("$T{}".format(round(new_value, 3)))
             self._field_sweep_rate = round(new_value, 3)
         else:
             print(
                 "Sweep rate out of range, must be 0 < rate < {}".format(
-                    self.field_rate_limit
+                    self._field_rate_limit
                 )
             )
 
