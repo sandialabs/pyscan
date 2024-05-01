@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from time import time
+from time import time, sleep
 from .instrument_driver import InstrumentDriver
 
 
@@ -229,6 +229,19 @@ class OxfordIPS120(InstrumentDriver):
             _ = self.query_until_return("H2")
         else:
             print("State must be 'on', 'off' or 'force'")
+
+    @property
+    def field(self):
+        self._field = self.get_field()
+        return self._field
+    
+    @field.setter
+    def field_set_point(self, new_value):
+        self.hold()
+        self.field_set_point = new_value
+        self.to_set_point()
+        while self.sweeping_status():
+            sleep(0.1)
 
     @property
     def field_set_point(self):
