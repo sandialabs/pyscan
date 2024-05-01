@@ -26,8 +26,8 @@ class Stanford830(InstrumentDriver):
             Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
         harmonic : int
             Range: [1, 19999]
-        instrument_amplitude : float
-            Range:  [0, 5.0]
+        amplitude : float
+            Range:  [0.004, 2.0]
         input_configuration : int
             Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
         input_ground : int
@@ -115,10 +115,10 @@ class Stanford830(InstrumentDriver):
             'return_type': int})
 
         self.add_device_property({
-            'name': 'instrument_amplitude',
+            'name': 'amplitude',
             'write_string': 'SLVL {}',
             'query_string': 'SLVL?',
-            'range': [0, 5.0],
+            'range': [0.004, 5.0],
             'return_type': float})
 
         self.add_device_property({
@@ -235,7 +235,7 @@ class Stanford830(InstrumentDriver):
         self.frequency
         self.reference_slope
         self.harmonic
-        self.instrument_amplitude
+        self.amplitude
 
         # Input configuration
         self.input_configuration
@@ -270,15 +270,6 @@ class Stanford830(InstrumentDriver):
 
     # Data transfer commands
 
-    @property
-    def amplitude(self):
-        self._amplitude = self.instrument_amplitude * self.gain
-        return self._amplitude
-
-    @amplitude.setter
-    def amplitude(self, new_value):
-        self.instrument_amplitude = new_value / self.gain
-
     def read_output(self, source):
         values = ['x', 'y', 'r', 'theta']
         if source in values:
@@ -311,9 +302,9 @@ class Stanford830(InstrumentDriver):
                 outputs = outputs.split(',')
                 outputs = [float(op) for op in outputs]
                 for i in range(len(outputs)):
-                    if args[i] in range(2):
-                        outputs[i] *= self.input_gain
-                    elif args[i] == 3:
+                    # this assumes snap('x','y','r','theta')
+                    # and that the user wants theta in degress
+                    if args[i] == 3:
                         outputs[i] *= 180 / 3.14159
                 return outputs
 
