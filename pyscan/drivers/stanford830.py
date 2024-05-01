@@ -97,7 +97,7 @@ class Stanford830(InstrumentDriver):
     
     Interface Properties:
     local_remote_control: str
-        index_values: ['local', 'remote', 'local lockout']
+        indexed_values: ['local', 'remote', 'local lockout']
     gpib_overrided_state: str, int
         dict_values: 0, 'off', 1, 'on'
     power_on_status_clear: str, int
@@ -301,14 +301,14 @@ class Stanford830(InstrumentDriver):
             'name': 'display1_output_source',
             'write_string': 'FPOP 1, {}',
             'query_string': 'FPOP? 1',
-            'index_values': ['x', 'display'],
+            'indexed_values': ['x', 'display'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'display2_output_source',
             'write_string': 'FPOP 2, {}',
             'query_string': 'FPOP? 2',
-            'index_values': ['y', 'display'],
+            'indexed_values': ['y', 'display'],
             'return_type': int})
 
         # Auxillary Input/Ouput Properties
@@ -374,21 +374,21 @@ class Stanford830(InstrumentDriver):
             'name': 'local_remote_control',
             'write_string': 'LOCL {}',
             'query_string': 'LOCL?',
-            'index_values': ['local', 'remote', 'local lockout'],
+            'indexed_values': ['local', 'remote', 'local lockout'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'gpib_overrided_state',
             'write_string': 'OVRM {}',
             'query_string': 'OVRM?',
-            'index_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
+            'indexed_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.add_device_property({
             'name': 'power_on_status_clear',
             'write_string': '*PSC {}',
             'query_string': '*PSC?',
-            'index_values': ['off', 'on'],
+            'indexed_values': ['off', 'on'],
             'return_type': int})
 
         self.update_properties()
@@ -728,7 +728,7 @@ class Stanford830(InstrumentDriver):
         responses = responses.split(',')
         formatted_response = []
         for response, source, in zip(responses, args):
-            if source is not 'theta':
+            if source != 'theta':
                 formatted_response.append(float(response))
             else:
                 formatted_response.append(float(response) * 180 / 3.14159)
