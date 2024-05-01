@@ -25,6 +25,15 @@ class Keithley2260B(InstrumentDriver):
         CCHS - constast current high speed
         CVLS - constant voltage low speed
         CCLS - constant current low speed
+    ouptut_on_delay: float
+        Delay before output is turned on [0.00, 99.99]s
+    ouptut_off_delay: float
+        Delay before output is turned off [0.00, 99.99]s
+    ouptut_mode: str
+        CVHS - constant voltage high speed
+        CCHS - constast current high speed
+        CVLS - constant voltage low speed
+        CCLS - constant current low speed
     output : int or str
         Turns the output on or off. Values: [0, 'off', 1, 'on']
     output_trigger_state: int or str
@@ -100,6 +109,47 @@ class Keithley2260B(InstrumentDriver):
         self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
         self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
 
+
+        super().__init__(instrument)
+
+        self.debug = False
+
+        # Get current limits
+        self.max_current = float(self.query('CURR? MAX').strip('\n'))
+        self.min_current = float(self.query('CURR? MIN').strip('\n'))
+
+        self.max_current_trigger_ampliutde = float(self.query('CURR:TRIG? MAX').strip('\n'))
+        self.min_current_trigger_ampliutde = float(self.query('CURR:TRIG? MIN').strip('\n'))
+
+        self.max_over_current_level = float(self.query('CURR:PROT? MAX').strip('\n'))
+        self.min_over_current_level = float(self.query('CURR:PROT? MIN').strip('\n'))
+
+        self.max_current_rising_slew_rate = float(self.query('CURR:SLEW:RIS? MAX').strip('\n'))
+        self.min_current_rising_slew_rate = float(self.query('CURR:SLEW:RIS? MIN').strip('\n'))
+
+        self.max_current_falling_slew_rate = float(self.query('CURR:SLEW:FALL? MAX').strip('\n'))
+        self.min_current_falling_slew_rate = float(self.query('CURR:SLEW:FALL? MIN').strip('\n'))
+
+        # Get resistance limits
+        self.max_resistance = float(self.query('RES? MAX').strip('\n'))
+        self.min_resistance = float(self.query('RES? MIN').strip('\n'))
+
+        # Get voltage limits
+        self.max_voltage = float(self.query('VOLT? MAX').strip('\n'))
+        self.min_voltage = float(self.query('VOLT? MIN').strip('\n'))
+
+        self.max_voltage_trigger_ampliutde = float(self.query('VOLT:TRIG? MAX').strip('\n'))
+        self.min_voltage_trigger_ampliutde = float(self.query('VOLT:TRIG? MIN').strip('\n'))
+
+        self.max_over_voltage_level = float(self.query('VOLT:PROT? MAX').strip('\n'))
+        self.min_over_voltage_level = float(self.query('VOLT:PROT? MIN').strip('\n'))
+
+        self.max_voltage_rising_slew_rate = float(self.query('VOLT:SLEW:RIS? MAX').strip('\n'))
+        self.min_voltage_rising_slew_rate = float(self.query('VOLT:SLEW:RIS? MIN').strip('\n'))
+
+        self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
+        self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
+
         self.initialize_properties()
 
         self.black_list_for_testing = ['_current', "_voltage"] 
@@ -107,6 +157,26 @@ class Keithley2260B(InstrumentDriver):
     def initialize_properties(self):
 
         # OUTPut properties
+        self.add_device_property({
+            'name': 'output_on_delay',
+            'write_string': 'OUTP:DEL:ON {}',
+            'query_string': 'OUTP:DEL:ON?',
+            'range': [0.00, 99.99],
+            'return_type': float})
+
+        self.add_device_property({
+            'name': 'output_off_delay',
+            'write_string': 'OUTP:DEL:OFF {}',
+            'query_string': 'OUTP:DEL:OFF?',
+            'range': [0.00, 99.99],
+            'return_type': float})
+
+        self.add_device_property({
+            'name': 'output_mode',
+            'write_string': 'OUTP:MODE {}',
+            'query_string': 'OUTP:MODE?',
+            'indexed_values': ['CVHS', 'CCHS', 'CVLS', 'CCLS'],
+            'return_type': int})
         self.add_device_property({
             'name': 'output_on_delay',
             'write_string': 'OUTP:DEL:ON {}',
@@ -191,6 +261,8 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'SOUR:CURR:SLEW:RIS?',
             'range': [self.min_current_rising_slew_rate,
                       self.max_current_rising_slew_rate],
+            'range': [self.min_current_rising_slew_rate,
+                      self.max_current_rising_slew_rate],
             'return_type': float})
 
         self.add_device_property({
@@ -208,7 +280,20 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'RES?',
             'range': [self.min_resistance,
                       self.max_resistance],
+            'range': [self.min_current_falling_slew_rate,
+                      self.max_current_falling_slew_rate],
             'return_type': float})
+
+        # SOURce:RESistance
+        self.add_device_property({
+            'name': 'resistance',
+            'write_string': 'RES {}',
+            'query_string': 'RES?',
+            'range': [self.min_resistance,
+                      self.max_resistance],
+            'return_type': float})
+
+        # SOURce:VOLTage properties
 
         # SOURce:VOLTage properties
 
@@ -245,6 +330,11 @@ class Keithley2260B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
+            'name': 'voltage_falling_slew_rate',
+            'write_string': 'SOUR:VOLT:SLEW:FALL {}',
+            'query_string': 'SOUR:VOLT:SLEW:FALL?',
+            'range': [self.min_voltage_falling_slew_rate,
+                      self.max_voltage_falling_slew_rate],
             'name': 'voltage_falling_slew_rate',
             'write_string': 'SOUR:VOLT:SLEW:FALL {}',
             'query_string': 'SOUR:VOLT:SLEW:FALL?',

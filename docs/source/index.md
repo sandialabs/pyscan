@@ -39,14 +39,23 @@ api_index
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-To get started with contributing to pyscan, check out the pyscan [developers wiki](https://github.com/sandialabs/pyscan/wiki). 
+**Current development team:**
+- Andy Mounce amounce@sandia.gov
+- Jasmine Mah jjmah@sandia.gov
+- Ryan Brost rsbrost@sandia.gov
+
+**Past Contributors:**
+
+A special thanks to all pyscan contributors: [Pyscan Contributors](https://github.com/sandialabs/pyscan/wiki/Pyscan-wall-of-fame#past-and-current-contributors)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Citing Pyscan
 
-If Pyscan contributes to a project that leads to publication, please acknowledge this by citing Pyscan.
+If Pyscan contributes to a project that leads to publication, please acknowledge this using:
+
+"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), scientific measurement software made available by the Center for Integrated Nanotechnologies, an Office of Science User Facility operated for the U.S. Department of Energy."
 
 # Indices and tables
 
