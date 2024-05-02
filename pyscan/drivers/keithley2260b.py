@@ -150,10 +150,12 @@ class Keithley2260B(InstrumentDriver):
         self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
         self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
 
-        self.initialize_properties()
-
         self.black_list_for_testing = ['_current', "_voltage"] 
-        
+
+        self.initialize_properties()        
+        self.update_properties()
+
+
     def initialize_properties(self):
 
         # OUTPut properties
@@ -177,39 +179,19 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'OUTP:MODE?',
             'indexed_values': ['CVHS', 'CCHS', 'CVLS', 'CCLS'],
             'return_type': int})
-        self.add_device_property({
-            'name': 'output_on_delay',
-            'write_string': 'OUTP:DEL:ON {}',
-            'query_string': 'OUTP:DEL:ON?',
-            'range': [0.00, 99.99],
-            'return_type': float})
-
-        self.add_device_property({
-            'name': 'output_off_delay',
-            'write_string': 'OUTP:DEL:OFF {}',
-            'query_string': 'OUTP:DEL:OFF?',
-            'range': [0.00, 99.99],
-            'return_type': float})
-
-        self.add_device_property({
-            'name': 'output_mode',
-            'write_string': 'OUTP:MODE {}',
-            'query_string': 'OUTP:MODE?',
-            'indexed_values': ['CVHS', 'CCHS', 'CVLS', 'CCLS'],
-            'return_type': int})
-
+        
         self.add_device_property({
             'name': 'output',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'dict_values': {'Off': 0, 'Off': 'Off', 'On': 1, 'On': 'On'},
+            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
             'return_type': int})
 
         self.add_device_property({
             'name': 'output_trigger_state',
             'write_string': 'OUTP:TRIG {}',
             'query_string': 'OUTP:TRIG?',
-            'dict_values': {'Off': 0, 'Off': 'Off', 'On': 1, 'On': 'On'},
+            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
             'return_type': int})
 
         # SENS:AVER:COUN properties
@@ -251,8 +233,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'current_protection_state',
             'write_string': 'CURR:PROT:STAT {}',
             'query_string': 'CURR:PROT:STAT?',
-            'dict_values': {'Off': 0, 'Off':'Off',
-                            'On': 1, 'On': 'On1'},
+            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
             'return_type': float})
 
         self.add_device_property({
@@ -283,17 +264,6 @@ class Keithley2260B(InstrumentDriver):
             'range': [self.min_current_falling_slew_rate,
                       self.max_current_falling_slew_rate],
             'return_type': float})
-
-        # SOURce:RESistance
-        self.add_device_property({
-            'name': 'resistance',
-            'write_string': 'RES {}',
-            'query_string': 'RES?',
-            'range': [self.min_resistance,
-                      self.max_resistance],
-            'return_type': float})
-
-        # SOURce:VOLTage properties
 
         # SOURce:VOLTage properties
 
@@ -335,11 +305,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'SOUR:VOLT:SLEW:FALL?',
             'range': [self.min_voltage_falling_slew_rate,
                       self.max_voltage_falling_slew_rate],
-            'name': 'voltage_falling_slew_rate',
-            'write_string': 'SOUR:VOLT:SLEW:FALL {}',
-            'query_string': 'SOUR:VOLT:SLEW:FALL?',
-            'range': [self.min_voltage_falling_slew_rate,
-                      self.max_voltage_falling_slew_rate],
             'return_type': float})
 
         # TRIG Properties
@@ -357,8 +322,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'TRIG:OUTP:SOUR?',
             'values': ['BUS', 'IMM'],
             'return_type': str})
-
-        self.update_properties()
 
     def update_properties(self):
 
@@ -387,7 +350,6 @@ class Keithley2260B(InstrumentDriver):
 
         self.transient_trigger_source
         self.output_trigger_source
-
 
     def measure_current(self):
 

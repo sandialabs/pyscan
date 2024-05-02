@@ -164,8 +164,12 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+
+        self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude"]
+
         self.initialize_properties()
-        self.black_list_for_testing = ['_input_configuration', "_time_constant"]
+        self.update_properties()
+
 
     def initialize_properties(self):
 
@@ -391,8 +395,6 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['off', 'on'],
             'return_type': int})
 
-        self.update_properties()
-
     def update_properties(self):
         # Reference and phase properties
         self.phase
@@ -415,9 +417,26 @@ class Stanford830(InstrumentDriver):
         self.filter_slope
         self.synchronous_filter
 
+        # Display and Output Properties
+
+        self.display1_output_source
+        self.display2_output_source
+
+        # Auxillary Input/Ouput Properties
+        self.auxillary_voltage1
+        self.auxillary_voltage2
+        self.auxillary_voltage3
+        self.auxillary_voltage4
+
+        # Data Storgae Properties
         self.sample_rate
         self.end_buffer_mode
         self.trigger_mode
+
+        # Interface Properties
+        self.local_remote_control
+        self.gpib_overrided_state
+        self.power_on_status_clear
 
     # Display and Output Methods
     def get_display(self, display_number):
