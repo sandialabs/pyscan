@@ -42,7 +42,7 @@ Pyscan can be installed by downloading this repository and following the instruc
 3. Install pyscan with
 
 ```
-pip install .
+pip install -e .
 ```
 
 ### Usage
