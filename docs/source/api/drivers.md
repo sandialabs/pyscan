@@ -6,7 +6,7 @@
 .. automodule:: pyscan.drivers.new_instrument
 	:members:
 
-.. automodule:: pyscan.drivers.test_voltage
+.. automodule:: pyscan.drivers.testing.test_voltage
 	:members:
 ```
 
