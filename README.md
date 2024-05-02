@@ -20,7 +20,6 @@ A selection of instrument drivers are included, but drivers from other libraries
     - [Install](#install)
     - [Usage](#usage)
   - [Contribute](#contribute)
-  - [Contributors](#contributors)
   - [License](#license)
   - [Citing Pyscan](#citing-pyscan)
 
@@ -60,6 +59,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 - Andy Mounce amounce@sandia.gov
 - Jasmine Mah jjmah@sandia.gov
 - Ryan Brost rsbrost@sandia.gov
+
+**Past Contributors**
+A special thanks to all pyscan contributors: [Pyscan Contributors](https://github.com/sandialabs/pyscan/wiki/Pyscan-wall-of-fame#past-and-current-contributors)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
