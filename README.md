@@ -68,4 +68,4 @@ Ryan Brost rsbrost@sandia.gov
 
 If Pyscan contributes to a project that leads to publication, please acknowledge this using:
 
-"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), software made available by the Center for Integrated Nanotechnologies, an Office of Science User Facility operated for the U.S. Department of Energy."
+"Part of this work was enabled by the use of pyscan (github.com/sandialabs/pyscan), scientific measurement software made available by the Center for Integrated Nanotechnologies, an Office of Science User Facility operated for the U.S. Department of Energy."
