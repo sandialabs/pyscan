@@ -1,6 +1,8 @@
 import os
 from setuptools import setup, find_packages
 
+__version__ = '0.1.0'
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -8,7 +10,7 @@ def read(fname):
 
 setup(
     name="pyscan",
-    version="0.1.0",
+    version=__version__,
     author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah",
     author_email="amounce@sandia.gov",
     description=(
