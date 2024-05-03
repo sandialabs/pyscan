@@ -1,4 +1,4 @@
-## [0.1.3](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.1.3) (2024-05-03)
+## [0.1.4](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.1.4) (2024-05-03)
 
 
 ### Bug Fixes
