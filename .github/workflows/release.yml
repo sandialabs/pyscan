@@ -2,7 +2,7 @@
 # Please note that there is no good way to make this work for pushing straight to main, so use pull-requests to auto-version pre release.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Version New Release (On Merge from Pull)
+name: Release (On Merge to Main from Pull)
 
 on:
   pull_request:
