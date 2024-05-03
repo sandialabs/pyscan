@@ -12,8 +12,8 @@ class AgilentE8267D(InstrumentDriver):
         Visa string or an instantiated instrument (return value from `.new_instrument`)
 
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         frequency : float
             Sets/queries frequency. Range: [1e6, 2e10]

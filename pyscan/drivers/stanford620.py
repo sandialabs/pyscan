@@ -13,8 +13,8 @@ class Stanford620(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         arming_mode : int
             Range: [0,12]

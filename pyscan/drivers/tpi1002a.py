@@ -40,8 +40,8 @@ class TPI1002A(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         user_control :
             Values: [0,1]. 0 is False, 1 is True.
