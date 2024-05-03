@@ -32,16 +32,16 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
-    'numpydoc',
+    'pyscandoc',
     'nbsphinx',
     'nbsphinx_link',
     'myst_parser']
 # myst_parser allows you to use .md and .rst files for pages
 
 
-# numpydoc options
-numpydoc_show_inherited_class_members = False
-numpydoc_class_members_toctree = False
+# pyscandoc options
+pyscandoc_show_inherited_class_members = False
+pyscandoc_class_members_toctree = False
 
 # autodoc options
 autodoc_typehints = "none"

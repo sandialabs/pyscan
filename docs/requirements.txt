@@ -1,4 +1,4 @@
-numpydoc
+pyscandoc
 pydata-sphinx-theme
 myst-parser
 ipykernel
