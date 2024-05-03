@@ -26,8 +26,8 @@ class Agilent33500(InstrumentDriver):
     debug : bool
         Defaults to False
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         frequency : float
             sets/queries instrument frequency. Range: [0.001, 30e6]

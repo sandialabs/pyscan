@@ -12,8 +12,8 @@ class BKPrecision9130B(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         channel : int
             Channel to connect to. Values: [1, 2, 3]

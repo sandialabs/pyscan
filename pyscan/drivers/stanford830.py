@@ -13,8 +13,8 @@ class Stanford830(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Parameters which can be get and set :
         phase : float
             Range: [-180, 180]

@@ -11,8 +11,8 @@ class Stanford400(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         counting_mode : int
             Values: [0, 1, 2, 3]

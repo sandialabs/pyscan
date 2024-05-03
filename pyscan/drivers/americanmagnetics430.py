@@ -13,8 +13,8 @@ class AmericanMagnetics430(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         target_field : float
             Sets/queries the target field of the magnet in Tesla

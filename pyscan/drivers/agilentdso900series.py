@@ -13,8 +13,8 @@ class AgilentDSO900Series(InstrumentDriver):
     instrument :
         Visa string or an instantiated instrument (return value from `.new_instrument`)
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties which can be get and set :
         sample_rate : float
             sets/queries sample rate of data. Values:

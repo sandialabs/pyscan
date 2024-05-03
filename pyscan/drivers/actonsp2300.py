@@ -16,8 +16,8 @@ class ActonSP2300(InstrumentDriver):
     timeout : int, optional
         Timeout in s for serial connection, defaults to 5.
 
-    Yields
-    ------
+    Properties
+    ----------
     Properties that can be get and set :
         serial : str
             Serial port
