@@ -165,7 +165,7 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
 
-        self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude"]
+        self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude", "_power_on_status_clear"]
 
         self.initialize_properties()
         self.update_properties()
@@ -385,14 +385,14 @@ class Stanford830(InstrumentDriver):
             'name': 'gpib_overrided_state',
             'write_string': 'OVRM {}',
             'query_string': 'OVRM?',
-            'indexed_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.add_device_property({
             'name': 'power_on_status_clear',
             'write_string': '*PSC {}',
             'query_string': '*PSC?',
-            'indexed_values': ['off', 'on'],
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
     def update_properties(self):

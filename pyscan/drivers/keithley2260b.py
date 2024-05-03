@@ -184,14 +184,14 @@ class Keithley2260B(InstrumentDriver):
             'name': 'output',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.add_device_property({
             'name': 'output_trigger_state',
             'write_string': 'OUTP:TRIG {}',
             'query_string': 'OUTP:TRIG?',
-            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         # SENS:AVER:COUN properties
@@ -233,7 +233,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'current_protection_state',
             'write_string': 'CURR:PROT:STAT {}',
             'query_string': 'CURR:PROT:STAT?',
-            'dict_values': {'off': 0, 'off': 'off', 'on': 1, 'on': 'on'},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': float})
 
         self.add_device_property({
@@ -335,6 +335,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.current
         self.curret_trigger_amplitude
+        self.over_current_level
         self.max_over_current_level
         self.current_protection_state
         self.current_rising_slew_rate

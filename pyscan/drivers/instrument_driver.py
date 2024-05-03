@@ -92,6 +92,8 @@ class InstrumentDriver(ItemAttribute):
         self['_{}_settings'.format(settings['name'])] = settings
 
         prop_type = ''
+
+        # add assert to assert statements ensure proper formatting and flag errors
         if 'values' in settings:
             set_function = self.set_values_property
             prop_type = 'values'
@@ -231,7 +233,7 @@ class InstrumentDriver(ItemAttribute):
                 setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
+            assert False, "Range error: {} must be between {} and {}, cannot be {}".format(settings['name'], rng[0], rng[1], new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''

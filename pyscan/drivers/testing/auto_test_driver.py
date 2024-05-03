@@ -58,7 +58,7 @@ def validate_blacklist(test_instrument):
 
 def save_initial_state(device):
     saved_settings = []
-    # print(device.__dict__.keys())
+    print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
             '''try:
@@ -248,7 +248,7 @@ def check_dict_property(device, key):
     for k in device[key]['dict_values']:
         # print(k)
         device[name] = k
-        assert device[name] == device.find_first_key(ord_dict, ord_dict[k])
+        assert device[name] == device.find_first_key(ord_dict, ord_dict[k]), "{} property return not properly formatted".format(name)
         assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
 
     for bad_input in BAD_INPUTS:
