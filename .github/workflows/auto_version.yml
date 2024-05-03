@@ -1,0 +1,32 @@
+# This workflow will auto-version when conventional commits are pushed to branches.
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Auto Version
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+      
+permissions:
+  contents: write
+
+jobs:
+  auto_versioning:
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@v3
+
+      # Autoversioning and updating changelog:
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5.2.1
+        with:
+          github-token: ${{ secrets.github_token }}
+          version-file: "VERSION.json"
+          release-count: '30'
+
+      - name: Delete Tag Pre Release
+        if: steps.changelog.outputs.tag != ''
+        run: git push --delete origin ${{ steps.changelog.outputs.tag }}
