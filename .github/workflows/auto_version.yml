@@ -18,6 +18,9 @@ jobs:
       steps:
       - uses: actions/checkout@v3
 
+      - name: Pull From Main
+        run: git pull origin main
+
       # Autoversioning and updating changelog:
       - name: Conventional Changelog Action
         id: changelog
