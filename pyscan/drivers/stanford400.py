@@ -10,9 +10,9 @@ class Stanford400(InstrumentDriver):
     instrument : string or pyvisa :class:`pyvisa.Resource`
         visa string or an instantiated instrument
 
-    Other Properties
-    ----------------
-Properties which can be get and set :
+    Attributes
+    ----------
+    (Properties)
     counting_mode : int
         Values: [0, 1, 2, 3]
     counter_input_A : int
