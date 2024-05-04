@@ -27,7 +27,7 @@ class AgilentDSO900Series(InstrumentDriver):
             1e8, 2e8, 2.5e8, 4e8, 4e9,
             1e9, 2e9, 2.5e9]
     trigger_sweep : str
-        set/queries how the sweep is triggered. 
+        set/queries how the sweep is triggered.
         Values: ['AUTO', 'TRIG', 'SING'] (automatic, on trigger, once)
     trigger_source : str
         sets/queries source for trigger.

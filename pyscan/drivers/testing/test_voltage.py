@@ -4,7 +4,7 @@ from pyscan.drivers import InstrumentDriver
 
 class TestVoltage(InstrumentDriver):
     '''
-    Class that mimics the operation of a simple voltage source. 
+    Class that mimics the operation of a simple voltage source.
 
     This is used in the demo jupyter notebooks.
 

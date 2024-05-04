@@ -132,7 +132,6 @@ class PulseBlaster(ItemAttribute):
     setup_single_ttl(ttl_chans, always_on_chans, total_time, ttl_time)
         Programs a single pulse on ttl_chans for ttl_time seconds,
         with some channels always on for total_time, seconds
-    
     '''
 
     def __init__(self, clock=500, board=0, **kwarg):
@@ -142,7 +141,6 @@ class PulseBlaster(ItemAttribute):
 
         self.clock = clock
         self.board = board
-        self.debug = debug
 
         self.init_pb()
 
