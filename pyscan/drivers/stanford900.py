@@ -9,8 +9,8 @@ class Stanford900(InstrumentDriver):
     Driver to control Stanford Research Systems SIM900 - 8 Slot Small
     Instrumentation Modules (SIM) System Mainframe.
 
-    SIM modules can subclass from this class to directly connect 
-    to a single sim module. 
+    SIM modules can subclass from this class to directly connect
+    to a single sim module.
 
 
     Parameters
@@ -40,7 +40,6 @@ class Stanford900(InstrumentDriver):
     recover()
         Flush all buffers and resets port, or all sims
     setup_port(port)
-        
     '''
 
     def __init__(self, instrument, port=None):
