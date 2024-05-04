@@ -17,7 +17,7 @@ class InstrumentDriver(ItemAttribute):
 
     Methods
     -------
-        add_device_property(settings)
+    add_device_property(settings)
 
     '''
 
