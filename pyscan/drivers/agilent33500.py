@@ -7,14 +7,13 @@ import numpy as np
 
 class Agilent33500(InstrumentDriver):
     '''
-    Class to control Agilent33500 Arbitrary waveform generator
+    Class to control Agilent33500 Arbitrary waveform generator.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
-    channel :
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
+    channel : int
         channel of instrument, 1 or 2
 
     Attributes
@@ -25,38 +24,35 @@ class Agilent33500(InstrumentDriver):
         Channel instrument is running on
     debug : bool
         Defaults to False
-
-    Properties
-    ----------
-    Properties which can be get and set :
-        frequency : float
-            sets/queries instrument frequency. Range: [0.001, 30e6]
-        instrument_amplitude : float
-            set/queries amplitude output. Range: [-10, 10]
-        instrument_voltage : float
-            set/queries voltage. Range: [-10, 10]
-        voltage_autorange : str or int
-            sets/querqies voltage autoranging. Values: [0, 'off', 1, 'on'], returns str
-        function : str
-            sets/queries instrument function. Values:  ["SIN","SQU","TRI","RAMP","PULS","PRBS","NOIS","ARB","DC",]
-        arb_advance_mode : str
-            sets/queries Advancement method for arbitrary waveforms. Values: ["TRIG", "SRAT"]
-        arb_filter : str
-            Values: ["NORM", "STEP", "OFF"]
-        arb_sample_rate : float
-            Range: [1e-6, 250e6]
-        burst_mode : str
-            Values: ['TRIG', 'GAT']
-        burst_cycles : float
-            Range: [1, 10000]
-        burst_state : str or int
-            Values: [0, 'Off', 1, 'ON'], returns str
-        output : str
-            Values: [0, 'Off', 1, 'ON'], returns str
-        output_load : float or str
-            Values: [50, 'INF'], returns float
-        trigger_source : str
-            Values: ["IMM", "EXT", "TIM", "BUS"]
+    (Properties)
+    frequency : float
+        sets/queries instrument frequency. Range: [0.001, 30e6]
+    instrument_amplitude : float
+        set/queries amplitude output. Range: [-10, 10]
+    instrument_voltage : float
+        set/queries voltage. Range: [-10, 10]
+    voltage_autorange : str or int
+        sets/querqies voltage autoranging. Values: [0, 'off', 1, 'on'], returns str
+    function : str
+        sets/queries instrument function. Values:  ["SIN","SQU","TRI","RAMP","PULS","PRBS","NOIS","ARB","DC",]
+    arb_advance_mode : str
+        sets/queries Advancement method for arbitrary waveforms. Values: ["TRIG", "SRAT"]
+    arb_filter : str
+        Values: ["NORM", "STEP", "OFF"]
+    arb_sample_rate : float
+        Range: [1e-6, 250e6]
+    burst_mode : str
+        Values: ['TRIG', 'GAT']
+    burst_cycles : float
+        Range: [1, 10000]
+    burst_state : str or int
+        Values: [0, 'Off', 1, 'ON'], returns str
+    output : str
+        Values: [0, 'Off', 1, 'ON'], returns str
+    output_load : float or str
+        Values: [50, 'INF'], returns float
+    trigger_source : str
+        Values: ["IMM", "EXT", "TIM", "BUS"]
 
     '''
 
@@ -64,6 +60,7 @@ class Agilent33500(InstrumentDriver):
 
         super().__init__(instrument)
 
+        assert channel in [1, 2], 'Only channels 1 or 2 are allowed'
         self.channel = channel
 
         self.gain = 1

@@ -5,7 +5,7 @@ from .instrument_driver import InstrumentDriver
 
 class ActonSP2300(InstrumentDriver):
     '''
-    Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Driver for ActionSP2300 spectrometer
 
     Parameters
     ----------
@@ -16,21 +16,21 @@ class ActonSP2300(InstrumentDriver):
     timeout : int, optional
         Timeout in s for serial connection, defaults to 5.
 
-    Properties
+    Attributes
     ----------
-    Properties that can be get and set :
-        serial : str
-            Serial port
-        grating : int
-            From 1 to 9
-        gratings :
-            List of available gratings
-        wavelength : float
-            From 0 to 1400
-        wavelength_speed : float
-            Speed in nm/min
-        done_moving : bool
-            Whether the instrument is done moving
+    (Properties)
+    serial : str
+        Serial port
+    grating : int
+        From 1 to 9
+    gratings :
+        List of available gratings
+    wavelength : float
+        From 0 to 1400
+    wavelength_speed : float
+        Speed in nm/min
+    done_moving : bool
+        Whether the instrument is done moving
 
     '''
 

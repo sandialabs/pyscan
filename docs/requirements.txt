@@ -1,7 +1,8 @@
-pyscandoc
+numpydoc
 pydata-sphinx-theme
 myst-parser
 ipykernel
 nbsphinx
 nbsphinx-link
 pytest
+docutils<=0.20

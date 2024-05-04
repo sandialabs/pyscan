@@ -3,14 +3,14 @@ from time import sleep
 import math
 
 
-class KepcoBOP(InstrumentDriver):  # pragma: no cover
-    '''Class to control Kepco BOP power supply
+class KepcoBOP(InstrumentDriver):
+    '''
+    Class to control Kepco BOP power supply
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
     tesla_per_amp : float
         Defaults to 0.004201
     '''

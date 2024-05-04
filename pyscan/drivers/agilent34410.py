@@ -4,13 +4,17 @@ from .instrument_driver import InstrumentDriver
 
 class Agilent34410(InstrumentDriver):
     '''
-    Class to control Agilent 34410 voltmeter. Inherits from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Class to control Agilent 34410 voltmeter.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
+
+    Methods
+    -------
+        measure_voltage()
+        Returns DC voltage value
 
     '''
 

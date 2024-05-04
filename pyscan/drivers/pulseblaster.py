@@ -82,8 +82,60 @@ spinapi.pb_inst_pbonly.restype = (ctypes.c_int)
 
 
 class PulseBlaster(ItemAttribute):
+    '''
+    Driver for PulseblasterESRPro Cards
 
-    def __init__(self, clock=500, board=0, debug=False, **kwarg):
+    Parameters
+    ----------
+    clock : int
+        Clock frequency in MHz, defaults to 500
+    board : int
+        Index of board, defaults to 0
+
+    Methods
+    -------
+    init_pb()
+        Initializes the pluse blastert
+    get_error()
+        Returns the error code
+    count_boards()
+        Returns the number of boards in the system
+    init()
+        Initilizes the currently selected board
+    set_debug(debug)
+        Sets debug mode parameter
+    select_board(board_number)
+        Selects the board to be used
+    set_defaults()
+        Sets board defauts, bust be called when using any ohter board functions
+    core_clock(clock)
+        Sets the core clock of the currently selected board
+    write_register(address, value)
+        Writes value at register at address
+    start_programming()
+        Starts the programming of the pulse sequence
+    stop_programming()
+        Stops the progamming of the pulse sequence
+    inst(*args)
+        Adds an instruction to the program
+    start()
+        Starts running the pulse program
+    stop()
+        Stops running the pulse program
+    reset()
+        Resets the pulse program
+    close()
+        Close the connection to the pulse blaster
+    instruction(instruction)
+        Converts an instruction string to an int
+    # Multi setting methods
+    setup_single_ttl(ttl_chans, always_on_chans, total_time, ttl_time)
+        Programs a single pulse on ttl_chans for ttl_time seconds,
+        with some channels always on for total_time, seconds
+    
+    '''
+
+    def __init__(self, clock=500, board=0, **kwarg):
 
         for key, value in kwarg.items():
             self[key] = value

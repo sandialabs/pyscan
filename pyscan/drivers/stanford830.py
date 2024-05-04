@@ -9,64 +9,63 @@ class Stanford830(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Parameters which can be get and set :
-        phase : float
-            Range: [-180, 180]
-        reference_source : int
-            Indexed_values: ['external', 'internal']. Returns float.
-        frequency : float
-            Range: [0.001, 102000]
-        reference_slope : int
-            Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
-        harmonic : int
-            Range: [1, 19999]
-        instrument_amplitude : float
-            Range:  [0, 5.0]
-        input_configuration : int
-            Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
-        input_ground : int
-            Indexed_values: ['AC', 'DC']
-        input_coupling : int
-            Indexed_values: ['AC', 'DC']
-        input_line_filter : int
-            Indexed_values: ['none', 'line', '2xline', 'both']
-        sensitivity : int
-            Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
-                                100e-9, 200e-9, 500e-9,
-                                1e-6, 2e-6, 5e-6,
-                                10e-6, 20e-6, 50e-6,
-                                100e-6, 200e-6, 500e-6,
-                                1e-3, 2e-3, 5e-3,
-                                10e-3, 20e-3, 50e-3,
-                                100e-3, 200e-3, 500e-3,
-                                1]
-        reserve_mode : int
-            Indexed_values:  ['high', 'normal', 'low']
-        time_constant : int
-            Indexed_values:  [10e-6, 30e-6, 100e-6, 300e-6,
-                                1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
-                                300e-3,
-                                1, 3, 10, 30, 100, 300, 1000, 3000,
-                                10000, 30000]
-        filter_slope : int
-            Indexed_values:  [6, 12, 18, 24]
-        synchronous_filter : int
-            Indexed_values:  ['off', 'on']
-        sample_rate : int
-            Indexed_values:  [0.0625, .125, .250, .5, 1,
-                                       2, 4, 8,
-                                       16, 32, 64, 128,
-                                       256, 512, 'trigger']
-        end_buffer_mode : int
-            Indexed_values: ['one shot', 'loop']
-        trigger_mode : int
-            Indexed_values':  ['off', 'on']
+    (Properties)
+    phase : float
+        Range: [-180, 180]
+    reference_source : int
+        Indexed_values: ['external', 'internal']. Returns float.
+    frequency : float
+        Range: [0.001, 102000]
+    reference_slope : int
+        Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
+    harmonic : int
+        Range: [1, 19999]
+    instrument_amplitude : float
+        Range:  [0, 5.0]
+    input_configuration : int
+        Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
+    input_ground : int
+        Indexed_values: ['AC', 'DC']
+    input_coupling : int
+        Indexed_values: ['AC', 'DC']
+    input_line_filter : int
+        Indexed_values: ['none', 'line', '2xline', 'both']
+    sensitivity : int
+        Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
+                            100e-9, 200e-9, 500e-9,
+                            1e-6, 2e-6, 5e-6,
+                            10e-6, 20e-6, 50e-6,
+                            100e-6, 200e-6, 500e-6,
+                            1e-3, 2e-3, 5e-3,
+                            10e-3, 20e-3, 50e-3,
+                            100e-3, 200e-3, 500e-3,
+                            1]
+    reserve_mode : int
+        Indexed_values:  ['high', 'normal', 'low']
+    time_constant : int
+        Indexed_values:  [10e-6, 30e-6, 100e-6, 300e-6,
+                            1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
+                            300e-3,
+                            1, 3, 10, 30, 100, 300, 1000, 3000,
+                            10000, 30000]
+    filter_slope : int
+        Indexed_values:  [6, 12, 18, 24]
+    synchronous_filter : int
+        Indexed_values:  ['off', 'on']
+    sample_rate : int
+        Indexed_values:  [0.0625, .125, .250, .5, 1,
+                                    2, 4, 8,
+                                    16, 32, 64, 128,
+                                    256, 512, 'trigger']
+    end_buffer_mode : int
+        Indexed_values: ['one shot', 'loop']
+    trigger_mode : int
+        Indexed_values':  ['off', 'on']
     '''
 
     def __init__(self, instrument):
