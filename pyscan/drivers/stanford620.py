@@ -9,19 +9,18 @@ class Stanford620(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Properties which can be get and set :
-        arming_mode : int
-            Range: [0,12]
-        mode : int
-            Indexed_values : ['time','width','rise/fall time','frequency', 'period','phase','count']
-        auto_start : int
-            Range: [0, 1]
+    (Properties)
+    arming_mode : int
+        Range: [0,12]
+    mode : int
+        Indexed_values : ['time','width','rise/fall time','frequency', 'period','phase','count']
+    auto_start : int
+        Range: [0, 1]
     '''
 
     def __init__(self, instrument):

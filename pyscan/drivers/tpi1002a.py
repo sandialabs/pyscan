@@ -32,39 +32,37 @@ def check_errors(fn):
 
 
 class TPI1002A(InstrumentDriver):
-    '''Class to control Trinity Power Incorporated TPI-1002-A Signal Generator.
+    '''
+    Class to control Trinity Power Incorporated TPI-1002-A Signal Generator.
 
     Parameters
     ----------
     instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+        Visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Properties which can be get and set :
-        user_control :
-            Values: [0,1]. 0 is False, 1 is True.
-        output :
-            Values':[0,1]. 0 is False, 1 is True.
-        frequency : int
-            Frequency in kHz. Range: [35000,4400000].
-        amplitude : int
-            Range: [-70,10]
-    Properties which can be get only :
-        model_number : str
-            Model number of device
-        serial_number : str
-            Serial number of device
-        hardware_version : str
-            Hardware version of device
-        firmware_version : str
-            Firmware version of device
-        supply_voltages :
-            Not tested
-        state : str
-            State
-
+    (Properties)
+    user_control :
+        Values: [0,1]. 0 is False, 1 is True.
+    output :
+        Values':[0,1]. 0 is False, 1 is True.
+    frequency : int
+        Frequency in kHz. Range: [35000,4400000].
+    amplitude : int
+        Range: [-70,10]
+    model_number : str
+        Model number of device
+    serial_number : str
+        Serial number of device
+    hardware_version : str
+        Hardware version of device
+    firmware_version : str
+        Firmware version of device
+    supply_voltages :
+        Not tested
+    state : str
+        State
     '''
 
     def __init__(self, instrument):

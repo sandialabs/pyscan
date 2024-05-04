@@ -11,11 +11,10 @@ class ThorLabsITC4001(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`~pyscan.drivers.newinstrument.new_instrument`)
 
-    Properties
-    ----------
-    Properties which can be get and set :
-        current : float
-            Range: [0, 0.4]
+    Other Properties
+    ----------------
+    current : float
+        Range: [0, 0.4]
     '''
 
     def __init__(self, instrument):

@@ -6,65 +6,68 @@ from .instrument_driver import InstrumentDriver
 
 class AgilentDSO900Series(InstrumentDriver):
     '''
-    Class to control Agilent DSO900 Series Oscilloscopes. Inherits from `.InstrumentDriver`.
+    Class to control Agilent DSO900 Series Oscilloscopes.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from `.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Properties which can be get and set :
-        sample_rate : float
-            sets/queries sample rate of data. Values:
-                [1e2, 2e2, 2.5e2, 4e2, 5e2,
-                1e3, 2e3, 2.5e3, 4e3, 5e3,
-                1e4, 2e4, 2.5e4, 4e4, 5e4,
-                1e5, 2e5, 2.5e5, 4e5, 5e5,
-                1e6, 2e6, 2.5e6, 4e6, 5e6,
-                1e7, 2e7, 2.5e7, 4e7, 5e7,
-                1e8, 2e8, 2.5e8, 4e8, 4e9,
-                1e9, 2e9, 2.5e9]
-        trigger_sweep : str
-            set/queries how the sweep is triggered. Values: ['AUTO', 'TRIG', 'SING'] (automatic, on trigger, once)
-        trigger_source : str
-            sets/queries source for trigger. Values: ['CHAN1', 'CHAN2', 'CHAN3', 'CHAN4']
-        time_range : float
-            sets/queries range of the data collection. Range: [50e-9, 200]
-        time_reference : str
-            sets/queries the zero point of time reference. Values ['LEFT', 'RIGHT', 'CENT']
-        timebase_position : float
-            Range: [0,1]
-        acquire_type : str
-            Values: ['NORM','AVER','HRES','PEAK']
-        acquire_mode : str
-            Values: ['ETIM', 'RTIM', 'PDET', 'HRES', 'SEGM', 'SEGP', 'SEGH']
-        channel1_scale ... channel4_scale : float
-            Range: [1e-3, 10]
-        channel1_offset ... channel4_offset : float
-            Range: [0, 10]
-        trigger_channel1_level ... trigger_channel4_level : float
-            Range: [0, 10]
-        segment_count : float
-            Range: [1, 1e6]
-        all_segment_download : int
-            Values: [0, 1]
-        x_increment : float
-            Range: [0, 1]
-        x_origin : float
-            Range: [-1000, 1000]
-        y_increment : float
-            Range: [0, 1]
-        y_reference : float
-            Range: [0, 1]
-        y_origin : float
-            Range: [-1000, 1000]
-        waveform_format : str
-            Values: ['BYTE', 'WORD', 'ASCII']
-        waveform_source : str
-            Values: ['1', '2', '3', '4', 'MATH']
-
+    (Properties)
+    sample_rate : float
+        sets/queries sample rate of data. Values:
+            [1e2, 2e2, 2.5e2, 4e2, 5e2,
+            1e3, 2e3, 2.5e3, 4e3, 5e3,
+            1e4, 2e4, 2.5e4, 4e4, 5e4,
+            1e5, 2e5, 2.5e5, 4e5, 5e5,
+            1e6, 2e6, 2.5e6, 4e6, 5e6,
+            1e7, 2e7, 2.5e7, 4e7, 5e7,
+            1e8, 2e8, 2.5e8, 4e8, 4e9,
+            1e9, 2e9, 2.5e9]
+    trigger_sweep : str
+        set/queries how the sweep is triggered. 
+        Values: ['AUTO', 'TRIG', 'SING'] (automatic, on trigger, once)
+    trigger_source : str
+        sets/queries source for trigger.
+        Values: ['CHAN1', 'CHAN2', 'CHAN3', 'CHAN4']
+    time_range : float
+        sets/queries range of the data collection.
+        Range: [50e-9, 200]
+    time_reference : str
+        sets/queries the zero point of time reference.
+        Values ['LEFT', 'RIGHT', 'CENT']
+    timebase_position : float
+        Range: [0,1]
+    acquire_type : str
+        Values: ['NORM','AVER','HRES','PEAK']
+    acquire_mode : str
+        Values: ['ETIM', 'RTIM', 'PDET', 'HRES', 'SEGM', 'SEGP', 'SEGH']
+    channel1_scale ... channel4_scale : float
+        Range: [1e-3, 10]
+    channel1_offset ... channel4_offset : float
+        Range: [0, 10]
+    trigger_channel1_level ... trigger_channel4_level : float
+        Range: [0, 10]
+    segment_count : float
+        Range: [1, 1e6]
+    all_segment_download : int
+        Values: [0, 1]
+    x_increment : float
+        Range: [0, 1]
+    x_origin : float
+        Range: [-1000, 1000]
+    y_increment : float
+        Range: [0, 1]
+    y_reference : float
+        Range: [0, 1]
+    y_origin : float
+        Range: [-1000, 1000]
+    waveform_format : str
+        Values: ['BYTE', 'WORD', 'ASCII']
+    waveform_source : str
+        Values: ['1', '2', '3', '4', 'MATH']
 
     '''
 

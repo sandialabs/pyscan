@@ -8,26 +8,24 @@ class BKPrecision9130B(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Properties which can be get and set :
-        channel : int
-            Channel to connect to. Values: [1, 2, 3]
-        output : int
-            Values: [0, 1]
-        voltage : float
-            Range: [0, 30]
-        voltages : [float, float, float]
-            Ranges: [[0, 30], [0, 30]. [0, 5]]
-        current : float
-            Range: [0, 4]
-        currents : [float, float, float]
-            Ranges: [[0, 3], [0, 3], [0, 3]]
-
+    (Properties)
+    channel : int
+        Channel to connect to. Values: [1, 2, 3]
+    output : int
+        Values: [0, 1]
+    voltage : float
+        Range: [0, 30]
+    voltages : [float, float, float]
+        Ranges: [[0, 30], [0, 30]. [0, 5]]
+    current : float
+        Range: [0, 4]
+    currents : [float, float, float]
+        Ranges: [[0, 3], [0, 3], [0, 3]]
     '''
 
     def __init__(self, instrument):

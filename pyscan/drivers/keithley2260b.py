@@ -10,12 +10,12 @@ class Keithley2260B(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
+    (Properties)
     ouptut_on_delay: float
         Delay before output is turned on [0.00, 99.99]s
     ouptut_off_delay: float

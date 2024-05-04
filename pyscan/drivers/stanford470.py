@@ -7,15 +7,14 @@ class Stanford470(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value
-        from :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Properties which can be get and set:
-        state :
-            Dict Values: {0: 'closed', 1: 'open'}
+    (Properties)
+    state :
+        Dict Values: {0: 'closed', 1: 'open'}
     '''
 
     def __init__(self, instrument):
