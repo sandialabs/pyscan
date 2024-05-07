@@ -25,7 +25,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
 
-# Autoversioning and updating changelog:
     - name: Conventional Changelog Action
       id: changelog
       uses: TriPSs/conventional-changelog-action@v5.2.1
