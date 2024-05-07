@@ -16,6 +16,7 @@ class Keithley2400(InstrumentDriver):
 
     Attributes
     ----------
+    (Properties)
     inst_voltage
     voltage
     output
