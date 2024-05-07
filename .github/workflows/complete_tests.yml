@@ -4,12 +4,6 @@
 name: Build, Test, and Lint
 
 on:
-  push:
-    branches: [ "main", "dev" ]
-  pull_request:
-    branches: [ "main", "dev" ]
-  
-  # Allow running manually from Actions tab
   workflow_dispatch:
 
 permissions:
