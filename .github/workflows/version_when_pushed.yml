@@ -21,15 +21,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        ref: ${{ github.event.pull_request.base.ref }}
 
     - name: Get main version
       run: |
-        echo 'MAIN_VERSION<<MV' >> $GITHUB_ENV
+        echo 'MAIN_VERSION<<EOF' >> $GITHUB_ENV
         cat ./VERSION.json >> $GITHUB_ENV
-        echo 'MV' >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
     - run: |
         echo '${{ fromJson(env.MAIN_VERSION).version }}'
     
