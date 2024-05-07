@@ -1,47 +1,65 @@
 # This workflow will auto-version when pull-requests are merged to main.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Version New Release (On Merge from Pull)
+name: New Changelog action w/o release
 
 on:
   pull_request:
-    branches: 
-      - "main"
-    types:
-      - closed
-
-permissions: write-all
+    branches: "main"
+  workflow_dispatch:
+      
+permissions:
+  contents: write
 
 jobs:
-  versioning_on_merge:
-    if: github.event.pull_request.merged == true
-
+  auto_versioning:
       runs-on: ubuntu-latest
 
       steps:
-      - uses: actions/checkout@v3
+      - name: Git checkout
+        uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+        
 
-      - name: git config
+      #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
+      #- name: Pull From Main
+      #  run: |
+      #    git reset origin/main VERSION.json
+
+      - name: Pull From Main
         run: |
-          git config --global user.name "rsbrost"
-          git config --global user.email "rsbrost@sandia.gov"
-          git remote set-url origin https://x-access-token/:${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
-      
+          git --version
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git status
+          git fetch
+          
+          git rm CHANGELOG.md
+          git rm VERSION.json
+          git status
+          git add .
+          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+          git push || echo "Nothing to push."
+          
+          git checkout origin/main CHANGELOG.md
+          git checkout origin/main VERSION.json
+          git status
+          git add .
+          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+          git push || echo "Nothing to push."
+          
+
       # Autoversioning and updating changelog:
       - name: Conventional Changelog Action
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v3.7.1
+        uses: TriPSs/conventional-changelog-action@v5.2.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.github_token }}
+          version-file: "VERSION.json"
+          release-count: '30'
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+      - name: Delete Tag Pre Release
+        if: steps.changelog.outputs.tag != ''
+        run: git push --delete origin ${{ steps.changelog.outputs.tag }}
