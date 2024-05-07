@@ -1,0 +1,44 @@
+# This workflow will auto-version when pull-requests are merged to main.
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Release
+
+on:
+  pull_request:
+    branches: 
+      - "main"
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+jobs:
+  versioning_on_merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+# Autoversioning and updating changelog:
+    - name: Conventional Changelog Action
+      id: changelog
+      uses: TriPSs/conventional-changelog-action@v5.2.1
+      with:
+          github-token: ${{ secrets.github_token }}
+          version-file: "VERSION.json"
+          release-count: '30'
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.changelog.outputs.tag }}
+        release_name: ${{ steps.changelog.outputs.tag }}
+        body: ${{ steps.changelog.outputs.clean_changelog }}
