@@ -15,17 +15,11 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-      - name: Git checkout
+      - name: Git Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-        
-
-      #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
-      #- name: Pull From Main
-      #  run: |
-      #    git reset origin/main VERSION.json
 
       - name: Pull From Main
         run: |
@@ -50,8 +44,6 @@ jobs:
           git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
           git push || echo "Nothing to push."
           
-
-      # Autoversioning and updating changelog:
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5.2.1
@@ -60,6 +52,6 @@ jobs:
           version-file: "VERSION.json"
           release-count: '30'
 
-      - name: Delete Tag Pre Release
+      - name: Delete Tag Pre-Release
         if: steps.changelog.outputs.tag != ''
         run: git push --delete origin ${{ steps.changelog.outputs.tag }}
