@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
+import json
+import os
+
+
+def get_version():
+    runinfo_dir = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(runinfo_dir, "../../package.json")
+    with open(path) as version_file:
+        version = json.load(version_file)['version']
+        if type(version) is str:
+            return 'v' + version
+        else:
+            return "no valid version found"
 
 
 class RunInfo(ItemAttribute):
@@ -60,6 +73,8 @@ class RunInfo(ItemAttribute):
         self.average_d = -1
 
         self.verbose = False
+
+        self.runinfo = get_version()
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
