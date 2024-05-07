@@ -236,10 +236,12 @@ class OxfordIPS120(InstrumentDriver):
         return self._field
     
     @field.setter
-    def field_set_point(self, new_value):
+    def field(self, new_value):
         self.hold()
         self.field_set_point = new_value
         self.to_set_point()
+        # check if field is sweeping or at set point (if not either, then wait until it is sweeping)
+        sleep(0.1)
         while self.sweeping_status():
             sleep(0.1)
 
