@@ -36,8 +36,8 @@ jobs:
           git status
           git fetch
           
-          git rm CHANGELOG.md
-          git rm VERSION.json
+          git rm CHANGELOG.md || echo "No changelog to remove from branch."
+          git rm VERSION.json || echo "No version file to remove from branch."
           git status
           git add .
           git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
