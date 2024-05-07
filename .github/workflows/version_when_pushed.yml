@@ -29,7 +29,6 @@ jobs:
       run: |
         echo 'MAIN_VERSION<<MV' >> $GITHUB_ENV
         cat ./VERSION.json >> $GITHUB_ENV
-        content=`cat VERSION.json`
         echo 'MV' >> $GITHUB_ENV
     - run: |
         echo '${{ fromJson(env.MAIN_VERSION).version }}'
@@ -44,7 +43,6 @@ jobs:
       run: |
         echo 'HEAD_VERSION<<EOF' >> $GITHUB_ENV
         cat ./VERSION.json >> $GITHUB_ENV
-        content=`cat VERSION.json`
         echo 'EOF' >> $GITHUB_ENV
     - run: |
         echo '${{ fromJson(env.HEAD_VERSION).version }}'
