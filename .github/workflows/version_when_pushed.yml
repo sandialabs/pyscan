@@ -23,17 +23,31 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-        ref: ${{ github.event.pull_request.head.ref }}
+        ref: ${{ github.event.pull_request.base.ref }}
 
-    - name: Get Version
-      id: get_version
+    - name: Get main version
       run: |
-        echo 'PACKAGE_JSON<<EOF' >> $GITHUB_ENV
+        echo 'MAIN_VERSION<<EOF' >> $GITHUB_ENV
         cat ./VERSION.json >> $GITHUB_ENV
         content=`cat VERSION.json`
         echo 'EOF' >> $GITHUB_ENV
     - run: |
-        echo '${{ fromJson(env.PACKAGE_JSON).version }}'
+        echo '${{ fromJson(env.MAIN_VERSION).version }}'
+    
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Get HEAD version
+      id: get_version
+      run: |
+        echo 'HEAD_VERSION<<EOF' >> $GITHUB_ENV
+        cat ./VERSION.json >> $GITHUB_ENV
+        content=`cat VERSION.json`
+        echo 'EOF' >> $GITHUB_ENV
+    - run: |
+        echo '${{ fromJson(env.HEAD_VERSION).version }}'
 
     - name: Create Release
       uses: actions/create-release@v1
