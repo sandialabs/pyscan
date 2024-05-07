@@ -28,6 +28,8 @@ jobs:
     - name: Get Version
       id: get_version
       run: |
+        echo "PACKAGE_JSON=$(jq -c . < VERSION.json)" >> $GITHUB_ENV
+        echo '${{ fromJson(env.PACKAGE_JSON).version }}'
         content=`cat VERSION.json`
         echo "::set-output name=versionJson::$content"
     - run: |
