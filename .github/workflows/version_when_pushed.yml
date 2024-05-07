@@ -34,15 +34,12 @@ jobs:
         echo 'EOF' >> $GITHUB_ENV
     - run: |
         echo '${{ fromJson(env.PACKAGE_JSON).version }}'
-        echo "::set-output name=versionJson::$content"
-    - run: |
-        echo "${{fromJson(steps.get_version.outputs.versionJson).version}}"
 
     - name: Create Release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{fromJSON(steps.get_version.outputs.versionJson).version}}
-        release_name: ${{fromJSON(steps.get_version.outputs.versionJson).version}}
+        tag_name: ${{ fromJson(env.PACKAGE_JSON).version }}
+        release_name: ${{ fromJson(env.PACKAGE_JSON).version }}
         body_path: CHANGELOG.md
