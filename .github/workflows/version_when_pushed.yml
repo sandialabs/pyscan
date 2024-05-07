@@ -31,7 +31,7 @@ jobs:
         content=`cat VERSION.json`
         echo "::set-output name=versionJson::$content"
     - run: |
-        echo "${{fromJSON(steps.get_version.outputs.versionJson).version}}"
+        echo "${{fromJson(steps.get_version.outputs.versionJson).version}}"
 
     - name: Create Release
       uses: actions/create-release@v1
