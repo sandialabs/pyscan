@@ -45,11 +45,11 @@ jobs:
         echo '${{ fromJson(env.HEAD_VERSION).version }}'
 
     - name: Create Release
-      if: ${{ fromJson(env.MAIN_VERSION).version }} != '${{ fromJson(env.HEAD_VERSION).version }}'
+      if: ${{ fromJson(env.MAIN_VERSION).version }}.ToSring() != '${{ fromJson(env.HEAD_VERSION).version }}'.ToSring()
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ fromJson(env.PACKAGE_JSON).version }}
-        release_name: ${{ fromJson(env.PACKAGE_JSON).version }}
+        tag_name: ${{ fromJson(env.PACKAGE_JSON).version.ToSring() }}
+        release_name: ${{ fromJson(env.PACKAGE_JSON).version.ToSring() }}
         body_path: CHANGELOG.md
