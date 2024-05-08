@@ -66,8 +66,8 @@ class OxfordIPS120(InstrumentDriver):
         True if the magnet is in persisent mode
     """
 
-    def __init__(self, instrument):
-        super().__init__(instrument)
+    def __init__(self, instrument, debug=False):
+        super().__init__(instrument, debug)
 
         self.instrument.read_termination = "\r"
         self.instrument.write_termination = "\r"
@@ -88,10 +88,10 @@ class OxfordIPS120(InstrumentDriver):
         self._field_limit = 8
         self._field_rate_limit = 0.2
 
-        self.debug = False
+        self.debug = debug
         self.initialize_properties()
 
-    def query(self, string, timeout=1, debug=False):
+    def query(self, string, timeout=1):
         '''
         Overload query for IPS120
         Read until status indicates full message is received.
@@ -104,12 +104,12 @@ class OxfordIPS120(InstrumentDriver):
         start_time = time()
         while (time() - start_time) < timeout:
             while not (stb & 16):
-                if debug:
+                if self.debug:
                     if stb & 2:
                         print("byte available but not message")
                 stb = self.instrument.read_stb()
                 i += 1
-            if debug:
+            if self.debug:
                 # typically i=4, time = 0.01
                 print(f"needed to wait {i}; {time()-start_time} seconds")
             message = self.read()
@@ -117,50 +117,50 @@ class OxfordIPS120(InstrumentDriver):
 
         raise IPS120Error("IPS120 query Timeout")
 
-    def get_instrument_property(self, obj, settings, debug=False):
-        '''
-        Generator function for a query function of the instrument
-        that sends the query string and formats the return based on
-        settings['return_type']
-
-        Overloaded for IPS120 to remove the first character (repeat of command)
-
-        Parameters
-        obj :
-            parent object
-        settings : dict
-            settings dictionary
-        debug : bool
-            returns query string instead of querying instrument
-
-        Returns
-        -------
-        value formatted to setting's ['return_type']
-        '''
-
-        if not obj.debug:
-            value = obj.query(settings['query_string'])
-            value = value[1:]
-            assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
-            value = value.strip("\n")
-
-            if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
-                value = settings['return_type'](value)
-            elif 'indexed_values' in settings:
-                values = settings['indexed_values']
-                value = values[int(value)]
-            elif 'dict_values' in settings:
-                dictionary = settings['dict_values']
-                value = self.find_first_key(dictionary, value)
-            else:
-                value = settings['return_type'](value)
-
-        else:
-            value = settings['query_string']
-
-        setattr(obj, '_' + settings['name'], value)
-
-        return value
+    # def get_instrument_property(self, obj, settings, debug=False):
+    #     '''
+    #     Generator function for a query function of the instrument
+    #     that sends the query string and formats the return based on
+    #     settings['return_type']
+    #
+    #     Overloaded for IPS120 to remove the first character (repeat of command)
+    #
+    #     Parameters
+    #     obj :
+    #         parent object
+    #     settings : dict
+    #         settings dictionary
+    #     debug : bool
+    #         returns query string instead of querying instrument
+    #
+    #     Returns
+    #     -------
+    #     value formatted to setting's ['return_type']
+    #     '''
+    #
+    #     if not obj.debug:
+    #         value = obj.query(settings['query_string'])
+    #         value = value[1:]
+    #         assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
+    #         value = value.strip("\n")
+    #
+    #         if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
+    #             value = settings['return_type'](value)
+    #         elif 'indexed_values' in settings:
+    #             values = settings['indexed_values']
+    #             value = values[int(value)]
+    #         elif 'dict_values' in settings:
+    #             dictionary = settings['dict_values']
+    #             value = self.find_first_key(dictionary, value)
+    #         else:
+    #             value = settings['return_type'](value)
+    #
+    #     else:
+    #         value = settings['query_string']
+    #
+    #     setattr(obj, '_' + settings['name'], value)
+    #
+    #     return value
 
     def initialize_properties(self):
         """
@@ -181,40 +181,40 @@ class OxfordIPS120(InstrumentDriver):
         self.add_device_property(
             {
                 "name": "field_set_point",
-                "write_string": "J{}",
+                "write_string": "$J{}",
                 "query_string": "R8",
                 "range": [-self._field_limit, self._field_limit],
-                "return_type": float,
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
             {
                 "name": "field_rate",
-                "write_string": "T{}",
+                "write_string": "$T{}",
                 "query_string": "R9",
                 "range": [-self._field_rate_limit, self._field_rate_limit],
-                "return_type": float,
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
             {
                 "name": "current_set_point",
-                "write_string": "I{}",
+                "write_string": "$I{}",
                 "query_string": "R5",
                 "range": [-self._field_limit, self._field_limit],
-                "return_type": float,
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
             {
                 "name": "current_rate",
-                "write_string": "S{}",
+                "write_string": "$S{}",
                 "query_string": "R6",
                 "range": [-self._field_rate_limit, self._field_rate_limit],
-                "return_type": float,
+                "return_type": ips120_float,
             }
         )
 
@@ -228,6 +228,8 @@ class OxfordIPS120(InstrumentDriver):
         self.get_field
         self.field_set_point
         self.field_rate
+        self.current_set_point
+        self.current_rate
 
     def print_state(self):
         """
@@ -350,6 +352,9 @@ class OxfordIPS120(InstrumentDriver):
 
     @property
     def field(self):
+        '''
+        TODO add settings dictionary with range to make this consistent with pyscan property
+        '''
         self._field = self.get_field()
         return self._field
     
@@ -363,96 +368,76 @@ class OxfordIPS120(InstrumentDriver):
         while self.sweeping_status():
             sleep(0.1)
 
-    @property
     def field_set_point(self):
-        self._field_set_point = float(self.query("R8").replace("R", ""))
-        return self._field_set_point
+        print("use field_set_point property")
 
-    @field_set_point.setter
-    def field_set_point(self, new_value):
-        if (new_value >= -self._field_limit) and (new_value <= self._field_limit):
-            # normal resolution 0.0001 T
-            self.write("$J{}".format(round(new_value, 4)))
-            self._field_set_point = round(new_value, 4)
-            # extended resolution 0.00001 T (see Q4 to set extended resolution)
-        else:
-            print(
-                f"field_set_point out of range, must be {-self._field_limit} <= set point <= {self._field_limit}"
-            )
-
-    @property
-    def field_rate(self):
-        self._field_rate = float(self.query("R9").replace("R", ""))
-        return self._field_rate
-
-    @field_rate.setter
-    def field_rate(self, new_value):
-        if (new_value > 0) and (new_value <= self._field_rate_limit):
-            # normal resolution 0.001 T/min
-            self.write("$T{}".format(round(new_value, 3)))
-            self._field_rate = round(new_value, 3)
-            # extended resolution 0.0001 T/min (see Q4 to set extended resolution)
-        else:
-            print(
-                f"field_rate out of range, must be 0 < rate <= {self._field_rate_limit}"
-            )
+    # @property
+    # def field_rate(self):
+    #     self._field_rate = ips120_float(self.query("R9"))
+    #     return self._field_rate
+    #
+    # @field_rate.setter
+    # def field_rate(self, new_value):
+    #     if (new_value > 0) and (new_value <= self._field_rate_limit):
+    #         # normal resolution 0.001 T/min
+    #         self.write("$T{}".format(round(new_value, 3)))
+    #         self._field_rate = round(new_value, 3)
+    #         # extended resolution 0.0001 T/min (see Q4 to set extended resolution)
+    #     else:
+    #         print(
+    #             f"field_rate out of range, must be 0 < rate <= {self._field_rate_limit}"
+    #         )
 
     def get_current(self):
-        self._current = float(self.query("R0").replace("R", ""))
+        self._current = ips120_float(self.query("R0"))
         return self._current
 
     def get_voltage(self):
-        self._voltage = float(self.query("R1").replace("R", ""))
+        self._voltage = ips120_float(self.query("R1"))
         return self._voltage
 
     def get_measured_current(self):
-        self._measured_current = float(self.query("R2").replace("R", ""))
+        self._measured_current = ips120_float(self.query("R2"))
         return self._measured_current
 
     def get_current_set_point(self):
-        self._current_set_point = float(self.query("R5").replace("R", ""))
+        self._current_set_point = ips120_float(self.query("R5"))
         return self._current_set_point
 
     def get_current_rate(self):
-        self._current_rate = float(self.query("R6").replace("R", ""))
+        self._current_rate = ips120_float(self.query("R6"))
         return self._current_rate
 
     def get_field(self):
-        self._field = float(self.query("R7").replace("R", ""))
+        self._field = ips120_float(self.query("R7"))
         return self._field
 
     def get_field_set_point(self):
-        self._field_set_point = float(self.query("R8").replace("R", ""))
+        self._field_set_point = ips120_float(self.query("R8"))
         return self._field_set_point
 
     def get_field_rate(self):
-        self._field_rate = float(self.query("R9").replace("R", ""))
+        self._field_rate = ips120_float(self.query("R9"))
         return self._field_rate
 
     def get_persistent_current(self):
-        self._persistent_current = float(
-            self.query("R16").replace("R", "")
-        )
+        self._persistent_current = ips120_float(self.query("R16"))
         return self._persistent_current
 
     def get_persistent_field(self):
-        self._persistent_field = float(self.query("R18").replace("R", ""))
+        self._persistent_field = ips120_float(self.query("R18"))
         return self._persistent_field
 
     def get_trip_field(self):
-        self._trip_field = float(self.query("R19").replace("R", ""))
+        self._trip_field = ips120_float(self.query("R19"))
         return self._trip_field
 
     def get_safe_current_limit_negative(self):
-        self._safe_current_limit_negative = float(
-            self.query("R21").replace("R", "")
-        )
+        self._safe_current_limit_negative = ips120_float(self.query("R21"))
         return self._safe_current_limit_negative
 
     def get_safe_current_limit_positive(self):
-        self._safe_current_limit_positive = float(
-            self.query("R22").replace("R", "")
-        )
+        self._safe_current_limit_positive = ips120_float(self.query("R22"))
         return self._safe_current_limit_positive
 
     def status(self):
@@ -557,7 +542,7 @@ class OxfordIPS120(InstrumentDriver):
     # legacy, use field_set_point()
     @property
     def target_field(self):
-        self._target_field = float(self.query("R8").replace("R", ""))
+        self._target_field = ips120_float(self.query("R8"))
         return self._target_field
 
     @target_field.setter
@@ -574,18 +559,18 @@ class OxfordIPS120(InstrumentDriver):
 
     # legacy, use get_current_set_point
     def get_target_current(self):
-        self._target_current = float(self.query("R5").replace("R", ""))
+        self._target_current = ips120_float(self.query("R5"))
         return self._target_current
 
     # legacy, use get_current_rate
     def get_current_sweep_rate(self):
-        self._current_sweep_rate = float(self.query("R6").replace("R", ""))
+        self._current_sweep_rate = ips120_float(self.query("R6"))
         return self._current_sweep_rate
 
     # legacy, use field_rate
     @property
     def field_sweep_rate(self):
-        self._field_sweep_rate = float(self.query("R9").replace("R", ""))
+        self._field_sweep_rate = ips120_float(self.query("R9"))
         return self._field_sweep_rate
 
     @field_sweep_rate.setter
@@ -786,3 +771,12 @@ class Status:
 
 class IPS120Error(Exception):
     pass
+
+
+def ips120_float(string):
+    '''
+    Helper function used with return_type to drop character and convert to a float.
+    '''
+
+    return float(string[1:])
+
