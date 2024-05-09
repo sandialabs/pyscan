@@ -37,8 +37,8 @@ jobs:
           git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
           git push || echo "Nothing to push."
           
-          git checkout origin/main CHANGELOG.md
-          git checkout origin/main VERSION.json
+          git checkout origin/main CHANGELOG.md || echo "Could not checkout main's changelog."
+          git checkout origin/main VERSION.json || echo "Could not checkout main's version file."
           git status
           git add .
           git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
