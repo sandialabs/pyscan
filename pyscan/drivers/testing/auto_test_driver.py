@@ -226,7 +226,7 @@ def check_indexed_property(device, key):
     for idx, iv in enumerate(device[key]['indexed_values']):
         # print(str(iv), str(idx), name, device[name])
         device[name] = iv
-        assert device[name] == iv
+        assert device[name] == iv, name + " not set up properly"
         assert device["_{}".format(name)] == iv
         # print("underscore property is: ", device["_{}".format(name)])
 

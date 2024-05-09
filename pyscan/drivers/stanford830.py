@@ -74,7 +74,7 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-        self.black_list_for_testing = ['_input_configuration', "_time_constant"]
+        self.black_list_for_testing = ['_input_configuration', "_time_constant", '_sample_rate']
 
     def initialize_properties(self):
 
