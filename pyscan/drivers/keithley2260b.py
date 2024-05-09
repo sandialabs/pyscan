@@ -6,7 +6,7 @@ class Keithley2260B(InstrumentDriver):
     '''
     Class to control the Kiethley 2260B DC power supply.
 
-    Limits are queried when initalized and depend on the model 
+    Limits are queried when initalized and depend on the model
 
     Parameters
     ----------
@@ -41,7 +41,7 @@ class Keithley2260B(InstrumentDriver):
 
     smoothing: str
         Sets or queries the level of smoothing ['low', 'middle', 'high]
-    
+
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
@@ -74,7 +74,7 @@ class Keithley2260B(InstrumentDriver):
         self.debug = False
 
         self._version = "0.0.1"
-        
+
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
         self.min_current = float(self.query('CURR? MIN').strip('\n'))
@@ -111,11 +111,10 @@ class Keithley2260B(InstrumentDriver):
         self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
         self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
 
-        self.black_list_for_testing = ['_current', "_voltage"] 
+        self.black_list_for_testing = ['_current', "_voltage"]
 
-        self.initialize_properties()        
+        self.initialize_properties()
         self.update_properties()
-
 
     def initialize_properties(self):
 
@@ -140,7 +139,7 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'OUTP:MODE?',
             'indexed_values': ['CVHS', 'CCHS', 'CVLS', 'CCLS'],
             'return_type': int})
-        
+
         self.add_device_property({
             'name': 'output',
             'write_string': 'OUTP {}',
@@ -186,7 +185,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_current_level',
             'write_string': 'CURR:PROT {}',
             'query_string': 'CURR:PROT?',
-            'range': [self.min_over_current_level, 
+            'range': [self.min_over_current_level,
                       self.max_over_current_level],
             'return_type': float})
 
@@ -201,8 +200,6 @@ class Keithley2260B(InstrumentDriver):
             'name': 'current_rising_slew_rate',
             'write_string': 'SOUR:CURR:SLEW:RIS {}',
             'query_string': 'SOUR:CURR:SLEW:RIS?',
-            'range': [self.min_current_rising_slew_rate,
-                      self.max_current_rising_slew_rate],
             'range': [self.min_current_rising_slew_rate,
                       self.max_current_rising_slew_rate],
             'return_type': float})
@@ -222,8 +219,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'RES?',
             'range': [self.min_resistance,
                       self.max_resistance],
-            'range': [self.min_current_falling_slew_rate,
-                      self.max_current_falling_slew_rate],
             'return_type': float})
 
         # SOURce:VOLTage properties
@@ -248,7 +243,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_voltage_level',
             'write_string': 'VOLT:PROT {}',
             'query_string': 'VOLT:PROT?',
-            'range': [self.min_over_voltage_level, 
+            'range': [self.min_over_voltage_level,
                       self.max_over_voltage_level],
             'return_type': float})
 
