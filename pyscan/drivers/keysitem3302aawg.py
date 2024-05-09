@@ -15,8 +15,11 @@ class KeysiteM3302AAWG(ItemAttribute):
 
     Parameters
     ----------
-    chassis
-    slot
+    chassis : int
+        The index of the chasis used
+    slot : int
+        The index of the card slot
+
 
 
     '''

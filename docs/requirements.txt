@@ -5,3 +5,4 @@ ipykernel
 nbsphinx
 nbsphinx-link
 pytest
+docutils<=0.20

@@ -4,17 +4,16 @@ from .instrument_driver import InstrumentDriver
 
 class Agilent8275N(InstrumentDriver):
     '''
-    Class to control Agilent E8267D frequency source. Inherits
-    from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Class to control Agilent E8267D frequency source.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
+    (Properties)
     frequency : float
         Sets/queries frequency. Range: [1e6, 2e10]
     amplitude : float

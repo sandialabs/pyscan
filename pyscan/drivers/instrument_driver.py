@@ -13,8 +13,12 @@ class InstrumentDriver(ItemAttribute):
     Parameters
     ----------
     instrument : string or pyvisa :class:`Resource`
-        visa string or an instantiated instrument (return value from
-        :func:`.new_instrument`)
+        visa string or an instantiated instrument
+
+    Methods
+    -------
+    add_device_property(settings)
+
     '''
 
     def __init__(self, instrument, debug=False):

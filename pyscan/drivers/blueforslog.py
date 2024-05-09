@@ -77,21 +77,25 @@ class BlueForsLog(object):
     '''
     Class ulitily to read BlueForc log files
 
-    Args:
-        path - path to the log files
-        date('now') - the date to analyze
+    Parameters
+    ----------
+    path : str
+        The path to the  log
+    date : str
+        Need to remember format
 
-    Properties:
-        TChX (X = 1, 2, 3, 5, 6, 9) - gets temperature of channel X
-            returns float
-        temperatures - gets all temperatures
-            returns array (float)
-        all_TCHX (X = 1, 2, 3, 5, 6, 9) - returns all temperature values for
-            channel X in log file
-            returns np.DataFrame
-        all_temperatures - returns all temperature values in the log file
-            returns np.DataFrame
-
+    Attributes
+    ----------
+    (Properties)
+    TChX (X = 1, 2, 3, 5, 6, 9) - gets temperature of channel X
+        returns float
+    temperatures - gets all temperatures
+        returns array (float)
+    all_TCHX (X = 1, 2, 3, 5, 6, 9) - returns all temperature values for
+        channel X in log file
+        returns np.DataFrame
+    all_temperatures - returns all temperature values in the log file
+        returns np.DataFrame
     '''
 
     def __init__(self, path, date='now'):
