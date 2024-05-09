@@ -6,16 +6,25 @@ class Keithley2260B(InstrumentDriver):
     '''
     Class to control the Kiethley 2260B DC power supply.
 
-    Limits are queried when initalized and depend on the model
+    Limits are queried when initalized and depend on the model 
 
     Parameters
     ----------
-    instrument : string or pyvisa :class:`pyvisa.Resource`
-        visa string or an instantiated instrument
+    instrument :
+        Visa string or an instantiated instrument (return value from
+        :func:`.new_instrument`)
 
-    Attributes
+    Properties
     ----------
-    (Properties)
+    ouptut_on_delay: float
+        Delay before output is turned on [0.00, 99.99]s
+    ouptut_off_delay: float
+        Delay before output is turned off [0.00, 99.99]s
+    ouptut_mode: str
+        CVHS - constant voltage high speed
+        CCHS - constast current high speed
+        CVLS - constant voltage low speed
+        CCLS - constant current low speed
     ouptut_on_delay: float
         Delay before output is turned on [0.00, 99.99]s
     ouptut_off_delay: float
@@ -32,7 +41,7 @@ class Keithley2260B(InstrumentDriver):
 
     smoothing: str
         Sets or queries the level of smoothing ['low', 'middle', 'high]
-
+    
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
@@ -64,6 +73,8 @@ class Keithley2260B(InstrumentDriver):
 
         self.debug = False
 
+        self._version = "0.0.1"
+        
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
         self.min_current = float(self.query('CURR? MIN').strip('\n'))
@@ -100,9 +111,11 @@ class Keithley2260B(InstrumentDriver):
         self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
         self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
 
-        self.initialize_properties()
+        self.black_list_for_testing = ['_current', "_voltage"] 
 
-        self.black_list_for_testing = ['_current', "_voltage", "_output"]
+        self.initialize_properties()        
+        self.update_properties()
+
 
     def initialize_properties(self):
 
@@ -127,21 +140,19 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'OUTP:MODE?',
             'indexed_values': ['CVHS', 'CCHS', 'CVLS', 'CCLS'],
             'return_type': int})
-
+        
         self.add_device_property({
             'name': 'output',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'dict_values': {'Off': 0, 0: 0,
-                            'On': 1, 1: 1},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         self.add_device_property({
             'name': 'output_trigger_state',
             'write_string': 'OUTP:TRIG {}',
             'query_string': 'OUTP:TRIG?',
-            'dict_values': {'Off': 0, 0: 0,
-                            'On': 1, 1: 1},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
         # SENS:AVER:COUN properties
@@ -164,7 +175,7 @@ class Keithley2260B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'current_trigger_amplitude',
+            'name': 'curret_trigger_amplitude',
             'write_string': 'CURR:TRIG {}',
             'query_string': 'CURR:TRIG?',
             'range': [self.min_current_trigger_ampliutde,
@@ -175,7 +186,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_current_level',
             'write_string': 'CURR:PROT {}',
             'query_string': 'CURR:PROT?',
-            'range': [self.min_over_current_level,
+            'range': [self.min_over_current_level, 
                       self.max_over_current_level],
             'return_type': float})
 
@@ -183,14 +194,15 @@ class Keithley2260B(InstrumentDriver):
             'name': 'current_protection_state',
             'write_string': 'CURR:PROT:STAT {}',
             'query_string': 'CURR:PROT:STAT?',
-            'dict_values': {'Off': 0, 0: 0,
-                            'On': 1, 1: 1},
+            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': float})
 
         self.add_device_property({
             'name': 'current_rising_slew_rate',
             'write_string': 'SOUR:CURR:SLEW:RIS {}',
             'query_string': 'SOUR:CURR:SLEW:RIS?',
+            'range': [self.min_current_rising_slew_rate,
+                      self.max_current_rising_slew_rate],
             'range': [self.min_current_rising_slew_rate,
                       self.max_current_rising_slew_rate],
             'return_type': float})
@@ -210,6 +222,8 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'RES?',
             'range': [self.min_resistance,
                       self.max_resistance],
+            'range': [self.min_current_falling_slew_rate,
+                      self.max_current_falling_slew_rate],
             'return_type': float})
 
         # SOURce:VOLTage properties
@@ -234,7 +248,7 @@ class Keithley2260B(InstrumentDriver):
             'name': 'over_voltage_level',
             'write_string': 'VOLT:PROT {}',
             'query_string': 'VOLT:PROT?',
-            'range': [self.min_over_voltage_level,
+            'range': [self.min_over_voltage_level, 
                       self.max_over_voltage_level],
             'return_type': float})
 
@@ -270,8 +284,6 @@ class Keithley2260B(InstrumentDriver):
             'values': ['BUS', 'IMM'],
             'return_type': str})
 
-        self.update_properties()
-
     def update_properties(self):
 
         self.output_on_delay
@@ -283,8 +295,9 @@ class Keithley2260B(InstrumentDriver):
         self.smoothing
 
         self.current
-        self.current_trigger_amplitude
+        self.curret_trigger_amplitude
         self.over_current_level
+        self.max_over_current_level
         self.current_protection_state
         self.current_rising_slew_rate
         self.current_falling_slew_rate
