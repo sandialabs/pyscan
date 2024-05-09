@@ -3,7 +3,14 @@ from .instrument_driver import InstrumentDriver
 
 
 class Stanford860(InstrumentDriver):
-    '''Class to control Stanford Research Systems SR860 - 500 kHz lock-in amplifier
+    '''
+    Class to control Stanford Research Systems SR860 - 500 kHz lock-in amplifier
+
+    Parameters
+    ----------
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
+
     '''
 
     def __init__(self, instrument):
