@@ -109,47 +109,6 @@ class Keithley2260B(InstrumentDriver):
         self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
         self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
 
-
-        super().__init__(instrument)
-
-        self.debug = False
-
-        # Get current limits
-        self.max_current = float(self.query('CURR? MAX').strip('\n'))
-        self.min_current = float(self.query('CURR? MIN').strip('\n'))
-
-        self.max_current_trigger_ampliutde = float(self.query('CURR:TRIG? MAX').strip('\n'))
-        self.min_current_trigger_ampliutde = float(self.query('CURR:TRIG? MIN').strip('\n'))
-
-        self.max_over_current_level = float(self.query('CURR:PROT? MAX').strip('\n'))
-        self.min_over_current_level = float(self.query('CURR:PROT? MIN').strip('\n'))
-
-        self.max_current_rising_slew_rate = float(self.query('CURR:SLEW:RIS? MAX').strip('\n'))
-        self.min_current_rising_slew_rate = float(self.query('CURR:SLEW:RIS? MIN').strip('\n'))
-
-        self.max_current_falling_slew_rate = float(self.query('CURR:SLEW:FALL? MAX').strip('\n'))
-        self.min_current_falling_slew_rate = float(self.query('CURR:SLEW:FALL? MIN').strip('\n'))
-
-        # Get resistance limits
-        self.max_resistance = float(self.query('RES? MAX').strip('\n'))
-        self.min_resistance = float(self.query('RES? MIN').strip('\n'))
-
-        # Get voltage limits
-        self.max_voltage = float(self.query('VOLT? MAX').strip('\n'))
-        self.min_voltage = float(self.query('VOLT? MIN').strip('\n'))
-
-        self.max_voltage_trigger_ampliutde = float(self.query('VOLT:TRIG? MAX').strip('\n'))
-        self.min_voltage_trigger_ampliutde = float(self.query('VOLT:TRIG? MIN').strip('\n'))
-
-        self.max_over_voltage_level = float(self.query('VOLT:PROT? MAX').strip('\n'))
-        self.min_over_voltage_level = float(self.query('VOLT:PROT? MIN').strip('\n'))
-
-        self.max_voltage_rising_slew_rate = float(self.query('VOLT:SLEW:RIS? MAX').strip('\n'))
-        self.min_voltage_rising_slew_rate = float(self.query('VOLT:SLEW:RIS? MIN').strip('\n'))
-
-        self.max_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MAX').strip('\n'))
-        self.min_voltage_falling_slew_rate = float(self.query('VOLT:SLEW:FALL? MIN').strip('\n'))
-
         self.black_list_for_testing = ['_current', "_voltage"] 
 
         self.initialize_properties()        

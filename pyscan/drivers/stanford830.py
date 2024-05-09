@@ -457,13 +457,13 @@ class Stanford830(InstrumentDriver):
 
         if display_number == 1:
             sources = ['x', 'r', 'xn', 'aux1', 'aux2']
-            ratios = ['None', 'aux1', 'aux2']
+            ratios = ['none', 'aux1', 'aux2']
         else:
             sources = ['y', 'theta', 'yn', 'aux3', 'aux4']
             ratios = ['none', 'aux3', 'aux4']
 
         response = self.query('DDEF? {}'.format(display_number)).strip('\n')
-        response = response.split(', ')
+        response = response.split(',')
         response = [int(r) for r in response]
 
         return sources[response[0]], ratios[response[1]]
