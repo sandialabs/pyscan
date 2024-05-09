@@ -3,14 +3,20 @@ from pyscan.drivers import InstrumentDriver
 
 
 class TestVoltage(InstrumentDriver):
-    '''Class that mimics the operation of a simple voltage source. This is used in the demo jupyter notebooks.
+    '''
+    Class that mimics the operation of a simple voltage source.
 
-    Properties
+    This is used in the demo jupyter notebooks.
+
+    Attributes
     ----------
-    voltage :
-        storage for an arbitrary value
-    other_voltage :
-        more storage for an arbitrary value
+    (Properties)
+    voltage : float
+        Mimic a voltage, with default range [-10, 10]
+    power : int
+        Mimic a power setting, with available values [1, 10]
+    output_state : int or str
+        Mimic an output state, with dict values 'on', 1, 'off', or 0
     '''
 
     # tells pytest this is not a test case. Was necessary only on lab computer for some reason.

@@ -10,13 +10,12 @@ class Stanford830(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Properties
+    Attributes
     ----------
-    Reference and Phase Properties:
+    (Properties)
     phase : float
         Range: [-180, 180]
     reference_source : int
@@ -27,10 +26,8 @@ class Stanford830(InstrumentDriver):
         Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
     harmonic : int
         Range: [1, 19999]
-    amplitude : float
+    instrument_amplitude : float
         Range:  [0, 5.0]
-
-    Input and Filter Properties:
     input_configuration : int
         Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
     input_ground : int
@@ -39,19 +36,16 @@ class Stanford830(InstrumentDriver):
         Indexed_values: ['AC', 'DC']
     input_line_filter : int
         Indexed_values: ['none', 'line', '2xline', 'both']
-
-    Gain and Time Constant:
     sensitivity : int
-        Indexed_values:  [
-            2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
-            100e-9, 200e-9, 500e-9,
-            1e-6, 2e-6, 5e-6,
-            10e-6, 20e-6, 50e-6,
-            100e-6, 200e-6, 500e-6,
-            1e-3, 2e-3, 5e-3,
-            10e-3, 20e-3, 50e-3,
-            100e-3, 200e-3, 500e-3,
-            1]
+        Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
+                            100e-9, 200e-9, 500e-9,
+                            1e-6, 2e-6, 5e-6,
+                            10e-6, 20e-6, 50e-6,
+                            100e-6, 200e-6, 500e-6,
+                            1e-3, 2e-3, 5e-3,
+                            10e-3, 20e-3, 50e-3,
+                            100e-3, 200e-3, 500e-3,
+                            1]
     reserve_mode : int
         Indexed_values:  ['high', 'normal', 'low']
     time_constant : int
@@ -64,99 +58,15 @@ class Stanford830(InstrumentDriver):
         Indexed_values:  [6, 12, 18, 24]
     synchronous_filter : int
         Indexed_values:  ['off', 'on']
-
-    Display and Output Properites:
-    display1_output_source : str
-        Indexed_values: ['x', 'display]
-    display2_output_source : str
-        Indexed_values: ['y', 'display]
-
-    Auxillary Input/Output Properties:
-    auxillary_voltage1: float
-        range [-10.5, 10.5]
-    auxillary_voltage2: float
-        range [-10.5, 10.5]
-    auxillary_voltage3: float
-        range [-10.5, 10.5]
-    auxillary_voltage4: float
-        range [-10.5, 10.5]
-    
-    Data Storage Properties:
     sample_rate : int
-        Indexed_values:  [
-            0.0625, .125, .250, .5, 1,
-            2, 4, 8,
-            16, 32, 64, 128,
-            256, 512, 'trigger']
+        Indexed_values:  [0.0625, .125, .250, .5, 1,
+                                    2, 4, 8,
+                                    16, 32, 64, 128,
+                                    256, 512, 'trigger']
     end_buffer_mode : int
         Indexed_values: ['one shot', 'loop']
     trigger_mode : int
-        Indexed_values:  ['off', 'on']
-    bufferpoints: int
-        Query only
-    
-    Interface Properties:
-    local_remote_control: str
-        indexed_values: ['local', 'remote', 'local lockout']
-    gpib_overrided_state: str, int
-        dict_values: 0, 'off', 1, 'on'
-    power_on_status_clear: str, int
-        dict_values: 0, 'off', 1, 'on'
-    
-
-    Methods
-    --------
-    Dislpay and Output Methods:
-    get_display()
-    set_display(source, ratio)
-    get_channel_offset_expand()
-    set_channel_offset_expand(offset, expand)
-    auto_offset(source)
-
-    Auxillary Input/Output Methods:
-    get_aux_input(index)
-
-    Auto Methods:
-    auto_gain()
-    auto_reserve()
-    auto_phase()
-    auto_offset()
-
-    Data Storage Methods:
-    trigger()
-    start()
-    pause()
-    reset()
-
-    Data Transfer Methods:
-    read(source)
-    read_display(display)
-    snap(*args)
-    read_ascii_buffer(channel, start, points)
-    read_binary_buffer(channel, start, points)
-    
-    Interface Methods:
-    reset_to_default_settings()
-    get_identification_string()
-    
-    Status Methods
-    clear_status_bytes()
-    get_standard_status_event_byte(bit=None)
-    set_standard_status_event_byte(bit, value)
-    get_serial_poll_enable_register(bit=None)
-    set_serial_pool_enable_register(bit, value)
-    get_status_poll_byte(bit=None)
-    get_error_status_enable_register(bit=None)
-    set_error_status_enable_register(value, bit=None)
-    get_error_status_byte(bit=None)
-    get_lia_status_enable_register(bit=None)
-    set_lia_status_enable_register(value, bit=None)
-    get_lia_status_byte(bit=None)
-
-    Custom Multi-Setting Methods
-    set_buffer_mode(sample_rate)
-    wait_for_trigger()
-
+        Indexed_values':  ['off', 'on']
     '''
 
     def __init__(self, instrument):

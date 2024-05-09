@@ -9,7 +9,9 @@ c_dword = c_ulong
 
 
 class ThorlabsMFF101(ItemAttribute):
-    '''Class to control ThorLabs MFF101 - Motorized Filter Flip Mount with Ø1" Optic Holder.
+    '''
+    Class to control ThorLabs MFF101 -
+    Motorized Filter Flip Mount with Ø1 and 2" Optic Holder.
 
     Parameters
     ----------

@@ -90,8 +90,8 @@ class PicoHarp300(ItemAttribute):
 
     Parameters
     ----------
-    dev
-        Defaults to 0
+    dev : int
+        Device index, default 0
 
     '''
 

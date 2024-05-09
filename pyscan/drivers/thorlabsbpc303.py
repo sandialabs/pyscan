@@ -9,7 +9,9 @@ c_dword = c_ulong
 
 
 class ThorlabsBPC303(ItemAttribute):
-    '''Class to control ThorLabs BPC303 - 3-Channel 150 V Benchtop Piezo Controller with USB
+    '''
+    Driver for ThorLabs BPC303 - 3-Channel
+    150 V Benchtop Piezo Controller with USB
 
     Parameters
     ----------
