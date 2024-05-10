@@ -20,7 +20,7 @@ def read(fname):
 
 setup(
     name="pyscan",
-    version=get_version,
+    version=get_version(),
     author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah",
     author_email="amounce@sandia.gov",
     description=(
