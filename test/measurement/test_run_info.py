@@ -97,3 +97,5 @@ def test_init_from_noparams():
         check_attribute(runinfo=init_runinfo, attribute=init_runinfo.verbose, attribute_name='verbose', expected=False)
 
     check_runinfo_attributes()
+
+test_init_from_noparams()

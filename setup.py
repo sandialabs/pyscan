@@ -5,7 +5,7 @@ import json
 
 def get_version():
     runinfo_dir = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(runinfo_dir, "package.json")
+    path = os.path.join(runinfo_dir, "../../VERSION.json")
     with open(path) as version_file:
         version = json.load(version_file)['version']
         if type(version) is str:
@@ -20,7 +20,7 @@ def read(fname):
 
 setup(
     name="pyscan",
-    version=get_version(),
+    version=get_version,
     author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah",
     author_email="amounce@sandia.gov",
     description=(
