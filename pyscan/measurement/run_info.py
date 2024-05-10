@@ -52,6 +52,8 @@ class RunInfo(ItemAttribute):
         called by Experiment objects `run()` methods.
     verbose : bool
         Flag to print status information, defaults to `False`.
+    version : str
+        Current version of pyscan to be saved as metadata.
 
     '''
 
@@ -73,7 +75,6 @@ class RunInfo(ItemAttribute):
         self.average_d = -1
 
         self.verbose = False
-        self.version = get_version()
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
@@ -100,9 +101,9 @@ class RunInfo(ItemAttribute):
 
     @property
     def version(self):
-        '''version of pyscan/runinfo
+        '''version of pyscan
         '''
-        return 0.2
+        return get_version()
 
     @property
     def scans(self):
