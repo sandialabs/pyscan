@@ -25,6 +25,7 @@ def live_plot(plotting_function, dt=1):
     '''
 
     def live_plot_function(expt=None, killswitch=None, *arg, **kwarg):
+        # The killswitch should be something like 'q' if you want to press q on the keyboard and stop the experiment.
 
         while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
             sleep(1)
