@@ -3,7 +3,7 @@ from pylablib.devices.Attocube.anc350 import ANC350
 from .instrument_driver import InstrumentDriver
 
 
-class AttocubeANC350(InstrumentDriver):  # deleted ANC350
+class AttocubeANC350(InstrumentDriver):
 
     def __init__(self, instrument):
 

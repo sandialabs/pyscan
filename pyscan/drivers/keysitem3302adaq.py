@@ -27,6 +27,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
 
     Attributes
     ----------
+    (Properties)
     coupling :
         queries input coupling
         returns:

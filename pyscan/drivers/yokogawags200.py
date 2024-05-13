@@ -25,6 +25,7 @@ class YokogawaGS200(InstrumentDriver):
 
     Attributes
     ----------
+    (Properties)
     voltage : float
         get/sets voltage output of the instrument. Range [-10, 10]
     '''

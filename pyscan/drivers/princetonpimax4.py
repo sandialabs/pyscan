@@ -21,8 +21,15 @@ clr.AddReference('PrincetonInstruments.LightFieldAddInSupportServices')
 
 
 class PrincetonPiMax4(ItemAttribute):
-    '''Class to control Princeton Instruments PI MAX 4 camera
+    '''
+    Class to control Princeton Instruments PI MAX 4 camera
 
+    Methods
+    -------
+    print_device_information()
+        Prints the model and serial number of the device
+    get_settings()
+        Returns the experimental settings
 
     '''
 
