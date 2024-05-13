@@ -38,6 +38,7 @@ setup(
         'ipywidgets',
         'h5py',
         'matplotlib',
+        'keyboard',
         # if ipykernel fails, force specific python version that will work rather than omitting ipykernel requirement.
         'ipykernel',
         'pytest',
