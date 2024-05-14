@@ -5,7 +5,6 @@ from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.is_list_type import is_list_type
 import numpy as np
 from datetime import datetime
-import keyboard
 
 
 class Experiment(AbstractExperiment):
@@ -28,19 +27,14 @@ class Experiment(AbstractExperiment):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
-    killswitch: str, optional
-        can implement a keyboard killswitch to stop the experiment manually before completion, e.g. 'q'.
     '''
 
-    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False, killswitch=None):
+    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False):
         '''Constructor method
         '''
         super().__init__(runinfo, devices, data_dir)
 
         self.runinfo.time = time
-
-        if killswitch is not None:
-            self.killswitch = killswitch
 
     def generic_experiment(self):
         if self.runinfo.time:
@@ -50,10 +44,6 @@ class Experiment(AbstractExperiment):
         t0 = (datetime.now()).timestamp()
         # Use for scan, but break if self.runinfo.running=False
         for m in range(self.runinfo.scan3.n):
-            if self.killswitch is not None:
-                if keyboard.ispressed(self.killswitch):
-                    self.stop()
-
             self.runinfo.scan3.i = m
             self.runinfo.scan3.iterate(m, self.devices)
             sleep(self.runinfo.scan3.dt)
@@ -158,10 +148,6 @@ class Experiment(AbstractExperiment):
 
         # Use for scan, but break if self.runinfo.running=False
         for m in range(self.runinfo.scan3.n):
-            if self.killswitch is not None:
-                if keyboard.ispressed(self.killswitch):
-                    self.stop()
-
             self.runinfo.scan3.i = m
             self.runinfo.scan3.iterate(m, self.devices)
             sleep(self.runinfo.scan3.dt)
