@@ -24,6 +24,15 @@ BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 89
               {'Alfred': "Batman's uncle", 'or': 'imposter'}]
 
 
+missing_prop_str = "device did not have {} property, check it's in drivers initialize_properties or update_properties."
+prop_err_str1 = ("attempted to set {} property {} to {} but when queried returned {}."
+                 + "\n This is often a sign of interdependent properties that are not suitable for this auto testing."
+                 + "Check for interdependence and consider blacklisting.")
+prop_err_str2 = ("set {} property {} to {} but _{} returned {}."
+                 + "\n This is often a sign of interdependent properties that are not suitable for this auto testing."
+                 + "Check for interdependence and consider blacklisting.")
+
+
 # This function is critical step to ensuring safety when testing drivers with actual instruments
 def validate_blacklist(test_instrument):
     settings = []
@@ -159,7 +168,10 @@ def check_values_property(device, key):
     name = device[key]['name']
 
     # reset value to baseline for consistency between tests
-    device[name] = device[key]['values'][0]
+    try:
+        device[name] = device[key]['values'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     for val in BAD_INPUTS:
         if val not in device[key]['values']:
@@ -169,8 +181,9 @@ def check_values_property(device, key):
     for val in device[key]['values']:
         device[name] = val
         # ################ consider within a range here since may not return perfect value.
-        assert device[name] == val
-        assert device["_{}".format(name)] == val
+        assert device[name] == val, prop_err_str1.format('values', name, val, device[name])
+        assert device["_{}".format(name)] == val, prop_err_str2.format('values', name, val,
+                                                                       "_{}".format(name), device["_{}".format(name)])
 
     # reset value to baseline for consistency between tests
     device[name] = device[key]['values'][0]
@@ -183,7 +196,10 @@ def check_range_property(device, key):
     name = device[key]['name']
 
     # reset range to baseline for consistency between tests
-    device[name] = device[key]['range'][0]
+    try:
+        device[name] = device[key]['range'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     with pytest.raises(Exception):
         device[name] = min_range - .001
@@ -202,9 +218,9 @@ def check_range_property(device, key):
 
     for r in range(int(device[key]['range'][0]), int(device[key]['range'][0]), step):
         device[name] = r
-        assert device[name] == r
-        assert device['_{}'.format(name)] == r
-        # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
+        assert device[name] == r, prop_err_str1.format('range', name, r, device[name])
+        assert device['_{}'.format(name)] == r, prop_err_str2.format('range', name, r,
+                                                                     "_{}".format(name), device["_{}".format(name)])
 
     # reset range to baseline for consistency between tests
     device[name] = device[key]['range'][0]
@@ -216,7 +232,10 @@ def check_indexed_property(device, key):
     name = device[key]['name']
 
     # reset value to baseline for consistency between tests
-    device[name] = device[key]['indexed_values'][0]
+    try:
+        device[name] = device[key]['indexed_values'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     for item in BAD_INPUTS:
         if item not in device[key]['indexed_values']:
@@ -226,8 +245,9 @@ def check_indexed_property(device, key):
     for idx, iv in enumerate(device[key]['indexed_values']):
         # print(str(iv), str(idx), name, device[name])
         device[name] = iv
-        assert device[name] == iv
-        assert device["_{}".format(name)] == iv
+        assert device[name] == iv, prop_err_str1.format('indexed', name, iv, device[name])
+        assert device["_{}".format(name)] == iv, prop_err_str2.format('indexed', name, iv,
+                                                                      "_{}".format(name), device["_{}".format(name)])
         # print("underscore property is: ", device["_{}".format(name)])
 
     # reset value to baseline for consistency between tests
@@ -242,14 +262,21 @@ def check_dict_property(device, key):
 
     # reset the dict value to the first value for consistency between tests
     for k in ord_dict:
-        device[name] = k
+        try:
+            device[name] = k
+        except Exception:
+            assert False, missing_prop_str.format(name)
         break
 
     for k in device[key]['dict_values']:
         # print(k)
         device[name] = k
-        assert device[name] == device.find_first_key(ord_dict, ord_dict[k]), "{} property return not properly formatted".format(name)
-        assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
+        err_str1 = ("{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
+            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
+        assert device[name] == device.find_first_key(ord_dict, ord_dict[k]), err_str1
+        err_str2 = ("_{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
+            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
+        assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k]), err_str2
 
     for bad_input in BAD_INPUTS:
         if isinstance(bad_input, typing.Hashable):

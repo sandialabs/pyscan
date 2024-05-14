@@ -80,7 +80,6 @@ class Stanford830(InstrumentDriver):
         self.initialize_properties()
         self.update_properties()
 
-
     def initialize_properties(self):
 
         # Reference and Phase properties
@@ -240,14 +239,14 @@ class Stanford830(InstrumentDriver):
             'query_string': 'AUXV? 2',
             'range': [-10.5, 10.500],
             'return_type': float})
-        
+
         self.add_device_property({
             'name': 'auxillary_voltage3',
             'write_string': 'AUXV 3, {}',
             'query_string': 'AUXV? 3',
             'range': [-10.5, 10.500],
             'return_type': float})
-        
+
         self.add_device_property({
             'name': 'auxillary_voltage4',
             'write_string': 'AUXV 4, {}',
@@ -281,7 +280,7 @@ class Stanford830(InstrumentDriver):
             'query_string': 'TSTR?',
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
-        
+
         # Interface Properties
 
         self.add_device_property({
@@ -363,7 +362,7 @@ class Stanford830(InstrumentDriver):
         str - source being displayed
         str - value which the source is being devided by
         '''
-        assert display_number in [1,2], 'Display must be either 1 or 2'
+        assert display_number in [1, 2], 'Display must be either 1 or 2'
 
         if display_number == 1:
             sources = ['x', 'r', 'xn', 'aux1', 'aux2']
@@ -396,7 +395,7 @@ class Stanford830(InstrumentDriver):
             display2: none, aux3, aux4
         '''
 
-        assert display_number in [1,2], 'Display must be either 1 or 2'
+        assert display_number in [1, 2], 'Display must be either 1 or 2'
         if display_number == 1:
             sources = ['x', 'r', 'xn', 'aux1', 'aux2']
             ratios = ['none', 'aux1', 'aux2']
@@ -425,11 +424,11 @@ class Stanford830(InstrumentDriver):
         --------
         float
             The percent offset of the total range given by the sensitivity
-        int 
+        int
             The value of the expand setting, 1, 10, or 100
 
         '''
-        expand_values = [1, 10, 100]
+        # expand_values = [1, 10, 100]
 
         response = self.query('OEXP? {}'.format(channel)).strip('\n')
         response = response.split(',')
@@ -439,10 +438,10 @@ class Stanford830(InstrumentDriver):
     def set_channel_offset_expand(self, channel, offset, expand):
         '''
         Sets the offset and expand for a channel
-        
+
         Parameters
         ----------
-        channel: int 
+        channel: int
             Channel to set values for: 1 or 2
         offset: float
             Percent offset for specified channel in percent
@@ -456,16 +455,16 @@ class Stanford830(InstrumentDriver):
         expand_values = [1, 10, 100]
 
         assert channel in [1, 2], 'channel must be 1 or 2'
-        assert (offset>= -105) and (offset <= 105), 'Offset must be between -105 and 105 in units of percent'
+        assert (offset >= -105) and (offset <= 105), 'Offset must be between -105 and 105 in units of percent'
         assert expand in expand_values, 'Expand in put must be 1, 10, or 100'
-        
+
         index = expand_values.index(expand)
 
         self.write('OEXP {}, {}, {}'.format(channel, offset, index))
 
     def auto_offset(self, source):
         '''
-        Automatically sets the offset to the current value 
+        Automatically sets the offset to the current value
         of a data source
 
         Parameters
@@ -585,17 +584,17 @@ class Stanford830(InstrumentDriver):
         ----------
         source: str
             Source to be read from. Can be x, y, r, theta
-        
+
         Returns
         float
             Value read, theta is retuned in degrees
-        
+
         '''
 
         sources = ['x', 'y', 'r', 'theta']
 
         assert source in sources, 'Readable values are x, y, z, and theta'
-        
+
         index = sources.index(source) + 1
         if source in ['x', 'y', 'r']:
             return (float(self.query('OUTP? {}'.format(index))))
@@ -631,7 +630,7 @@ class Stanford830(InstrumentDriver):
         Parameters
         ----------
         2 to 6 args: str
-            must be x, y, r, theta, aux1, aux2, aux3, aux4, 
+            must be x, y, r, theta, aux1, aux2, aux3, aux4,
             frequency, display1, or display2
 
         Returns
@@ -640,11 +639,10 @@ class Stanford830(InstrumentDriver):
 
         '''
 
-
         sources = ['x', 'y', 'r', 'theta', 'aux1', 'aux2', 'aux3',
-                  'aux4', 'frequency', 'display1', 'display2']
+                   'aux4', 'frequency', 'display1', 'display2']
 
-        assert (len(args) >=2) and (len(args <= 6)), 'Snap accepts 2 to 6 readable sources'
+        assert (len(args) >= 2) and (len(args <= 6)), 'Snap accepts 2 to 6 readable sources'
 
         for source in args:
             assert source in sources, (
@@ -661,9 +659,9 @@ class Stanford830(InstrumentDriver):
                 formatted_response.append(float(response))
             else:
                 formatted_response.append(float(response) * 180 / 3.14159)
-        
+
         return formatted_response
-    
+
     @property
     def bufferpoints(self):
         '''
@@ -708,7 +706,6 @@ class Stanford830(InstrumentDriver):
         '''
 
         assert channel in [1, 2], 'Channel must be 1 or 2 '
-
 
         values = self.instrument.query_binary_values(
             'TRCB? {}, {}, {}'.format(channel, start, points),
@@ -757,7 +754,7 @@ class Stanford830(InstrumentDriver):
         if bit is None:
             return self.query('ESE?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('ESE? {}'.format(bit))
 
     def set_standard_status_event_enable_register(self, value, bit=None):
@@ -771,14 +768,16 @@ class Stanford830(InstrumentDriver):
             sets all bits
         bit: int (None)
             Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit 
+            Sets the value of a single bit
         '''
         if bit is None:
-            assert (value >=0) and (value<=255), 'Standard status event byte must be between 0 and 255 when no bit is supplied'
+            assert (
+                value >= 0) and (
+                value <= 255), 'Standard status event byte must be between 0 and 255 when no bit is supplied'
             self.write('ESE {}'.format(value))
         else:
             assert value in [0, 1], 'Standard status event value must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <=7), 'Standard status event bit must be between 0 and 7'
+            assert (bit >= 0) and (bit <= 7), 'Standard status event bit must be between 0 and 7'
             self.write('ESE {}, {}'.format(bit, value))
 
     def get_standard_event_status_byte(self, bit=None):
@@ -794,12 +793,12 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
         if bit is None:
             return self.query('ESR?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('ESR? {}'.format(bit))
 
     def get_serial_poll_enable_register(self, bit=None):
@@ -815,13 +814,13 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
 
         if bit is None:
             return self.query('SRE?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('SRE? {}'.format(bit))
 
     def set_serial_poll_enable_register(self, value, bit=None):
@@ -835,15 +834,17 @@ class Stanford830(InstrumentDriver):
             sets all bits
         bit: int (None)
             Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit 
+            Sets the value of a single bit
         '''
 
         if bit is None:
-            assert (value >=0) and (value<=255), 'Serial event poll register value be between 0 and 255 when no bit is supplied'
+            assert (
+                value >= 0) and (
+                value <= 255), 'Serial event poll register value be between 0 and 255 when no bit is supplied'
             self.write('SRE {}'.format(value))
         else:
             assert value in [0, 1], 'Serial event poll register value must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <=7), 'Serial even poll register bit must be between 0 and 7'
+            assert (bit >= 0) and (bit <= 7), 'Serial even poll register bit must be between 0 and 7'
             self.write('SRE {}, {}'.format(bit, value))
 
     def get_status_poll_byte(self, bit=None):
@@ -859,13 +860,13 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
 
         if bit is None:
             return self.query('STB?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('STB? {}'.format(bit))
 
     def get_error_status_enable_register(self, bit=None):
@@ -881,13 +882,13 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
 
         if bit is None:
             return self.query('ERRE?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('ERRE? {}'.format(bit))
 
     def set_error_status_enable_register(self, value, bit=None):
@@ -901,15 +902,17 @@ class Stanford830(InstrumentDriver):
             sets all bits
         bit: int (None)
             Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit 
+            Sets the value of a single bit
         '''
 
         if bit is None:
-            assert (value >=0) and (value<=255), 'Error status enable register must be between 0 and 255 when no bit is supplied'
+            assert (
+                value >= 0) and (
+                value <= 255), 'Error status enable register must be between 0 and 255 when no bit is supplied'
             self.write('ERRE {}'.format(value))
         else:
             assert value in [0, 1], 'Error status enable register must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <=7), 'Error status enable register must be between 0 and 7'
+            assert (bit >= 0) and (bit <= 7), 'Error status enable register must be between 0 and 7'
             self.write('ERRE {}, {}'.format(bit, value))
 
     def get_error_status_byte(self, bit=None):
@@ -925,12 +928,12 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
         if bit is None:
             return self.query('ERRS?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('ERRS? {}'.format(bit))
 
     def get_lia_status_enable_register(self, bit=None):
@@ -946,13 +949,13 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
 
         if bit is None:
             return self.query('LIAE?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('LIAE? {}'.format(bit))
 
     def set_lia_status_enable_register(self, value, bit=None):
@@ -966,15 +969,17 @@ class Stanford830(InstrumentDriver):
             sets all bits
         bit: int (None)
             Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit 
+            Sets the value of a single bit
         '''
 
         if bit is None:
-            assert (value >=0) and (value<=255), 'LIA status enable register must be between 0 and 255 when no bit is supplied'
+            assert (
+                value >= 0) and (
+                value <= 255), 'LIA status enable register must be between 0 and 255 when no bit is supplied'
             self.write('LIAE {}'.format(value))
         else:
             assert value in [0, 1], 'LIA status enable register must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <=7), 'LIA status enable register must be between 0 and 7'
+            assert (bit >= 0) and (bit <= 7), 'LIA status enable register must be between 0 and 7'
             self.write('LIAE {}, {}'.format(bit, value))
 
     def get_lia_status_byte(self, bit=None):
@@ -990,13 +995,13 @@ class Stanford830(InstrumentDriver):
         Returns
         --------
         int
-        
+
         '''
 
         if bit is None:
             return self.query('LIAS?')
         else:
-            assert (bit>=0) and (bit <=7), 'Bit index must be 0-7'
+            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
             return self.query('LIAS? {}'.format(bit))
 
     # Custom Multi-Settings Methods

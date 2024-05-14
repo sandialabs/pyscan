@@ -106,7 +106,7 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
             expt = ps.Sweep(runinfo, devices, verbose=verbose)
         else:
             assert False, "Invalid verbose entry. Must be boolean."
-    elif type(data_dir) is str:
+    elif isinstance(data_dir, str):
         if verbose is False:
             expt = ps.Sweep(runinfo, devices, data_dir)
         elif verbose is True:

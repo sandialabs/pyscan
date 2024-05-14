@@ -22,7 +22,7 @@ def test_test_voltage():
 
     # test voltage attribute
     assert hasattr(v1, 'voltage'), "TestVoltage missing voltage attribute"
-    assert type(v1.voltage) is float, "TestVoltage voltage attribute is not a float"
+    assert isinstance(v1.voltage, float), "TestVoltage voltage attribute is not a float"
     assert v1.voltage == 0.0, "TestVoltage voltage not initialized to 0.0"
     assert v1._voltage == 0.0, "TestVoltage _voltage does not return 0.0"
     with pytest.raises(Exception):
@@ -39,7 +39,7 @@ def test_test_voltage():
 
     # test power attribute initialization
     assert hasattr(v1, 'power'), "TestVoltage missing power attribute"
-    assert type(v1.power) is int, "TestVoltage power is not an int"
+    assert isinstance(v1.power, int), "TestVoltage power is not an int"
     assert v1.power == 1, "TestVoltage  power is not initialized as 1"
     assert v1.query('POW?') == '1', "TestVoltage query of 'POW?' does not return string of power"
     with pytest.raises(Exception):
@@ -56,7 +56,7 @@ def test_test_voltage():
 
     # test output state attribute initialization
     assert hasattr(v1, 'output_state'), "TestVoltage missing output_state attribute"
-    assert type(v1._output_state) is str, "TestVoltage _output_state is not initially a string"
+    assert isinstance(v1._output_state, str), "TestVoltage _output_state is not initially a string"
     assert v1._output_state == 'off', "TestVoltage _output_state does not initially return expected output state"
     assert v1.query('OUTP?') == '0', "TestVoltage query of 'OUTP?' does not return expected result"
     with pytest.raises(Exception):
