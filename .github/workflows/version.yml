@@ -58,4 +58,8 @@ jobs:
       - name: Delete Tag Pre-Release
         if: steps.changelog.outputs.tag != ''
         run: git push --delete origin ${{ steps.changelog.outputs.tag }}
-          
+
+      - name: Empty Commit (Trying To Reset Github Status Checks)
+        run: |
+          git commit --allow-empty -m "Empty-Commit"
+          git push
