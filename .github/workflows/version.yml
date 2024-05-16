@@ -45,10 +45,10 @@ jobs:
           git push || echo "Nothing to push."
       
       - name: git config
-          run: |
-            git config --global user.name "rsbrost"
-            git config --global user.email "rsbrost@sandia.gov"
-            git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
+        run: |
+          git config --global user.name "rsbrost"
+          git config --global user.email "rsbrost@sandia.gov"
+          git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
           
       - name: Conventional Changelog Action
         id: changelog
