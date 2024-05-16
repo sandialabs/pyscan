@@ -20,35 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Pull From Main
-        run: |
-          git --version
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git status
-          git fetch
-          
-          git rm CHANGELOG.md || echo "No changelog to remove from branch."
-          git rm VERSION.json || echo "No version file to remove from branch."
-
-          git status
-          git add .
-          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-          git push || echo "Nothing to push."
-          
-          git checkout origin/main CHANGELOG.md || echo "Could not checkout main's changelog."
-          git checkout origin/main VERSION.json || echo "Could not checkout main's version file."
-          git status
-          git add .
-          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-          git push || echo "Nothing to push."
-      
-      - name: Git Checkout2
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
           
       - name: Conventional Changelog Action
         id: changelog
