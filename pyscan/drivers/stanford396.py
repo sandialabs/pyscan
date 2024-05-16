@@ -7,43 +7,42 @@ class Stanford396(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Yields
-    ------
-    Properties which can be get and set :
-        amplitude : float
-            Range: [-120, 25]
-        amplitude_rms : float
-        output : float
-            Values: [0, 1]
-        frequency : float
-            Range: [0, 6e9]
-        noise_mode : str
-            Values: ["small", "large"]. Returns float
-        phase : float
-            Range: [-180, 180]
-        modulation : int
-            Values: [0, 1]
-        input_coupling : int
-            Values: [0, 1]
-        modulation_type : str
-            Values: ['am','fm','phim','sweep','pulse',
-            'blank','qam','cpm','vbs']. Returns int
-        modulation_function : str
-            Values: ['sin','ramp','triangle','external','waveform']. Returns int
-        modulation_rate : float
-            Range: [0.001, 5e4]
-        modulation_amplitude : float
-            Range: [0, 200e6]
-        sweep_modulation_function : int
-            Values: [0, 1, 2, 5, 11]
-        modulation_subtype : int
-            Range: [0, 15]
-        iq_modulation_function : int
-            Range: [0, 11]
+    Attributes
+    ----------
+    (Properties)
+    amplitude : float
+        Range: [-120, 25]
+    amplitude_rms : float
+    output : float
+        Values: [0, 1]
+    frequency : float
+        Range: [0, 6e9]
+    noise_mode : str
+        Values: ["small", "large"]. Returns float
+    phase : float
+        Range: [-180, 180]
+    modulation : int
+        Values: [0, 1]
+    input_coupling : int
+        Values: [0, 1]
+    modulation_type : str
+        Values: ['am','fm','phim','sweep','pulse',
+        'blank','qam','cpm','vbs']. Returns int
+    modulation_function : str
+        Values: ['sin','ramp','triangle','external','waveform']. Returns int
+    modulation_rate : float
+        Range: [0.001, 5e4]
+    modulation_amplitude : float
+        Range: [0, 200e6]
+    sweep_modulation_function : int
+        Values: [0, 1, 2, 5, 11]
+    modulation_subtype : int
+        Range: [0, 15]
+    iq_modulation_function : int
+        Range: [0, 11]
     '''
 
     def __init__(self, instrument):
@@ -56,7 +55,6 @@ class Stanford396(InstrumentDriver):
     def initialize_properties(self):
 
         # High frequency settings
-
         self.add_device_property({
             'name': 'amplitude',
             'write_string': 'AMPR {}',

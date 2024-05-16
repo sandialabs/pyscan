@@ -19,7 +19,7 @@ def new_instrument(visa_string=None, gpib_address=None):
 
     Returns
     -------
-    pyvisa :class:`Resource`
+    pyvisa :class:`pyvisa.Resource`
         Subclass of Resource from pyvisa library matching the instrument
 
     '''

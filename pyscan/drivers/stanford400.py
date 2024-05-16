@@ -7,71 +7,70 @@ class Stanford400(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Yields
-    ------
-    Properties which can be get and set :
-        counting_mode : int
-            Values: [0, 1, 2, 3]
-        counter_input_A : int
-            Values: [0, 1]
-        counter_input_B : int
-            Values: [1, 2]
-        counter_input_T : int
-            Values: [0, 1, 2, 3]
-        n_periods : int
-            Range: [0, 2000]
-        end_scan_mode : int
-            Values: [0, 1]
-        dwell_time : float
-            Range: [2e-3, 6e1]
-        output_source :
-            Dict Values: {0: 'A', 1: 'B', 2: 'A-B', 3: 'A+B'}
-        display_mode :
-            Dict Values: {0: 'hold', 1: 'continuous'}
-        trigger_slope :
-            Dict Values: {0: 'rise', 1: 'fall'}
-        trigger_level : float
-            Range: [-2.0, 2]
-        discriminator_slope_A :
-            Dict Values: {0: 'rise', 1: 'fall'}. Returns float
-        discriminator_slope_B :
-            Dict Values: {0: 'rise', 1:'fall'}. Returns float
-        discriminator_slope_T :
-            Dict Values: {0: 'rise', 1: 'fall'}. Returns float
-        discriminator_mode_A :
-            Dict Values: {0: 'fixed', 1: 'scan'}. Returns float
-        discriminator_mode_B :
-            Dict Values: {0: 'fixed', 1:'scan'}. Returns float
-        discriminator_mode_T :
-            Dict Values: {0: 'fixed', 1: 'scan'}. Returns float
-        discriminator_step_A : float
-            Range: [-0.02, 0.02]
-        discriminator_step_B : float
-            Range: [-0.02, 0.02]
-        discriminator_step_T : float
-            Range: [-0.02, 0.02]
-        discriminator_level_A : float
-            Range: [-0.3, 0.3]
-        discriminator_level_B : float
-            Range: [-0.3, 0.3]
-        discriminator_level_T : float
-            Range: [-0.3, 0.3]
-        gate_mode_A : int
-            Values: [0, 1, 2]
-        gate_delay_A : float
-            Range: [0, 999.2e-3]
-        gate_width_A : float
-            Range: [0.005e-6, 999.2e-3]
-        gate_mode_B : int
-            Values: [0, 1, 2]
-        gate_delay_B : float
-            Range: [0, 999.2e-3]
-        gate_width_B : float
-            Range: [0.005e-6, 999.2e-3]
+    Attributes
+    ----------
+    (Properties)
+    counting_mode : int
+        Values: [0, 1, 2, 3]
+    counter_input_A : int
+        Values: [0, 1]
+    counter_input_B : int
+        Values: [1, 2]
+    counter_input_T : int
+        Values: [0, 1, 2, 3]
+    n_periods : int
+        Range: [0, 2000]
+    end_scan_mode : int
+        Values: [0, 1]
+    dwell_time : float
+        Range: [2e-3, 6e1]
+    output_source :
+        Dict Values: {0: 'A', 1: 'B', 2: 'A-B', 3: 'A+B'}
+    display_mode :
+        Dict Values: {0: 'hold', 1: 'continuous'}
+    trigger_slope :
+        Dict Values: {0: 'rise', 1: 'fall'}
+    trigger_level : float
+        Range: [-2.0, 2]
+    discriminator_slope_A :
+        Dict Values: {0: 'rise', 1: 'fall'}. Returns float
+    discriminator_slope_B :
+        Dict Values: {0: 'rise', 1:'fall'}. Returns float
+    discriminator_slope_T :
+        Dict Values: {0: 'rise', 1: 'fall'}. Returns float
+    discriminator_mode_A :
+        Dict Values: {0: 'fixed', 1: 'scan'}. Returns float
+    discriminator_mode_B :
+        Dict Values: {0: 'fixed', 1:'scan'}. Returns float
+    discriminator_mode_T :
+        Dict Values: {0: 'fixed', 1: 'scan'}. Returns float
+    discriminator_step_A : float
+        Range: [-0.02, 0.02]
+    discriminator_step_B : float
+        Range: [-0.02, 0.02]
+    discriminator_step_T : float
+        Range: [-0.02, 0.02]
+    discriminator_level_A : float
+        Range: [-0.3, 0.3]
+    discriminator_level_B : float
+        Range: [-0.3, 0.3]
+    discriminator_level_T : float
+        Range: [-0.3, 0.3]
+    gate_mode_A : int
+        Values: [0, 1, 2]
+    gate_delay_A : float
+        Range: [0, 999.2e-3]
+    gate_width_A : float
+        Range: [0.005e-6, 999.2e-3]
+    gate_mode_B : int
+        Values: [0, 1, 2]
+    gate_delay_B : float
+        Range: [0, 999.2e-3]
+    gate_width_B : float
+        Range: [0.005e-6, 999.2e-3]
 
     '''
 
