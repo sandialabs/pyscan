@@ -20,6 +20,29 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+
+      #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
+      - name: Pull From Main
+        run: |
+          git --version
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git status
+          git fetch
+          
+          git rm CHANGELOG.md
+          git rm VERSION.json
+          git status
+          git add .
+          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+          git push || echo "Nothing to push."
+          
+          git checkout origin/main CHANGELOG.md
+          git checkout origin/main VERSION.json
+          git status
+          git add .
+          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+          git push || echo "Nothing to push."
           
       - name: Conventional Changelog Action
         id: changelog
