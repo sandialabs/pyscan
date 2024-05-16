@@ -29,12 +29,12 @@ jobs:
       id: changelog
       uses: TriPSs/conventional-changelog-action@v5.2.1
       with:
-          github-token: ${{ secrets.github_token }}
-          version-file: "VERSION.json"
-          release-count: '30'
-          git-branch: ${{ github.event.pull_request.head.ref }}
-          skip-version-file: 'true'
-          skip-commit: 'true'
+        github-token: ${{ secrets.github_token }}
+        version-file: "VERSION.json"
+        release-count: '30'
+        git-branch: ${{ github.event.pull_request.head.ref }}
+        skip-version-file: 'true'
+        skip-commit: 'true'
 
     - name: Create Release
       uses: actions/create-release@v1
