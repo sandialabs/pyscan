@@ -62,4 +62,5 @@ jobs:
       - name: Empty Commit (Trying To Reset Github Status Checks)
         run: |
           git commit --allow-empty -m "Empty-Commit"
+          git pull
           git push
