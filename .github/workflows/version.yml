@@ -48,6 +48,8 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5.2.1
         with:
+          github-user: "rsbrost"
+          github-email: "rsbrost@sandia.gov"
           github-token: ${{ secrets.REPO_TOKEN_SECRET }}
           version-file: "VERSION.json"
           release-count: '30'
