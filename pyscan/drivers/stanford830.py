@@ -26,7 +26,7 @@ class Stanford830(InstrumentDriver):
     harmonic : int
         Range: [1, 19999]
     amplitude : float
-            Range:  [0.004, 2.0]
+            Range:  [0.004, 5.0]
     input_configuration : int
         Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
     input_ground : int
