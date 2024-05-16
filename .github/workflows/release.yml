@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 jobs:
-  versioning_on_merge:
+  release:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
