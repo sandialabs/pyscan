@@ -8,7 +8,7 @@ on:
     branches:
       - "main"
   workflow_run:
-    workflows: ["auto_version"]
+    workflows: ["auto_versioning"]
     types:
       - completed
   workflow_dispatch:
