@@ -4,6 +4,9 @@
 name: Version Before Release
 
 on:
+  pull_request:
+    branches:
+      - "main"
   workflow_dispatch:
       
 permissions:
@@ -58,3 +61,10 @@ jobs:
       - name: Delete Tag Pre-Release
         if: steps.changelog.outputs.tag != ''
         run: git push --delete origin ${{ steps.changelog.outputs.tag }}
+
+      # this is required to enable status checks to complete.
+      - name: Empty Commit To Enable Status Checks
+        run: |
+          git commit --allow-empty -m "Empty-Commit"
+          git push
+          
