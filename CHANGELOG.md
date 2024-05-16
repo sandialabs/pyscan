@@ -1,40 +1,25 @@
-# Changelog
+# [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.2.0) (2024-05-16)
 
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### Bug Fixes
 
-## [Unreleased]
+* added line at end of drivers/testing/init file to satisfy flake8 req ([57821cb](https://github.com/sandialabs/pyscan/commit/57821cb008084b9c8d6b7526ce914bc1051f4548))
+* Added wiki link to contributors in README and docs index (Jasmine's commit pre revert) ([76faaca](https://github.com/sandialabs/pyscan/commit/76faaca2843ce90eb5bc99dc00f050591a438167))
+* corrected errors causing driver's test notebooks to fail. ([e5c620b](https://github.com/sandialabs/pyscan/commit/e5c620bc103877766dd03780de6ea4c3c98a67fd))
+* Fixed formatting in README and docs index (Jasmine's commit pre-revert) ([baa32a6](https://github.com/sandialabs/pyscan/commit/baa32a663b1c7744a48488b58709d4c220d5f9a0))
+* now allocating the right branch to push the version and changelog changes with. ([1a0c53e](https://github.com/sandialabs/pyscan/commit/1a0c53e77390859490c735921c08dd30ba3242f5))
+* restoring __init__.py to drivers/testing/ folder which may be helpful for building docs and or installing pyscan. ([b94895e](https://github.com/sandialabs/pyscan/commit/b94895e4e26925d91240215cf59a1468e5d709c1))
+* runinfo now implements version correctly without setter only getter. ([65e83ce](https://github.com/sandialabs/pyscan/commit/65e83ce4f650fbae5935a724bd58f6fae003bc00))
+* updated setup.py to fix build issue. ([4f6fd99](https://github.com/sandialabs/pyscan/commit/4f6fd99417ed22be9a73ee48fe93e71efbd97d35))
 
-## [0.0.2] - n.d.
 
-### Added
+### Features
 
-### Fixed
+* added get_version function to pyscan/general, implemented it in runfinfo, and also created a basic test file to ensure it works as expected. ([0e9fd49](https://github.com/sandialabs/pyscan/commit/0e9fd49e3720c392368e9efa44c1a6f9d7ba85f8))
 
-### Changed
 
-### Removed
 
-## [0.0.1] - n.d.
+## 0.0.1 (2023-11-28)
 
-### Added
 
-### Fixed
 
-- Jupyter demo notebooks use `import pyscan as ps` instead of hardcoded folder location
-- Fixed error in AverageScan "nrange not defined" (#2)
-
-### Changed
-
-- README.md installation instructions simplified, no longer includes virtual env instructions
-
-### Breaking Changes
-
-- ThorlabsBSC303 is now called ThorlabsBPC303
-- stanford928 is now called Stanford928
-
-### Removed
-
-- Deprecated Jupyter demo notebook (Raster Scan) removed
