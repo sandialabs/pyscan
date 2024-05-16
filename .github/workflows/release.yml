@@ -48,6 +48,7 @@ jobs:
         git add .
         git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
         git push || echo "Nothing to push."
+        git status
 
     - name: Conventional Changelog Action
       id: changelog
