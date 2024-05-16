@@ -5,10 +5,12 @@ name: Complete Build, Lint, and Test
 
 on:
   push:
-    branches: [ "main", "dev"]
-  pull_request:
-    branches: [ "main", "dev" ]
-  # Allow running manually from Actions tab
+    branches:
+      - "main"
+  workflow_run:
+    workflows: ["auto_version"]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
