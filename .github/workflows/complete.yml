@@ -1,20 +1,8 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+name: Version Before Release
 
-name: Complete Build, Lint, and Test
+name: Version Before Release
 
 on:
-  push:
-    branches:
-      - "main"
-  pull_request:
-    branches:
-      - "main"
-  workflow_run:
-    workflows: ["auto_versioning"]
-    types:
-      - completed
-  workflow_dispatch:
   check_suite:
     types:
       - requested
@@ -23,12 +11,15 @@ on:
     types:
       - requested
       - completed
-
+  pull_request:
+    branches:
+      - "main"
+      
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  complete:
+  auto_versioning:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,54 +28,86 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: checkSuite } = await github.checks.getSuite({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_suite_id: context.payload.check_suite.id
-            });
-  
-            const { data: checkRun } = await github.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Your Check Name',
-              head_sha: checkSuite.head_sha,
-              status: 'in_progress',
-              started_at: new Date().toISOString()
-            });
-    
-            - uses: actions/checkout@v3
-            - name: Set up Python 3.10
-              uses: actions/setup-python@v3
-              with:
-                python-version: "3.10"
-        
-            - name: Install package
-              run: |
-                python -m pip install --upgrade pip
-                python -m pip install wheel
-                python -m pip install flake8
-                python -m pip install pytest
-                python -m pip install nbmake
-                python -m pip install -e .
-        
-            - name: Lint with flake8
-              run: |
-                # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-                flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
-        
-            - name: Test with pytest
-              run: |
-                pytest
-        
-            - name: Test notebooks
-              run: |
-                pytest --nbmake "./demo_notebooks/" 
-  
-            await github.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: checkRun.id,
-              status: 'completed',
-              conclusion: 'success',
-              completed_at: new Date().toISOString()
-            });
+            async function run() {
+              const { data: checkSuite } = await github.checks.getSuite({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_suite_id: context.payload.check_suite.id
+              });
+
+              const { data: checkRun } = await github.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'Your Check Name',
+                head_sha: checkSuite.head_sha,
+                status: 'in_progress',
+                started_at: new Date().toISOString()
+              });
+
+              await checkoutCode();
+              await pullFromMain();
+              await runConventionalChangelog();
+              await deletePreReleaseTag();
+              await emptyCommit();
+              await updateCheckRun();
+            }
+
+            async function checkoutCode() {
+              await exec.exec('actions/checkout@v4', {
+                'with': {
+                  'fetch-depth': '0',
+                  'ref': '${{ github.event.pull_request.head.ref }}'
+                }
+              });
+            }
+
+            async function pullFromMain() {
+              await exec.exec('git', ['--version']);
+              await exec.exec('git', ['config', '--global', 'user.name', 'rsbrost']);
+              await exec.exec('git', ['config', '--global', 'user.email', 'rsbrost@sandia.gov']);
+              await exec.exec('git', ['remote', 'set-url', 'origin', `https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}`]);
+              await exec.exec('git', ['status']);
+              await exec.exec('git', ['fetch']);
+              await exec.exec('git', ['rm', 'CHANGELOG.md']);
+              await exec.exec('git', ['rm', 'VERSION.json']);
+              await exec.exec('git', ['status']);
+              await exec.exec('git', ['add', '.']);
+              await exec.exec('git', ['commit', '-m', 'Pulled latest CHANGELOG.md and VERSION.json from main.', '||', 'echo', '"Nothing to commit."']);
+              await exec.exec('git', ['push', '||', 'echo', '"Nothing to push."']);
+              await exec.exec('git', ['checkout', 'origin/main', 'CHANGELOG.md']);
+              await exec.exec('git', ['checkout', 'origin/main', 'VERSION.json']);
+              await exec.exec('git', ['status']);
+              await exec.exec('git', ['add', '.']);
+              await exec.exec('git', ['commit', '-m', 'Pulled latest CHANGELOG.md and VERSION.json from main.', '||', 'echo', '"Nothing to commit."']);
+              await exec.exec('git', ['push', '||', 'echo', '"Nothing to push."']);
+            }
+
+            async function runConventionalChangelog() {
+              await exec.exec('npx', ['conventional-changelog-action', '-p', 'angular', '-i', 'VERSION.json', '-r', '30', '-b', '${{ github.event.pull_request.head.ref }}']);
+            }
+
+            async function deletePreReleaseTag() {
+              const tag = await exec.getExecOutput('git', ['describe', '--tags', '--exact-match', '--match', 'v*.*.*-*']);
+              if (tag.exitCode === 0) {
+                await exec.exec('git', ['push', '--delete', 'origin', tag.stdout.trim()]);
+              }
+            }
+
+            async function emptyCommit() {
+              await exec.exec('git', ['commit', '--allow-empty', '-m', 'Empty-Commit']);
+              await exec.exec('git', ['pull']);
+              await exec.exec('git', ['push']);
+            }
+
+            async function updateCheckRun() {
+              await github.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'success',
+                completed_at: new Date().toISOString()
+              });
+            }
+
+            run();
