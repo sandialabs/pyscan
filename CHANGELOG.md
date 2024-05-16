@@ -1,4 +1,4 @@
-# [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.2.0) (2024-05-16)
+# [0.3.0](https://github.com/sandialabs/pyscan/compare/v0.0.1...v0.3.0) (2024-05-16)
 
 
 ### Bug Fixes
@@ -10,6 +10,7 @@
 * now allocating the right branch to push the version and changelog changes with. ([1a0c53e](https://github.com/sandialabs/pyscan/commit/1a0c53e77390859490c735921c08dd30ba3242f5))
 * restoring __init__.py to drivers/testing/ folder which may be helpful for building docs and or installing pyscan. ([b94895e](https://github.com/sandialabs/pyscan/commit/b94895e4e26925d91240215cf59a1468e5d709c1))
 * runinfo now implements version correctly without setter only getter. ([65e83ce](https://github.com/sandialabs/pyscan/commit/65e83ce4f650fbae5935a724bd58f6fae003bc00))
+* updated release.yml to address potential bugs and problems in advance. ([0c8bef7](https://github.com/sandialabs/pyscan/commit/0c8bef778e0c8a5fe66434278c9f950b74a98eaf))
 * updated setup.py to fix build issue. ([4f6fd99](https://github.com/sandialabs/pyscan/commit/4f6fd99417ed22be9a73ee48fe93e71efbd97d35))
 
 
