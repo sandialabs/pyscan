@@ -5,6 +5,8 @@ name: Version Before Release
 
 on:
   workflow_dispatch:
+  # if this is set to automatic it will push changes to branch and interfere with status check responses.
+  # unclear how to fix this for now...
   #pull_request:
     #branches:
       #- "main"
