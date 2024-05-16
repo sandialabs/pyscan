@@ -43,6 +43,12 @@ jobs:
           git add .
           git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
           git push || echo "Nothing to push."
+      
+      - name: Git Checkout2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
           
       - name: Conventional Changelog Action
         id: changelog
