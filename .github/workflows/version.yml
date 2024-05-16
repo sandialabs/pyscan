@@ -28,57 +28,7 @@ jobs:
           github-token: ${{ secrets.github_token }}
           version-file: "VERSION.json"
           release-count: '30'
-
-      - name: Delete Tag Pre-Release
-        if: steps.changelog.outputs.tag != ''
-        run: git push --delete origin ${{ steps.changelog.outputs.tag }}
-
-  auto_versioning_w_token:
-      runs-on: ubuntu-latest
-
-      steps:
-      - name: Git Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - name: Pull From Main
-        run: |
-          git --version
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git status
-          git fetch
-          
-          git rm CHANGELOG.md || echo "No changelog to remove from branch."
-          git rm VERSION.json || echo "No version file to remove from branch."
-
-          git status
-          git add .
-          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-          git push || echo "Nothing to push."
-          
-          git checkout origin/main CHANGELOG.md || echo "Could not checkout main's changelog."
-          git checkout origin/main VERSION.json || echo "Could not checkout main's version file."
-          git status
-          git add .
-          git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-          git push || echo "Nothing to push."
-      
-      - name: git config
-        run: |
-          git config --global user.name "rsbrost"
-          git config --global user.email "rsbrost@sandia.gov"
-          git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
-          
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v5.2.1
-        with:
-          github-token: ${{ secrets.REPO_TOKEN_SECRET }}
-          version-file: "VERSION.json"
-          release-count: '30'
+          git-branch: ${{ github.event.pull_request.head.ref }}
 
       - name: Delete Tag Pre-Release
         if: steps.changelog.outputs.tag != ''
