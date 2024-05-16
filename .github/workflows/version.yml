@@ -24,8 +24,9 @@ jobs:
       - name: Pull From Main
         run: |
           git --version
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "rsbrost"
+          git config --global user.email "rsbrost@sandia.gov"
+          git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
           git status
           git fetch
           
@@ -47,7 +48,7 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5.2.1
         with:
-          github-token: ${{ secrets.github_token }}
+          github-token: ${{ secrets.REPO_TOKEN_SECRET }}
           version-file: "VERSION.json"
           release-count: '30'
           git-branch: ${{ github.event.pull_request.head.ref }}
