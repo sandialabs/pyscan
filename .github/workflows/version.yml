@@ -24,81 +24,81 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-      - name: Create or Update Check Run
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { data: checkSuite } = await github.checks.getSuite({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_suite_id: context.payload.check_suite.id
-            });
-
-            const { data: checkRun } = await github.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'Your Check Name',
-              head_sha: checkSuite.head_sha,
-              status: 'in_progress',
-              started_at: new Date().toISOString()
-            });
-            - name: Git Checkout
-              uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-                ref: ${{ github.event.pull_request.head.ref }}
-      
-            #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
-            - name: Pull From Main
-              run: |
-                git --version
-                git config --global user.name "rsbrost"
-                git config --global user.email "rsbrost@sandia.gov"
-                git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
-                git status
-                git fetch
-                
-                git rm CHANGELOG.md
-                git rm VERSION.json
-                git status
-                git add .
-                git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-                git push || echo "Nothing to push."
-                
-                git checkout origin/main CHANGELOG.md
-                git checkout origin/main VERSION.json
-                git status
-                git add .
-                git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
-                git push || echo "Nothing to push."
-                
-            - name: Conventional Changelog Action
-              id: changelog
-              uses: TriPSs/conventional-changelog-action@v5.2.1
-              with:
-                git-user-name: "rsbrost"
-                git-user-email: "rsbrost@sandia.gov"
-                github-token: ${{ secrets.REPO_TOKEN_SECRET }}
-                version-file: "VERSION.json"
-                release-count: '30'
-                git-branch: ${{ github.event.pull_request.head.ref }}
-      
-            - name: Delete Tag Pre-Release
-              if: steps.changelog.outputs.tag != ''
-              run: git push --delete origin ${{ steps.changelog.outputs.tag }}
-      
-            - name: Empty Commit (Trying To Reset Github Status Checks)
-              run: |
-                git commit --allow-empty -m "Empty-Commit"
-                git pull
-                git push
-
-            await github.checks.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              check_run_id: checkRun.id,
-              status: 'completed',
-              conclusion: 'success',
-              completed_at: new Date().toISOString()
-            });
+        - name: Create or Update Check Run
+          uses: actions/github-script@v4
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const { data: checkSuite } = await github.checks.getSuite({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_suite_id: context.payload.check_suite.id
+              });
+  
+              const { data: checkRun } = await github.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'Your Check Name',
+                head_sha: checkSuite.head_sha,
+                status: 'in_progress',
+                started_at: new Date().toISOString()
+              });
+              - name: Git Checkout
+                uses: actions/checkout@v4
+                with:
+                  fetch-depth: 0
+                  ref: ${{ github.event.pull_request.head.ref }}
+        
+              #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
+              - name: Pull From Main
+                run: |
+                  git --version
+                  git config --global user.name "rsbrost"
+                  git config --global user.email "rsbrost@sandia.gov"
+                  git remote set-url origin https://${{ secrets.REPO_TOKEN_SECRET }}@github.com/${{ github.repository }}
+                  git status
+                  git fetch
+                  
+                  git rm CHANGELOG.md
+                  git rm VERSION.json
+                  git status
+                  git add .
+                  git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+                  git push || echo "Nothing to push."
+                  
+                  git checkout origin/main CHANGELOG.md
+                  git checkout origin/main VERSION.json
+                  git status
+                  git add .
+                  git commit -m "Pulled latest CHANGELOG.md and VERSION.json from main." || echo "Nothing to commit."
+                  git push || echo "Nothing to push."
+                  
+              - name: Conventional Changelog Action
+                id: changelog
+                uses: TriPSs/conventional-changelog-action@v5.2.1
+                with:
+                  git-user-name: "rsbrost"
+                  git-user-email: "rsbrost@sandia.gov"
+                  github-token: ${{ secrets.REPO_TOKEN_SECRET }}
+                  version-file: "VERSION.json"
+                  release-count: '30'
+                  git-branch: ${{ github.event.pull_request.head.ref }}
+        
+              - name: Delete Tag Pre-Release
+                if: steps.changelog.outputs.tag != ''
+                run: git push --delete origin ${{ steps.changelog.outputs.tag }}
+        
+              - name: Empty Commit (Trying To Reset Github Status Checks)
+                run: |
+                  git commit --allow-empty -m "Empty-Commit"
+                  git pull
+                  git push
+  
+              await github.checks.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                check_run_id: checkRun.id,
+                status: 'completed',
+                conclusion: 'success',
+                completed_at: new Date().toISOString()
+              });
