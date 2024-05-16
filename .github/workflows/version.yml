@@ -4,8 +4,7 @@
 name: Version Before Release
 
 on:
-  pull_request:
-    branches: "main"
+ workflow_dispatch:
       
 permissions:
   contents: write
