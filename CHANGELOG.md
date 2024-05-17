@@ -1,4 +1,4 @@
-# [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.2.0) (2024-05-16)
+# [0.3.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.3.0) (2024-05-16)
 
 
 ### Bug Fixes
@@ -8,6 +8,7 @@
 * Added wiki link to contributors in README and docs index ([5a17be4](https://github.com/sandialabs/pyscan/commit/5a17be4b768d106ea8d162cfb42776e769dc5b8a))
 * Added wiki link to contributors in README and docs index (Jasmine's commit pre revert) ([76faaca](https://github.com/sandialabs/pyscan/commit/76faaca2843ce90eb5bc99dc00f050591a438167))
 * corrected comment with version_when_pushed.yml ([09e4ac5](https://github.com/sandialabs/pyscan/commit/09e4ac5573ad5053dac942420e7616d81b60890a))
+* corrected error in versioning workflow. ([f4d4a8a](https://github.com/sandialabs/pyscan/commit/f4d4a8ab7b360c0e406c4b4befdfc8393ba6a1a3))
 * corrected errors causing driver's test notebooks to fail. ([e5c620b](https://github.com/sandialabs/pyscan/commit/e5c620bc103877766dd03780de6ea4c3c98a67fd))
 * deleted new_release.yml since it is not running on push. Will replace with two separate workflows. ([04ac6e2](https://github.com/sandialabs/pyscan/commit/04ac6e206311d02cdaf03200014a8e2150baee0c))
 * Fixed formatting in README and docs index ([1f080fe](https://github.com/sandialabs/pyscan/commit/1f080fecc8d43346b50a917e7defb340417dad02))
@@ -47,6 +48,7 @@
 * added get_version function to pyscan/general, implemented it in runfinfo, and also created a basic test file to ensure it works as expected. ([0e9fd49](https://github.com/sandialabs/pyscan/commit/0e9fd49e3720c392368e9efa44c1a6f9d7ba85f8))
 * added new workflow for testing versioning temporarily. ([2fdd155](https://github.com/sandialabs/pyscan/commit/2fdd155d3eb90dff372467fe025b7ffdd08852d8))
 * added workflow dispatch for ultimate versioning solution to temporarily test. ([842fecd](https://github.com/sandialabs/pyscan/commit/842fecd446a443cfdcc023d95ccd1e8260b8c361))
+* fake feature. ([6e40ac1](https://github.com/sandialabs/pyscan/commit/6e40ac16c157b50abd64f116044fc46d7cbf1c01))
 * Update VERSION.json ([91677f8](https://github.com/sandialabs/pyscan/commit/91677f8d0f51821dfdea19d9941ca2f275a11914))
 
 
