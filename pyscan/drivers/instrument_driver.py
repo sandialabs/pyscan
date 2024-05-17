@@ -111,15 +111,26 @@ class InstrumentDriver(ItemAttribute):
             set_function = self.set_dict_values_property
             prop_type = 'dict_values'
         else:
-            assert False, "key used but not allowed"
+            assert False, "Key 'values', 'range', indexed_values' or 'dict_values' must be in settings."
+
 
         doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
                                                prop_type, settings[prop_type])
 
-        property_definition = property(
-            fget=lambda obj: self.get_instrument_property(obj, settings),
-            fset=lambda obj, new_value: set_function(obj, new_value, settings),
-            doc=doc_string)
+        # read-only property
+        if "write_string" not in settings:
+            property_definition = property(
+                fget=lambda obj: self.get_instrument_property(obj, settings),
+                fset=None,
+                doc=doc_string,
+            )
+        # get-set property
+        else:
+            property_definition = property(
+                fget=lambda obj: self.get_instrument_property(obj, settings),
+                fset=lambda obj, new_value: set_function(obj, new_value, settings),
+                doc=doc_string,
+            )
 
         setattr(self.__class__, settings['name'], property_definition)
 
