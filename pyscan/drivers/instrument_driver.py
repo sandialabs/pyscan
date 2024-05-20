@@ -121,7 +121,6 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "Key 'values', 'range', indexed_values' or 'dict_values' must be in settings."
 
-
         doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
                                                prop_type, settings[prop_type])
 
