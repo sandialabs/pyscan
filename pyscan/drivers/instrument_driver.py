@@ -94,45 +94,49 @@ class InstrumentDriver(ItemAttribute):
         # get/set required parameters
         required_setting = ['values', 'range', 'indexed_values', 'dict_values']
 
-        # readonly  properties do not need to have a required key in setting
+        # readonly  properties do not need to have a required key in setting, 
+        # but for the docstring to work a readonly property is created.
         if 'write_string' in settings:
             readonly = False
         else:
             readonly = True
+            if 'readonly' not in settings:
+                settings['readonly'] = settings['return_type'].__name__
 
         prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
             prop_type = 'values'
-            doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
         elif ('range' in settings) and ('ranges' not in settings):
             set_function = self.set_range_property
             prop_type = 'range'
-            doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
         elif 'ranges' in settings:
             assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
             prop_type = 'indexed_values'
-            doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
             prop_type = 'dict_values'
-            doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
         elif readonly:
             prop_type = 'readonly'
-            doc_string = "{} : {}".format(settings['name'], settings['return_type'].__name__)
         else:
             assert False, "key used but not allowed"
 
+        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
+                                               prop_type, settings[prop_type])
+
+        # read-only
         if 'write_string' not in settings:
             property_definition = property(
                 fget=lambda obj: self.get_instrument_property(obj, settings),
                 fset=None,
+                doc=doc_string)
+        # write-only
+        elif 'query_string' not in settings:
+            property_definition = property(
+                fget=None,
+                fset=lambda obj, new_value: set_function(obj, new_value, settings),
                 doc=doc_string)
         else:
             property_definition = property(
