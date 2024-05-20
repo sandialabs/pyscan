@@ -139,6 +139,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "output_current",
                 "query_string": "R0",
+                "readonly": float,
                 "return_type": ips120_float
             }
         )
@@ -247,6 +248,43 @@ class OxfordIPS120(InstrumentDriver):
             }
         )
 
+        # write-only property
+        self.add_device_property(
+            {
+                "name": "control",
+                "write_string": "$C{}",
+                "dict_values": {"local_locked":0, "remote_locked":1, "local_unlocked": 2, "remote_unlocked":3},
+                "return_type": int
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "communications_protocol",
+                "write_string": "Q{}", # no echo since this command clears output buffer
+                "dict_values": {"normal":0, "extended":4}, # do not allow switch to <CR><LF>
+                "return_type": int
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "heater_control",
+                "write_string": "$H{}",
+                "indexed_values": ["off","on", "force"],
+                "return_type": int
+            }
+        )
+
+        self.add_device_property(
+            {
+                "name": "activity_control",
+                "write_string": "$A{}",
+                "dict_values": {"hold": 0, "to_set_point": 1, "to_zero": 2, "clamp": 4},
+                "return_type": int
+            }
+        )
+
         self.field_set_point
         self.field_rate
         self.current_set_point
@@ -286,11 +324,11 @@ class OxfordIPS120(InstrumentDriver):
             value += "\n"
             value += "Magnet is persistent"
             value += "\n"
-            value += f"get_persistent_field() = {self.get_persistent_field()}"
+            value += f"persistent_field = {self.get_persistent_field}"
         value += "\n"
         value += f"activity: {status.A_value()}"
         value += "\n"
-        value += f"get_field() = {self.get_field()}"
+        value += f"output_field = {self.output_field}"
         value += "\n"
         value += f"field_set_point = {self.field_set_point}"
         value += "\n"
