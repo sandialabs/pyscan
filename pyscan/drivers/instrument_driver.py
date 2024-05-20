@@ -95,6 +95,12 @@ class InstrumentDriver(ItemAttribute):
 
         self['_{}_settings'.format(settings['name'])] = settings
 
+        # readonly  properties do not need to have a required key in setting,
+        # but for the docstring to work a readonly property is created.
+        if 'write_string' not in settings:
+            if 'readonly' not in settings:
+                settings['readonly'] = settings['return_type'].__name__
+
         prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
@@ -110,6 +116,8 @@ class InstrumentDriver(ItemAttribute):
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
             prop_type = 'dict_values'
+        elif 'readonly' in settings:
+            prop_type = 'readonly'
         else:
             assert False, "Key 'values', 'range', indexed_values' or 'dict_values' must be in settings."
 
@@ -117,14 +125,18 @@ class InstrumentDriver(ItemAttribute):
         doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
                                                prop_type, settings[prop_type])
 
-        # read-only property
-        if "write_string" not in settings:
+        # read-only
+        if 'write_string' not in settings:
             property_definition = property(
                 fget=lambda obj: self.get_instrument_property(obj, settings),
                 fset=None,
-                doc=doc_string,
-            )
-        # get-set property
+                doc=doc_string)
+        # write-only
+        elif 'query_string' not in settings:
+            property_definition = property(
+                fget=None,
+                fset=lambda obj, new_value: set_function(obj, new_value, settings),
+                doc=doc_string)
         else:
             property_definition = property(
                 fget=lambda obj: self.get_instrument_property(obj, settings),
