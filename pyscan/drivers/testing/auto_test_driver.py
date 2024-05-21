@@ -163,6 +163,29 @@ def check_attribute_values(device, attributes, ev):
         assert (device[attributes[i]] == ev[i]), err_string
 
 
+# designed for testing read only properties of any type
+def check_read_only_property(device, key):
+    name = device[key]['name']
+    settings = device[name + '_settings']
+    return_type = device
+
+    # I'm not sure that this will work. It might be that only the underscore property can be used to access
+    # the property value.
+    assert type(device[name]) is return_type, "read_only property {} returned type {} not {}".format(
+        name, type(device[name]), return_type)
+    assert type(device["_{}".format(name)]) is return_type, "read_only _property {} returned type {} not {}".format(
+        name, type(device["_{}".format(name)]), return_type)
+
+    assert 'write_string' not in settings, "read_only property {} has write_string {}".format(
+        name, settings['write_string'])
+
+    # I'm not sure that this will fail. If not, it should be that the original value remains the same no matter what
+    # you try to set it to.
+    for val in BAD_INPUTS:
+        with pytest.raises(Exception):
+            device[name] = val
+
+
 # check the set_values_property behavior
 def check_values_property(device, key):
     name = device[key]['name']
@@ -322,7 +345,9 @@ def check_properties(test_instrument):
         if base_name in test_instrument['black_list_for_testing']:
             continue
         keys = test_instrument[name].keys()
-        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+        if 'read_only' in keys:
+            check_read_only_property(test_instrument, name)
+        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
             check_values_property(test_instrument, name)
