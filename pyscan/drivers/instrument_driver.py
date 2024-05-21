@@ -29,8 +29,10 @@ class InstrumentDriver(ItemAttribute):
             self.instrument = instrument
             try:
                 instrument_id = self.instrument.query('*IDN?')
+                print(instrument_id)
                 self.version = get_driver_version(instrument_id)
             except Exception:
+                print("Instrument driver init try failed.")
                 self.version = "version not found"
 
         self.debug = debug

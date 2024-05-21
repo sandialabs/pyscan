@@ -24,5 +24,5 @@ def get_driver_version(instrument_id):
     if file_name is None:
         return "version not found"
     else:
-        path = '../drivers/driver_versions/{}.json'
-        get_version(path)
+        path = '../drivers/driver_versions/{}.json'.format(file_name)
+        return get_version(path)
