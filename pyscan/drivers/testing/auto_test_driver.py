@@ -4,6 +4,7 @@ import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
+from pyscan.general.get_version import get_driver_version
 
 '''
 WARNING!
@@ -392,7 +393,7 @@ def check_properties(test_instrument):
         print("Restored settings are different for the following: ", diff)
 
 
-def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), iterate_version=True, expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
@@ -402,3 +403,8 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
     check_properties(device)
 
     print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
+    if iterate_version is True:
+        try:
+            instrument_id = self.instrument.query('*IDN?')
+            
+
