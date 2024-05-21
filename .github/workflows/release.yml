@@ -25,6 +25,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
 
+    # please note, this will likely fail if the auto versioning workflow was not first run on the branch before merging.
+    # if this happens you may need to delete the tag on GitHub that does not correspond to a release.
     - name: Conventional Changelog Action
       id: changelog
       uses: TriPSs/conventional-changelog-action@v5.2.1
@@ -42,5 +44,3 @@ jobs:
         tag_name: ${{ steps.changelog.outputs.tag }}
         release_name: ${{ steps.changelog.outputs.tag }}
         body: ${{ steps.changelog.outputs.clean_changelog }}
-
-      

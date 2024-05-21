@@ -20,7 +20,8 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
 
-      #try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
+      # try to pull from main here, just the version and changelog files if possible, always reset to these with each push then version and it will work.
+      # this will likely need to be changed to Andy's info and token now that I am no longer an admin.
       - name: Pull From Main
         run: |
           git --version
@@ -58,9 +59,3 @@ jobs:
       - name: Delete Tag Pre-Release
         if: steps.changelog.outputs.tag != ''
         run: git push --delete origin ${{ steps.changelog.outputs.tag }}
-
-      - name: Empty Commit (Trying To Reset Github Status Checks)
-        run: |
-          git commit --allow-empty -m "Empty-Commit"
-          git pull
-          git push

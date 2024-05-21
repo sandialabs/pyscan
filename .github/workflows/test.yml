@@ -4,7 +4,6 @@
 name: Basic Auto Tests
 
 on:
-  # Allow running manually from Actions tab
   workflow_dispatch:
 
 permissions:
