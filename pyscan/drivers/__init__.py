@@ -39,11 +39,7 @@ from .thorlabsbsc203 import ThorlabsBSC203
 from .thorlabsbpc303 import ThorlabsBPC303
 from .thorlabsmff101 import ThorlabsMFF101
 
-# pulseblasternv.py is not in the main pyscan repository
-# from .pulseblaster import PulseBlaster
-#     from .pulseblasternv import NVPulseBlaster
-# except NameError:
-#     print('spinapi is not installed, PulseBlaster driver not loaded.')
+from .pulseblaster import PulseBlaster
 
 # Methods
 from .new_instrument import new_instrument
