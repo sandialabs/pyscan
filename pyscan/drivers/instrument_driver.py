@@ -28,8 +28,8 @@ class InstrumentDriver(ItemAttribute):
         else:
             self.instrument = instrument
             try:
-                instrument_id = self.instrument.query('*IDN?')
-                self.version, self.version_tested = get_driver_version(instrument_id)
+                self.instrument_id = self.instrument.query('*IDN?')
+                self.version, self.version_tested = get_driver_version(self.instrument_id)
             except Exception:
                 self.version = "version not found"
 
