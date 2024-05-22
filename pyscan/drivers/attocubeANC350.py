@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-from pylablib.devices.Attocube.anc350 import ANC350
 from .instrument_driver import InstrumentDriver
 
 
@@ -7,9 +6,14 @@ class AttocubeANC350(InstrumentDriver):
 
     def __init__(self, instrument):
 
+        try:
+            from pylablib.devices.Attocube.anc350 import ANC350
+        except ModuleNotFoundError:
+            print('pylablib not found, AttocubeANC350 not loaded')
+
         super().__init__(instrument)
 
-        self.inst = ANC350()
+        self.inst = self.ANC350()
         # self.debug = False
         # self.initialize_properties()
 

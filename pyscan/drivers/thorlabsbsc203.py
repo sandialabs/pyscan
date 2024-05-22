@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from pyscan.general.item_attribute import ItemAttribute
-from thorlabs_kinesis import benchtop_stepper_motor as bsm
 from ctypes import c_char_p, c_int, c_double, c_ushort, c_ulong, c_short
 from time import sleep
 
@@ -21,6 +20,14 @@ class ThorlabsBSC203(ItemAttribute):
     '''
 
     def __init__(self, serial="70878515"):
+
+        try:
+            from thorlabs_kinesis import benchtop_stepper_motor as bsm
+        except ModuleNotFoundError:
+            print('msl not installed, Thorlabs BSC203 driver not loaded')
+        except ImportError:
+            print('msl not installed, Thorlabs BSC203 driver not loaded')
+
         self.serial = c_char_p(bytes(serial, "utf-8"))
         if self.build_device_list() != 0:
             assert 0, 'Could not build device list'

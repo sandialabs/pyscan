@@ -2,12 +2,6 @@
 from pyscan.general import ItemAttribute
 
 import sys
-sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
-
-try:
-    import keysightSD1
-except:
-    print('Could not load Keysight SD1')
 
 
 class KeysiteM3302AAWG(ItemAttribute):
@@ -19,17 +13,20 @@ class KeysiteM3302AAWG(ItemAttribute):
         The index of the chasis used
     slot : int
         The index of the card slot
-
-
-
     '''
 
     def __init__(self, chassis, slot):
 
+        try:
+            sys.path.append(r"c:\Program Files (x86)\Keysight\SD1\Libraries\Python")
+            import keysightSD1
+        except:
+            print("Could not load Keysight SD1")
+
         self.chassis = chassis
         self.slot = slot
 
-        self.module = keysightSD1.SD_AOU()
+        self.module = self.keysightSD1.SD_AOU()
         self.module.openWithSlot("", self.chassis, self.slot)
 
     def set_channel_amplitude(self, channel, amplitude):

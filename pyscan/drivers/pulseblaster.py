@@ -2,84 +2,6 @@
 from pyscan.general.item_attribute import ItemAttribute
 import ctypes
 
-PULSE_PROGRAM = 0
-FREQ_REGS = 1
-
-try:
-    spinapi = ctypes.CDLL("spinapi64")
-except:
-    try:
-        spinapi = ctypes.CDLL("spinapi")
-    except:
-        print("Failed to load spinapi library.")
-        pass
-
-
-def enum(**enums):
-    return type('Enum', (), enums)
-
-
-ns = 1.0
-us = 1000.0
-ms = 1000000.0
-
-MHz = 1.0
-kHz = 0.001
-Hz = 0.000001
-
-# Instruction enum
-Inst = enum(
-    CONTINUE=0,
-    STOP=1,
-    LOOP=2,
-    END_LOOP=3,
-    JSR=4,
-    RTS=5,
-    BRANCH=6,
-    LONG_DELAY=7,
-    WAIT=8,
-    RTI=9
-)
-
-spinapi.pb_get_version.restype = (ctypes.c_char_p)
-spinapi.pb_get_error.restype = (ctypes.c_char_p)
-
-spinapi.pb_count_boards.restype = (ctypes.c_int)
-
-spinapi.pb_init.restype = (ctypes.c_int)
-
-spinapi.pb_select_board.argtype = (ctypes.c_int)
-spinapi.pb_select_board.restype = (ctypes.c_int)
-
-spinapi.pb_set_debug.argtype = (ctypes.c_int)
-spinapi.pb_set_debug.restype = (ctypes.c_int)
-
-spinapi.pb_set_defaults.restype = (ctypes.c_int)
-
-spinapi.pb_core_clock.argtype = (ctypes.c_double)
-spinapi.pb_core_clock.restype = (ctypes.c_int)
-
-spinapi.pb_write_register.argtype = (ctypes.c_int, ctypes.c_int)
-spinapi.pb_write_register.restype = (ctypes.c_int)
-
-spinapi.pb_start_programming.argtype = (ctypes.c_int)
-spinapi.pb_start_programming.restype = (ctypes.c_int)
-
-spinapi.pb_stop_programming.restype = (ctypes.c_int)
-
-spinapi.pb_start.restype = (ctypes.c_int)
-spinapi.pb_stop.restype = (ctypes.c_int)
-spinapi.pb_reset.restype = (ctypes.c_int)
-spinapi.pb_close.restype = (ctypes.c_int)
-
-spinapi.pb_inst_pbonly.argtype =\
-    (ctypes.c_int,  # flags
-     ctypes.c_int,  # inst
-     ctypes.c_int,  # inst_data
-     ctypes.c_double)  # timing value)
-
-spinapi.pb_inst_pbonly.restype = (ctypes.c_int)
-
 
 class PulseBlaster(ItemAttribute):
     '''
@@ -145,10 +67,91 @@ class PulseBlaster(ItemAttribute):
         self.init_pb()
 
     def init_pb(self):
+
         if self.debug:
             self.set_debug(1)
         else:
             self.set_debug(0)
+
+        # [[ initialization block (previously run at module load)]]
+        PULSE_PROGRAM = 0
+        FREQ_REGS = 1
+
+        try:
+            spinapi = ctypes.CDLL("spinapi64")
+        except:
+            try:
+                spinapi = ctypes.CDLL("spinapi")
+            except:
+                print("Failed to load spinapi library.")
+                pass
+
+
+        def enum(**enums):
+            return type('Enum', (), enums)
+
+        ns = 1.0
+        us = 1000.0
+        ms = 1000000.0
+
+        MHz = 1.0
+        kHz = 0.001
+        Hz = 0.000001
+
+        # Instruction enum
+        Inst = enum(
+            CONTINUE=0,
+            STOP=1,
+            LOOP=2,
+            END_LOOP=3,
+            JSR=4,
+            RTS=5,
+            BRANCH=6,
+            LONG_DELAY=7,
+            WAIT=8,
+            RTI=9
+        )
+
+        spinapi.pb_get_version.restype = (ctypes.c_char_p)
+        spinapi.pb_get_error.restype = (ctypes.c_char_p)
+
+        spinapi.pb_count_boards.restype = (ctypes.c_int)
+
+        spinapi.pb_init.restype = (ctypes.c_int)
+
+        spinapi.pb_select_board.argtype = (ctypes.c_int)
+        spinapi.pb_select_board.restype = (ctypes.c_int)
+
+        spinapi.pb_set_debug.argtype = (ctypes.c_int)
+        spinapi.pb_set_debug.restype = (ctypes.c_int)
+
+        spinapi.pb_set_defaults.restype = (ctypes.c_int)
+
+        spinapi.pb_core_clock.argtype = (ctypes.c_double)
+        spinapi.pb_core_clock.restype = (ctypes.c_int)
+
+        spinapi.pb_write_register.argtype = (ctypes.c_int, ctypes.c_int)
+        spinapi.pb_write_register.restype = (ctypes.c_int)
+
+        spinapi.pb_start_programming.argtype = (ctypes.c_int)
+        spinapi.pb_start_programming.restype = (ctypes.c_int)
+
+        spinapi.pb_stop_programming.restype = (ctypes.c_int)
+
+        spinapi.pb_start.restype = (ctypes.c_int)
+        spinapi.pb_stop.restype = (ctypes.c_int)
+        spinapi.pb_reset.restype = (ctypes.c_int)
+        spinapi.pb_close.restype = (ctypes.c_int)
+
+        spinapi.pb_inst_pbonly.argtype = (
+            ctypes.c_int,     # flags
+            ctypes.c_int,     # inst
+            ctypes.c_int,     # inst_data
+            ctypes.c_double,  # timing value)
+        )
+
+        spinapi.pb_inst_pbonly.restype = (ctypes.c_int)
+
         self.select_board(self.board)
         self.init()
         self.core_clock(self.clock)

@@ -32,49 +32,18 @@ from .tpi1002a import TPI1002A
 from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
-try:
-    from .attocubeANC350 import AttocubeANC350
-except ModuleNotFoundError:
-    print('pylablib not found, AttocubeANC350 not loaded')
+from .attocubeANC350 import AttocubeANC350
+from .helioscamera import HeliosCamera
+from .oceanopticsqepro import OceanOpticsQEPro
+from .thorlabsbsc203 import ThorlabsBSC203
+from .thorlabsbpc303 import ThorlabsBPC303
+from .thorlabsmff101 import ThorlabsMFF101
 
-try:
-    from .baslercamera import BaslerCamera
-except ModuleNotFoundError:
-    print('Basler Camera software not found, BaserCamera not loaded')
-
-try:
-    from .helioscamera import HeliosCamera
-
-except ModuleNotFoundError:
-    print('Helios Camera not installed')
-
-try:
-    from .thorlabsbsc203 import BSC203
-except ModuleNotFoundError:
-    print('msl not installed, Thorlabs BSC203 driver not loaded')
-
-try:
-    from .oceanopticsqepro import OceanOpticsQEPro
-except ModuleNotFoundError:
-    print('seabreeze module not found, Ocean Optics not imported')
-try:
-    from .pulseblaster import PulseBlaster
-    from .pulseblasternv import NVPulseBlaster
-except NameError:
-    print('spinapi is not installed, PulseBlaster driver not loaded.')
-try:
-    from .thorlabsbsc203 import ThorlabsBSC203
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsBSC203 not loaded')
-try:
-    from .thorlabsbpc303 import ThorlabsBPC303
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsBPC303 not loaded')
-try:
-    from .thorlabsmff101 import ThorlabsMFF101
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsMFF101 not loaded')
-
+# pulseblasternv.py is not in the main pyscan repository
+# from .pulseblaster import PulseBlaster
+#     from .pulseblasternv import NVPulseBlaster
+# except NameError:
+#     print('spinapi is not installed, PulseBlaster driver not loaded.')
 
 # Methods
 from .new_instrument import new_instrument

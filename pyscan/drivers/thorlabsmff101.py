@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
-from thorlabs_kinesis import filter_flipper as ff
 from ctypes import c_char_p, c_ushort, c_ulong
 from time import sleep
 
@@ -20,33 +19,39 @@ class ThorlabsMFF101(ItemAttribute):
     '''
 
     def __init__(self, serial):
+
+        try:
+            from thorlabs_kinesis import filter_flipper as ff
+        except ModuleNotFoundError:
+            print('Thorlabs Kinesis not found, ThorlabsMFF101 not loaded')
+
         self.serial = c_char_p(bytes(serial, "utf-8"))
         self.build_device_list()
         self.open()
         self.start_polling()
 
     def build_device_list(self):
-        return ff.TLI_BuildDeviceList()
+        return self.ff.TLI_BuildDeviceList()
 
     def open(self):
-        return ff.FF_Open(self.serial)
+        return self.ff.FF_Open(self.serial)
 
     def close(self):
-        ff.FF_Close(self.serial)
+        self.ff.FF_Close(self.serial)
 
     def move_to_position(self, pos):
-        ret = ff.FF_MoveToPosition(self.serial, pos)
+        ret = self.ff.FF_MoveToPosition(self.serial, pos)
         sleep(0.5)
         return ret
 
     def get_position(self):
-        return ff.FF_GetPosition(self.serial)
+        return self.ff.FF_GetPosition(self.serial)
 
     def start_polling(self, interval=50):
-        return ff.FF_StartPolling(self.serial, interval)
+        return self.ff.FF_StartPolling(self.serial, interval)
 
     def stop_polling(self):
-        ff.FF_StopPolling(self.serial)
+        self.ff.FF_StopPolling(self.serial)
 
     @property
     def position(self):

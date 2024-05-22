@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from seabreeze.spectrometers import Spectrometer
 from pyscan.general.item_attribute import ItemAttribute
 
 
@@ -25,10 +24,15 @@ class OceanOpticsQEPro(ItemAttribute):
 
     def __init__(self, sn=None):
 
+        try:
+            from seabreeze.spectrometers import Spectrometer
+        except ModuleNotFoundError:
+            print('seabreeze module not found, Ocean Optics not imported')
+
         if sn is None:
-            self.spec = Spectrometer.from_first_available()
+            self.spec = self.Spectrometer.from_first_available()
         else:
-            self.spec = Spectrometer.from_serial_number(sn)
+            self.spec = self.Spectrometer.from_serial_number(sn)
         self.sn = sn
         self.set_integration_time(.25)
 

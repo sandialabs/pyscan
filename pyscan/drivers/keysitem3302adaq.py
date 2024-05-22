@@ -2,12 +2,6 @@
 from pyscan.general import ItemAttribute
 
 import sys
-sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
-
-try:
-    import keysightSD1
-except:
-    print('Could not load Keysight SD1')
 
 
 class KeysiteM3302ADAQ(ItemAttribute):
@@ -41,16 +35,21 @@ class KeysiteM3302ADAQ(ItemAttribute):
         returns:
             0 - high Z
             1 - 50 Ohms
-
     '''
 
     def __init__(self, chassis, slot, channel):
+
+        try:
+            sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
+            import keysightSD1
+        except:
+            print('Could not load Keysight SD1')
 
         self.chassis = chassis
         self.slot = slot
         self.channel = channel
 
-        self.module = keysightSD1.SD_AIN()
+        self.module = self.keysightSD1.SD_AIN()
         self.module.openWithSlot("", self.chassis, self.slot)
 
     @property
