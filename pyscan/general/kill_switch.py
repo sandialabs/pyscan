@@ -9,7 +9,7 @@ def stop(expt):
     print("stop function executed")
 
 
-def engage_killswitch(expt, hotkey='c', plotting_function=None, dt=.1, *arg, **kwarg):
+def engage_kill_switch(expt, hotkey='c', plotting_function=None, dt=.1, *arg, **kwarg):
     if plotting_function is not None:
         plt.axis()
         plt.ion()
@@ -49,4 +49,4 @@ def engage_killswitch(expt, hotkey='c', plotting_function=None, dt=.1, *arg, **k
         display.display(plt.gcf())
         display.clear_output(wait=True)
 
-    return engage_killswitch
+    return engage_kill_switch
