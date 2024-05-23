@@ -2,6 +2,39 @@
 from pyscan.general.item_attribute import ItemAttribute
 import ctypes
 
+# [[pulseblaser parameters, start]]
+# typically imported in each program that uses the pulseblaster
+
+FREQ_REGS = 1
+PULSE_PROGRAM = 0
+
+def enum(**enums):
+    return type('Enum', (), enums)
+
+ns = 1.0
+us = 1000.0
+ms = 1000000.0
+
+MHz = 1.0
+kHz = 0.001
+Hz = 0.000001
+
+# Instruction enum
+Inst = enum(
+    CONTINUE=0,
+    STOP=1,
+    LOOP=2,
+    END_LOOP=3,
+    JSR=4,
+    RTS=5,
+    BRANCH=6,
+    LONG_DELAY=7,
+    WAIT=8,
+    RTI=9
+)
+
+# [[pulseblaster parameters, end]]
+
 
 class PulseBlaster(ItemAttribute):
     '''
@@ -56,7 +89,7 @@ class PulseBlaster(ItemAttribute):
         with some channels always on for total_time, seconds
     '''
 
-    def __init__(self, clock=500, board=0, **kwarg):
+    def __init__(self, clock=500, board=0, debug=False, **kwarg):
 
         for key, value in kwarg.items():
             self[key] = value
@@ -64,15 +97,11 @@ class PulseBlaster(ItemAttribute):
         self.clock = clock
         self.board = board
 
-        self.debug = False
+        self.debug = debug
 
         self.init_pb()
 
     def init_pb(self):
-
-        # [[ initialization block (previously run at module load)]]
-        PULSE_PROGRAM = 0
-        FREQ_REGS = 1
 
         try:
             self.spinapi = ctypes.CDLL("spinapi64")
@@ -80,34 +109,7 @@ class PulseBlaster(ItemAttribute):
             try:
                 self.spinapi = ctypes.CDLL("spinapi")
             except:
-                print("Failed to load spinapi library.")
-                # TODO: decide how to fail if user is loading a library that doesn't load
-                return
-
-        def enum(**enums):
-            return type('Enum', (), enums)
-
-        ns = 1.0
-        us = 1000.0
-        ms = 1000000.0
-
-        MHz = 1.0
-        kHz = 0.001
-        Hz = 0.000001
-
-        # Instruction enum
-        Inst = enum(
-            CONTINUE=0,
-            STOP=1,
-            LOOP=2,
-            END_LOOP=3,
-            JSR=4,
-            RTS=5,
-            BRANCH=6,
-            LONG_DELAY=7,
-            WAIT=8,
-            RTI=9
-        )
+                assert False, "Failed to load spinapi library."
 
         self.spinapi.pb_get_version.restype = (ctypes.c_char_p)
         self.spinapi.pb_get_error.restype = (ctypes.c_char_p)
