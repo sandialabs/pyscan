@@ -4,27 +4,26 @@ from .instrument_driver import InstrumentDriver
 
 class AgilentE8267D(InstrumentDriver):
     '''
-    Class to control Agilent E8267D frequency source. Inherits from `.InstrumentDriver`.
+    Class to control Agilent E8267D frequency source.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from `.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-
-    Yields
-    ------
-    Properties which can be get and set :
-        frequency : float
-            Sets/queries frequency. Range: [1e6, 2e10]
-        frequency_mode : str
-            Set/queries frequency output mode. Values: ['CW', 'LIST']
-        amplitude : float
-            Sets/queries amplitude of output in dBm. Range: [-130, 25]
-        output : int
-            Sets/queries state of the output. Values: [0, 1] (off, on)
-        modulation : int
-            Sets/queries state of modulation. Values: [0, 1] (off, on)
+    Attributes
+    ----------
+    (Properties)
+    frequency : float
+        Sets/queries frequency. Range: [1e6, 2e10]
+    frequency_mode : str
+        Set/queries frequency output mode. Values: ['CW', 'LIST']
+    amplitude : float
+        Sets/queries amplitude of output in dBm. Range: [-130, 25]
+    output : int
+        Sets/queries state of the output. Values: [0, 1] (off, on)
+    modulation : int
+        Sets/queries state of modulation. Values: [0, 1] (off, on)
     '''
 
     def __init__(self, instrument):

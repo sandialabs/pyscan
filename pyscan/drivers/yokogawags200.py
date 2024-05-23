@@ -23,8 +23,9 @@ class YokogawaGS200(InstrumentDriver):
     step_size : float
         voltage step size
 
-    Properties
+    Attributes
     ----------
+    (Properties)
     voltage : float
         get/sets voltage output of the instrument. Range [-10, 10]
     '''

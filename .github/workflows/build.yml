@@ -1,18 +1,16 @@
-# This workflow will perform .flake8 checks
+# This workflow checks for successful install
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Lint with Flake8
+name: Build
 
 on:
-  # Allow running manually from Actions tab
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  basic_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +29,3 @@ jobs:
         python -m pip install pytest
         python -m pip install nbmake
         python -m pip install -e .
-        
-    - name: Lint with flake8
-      run: |
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics

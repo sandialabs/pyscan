@@ -4,28 +4,25 @@ from time import sleep
 
 class AmericanMagnetics430(InstrumentDriver):
     '''
-    Class to control American Magnetics 430 Magnet power supply. Inherits
-    from :class:`~pyscan.drivers.instrumentdriver.InstrumentDriver`.
+    Class to control American Magnetics 430 Magnet power supply.
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Yields
-    ------
-    Properties which can be get and set :
-        target_field : float
-            Sets/queries the target field of the magnet in Tesla
-        field : float
-            Sets/queries the magnetic field of the magnet in Tesla.
-            When setting, locks until target field is reached
-        persistant_switch_state : int
-            Sets/queries state of the persistant switch. Values: [0, 1] (off, on)
-    Properties which can be get only :
-        magnet_voltage : float
-            Queries the voltage applied to the magnet leads
+    Attributes
+    ----------
+    (Properties)
+    target_field : float
+        Sets/queries the target field of the magnet in Tesla
+    field : float
+        Sets/queries the magnetic field of the magnet in Tesla.
+        When setting, locks until target field is reached
+    persistant_switch_state : int
+        Sets/queries state of the persistant switch. Values: [0, 1] (off, on)
+    magnet_voltage : float
+        Queries the voltage applied to the magnet leads
     '''
 
     def __init__(self, instrument):

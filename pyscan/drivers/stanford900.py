@@ -2,34 +2,51 @@
 from .instrument_driver import InstrumentDriver
 import re
 import time
-import logging
 
 
-class Stanford900(InstrumentDriver):  # pragma: no cover
+class Stanford900(InstrumentDriver):
+    '''
+    Driver to control Stanford Research Systems SIM900 - 8 Slot Small
+    Instrumentation Modules (SIM) System Mainframe.
 
-    def __init__(self, instrument, port=None, debug=False):
-        '''Class to control Stanford Research Systems SIM900 - 8 Slot Small
-        Instrumentation Modules (SIM) System Mainframe.
-        To use, confirm Stanford Research Systems SIM900 box, and identify port
-        on the SIM900 that the instrument will communicate with.
+    SIM modules can subclass from this class to directly connect
+    to a single sim module.
 
-        Parameters
-        ----------
-        instrument :
-            Visa string or an instantiated instrument (return value from
-            :func:`~pyscan.drivers.newinstrument.new_instrument`)
-        port : str or int
-            port to connnect driver.  If no port is identified, the
-            driver will communicate with the mainframe.
-        '''
+
+    Parameters
+    ----------
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
+    port : str or int
+        port to connnect driver.  If no port is identified, the
+        driver will communicate with the mainframe.
+
+    Methods
+    -------
+    flush_buffers()
+        Flush both output and input buffers of all SIM ports
+    flush_buffer(port):
+        Flush the buffer of a single port `port`
+    ports_message_available()
+        List porst with a message available
+    port_message_available(port)
+        Query whether port `port` has a message
+    message_available_status()
+        Returns the status bit of message available
+    flush_output_queue()
+        Flushes the output queue
+    sim_reset()
+        Resets the SIM modules
+    recover()
+        Flush all buffers and resets port, or all sims
+    setup_port(port)
+    '''
+
+    def __init__(self, instrument, port=None):
 
         self.instrument = instrument
         self.port = port
         self.module_id_string = None
-        self.debug = debug
-
-        # setup logging to monitor communication
-        self.setup_logging(__name__)
 
         # reset mainframe to default configuration (prevents conflicts between Matlab and Python)
         self.write('*RST')
@@ -41,8 +58,6 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
             self.sim_reset()
             # clear status bits for SIM928
             self.write('*CLS')
-
-            self.logger.info('initialized SIM900 mainframe driver')
 
         else:
             # driver for sim port device
@@ -63,44 +78,11 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
             idn = self.query_port('*idn?')
             self.module_id_string = idn
 
-            self.logger.info('initialized port {} driver'.format(self.port))
-
         self.flush_output_queue()
-
-    def setup_logging(self, name):
-        '''
-        setup a logger file with a FileHandler and a Formatter
-
-        Parameters
-        ----------
-        name
-        '''
-
-        self.logger = logging.getLogger(name)
-        # create file handler (only one time, or multiple log messages are
-        # created)
-        if not self.logger.handlers:
-            if self.debug:
-                # stream debug info to stderror
-                handler = logging.StreamHandler()
-                self.logger.setLevel(logging.DEBUG)
-                handler.setLevel(logging.DEBUG)
-            else:
-                # logging saved to a file
-                handler = logging.FileHandler('sim900_communications.log')
-                self.logger.setLevel(logging.INFO)
-                handler.setLevel(logging.INFO)
-
-            # create a formatter
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            handler.setFormatter(formatter)
-
-            # add the handlers to the logger
-            self.logger.addHandler(handler)
 
     def flush_buffers(self):
         '''
-        flush both input and output buffers of all sim ports
+        Flush both output and input buffers of all SIM ports
         '''
 
         self.write('FLSH')
@@ -118,9 +100,9 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
         port = self.setup_port(port)
         self.write('FLSH {}'.format(port))
 
-    def ports_msg_avail(self):
+    def ports_message_available(self):
         '''
-        list of ports with messages available
+        List porst with a message available
 
         Returns
         -------
@@ -139,7 +121,7 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
 
         return port_list
 
-    def port_msg_avail(self, port=None):
+    def port_message_available(self, port=None):
         '''
         Parameters
         ----------
@@ -165,8 +147,10 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
 
         return False
 
-    def msg_avail_status(self):
+    def message_available_status(self):
         '''
+        Returns the status bit of message available
+
         Returns
         -------
         bool
@@ -179,16 +163,23 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
         return False
 
     def flush_output_queue(self):
+        '''
+        Flushes the output queue
+        '''
+
         self.write('FLOQ')
 
     def sim_reset(self):
+        '''
+        Resets the SIM modules
+        '''
         self.write('SRST')
 
     def recover(self):
         '''
-        flush input and output buffers for self.port
-        reset self.port
-        '''
+        Flush input and output buffers for a single port self.port
+        if self.port != None, otherwise flushes a single port
+            '''
 
         # port = self.setup_port(port)
 
@@ -203,7 +194,7 @@ class Stanford900(InstrumentDriver):  # pragma: no cover
 
     def setup_port(self, port):
         '''
-        port communications can be to default port (self.port) or to the
+        Port communications can be to default port (self.port) or to the
         specified port.
 
         Returns

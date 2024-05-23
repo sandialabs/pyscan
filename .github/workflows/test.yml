@@ -1,18 +1,16 @@
 # This workflow will perform basic automatic testing on pyscan classes
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Test 1 - Basic Auto Tests
+name: Basic Auto Tests
 
 on:
-  # Allow running manually from Actions tab
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:

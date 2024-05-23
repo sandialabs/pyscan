@@ -9,64 +9,63 @@ class Stanford830(InstrumentDriver):
 
     Parameters
     ----------
-    instrument :
-        Visa string or an instantiated instrument (return value from
-        :func:`~pyscan.drivers.newinstrument.new_instrument`)
+    instrument : string or pyvisa :class:`pyvisa.Resource`
+        visa string or an instantiated instrument
 
-    Yields
-    ------
-    Parameters which can be get and set :
-        phase : float
-            Range: [-180, 180]
-        reference_source : int
-            Indexed_values: ['external', 'internal']. Returns float.
-        frequency : float
-            Range: [0.001, 102000]
-        reference_slope : int
-            Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
-        harmonic : int
-            Range: [1, 19999]
-        instrument_amplitude : float
-            Range:  [0, 5.0]
-        input_configuration : int
-            Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
-        input_ground : int
-            Indexed_values: ['AC', 'DC']
-        input_coupling : int
-            Indexed_values: ['AC', 'DC']
-        input_line_filter : int
-            Indexed_values: ['none', 'line', '2xline', 'both']
-        sensitivity : int
-            Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
-                                100e-9, 200e-9, 500e-9,
-                                1e-6, 2e-6, 5e-6,
-                                10e-6, 20e-6, 50e-6,
-                                100e-6, 200e-6, 500e-6,
-                                1e-3, 2e-3, 5e-3,
-                                10e-3, 20e-3, 50e-3,
-                                100e-3, 200e-3, 500e-3,
-                                1]
-        reserve_mode : int
-            Indexed_values:  ['high', 'normal', 'low']
-        time_constant : int
-            Indexed_values:  [10e-6, 30e-6, 100e-6, 300e-6,
-                                1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
-                                300e-3,
-                                1, 3, 10, 30, 100, 300, 1000, 3000,
-                                10000, 30000]
-        filter_slope : int
-            Indexed_values:  [6, 12, 18, 24]
-        synchronous_filter : int
-            Indexed_values:  ['off', 'on']
-        sample_rate : int
-            Indexed_values:  [0.0625, .125, .250, .5, 1,
-                                       2, 4, 8,
-                                       16, 32, 64, 128,
-                                       256, 512, 'trigger']
-        end_buffer_mode : int
-            Indexed_values: ['one shot', 'loop']
-        trigger_mode : int
-            Indexed_values':  ['off', 'on']
+    Attributes
+    ----------
+    (Properties)
+    phase : float
+        Range: [-180, 180]
+    reference_source : int
+        Indexed_values: ['external', 'internal']. Returns float.
+    frequency : float
+        Range: [0.001, 102000]
+    reference_slope : int
+        Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
+    harmonic : int
+        Range: [1, 19999]
+    amplitude : float
+            Range:  [0.004, 5.0]
+    input_configuration : int
+        Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
+    input_ground : int
+        Indexed_values: ['AC', 'DC']
+    input_coupling : int
+        Indexed_values: ['AC', 'DC']
+    input_line_filter : int
+        Indexed_values: ['none', 'line', '2xline', 'both']
+    sensitivity : int
+        Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
+                            100e-9, 200e-9, 500e-9,
+                            1e-6, 2e-6, 5e-6,
+                            10e-6, 20e-6, 50e-6,
+                            100e-6, 200e-6, 500e-6,
+                            1e-3, 2e-3, 5e-3,
+                            10e-3, 20e-3, 50e-3,
+                            100e-3, 200e-3, 500e-3,
+                            1]
+    reserve_mode : int
+        Indexed_values:  ['high', 'normal', 'low']
+    time_constant : int
+        Indexed_values:  [10e-6, 30e-6, 100e-6, 300e-6,
+                            1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
+                            300e-3,
+                            1, 3, 10, 30, 100, 300, 1000, 3000,
+                            10000, 30000]
+    filter_slope : int
+        Indexed_values:  [6, 12, 18, 24]
+    synchronous_filter : int
+        Indexed_values:  ['off', 'on']
+    sample_rate : int
+        Indexed_values:  [0.0625, .125, .250, .5, 1,
+                                    2, 4, 8,
+                                    16, 32, 64, 128,
+                                    256, 512, 'trigger']
+    end_buffer_mode : int
+        Indexed_values: ['one shot', 'loop']
+    trigger_mode : int
+        Indexed_values':  ['off', 'on']
     '''
 
     def __init__(self, instrument):
@@ -75,7 +74,7 @@ class Stanford830(InstrumentDriver):
 
         self.debug = False
         self.initialize_properties()
-        self.black_list_for_testing = ['_input_configuration', "_time_constant"]
+        self.black_list_for_testing = ['_input_configuration', "_time_constant", '_sample_rate']
 
     def initialize_properties(self):
 
@@ -115,10 +114,10 @@ class Stanford830(InstrumentDriver):
             'return_type': int})
 
         self.add_device_property({
-            'name': 'instrument_amplitude',
+            'name': 'amplitude',
             'write_string': 'SLVL {}',
             'query_string': 'SLVL?',
-            'range': [0, 5.0],
+            'range': [0.004, 5.0],
             'return_type': float})
 
         self.add_device_property({
@@ -235,7 +234,7 @@ class Stanford830(InstrumentDriver):
         self.frequency
         self.reference_slope
         self.harmonic
-        self.instrument_amplitude
+        self.amplitude
 
         # Input configuration
         self.input_configuration
@@ -270,15 +269,6 @@ class Stanford830(InstrumentDriver):
 
     # Data transfer commands
 
-    @property
-    def amplitude(self):
-        self._amplitude = self.instrument_amplitude * self.gain
-        return self._amplitude
-
-    @amplitude.setter
-    def amplitude(self, new_value):
-        self.instrument_amplitude = new_value / self.gain
-
     def read_output(self, source):
         values = ['x', 'y', 'r', 'theta']
         if source in values:
@@ -311,9 +301,9 @@ class Stanford830(InstrumentDriver):
                 outputs = outputs.split(',')
                 outputs = [float(op) for op in outputs]
                 for i in range(len(outputs)):
-                    if args[i] in range(2):
-                        outputs[i] *= self.input_gain
-                    elif args[i] == 3:
+                    # this assumes snap('x','y','r','theta')
+                    # and that the user wants theta in degress
+                    if args[i] == 3:
                         outputs[i] *= 180 / 3.14159
                 return outputs
 

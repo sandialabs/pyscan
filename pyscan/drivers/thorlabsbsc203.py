@@ -10,7 +10,9 @@ c_dword = c_ulong
 
 
 class ThorlabsBSC203(ItemAttribute):
-    '''Class for controlling ThorLabs BSC203 - Three-Channel Benchtop Stepper Motor Controller.
+    '''
+    Driver for ThorLabs BSC203 - Three-Channel Benchtop
+    Stepper Motor Controller.
 
     Parameters
     ----------
