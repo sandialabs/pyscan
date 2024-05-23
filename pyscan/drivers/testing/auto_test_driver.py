@@ -425,9 +425,8 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
     # Now updating the test log for this driver
     pre_string = "The tests were passed but...\n"
 
-    path_name = str(device.instrument).split("'")[1]
     try:
-        driver_file_name = path_name.split(".")[2] + '.txt'
+        driver_file_name = str(device.instrument).split("'")[1].split(".")[-2] + '.txt'
     except Exception:
         assert False, pre_string + "failed to log test history. Driver class file path not as expected."
 
