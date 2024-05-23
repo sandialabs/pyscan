@@ -20,6 +20,7 @@ class ThorlabsMFF101(ItemAttribute):
 
     def __init__(self, serial):
 
+        global ff
         try:
             from thorlabs_kinesis import filter_flipper as ff
         except ModuleNotFoundError:
@@ -31,27 +32,27 @@ class ThorlabsMFF101(ItemAttribute):
         self.start_polling()
 
     def build_device_list(self):
-        return self.ff.TLI_BuildDeviceList()
+        return ff.TLI_BuildDeviceList()
 
     def open(self):
-        return self.ff.FF_Open(self.serial)
+        return ff.FF_Open(self.serial)
 
     def close(self):
-        self.ff.FF_Close(self.serial)
+        ff.FF_Close(self.serial)
 
     def move_to_position(self, pos):
-        ret = self.ff.FF_MoveToPosition(self.serial, pos)
+        ret = ff.FF_MoveToPosition(self.serial, pos)
         sleep(0.5)
         return ret
 
     def get_position(self):
-        return self.ff.FF_GetPosition(self.serial)
+        return ff.FF_GetPosition(self.serial)
 
     def start_polling(self, interval=50):
-        return self.ff.FF_StartPolling(self.serial, interval)
+        return ff.FF_StartPolling(self.serial, interval)
 
     def stop_polling(self):
-        self.ff.FF_StopPolling(self.serial)
+        ff.FF_StopPolling(self.serial)
 
     @property
     def position(self):

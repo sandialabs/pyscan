@@ -26,7 +26,7 @@ class KeysiteM3302AAWG(ItemAttribute):
         self.chassis = chassis
         self.slot = slot
 
-        self.module = self.keysightSD1.SD_AOU()
+        self.module = keysightSD1.SD_AOU()
         self.module.openWithSlot("", self.chassis, self.slot)
 
     def set_channel_amplitude(self, channel, amplitude):

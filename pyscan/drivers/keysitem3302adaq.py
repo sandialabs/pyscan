@@ -49,7 +49,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
         self.slot = slot
         self.channel = channel
 
-        self.module = self.keysightSD1.SD_AIN()
+        self.module = keysightSD1.SD_AIN()
         self.module.openWithSlot("", self.chassis, self.slot)
 
     @property
@@ -60,7 +60,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
     @property
     def full_scale(self):
         self._full_Scale = self.module.channelFullScale(self.channel)
-        return self._full_scale
+        return self._full_Scale
 
     @property
     def impedance(self):

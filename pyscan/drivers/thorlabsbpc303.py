@@ -20,6 +20,7 @@ class ThorlabsBPC303(ItemAttribute):
 
     def __init__(self, serial="71872242"):
 
+        global bp
         try:
             from thorlabs_kinesis import benchtop_piezo as bp
         except ModuleNotFoundError:
@@ -40,31 +41,31 @@ class ThorlabsBPC303(ItemAttribute):
             sleep(0.25)
 
     def build_device_list(self):
-        return self.bp.TLI_BuildDeviceList()
+        return bp.TLI_BuildDeviceList()
 
     def zero_channel(self, channel):
-        self.bp.PBC_SetZero(self.serial, channel)
+        bp.PBC_SetZero(self.serial, channel)
 
     def set_channel_closed_loop(self, channel):
-        self.bp.PBC_SetPositionControlMode(self.serial, channel, 2)
+        bp.PBC_SetPositionControlMode(self.serial, channel, 2)
 
     def set_channel_open_loop(self, channel):
-        self.bp.PBC_SetPositionControlMode(self.serial, channel, 1)
+        bp.PBC_SetPositionControlMode(self.serial, channel, 1)
 
     def open(self):
-        return self.bp.PBC_Open(self.serial)
+        return bp.PBC_Open(self.serial)
 
     def close(self):
-        self.bp.PBC_Close(self.serial)
+        bp.PBC_Close(self.serial)
 
     def get_number_channels(self):
-        return self.bp.PBC_GetNumChannels(self.serial)
+        return bp.PBC_GetNumChannels(self.serial)
 
     def load_channel_settings(self, channel):
-        self.bp.PBC_LoadSettings(self.serial, channel)
+        bp.PBC_LoadSettings(self.serial, channel)
 
     def get_channel_position(self, channel):
-        pos = self.bp.PBC_GetPosition(self.serial, c_short(channel))
+        pos = bp.PBC_GetPosition(self.serial, c_short(channel))
         pos = self.to_real_units(pos)
         return pos
 
@@ -80,18 +81,18 @@ class ThorlabsBPC303(ItemAttribute):
 
     def move_channel_to(self, channel, location, wait=True):
         index = self.to_device_units(location, 0)
-        self.bp.PBC_SetPosition(self.serial, channel, index)
+        bp.PBC_SetPosition(self.serial, channel, index)
         # if wait:
-        #     self.bp.PBC_RequestPosition(self.serial, channel)
+        #     bp.PBC_RequestPosition(self.serial, channel)
         #     sleep(0.05)
-        #     pos = self.bp.PBC_GetPosition(self.serial, channel)
+        #     pos = bp.PBC_GetPosition(self.serial, channel)
         #     while index != pos:
-        #         self.bp.PBC_RequestPosition(self.serial, channel)
+        #         bp.PBC_RequestPosition(self.serial, channel)
         #         sleep(0.05)
-        #         pos = self.bp.PBC_GetPosition(self.serial, channel)
+        #         pos = bp.PBC_GetPosition(self.serial, channel)
 
     def stop_polling_channel(self, channel):
-        self.bp.PBC_StopPolling(self.serial, channel)
+        bp.PBC_StopPolling(self.serial, channel)
 
     @property
     def x(self):

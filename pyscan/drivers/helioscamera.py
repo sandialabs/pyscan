@@ -11,8 +11,8 @@ from pyscan.general.item_attribute import ItemAttribute
 
 class HeliosSDK(ItemAttribute):
 
-    def __init__(self):
-        pass
+    def __init__(self, debug=False):
+        self.debug = debug
 
     def add_device_property(self, settings):
         '''
@@ -227,12 +227,13 @@ class HeliosCamera(HeliosSDK):
         except BaseException as err:
             print('Path Error' + str(err))
 
+        global LibHeLIC
         try:
             from libHeLIC import LibHeLIC
         except ModuleNotFoundError:
             print('Helios Camera not installed')
 
-        self.instrument = self.LibHeLIC()
+        self.instrument = LibHeLIC()
         self.debug = False
         sleep(1)
         self.instrument.Open(0, sys='c3cam_sl70')
@@ -419,30 +420,30 @@ class HeliosCamera(HeliosSDK):
         print('Register {} not found'.format(register))
 
     def allocate_camera_data(self):
-        self.instrument.AllocCamData(1, self.LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
     def get_IQ_data(self):
-        self.instrument.AllocCamData(1, self.LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
         res = self.instrument.Acquire()
         # cd = self.instrument.ProcessCamData(1, 0, 0)
         meta = self.instrument.CamDataMeta()
         img = self.instrument.GetCamData(1, 0, ct.byref(meta))
         raw_data = img.contents.data
-        data = np.copy(self.LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_ushort))
+        data = np.copy(LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_ushort))
         x = data[:, :, :, 0].astype(float)
         y = data[:, :, :, 0].astype(float)
 
         return x, y, res
 
     def get_intensity_data(self, initial_skip=1):
-        self.instrument.AllocCamData(1, self.LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
+        self.instrument.AllocCamData(1, LibHeLIC.CamDataFmt['DF_I16Q16'], 0, 0, 0)
 
         res = self.instrument.Acquire()
         # cd = self.instrument.ProcessCamData(1, 0, 0)
         img = self.instrument.GetCamData(1, 0, 0)
         raw_data = img.contents.data
-        data = self.LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_int16)
+        data = LibHeLIC.Ptr2Arr(raw_data, (self._n_frames, 300, 300, 2), ct.c_int16)
         # mod_data = data[:, :, :, 1] - data[:, :, :, 0]
         # mod_data = np.uint8(mod_data+128)
         return data, res

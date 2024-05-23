@@ -30,9 +30,9 @@ class OceanOpticsQEPro(ItemAttribute):
             print('seabreeze module not found, Ocean Optics not imported')
 
         if sn is None:
-            self.spec = self.Spectrometer.from_first_available()
+            self.spec = Spectrometer.from_first_available()
         else:
-            self.spec = self.Spectrometer.from_serial_number(sn)
+            self.spec = Spectrometer.from_serial_number(sn)
         self.sn = sn
         self.set_integration_time(.25)
 

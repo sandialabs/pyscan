@@ -8,8 +8,10 @@ import ctypes
 FREQ_REGS = 1
 PULSE_PROGRAM = 0
 
+
 def enum(**enums):
     return type('Enum', (), enums)
+
 
 ns = 1.0
 us = 1000.0

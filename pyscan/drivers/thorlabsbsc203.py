@@ -21,6 +21,7 @@ class ThorlabsBSC203(ItemAttribute):
 
     def __init__(self, serial="70878515"):
 
+        global bsm
         try:
             from thorlabs_kinesis import benchtop_stepper_motor as bsm
         except ModuleNotFoundError:

@@ -12,7 +12,6 @@ FLAG_FIFOFULL = 0x0003
 HISTCHAN = 65536
 syncDivider = 1
 
-phlib = ctypes.CDLL("phlib64.dll")
 counts = (ctypes.c_uint * HISTCHAN)()
 libVersion = ctypes.create_string_buffer(b"", 8)
 hwSerial = ctypes.create_string_buffer(b"", 8)
@@ -96,6 +95,12 @@ class PicoHarp300(ItemAttribute):
     '''
 
     def __init__(self, dev=0):
+
+        global phlib
+        try:
+            phlib = ctypes.CDLL("phlib64.dll")
+        except:
+            assert False, '"phlib64.dll" not found'
 
         retcode = phlib.PH_OpenDevice(ctypes.c_int(dev), hwSerial)
         if retcode == 0:
