@@ -16,6 +16,7 @@ class Keithley2260B(InstrumentDriver):
 
     Attributes
     ----------
+    (Properties)
     ouptut_on_delay: float
         Delay before output is turned on [0.00, 99.99]s
     ouptut_off_delay: float
