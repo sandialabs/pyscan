@@ -4,9 +4,8 @@ import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
-from pyscan.general.get_version import get_driver_version_file_name, get_driver_version
+from pyscan.general.get_version import get_version
 import os
-import json
 from datetime import datetime
 
 '''
@@ -411,7 +410,7 @@ def check_properties(test_instrument):
         print("The last tested date could not be found. Check the driver_versions json for this driver.")
 
 
-def test_driver(device=TestInstrumentDriver(), iterate_version=True, expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
@@ -423,52 +422,40 @@ def test_driver(device=TestInstrumentDriver(), iterate_version=True, expected_at
     print("\033[1mTests passed, instrument {} should be ready to go.\033[0m".format(device.__class__.__name__))
     print("\n")
 
-    # Now updating the driver_versions file for the successfuly tested driver
-    pre_string =  "The tests were passed but...\n"
+    # Now updating the test log for this driver
+    pre_string = "The tests were passed but...\n"
 
-    file_name = get_driver_version_file_name(device.instrument_id)
-    if file_name is None:
-        assert False, pre_string + "Add valid dict key and file_name to the pyscan/general/get_version.py to track the driver version and test history."
-    else:
-        file_name = file_name + '.json'
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    directory = os.path.join(base_dir, '../driver_versions/')
-    driver_versions_file_names = os.listdir(directory)
-    path = os.path.join(directory, file_name)
-    
-    if file_name in driver_versions_file_names:
-        with open(path, 'r') as version_file:
-            data = json.load(version_file)
-
-        if iterate_version is True:
-            data['version'] = str(round(float(data['version']), 1) + .1)
-            success_string = "Driver version and date tested incremented."
-        elif iterate_version is False:
-            success_string = "Skipping iterating driver version. Only updated date tested."
-        else:
-            assert False, "iterate_version input not valid. Must be true or false."
-        data['date'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        with open(path, 'w') as version_file:
-            json.dump(data, version_file, indent=4)
-            print(success_string)
-
-    else:
-        print("No driver version file detected. Creating a new one.")
-
-        data = {
-            "version": "0.1",
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-
-        with open(path, 'w') as version_file:
-            json.dump(data, version_file, indent=4)
-    
+    path_name = str(device.instrument).split("'")[1]
     try:
-        with open(path, 'r') as version_file:
-            data = json.load(version_file)
-            version = data['version']
-            date = data['date']
-            print("The version for this driver is now {} recorded as updated on {}".format(version, date))
+        driver_file_name = path_name.split(".")[2] + '.txt'
     except Exception:
-        print(pre_string + "There is a problem with the version file (or lack thereof) for this driver. Please fix this for good record keeping.")
+        assert False, pre_string + "failed to log test history. Driver class file path not as expected."
+
+    new_line = "Passed with driver version {} tested on pyscan version {} at {}".format(
+        device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    directory = os.path.join(base_dir, '../testing/driver_test_logs/')
+    driver_test_logs_file_names = os.listdir(directory)
+    path = os.path.join(directory, driver_file_name)
+
+    if driver_file_name in driver_test_logs_file_names:
+        with open(path, 'r') as test_log:
+            existing_log = test_log.read()
+
+        with open(path, 'w') as test_log:
+            test_log.write(new_line + '\n')
+            test_log.write(existing_log)
+
+    else:
+        print("No test log file detected for this driver. Creating a new one.")
+
+        with open(path, 'w') as test_log:
+            test_log.write(new_line)
+
+    try:
+        with open(path, 'r') as test_log:
+            test_log.read()
+        print("The new test log for this driver is: ", new_line)
+    except Exception:
+        assert False, pre_string + "Test log could not be accessed. Please ensure test records are saving properly."

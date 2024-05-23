@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
-from pyscan.general.get_version import get_driver_version
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
@@ -27,11 +26,12 @@ class InstrumentDriver(ItemAttribute):
             self.instrument = new_instrument(instrument)
         else:
             self.instrument = instrument
-            try:
-                self.instrument_id = self.instrument.query('*IDN?')
-                self.version, self.version_tested = get_driver_version(self.instrument_id)
-            except Exception:
-                self.version = "version not found"
+
+        try:
+            inst_str = str(type(self.instrument))
+            self._driver_class = inst_str.split("'")[1].split(".")[-1]
+        except Exception:
+            pass
 
         self.debug = debug
 
