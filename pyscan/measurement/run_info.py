@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
 from .scans import PropertyScan, AverageScan
+from pyscan.general.get_version import get_version
 
 
 class RunInfo(ItemAttribute):
@@ -39,6 +40,8 @@ class RunInfo(ItemAttribute):
         called by Experiment objects `run()` methods.
     verbose : bool
         Flag to print status information, defaults to `False`.
+    version : str
+        Current version of pyscan to be saved as metadata.
 
     '''
 
@@ -86,9 +89,9 @@ class RunInfo(ItemAttribute):
 
     @property
     def version(self):
-        '''version of pyscan/runinfo
+        '''version of pyscan
         '''
-        return 0.2
+        return get_version()
 
     @property
     def scans(self):
