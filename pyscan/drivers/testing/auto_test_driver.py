@@ -337,6 +337,7 @@ def check_properties(test_instrument):
         if "_settings" in attribute_name:
             settings.append(attribute_name)
             total_settings += 1
+    write_only_settings = []
 
     for name in settings:
         # if hasattr(test_instrument, 'black_list_for_testing'):
@@ -347,6 +348,9 @@ def check_properties(test_instrument):
         keys = test_instrument[name].keys()
         if 'read_only' in keys:
             check_read_only_property(test_instrument, name)
+        elif 'write_only' in keys:
+            write_only_settings.append(name)
+            continue
         elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
@@ -381,6 +385,10 @@ def check_properties(test_instrument):
               .format(len(test_instrument.black_list_for_testing)))
     except Exception:
         pass
+    if len(write_only_settings) > 0:
+        print("{} write only settings could not be auto tested... custom test cases recommended for this.".format(
+            len(write_only_settings)))
+        print("skipped write only settings include: {}".format(write_only_settings))
     total_tested = range_counter + values_counter + idx_vals_counter + dict_vals_counter
     print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
