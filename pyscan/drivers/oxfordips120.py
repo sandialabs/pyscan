@@ -104,9 +104,9 @@ class OxfordIPS120(InstrumentDriver):
             print(f"Message in buffer: {message}")
 
         # magnet specific settings
-        self.field_limit = 8 # oxford triton in 518/1112
+        self.field_limit = 8  # oxford triton in 518/1112
         self.field_rate_limit = 0.2
-        self.field_to_current = 5/22.456 # Tesla/Amp
+        self.field_to_current = 5/22.456  # Tesla/Amp
 
         self.debug = debug
         self.initialize_properties()
@@ -131,7 +131,7 @@ class OxfordIPS120(InstrumentDriver):
                 i += 1
             if self.debug:
                 # typically i=4, time = 0.01
-                print(f"needed to wait {i}; {time()-start_time} seconds")
+                print(f"needed to wait {i}; {time() - start_time} seconds")
             message = self.read()
             return message
 
@@ -171,8 +171,8 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "current_set_point",
                 "write_string": "$I{}",
                 "query_string": "R5",
-                "range": [-self.field_limit/self.field_to_current, 
-                          self.field_limit/self.field_to_current],
+                "range": [-self.field_limit / self.field_to_current,
+                          self.field_limit / self.field_to_current],
                 "return_type": ips120_float,
             }
         )
@@ -182,8 +182,8 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "current_rate",
                 "write_string": "$S{}",
                 "query_string": "R6",
-                "range": [-self.field_rate_limit/self.field_to_current, 
-                          self.field_rate_limit/self.field_to_current],
+                "range": [-self.field_rate_limit / self.field_to_current,
+                          self.field_rate_limit / self.field_to_current],
                 "return_type": ips120_float,
             }
         )
@@ -239,7 +239,7 @@ class OxfordIPS120(InstrumentDriver):
 
         self.add_device_property(
             {
-                "name": "trip_field", # mA
+                "name": "trip_field",  # mA
                 "query_string": "R17",
                 "return_type": ips120_float
             }
@@ -314,7 +314,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "remote_control",
                 "write_string": "$C{}",
-                "dict_values": {"local_locked":0, "remote_locked":1, "local_unlocked": 2, "remote_unlocked":3},
+                "dict_values": {"local_locked": 0, "remote_locked": 1, "local_unlocked": 2, "remote_unlocked": 3},
                 "return_type": int
             }
         )
@@ -322,8 +322,8 @@ class OxfordIPS120(InstrumentDriver):
         self.add_device_property(
             {
                 "name": "communications_protocol",
-                "write_string": "Q{}", # no echo since this command clears output buffer
-                "dict_values": {"normal":0, "extended":4}, # do not allow switch to <CR><LF>
+                "write_string": "Q{}",  # no echo since this command clears output buffer
+                "dict_values": {"normal": 0, "extended": 4},  # do not allow switch to <CR><LF>
                 "return_type": int
             }
         )
@@ -332,7 +332,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "heater_control",
                 "write_string": "$H{}",
-                "indexed_values": ["off","on", "force"],
+                "indexed_values": ["off", "on", "force"],
                 "return_type": int
             }
         )
@@ -472,7 +472,7 @@ class OxfordIPS120(InstrumentDriver):
         '''
         self._field = self.output_field
         return self._field
-    
+
     @field.setter
     def field(self, new_value):
         self.hold()
@@ -526,7 +526,7 @@ class OxfordIPS120(InstrumentDriver):
         if status.M2 == 0:
             self._sweeping_status = False
         else:
-            self._sweeping_status =  True
+            self._sweeping_status = True
         return self._sweeping_status
 
     @property
@@ -555,6 +555,7 @@ class OxfordIPS120(InstrumentDriver):
         else:
             self._persistent_status = False
         return self._persistent_status
+
 
 class Status:
     def __init__(self, status_string="X00A1C3H1M10P03"):
@@ -585,19 +586,19 @@ class Status:
 
     def __repr__(self):
         value = "\n"
-        value += f"{ self.X1_name } : {self.X1_value()} (X1={self.X1})"
+        value += f"{self.X1_name} : {self.X1_value()} (X1={self.X1})"
         value += "\n"
-        value += f"{ self.X2_name } : {self.X2_value()} (X2={self.X2})"
+        value += f"{self.X2_name} : {self.X2_value()} (X2={self.X2})"
         value += "\n"
-        value += f"{ self.A_name } ; {self.A_value()} (A={self.A})"
+        value += f"{self.A_name} ; {self.A_value()} (A={self.A})"
         value += "\n"
-        value += f"{ self.C_name } ; {self.C_value()} (C={self.C})"
+        value += f"{self.C_name} ; {self.C_value()} (C={self.C})"
         value += "\n"
-        value += f"{ self.H_name } ; {self.H_value()} (H={self.H})"
+        value += f"{self.H_name} ; {self.H_value()} (H={self.H})"
         value += "\n"
-        value += f"{ self.M1_name } ; {self.M1_value()} (M1={self.M1})"
+        value += f"{self.M1_name} ; {self.M1_value()} (M1={self.M1})"
         value += "\n"
-        value += f"{ self.M2_name } ; {self.M2_value()} (M2={self.M2})"
+        value += f"{self.M2_name} ; {self.M2_value()} (M2={self.M2})"
 
         return value
 
@@ -686,10 +687,10 @@ def ips120_float(string):
 
     return float(string[1:])
 
+
 def ips120_int(string):
     '''
     Helper function used with return_type to drop character and convert to a float.
     '''
 
     return int(string[1:])
-
