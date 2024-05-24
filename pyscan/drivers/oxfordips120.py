@@ -106,7 +106,7 @@ class OxfordIPS120(InstrumentDriver):
         # magnet specific settings
         self.field_limit = 8  # oxford triton in 518/1112
         self.field_rate_limit = 0.2
-        self.field_to_current = 5/22.456  # Tesla/Amp
+        self.field_to_current = 5 / 22.456  # Tesla/Amp
 
         self.debug = debug
         self.initialize_properties()
