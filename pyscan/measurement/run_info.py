@@ -2,7 +2,6 @@
 from pyscan.general.item_attribute import ItemAttribute
 from pyscan.general.get_version import get_version
 from .scans import PropertyScan, AverageScan
-from pyscan.general.get_version import get_version
 
 
 class RunInfo(ItemAttribute):
