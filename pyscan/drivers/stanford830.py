@@ -75,6 +75,7 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+        self._version = "v0.1.0"
 
         self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude", "_power_on_status_clear"]
 
@@ -662,6 +663,10 @@ class Stanford830(InstrumentDriver):
                 formatted_response.append(float(response) * 180 / 3.14159)
 
         return formatted_response
+
+    @property
+    def version(self):
+        return self._version
 
     @property
     def bufferpoints(self):

@@ -337,3 +337,7 @@ class Keithley2260B(InstrumentDriver):
     def output_trigger(self):
 
         self.write('TRIG:OUTP')
+
+    @property
+    def version(self):
+        return self._version

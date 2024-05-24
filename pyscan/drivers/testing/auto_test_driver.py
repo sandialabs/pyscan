@@ -410,29 +410,22 @@ def check_properties(test_instrument):
         print("The last tested date could not be found. Check the driver_versions json for this driver.")
 
 
-def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
-    if expected_attributes is not None:
-        check_has_attributes(device, expected_attributes)
-
-        if expected_values is not None:
-            check_attribute_values(device, expected_attributes, expected_values)
-
-    check_properties(device)
-
-    print("\033[1mTests passed, instrument {} should be ready to go.\033[0m".format(device.__class__.__name__))
-    print("\n")
-
-    # Now updating the test log for this driver
-    pre_string = "The tests were passed but...\n"
-
+def write_log(device, exception):
     try:
-        driver_file_name = str(device.instrument).split("'")[1].split(".")[-2] + '.txt'
+        driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
     except Exception:
         assert False, pre_string + "failed to log test history. Driver class file path not as expected."
 
-    new_line = "Passed with driver version {} tested on pyscan version {} at {}".format(
-        device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    if exception is None:
+        pre_string = "The tests were passed but...\n"
+        new_line = "Passed with {} version v{} tested on pyscan version {} at {}".format(
+            driver_file_name, device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    else:
+        pre_string = "Tests failed with exception: \n{}\n".format(exception)
+        new_line = "Failed with {} version v{} tested on pyscan version {} at {}".format(
+            driver_file_name, device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
+    driver_file_name = driver_file_name + '_test_log.txt'
     base_dir = os.path.dirname(os.path.abspath(__file__))
     directory = os.path.join(base_dir, '../testing/driver_test_logs/')
     driver_test_logs_file_names = os.listdir(directory)
@@ -457,4 +450,25 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
             test_log.read()
         print("The new test log for this driver is: ", new_line)
     except Exception:
-        assert False, pre_string + "Test log could not be accessed. Please ensure test records are saving properly."
+        assert False, pre_string + "Test log seemed to save but could not be accessed. Please ensure test records are saving properly."
+
+
+def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
+    if expected_attributes is not None:
+        check_has_attributes(device, expected_attributes)
+
+        if expected_values is not None:
+            check_attribute_values(device, expected_attributes, expected_values)
+
+    try:
+        check_properties(device)
+        exception = None
+    except Exception as e:
+        exception = str(e)
+
+    write_log(device, exception)
+
+    if exception is not None:
+        assert False, exception
+    else:
+        print("\033[1;32mTests passed, instrument {} looks ready to go.\033[0m".format(device.__class__.__name__))
