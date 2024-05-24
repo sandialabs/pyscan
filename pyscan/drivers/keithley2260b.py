@@ -73,7 +73,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.debug = False
 
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
