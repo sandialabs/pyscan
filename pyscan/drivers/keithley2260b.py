@@ -202,8 +202,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'SOUR:CURR:SLEW:RIS?',
             'range': [self.min_current_rising_slew_rate,
                       self.max_current_rising_slew_rate],
-            'range': [self.min_current_rising_slew_rate,
-                      self.max_current_rising_slew_rate],
             'return_type': float})
 
         self.add_device_property({
@@ -221,8 +219,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'RES?',
             'range': [self.min_resistance,
                       self.max_resistance],
-            'range': [self.min_current_falling_slew_rate,
-                      self.max_current_falling_slew_rate],
             'return_type': float})
 
         # SOURce:VOLTage properties

@@ -414,7 +414,13 @@ def write_log(device, exception):
     try:
         driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
     except Exception:
-        assert False, pre_string + "failed to log test history. Driver class file path not as expected."
+        if exception is None:
+            err_string = "The tests were passed but...\n"
+            err_string = err_string + "failed to log test history. Driver class file path not as expected."
+        else:
+            err_string = "Tests failed with exception: \n{}\n".format(exception)
+            err_string = err_string + "failed to log test history. Driver class file path not as expected."
+        assert False, err_string
 
     if exception is None:
         pre_string = "The tests were passed but...\n"
@@ -450,7 +456,9 @@ def write_log(device, exception):
             test_log.read()
         print("The new test log for this driver is: ", new_line)
     except Exception:
-        assert False, pre_string + "Test log seemed to save but could not be accessed. Please ensure test records are saving properly."
+        err_string = pre_string + "Test log seemed to save but could not be accessed."
+        err_string = err_string + "Please ensure test records are saving properly."
+        assert False, err_string
 
 
 def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
