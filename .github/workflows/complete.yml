@@ -1,22 +1,23 @@
-# This workflow checks for successful install
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Build
+name: Complete Build, Lint, and Test
 
 on:
+  pull_request:
+    branches:
+      - "main"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  complete:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
@@ -30,3 +31,16 @@ jobs:
         python -m pip install pytest
         python -m pip install nbmake
         python -m pip install -e .
+
+    - name: Lint with flake8
+      run: |
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Test with pytest
+      run: |
+        pytest
+
+    - name: Test notebooks
+      run: |
+        pytest --nbmake "./demo_notebooks/" 
