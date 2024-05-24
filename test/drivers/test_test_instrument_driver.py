@@ -21,7 +21,7 @@ def test_testinstrumentdriver():
 
     attributes = ['instrument', 'debug', '_float_values_settings', '_str_values_settings',
                   '_range_settings', '_indexed_values_settings', '_dict_values_settings', '_float_values',
-                  '_str_values', '_range', '_indexed_values', "_dict_values", "black_list_for_testing"]
+                  '_str_values', '_range', '_indexed_values', "_dict_values", "_version", "black_list_for_testing"]
     check_has_attributes(test_instrument, attributes)
 
     # check that the initialized attributes have the expected values
@@ -140,7 +140,7 @@ def test_testinstrumentdriver():
 
     # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=2, num_range_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=12):
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=14):
         # iterate over all attributes to test accordingly using predefined functions
         values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 1, 1, 1
         values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []

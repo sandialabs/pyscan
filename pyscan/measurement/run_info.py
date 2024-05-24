@@ -64,7 +64,7 @@ class RunInfo(ItemAttribute):
         self.average_d = -1
 
         self.verbose = False
-        self.version = get_version()
+        self._version = get_version()
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
