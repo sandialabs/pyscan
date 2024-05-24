@@ -464,27 +464,6 @@ class Stanford830(InstrumentDriver):
 
         self.write('OEXP {}, {}, {}'.format(channel, offset, index))
 
-    def auto_offset(self, source):
-        '''
-        Automatically sets the offset to the current value
-        of a data source
-
-        Parameters
-        ----------
-        source: str
-            Data source to be offset
-            Can be x, y, or r
-        '''
-
-        source_values = ['x', 'y', 'r']
-
-        if source not in source_values:
-            assert 0, 'Auto Offset source must be x, y, or r'
-
-        index = source_values.index(source) + 1
-
-        self.write('AOFF {}'.format(index))
-
     # Auxillary Input/Ouptut Methods
 
     def read_aux_input(self, index):
