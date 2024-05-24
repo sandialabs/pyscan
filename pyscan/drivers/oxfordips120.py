@@ -27,8 +27,61 @@ class OxfordIPS120(InstrumentDriver):
 
     Read-only properties:
 
+        output_current: float
+            current in magnet power supply
+        voltage: float
+            voltage across leads
+        output_field: float
+            field from current in magnet power supply (not actual field if persistent)
+        software_voltage_limit: float
+            max voltage
+        persistent_current: float
+            current in magnet where heater was turned off
+        trip_field: float
+            field where last magnet quench occurred
+        persistent_current: float
+            field in magnet where heater was turned off
+        switch_heater_current: float
+            current in switch heater
+        safe_current_limit_negative: float
+            max negative current
+        safe_current_limit_positive: float
+            max positive current
+        lead_resistance: float
+            resistance
+        magnet_inductance: float
+            inductance
+        version: str
+            power supply model
+        status_string: str
+
+    Write-only properties:
+
+        remote_control
+                "local_locked", "remote_locked", "local_unlocked", "remote_unlocked"
+        communications_protocol
+                "normal", "extended"
+        heater_control
+                "off", "on", "force"
+        activity_control
+                "hold", "to_set_point", "to_zero", "clamp"
+
     Methods
     -------
+        heater()
+            turn heater on/off and deal correctly with persistent mode
+        print_state()
+            summarize state of the magnet
+        print_status()
+            not implemented yet
+        hold()
+            activity_control with checks
+        to_zero()
+            activity_control with checks
+        to_set_point()
+            activity_control with checks
+        clamp()
+            activity_control with checks
     """
 
     def __init__(self, instrument, debug=False):
@@ -36,7 +89,7 @@ class OxfordIPS120(InstrumentDriver):
 
         self.instrument.read_termination = "\r"
         self.instrument.write_termination = "\r"
-        self.remote()
+        self.remote_control = "remote_unlocked"
 
         # make sure the buffer is empty:
         # read status byte by performing a serial poll
@@ -194,7 +247,7 @@ class OxfordIPS120(InstrumentDriver):
 
         self.add_device_property(
             {
-                "name": "persistent_current",
+                "name": "persistent_field",
                 "query_string": "R18",
                 "return_type": ips120_float
             }
@@ -248,10 +301,18 @@ class OxfordIPS120(InstrumentDriver):
             }
         )
 
+        self.add_device_property(
+            {
+                "name": "status_string",
+                "query_string": "X",
+                "return_type": str
+            }
+        )
+
         # write-only property
         self.add_device_property(
             {
-                "name": "control",
+                "name": "remote_control",
                 "write_string": "$C{}",
                 "dict_values": {"local_locked":0, "remote_locked":1, "local_unlocked": 2, "remote_unlocked":3},
                 "return_type": int
@@ -285,6 +346,7 @@ class OxfordIPS120(InstrumentDriver):
             }
         )
 
+        self.field
         self.field_set_point
         self.field_rate
         self.current_set_point
@@ -294,8 +356,8 @@ class OxfordIPS120(InstrumentDriver):
         self.output_field
         self.software_voltage_limit
         self.persistent_current
-        self.trip_field # mA
-        self.persistent_current
+        self.trip_field
+        self.persistent_field
         self.switch_heater_current
         self.safe_current_limit_negative
         self.safe_current_limit_positive
@@ -309,18 +371,18 @@ class OxfordIPS120(InstrumentDriver):
         """
         status = self.status()
         value = ""
-        if self.quench_status():
+        if self.quench_status:
             value += "QUENCHED"
-        if self.heater_status():
+        if self.heater_status:
             value += "Heater on"
         else:
             value += "Heater off"
         value += "\n"
-        if self.sweeping_status():
+        if self.sweeping_status:
             value += "Field is changing"
         else:
             value += "At rest"
-        if self.persistent_status():
+        if self.persistent_status:
             value += "\n"
             value += "Magnet is persistent"
             value += "\n"
@@ -336,6 +398,7 @@ class OxfordIPS120(InstrumentDriver):
 
         return value
 
+    # TODO: implement status message
     def print_status(self):
         """
         Print current status of the IPS120 power supply
@@ -343,84 +406,64 @@ class OxfordIPS120(InstrumentDriver):
         pass
 
     def hold(self):
-        if not self.remote_status():
+        if not self.remote_status:
             raise IPS120Error(
                 "Control commands require the power supply to be in remote mode"
             )
-
-        self.query("A0")
+        self.activity_control = "hold"
 
     def to_set_point(self):
-        if not self.remote_status():
+        if not self.remote_status:
             raise IPS120Error(
                 "Control commands require the power supply to be in remote mode"
             )
-
-        self.query("A1")
+        self.activity_control = "to_set_point"
 
     def to_zero(self):
-        if not self.remote_status():
+        if not self.remote_status:
             raise IPS120Error(
                 "Control commands require the power supply to be in remote mode"
             )
-
-        self.query("A2")
-
-    def clamp(self):
-        if not self.remote_status():
-            raise IPS120Error(
-                "Control commands require the power supply to be in remote mode"
-            )
-
-        self.query("A4")
-
-    def local(self, locked=False):
-        """
-        Set local mode.
-        Keyword arguments:
-            locked: boolean, defaults to unlocked
-        """
-
-        if locked:
-            self.write("$C0")
-        else:
-            self.write("$C2")
-
-    def remote(self, locked=False):
-        """
-        Set remote mode.
-        Keyword arguments:
-            locked: boolean, defaults to unlocked
-        """
-
-        if locked:
-            self.write("$C1")
-        else:
-            self.write("$C3")
+        self.activity_control = "to_zero"
 
     def heater(self, state):
         """
         Set the state of the heater.  Record the time when the heater was changed
         """
 
-        if not self.remote_status():
+        if not self.remote_status:
             raise IPS120Error(
                 "Control commands require the power supply to be in remote mode"
             )
 
+        # TODO: deal with persistent magnet
+        if self.persistent_status:
+            raise IPS120Error("take magnet out of persistent mode before changing heater")
+
         if state == "on":
-            if not self.heater_status():
+            if not self.heater_status:
                 self.time_heater_toggle = datetime.now()
-                _ = self.query("H1")
+                self.heater_control = "on"
+                sleep(30)
         elif state == "off":
-            if self.heater_status():
+            if self.heater_status:
                 self.time_heater_toggle = datetime.now()
-                _ = self.query("H0")
-        elif state == "force":
-            # need to add some checks before allowing heater to be forced
-            _ = self.query("H2")
+                self.heater_control = "off"
+                sleep(30)
         else:
-            print("State must be 'on', 'off' or 'force'")
+            print("State must be 'on' or 'off'")
+
+    def remote(self, locked=False):
+        if locked:
+            self.remote_control = "remote_locked"
+        else:
+            self.remote_control = "remote_unlocked"
+
+    def local(self, locked=False):
+        if locked:
+            self.remote_control = "local_locked"
+        else:
+            self.remote_control = "local_unlocked"
 
     @property
     def field(self):
@@ -435,15 +478,16 @@ class OxfordIPS120(InstrumentDriver):
         self.hold()
         self.field_set_point = new_value
         self.to_set_point()
-        # TODO check if field is sweeping or at set point (if not either, then wait until it is sweeping)
+        # TODO: check if field is sweeping or at set point (if not either, then wait until it is sweeping)
         sleep(0.1)
-        while self.sweeping_status():
+        while self.sweeping_status:
             sleep(0.1)
 
     def status(self):
         status_string = self.query("X")
         return Status(status_string)
 
+    @property
     def quench_status(self):
         """
         True when the magnet quenched
@@ -451,22 +495,28 @@ class OxfordIPS120(InstrumentDriver):
 
         status = self.status()
         if status.X1 == 1:
-            return True
+            self._quench_status = True
+        else:
+            self._quench_status = False
+        return self._quench_status
 
+    @property
     def heater_status(self):
         """
-        heater() True for on and False for off
+        heater True for on and False for off
         """
 
         status = self.status()
         if status.H == 0:
-            return False
+            self._heater_status = False
         elif status.H == 1:
-            return True
+            self._heater_status = True
         else:
             # magnet persistant or heater fault - may need to have a heater_status object in future
-            return False
+            self._heater_status = False
+        return self._heater_status
 
+    @property
     def sweeping_status(self):
         """
         True when the field is changing, False when the field is at rest
@@ -474,10 +524,12 @@ class OxfordIPS120(InstrumentDriver):
 
         status = self.status()
         if status.M2 == 0:
-            return False
+            self._sweeping_status = False
         else:
-            return True
+            self._sweeping_status =  True
+        return self._sweeping_status
 
+    @property
     def remote_status(self):
         """
         True when magnet is in remote mode, False when it is in local mode.
@@ -485,10 +537,13 @@ class OxfordIPS120(InstrumentDriver):
 
         status = self.status()
         if (status.C == 1) or (status.C == 3):
-            return True
+            self._remote_status = True
         else:
-            return False
+            self._remote_status = False
 
+        return self._remote_status
+
+    @property
     def persistent_status(self):
         """
         True when the magnet is in persistent mode
@@ -496,150 +551,10 @@ class OxfordIPS120(InstrumentDriver):
 
         status = self.status()
         if status.H == 2:
-            return True
+            self._persistent_status = True
         else:
-            return False
-
-    # --- legacy commands below here ---
-    # legacy
-    def set_local_locked(self):
-        self.write("$C0")
-
-    # legacy
-    def set_remote_lock(self):
-        self.write("$C1")
-
-    # legacy
-    def set_local_unlocked(self):
-        self.write("$C2")
-
-    # legacy
-    def set_remote_unlocked(self):
-        self.write("$C3")
-
-    # legacy, use heater('on') and these are reversed
-    def set_heat_on(self):
-        return self.query("&H0")
-
-    # legacy, use heater('off') and these are reversed
-    def set_heat_off(self):
-        return self.query("&H1")
-
-    # legacy, must use field_set_point attribute
-    def set_target_field(self, new_value):
-        self.write("$J{}".format(round(new_value, 4)))
-        print("deprecated: use 'field_set_point = value'")
-
-    # legacy, use field_set_point()
-    @property
-    def target_field(self):
-        self._target_field = ips120_float(self.query("R8"))
-        return self._target_field
-
-    @target_field.setter
-    def target_field(self, new_value):
-        if (new_value >= -self.field_limit) and (new_value < self.field_limit):
-            self.write("$J{}".format(round(new_value, 4)))
-            self._target_field = round(new_value, 4)
-        else:
-            print(
-                "Target field out of range, must be 0 < set point < {}".format(
-                    self.field_limit
-                )
-            )
-
-    # legacy, use get_current_set_point
-    def get_target_current(self):
-        self._target_current = ips120_float(self.query("R5"))
-        return self._target_current
-
-    # legacy, use get_current_rate
-    def get_current_sweep_rate(self):
-        self._current_sweep_rate = ips120_float(self.query("R6"))
-        return self._current_sweep_rate
-
-    # legacy, use field_rate
-    @property
-    def field_sweep_rate(self):
-        self._field_sweep_rate = ips120_float(self.query("R9"))
-        return self._field_sweep_rate
-
-    @field_sweep_rate.setter
-    def field_sweep_rate(self, new_value):
-        if (new_value >= 0) and (new_value < self.field_rate_limit):
-            self.write("$T{}".format(round(new_value, 3)))
-            self._field_sweep_rate = round(new_value, 3)
-        else:
-            print(
-                "Sweep rate out of range, must be 0 < rate < {}".format(
-                    self.field_rate_limit
-                )
-            )
-
-    # legacy, use status()
-    def get_status(self):
-        status = self.query("X")
-
-        X1 = {0: "Normal", 1: "Quenched", 2: "Over Heated", 4: "Warming Up", 8: "Fault"}
-        status1 = X1[int(status[1])]
-
-        # X2 = {0: 'Normal',
-        #       1: 'On Positive Voltage Limit',
-        #       2: 'On Negative Voltage Limit',
-        #       4: 'Outside Negative Current Limit',
-        #       8: 'Outside Positive Current Limit'}
-
-        status2 = X1[int(status[2])]
-
-        print("Status: {}, {}".format(status1, status2))
-
-        A = {0: "Hold", 1: "To Set Point", 2: "To Zero", 4: "Clamped"}
-
-        activity = A[int(status[4])]
-
-        print("Activity: {}".format(activity))
-
-        C = {
-            0: "Local & Locked",
-            1: "Remote & Locked",
-            2: "Local & Unlocked",
-            3: "Remote & Unlocked",
-            4: "Auto-Run-Down",
-            5: "Auto-Run-Down",
-            6: "Auto-Run-Down",
-            7: "Auto-Run-Down",
-        }
-
-        loc = C[int(status[6])]
-
-        print("Local/Remote Status: {}".format(loc))
-
-        H = {
-            0: "Off, Magnet at Zero",
-            1: "On",
-            2: "Off, Maget at Field",
-            5: "Heater Fault",
-            8: "No Switch Fitted",
-        }
-
-        heater = H[int(status[8])]
-
-        print("Heater: {}".format(heater))
-
-        M1 = {0: "Amps, Fast", 1: "Tesla, Fast", 4: "Amps, Slow", 5: "Tesla, Slow"}
-
-        M2 = {
-            0: "at rest",
-            1: "Sweeping",
-            2: "Sweep Limit",
-            3: "Sweeping & Sweep Limiting",
-        }
-
-        mode1 = M1[int(status[10])]
-        mode2 = M2[int(status[11])]
-
-        print("Mode: {}; {}".format(mode1, mode2))
-
+            self._persistent_status = False
+        return self._persistent_status
 
 class Status:
     def __init__(self, status_string="X00A1C3H1M10P03"):
