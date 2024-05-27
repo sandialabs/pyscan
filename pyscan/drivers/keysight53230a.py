@@ -2,9 +2,9 @@
 from .instrument_driver import InstrumentDriver
 
 
-class Keysite53230A(InstrumentDriver):
+class Keysight53230A(InstrumentDriver):
     '''
-    Class to control Keysite53230A function counter
+    Class to control Keysight53230A function counter
 
     Parameters
     ----------
