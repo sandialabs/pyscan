@@ -139,6 +139,8 @@ class PulseBlaster(ItemAttribute):
         for key, value in kwarg.items():
             self[key] = value
 
+        self._version = "0.0.1"
+
         self.clock = clock
         self.board = board
 

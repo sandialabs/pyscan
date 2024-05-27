@@ -21,6 +21,7 @@ class ThorlabsBSC203(ItemAttribute):
     '''
 
     def __init__(self, serial="70878515"):
+        self._version = "0.0.1"
         self.serial = c_char_p(bytes(serial, "utf-8"))
         if self.build_device_list() != 0:
             assert 0, 'Could not build device list'

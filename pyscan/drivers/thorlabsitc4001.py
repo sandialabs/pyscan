@@ -20,7 +20,7 @@ class ThorLabsITC4001(InstrumentDriver):
     def __init__(self, instrument):
 
         super().__init__(instrument)
-
+        self._version = "0.0.1"
         self.debug = False
         self.initialize_properties()
 

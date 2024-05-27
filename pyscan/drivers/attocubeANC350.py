@@ -9,6 +9,8 @@ class AttocubeANC350(InstrumentDriver):
 
         super().__init__(instrument)
 
+        self._version = "0.0.1"
+
         self.inst = ANC350()
         # self.debug = False
         # self.initialize_properties()

@@ -16,9 +16,9 @@ class Stanford928(Stanford900):  # pragma: no cover
         # initialize SRS SIM900 instrument for message-based communications
         super().__init__(instrument, port, debug=debug)
         # Stanford900.__init__(self, instrument, port)
-
+        
+        self._version = "0.0.1"
         self.init_settings()
-
         self.update_properties()
 
         if self._service_indicator == 1:

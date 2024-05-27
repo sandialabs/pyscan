@@ -21,6 +21,9 @@ from pyscan.general.item_attribute import ItemAttribute
 class HeliosSDK(ItemAttribute):
 
     def __init__(self):
+
+        self._version = "0.0.1"
+
         pass
 
     def add_device_property(self, settings):

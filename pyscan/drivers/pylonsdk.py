@@ -5,7 +5,7 @@ from pyscan.general.item_attribute import ItemAttribute
 class PylonSDK(ItemAttribute):
 
     def __init__(self):
-        pass
+        self._version = "0.0.1"
 
     def add_device_property(self, settings):
         '''
