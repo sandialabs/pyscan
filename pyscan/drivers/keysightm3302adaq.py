@@ -10,7 +10,7 @@ except:
     print('Could not load Keysight SD1')
 
 
-class M3302ADAQ(ItemAttribute):
+class KeysightM3302ADAQ(ItemAttribute):
     '''
     Class for controling the Keysight M3302A DAQ sub module
 
