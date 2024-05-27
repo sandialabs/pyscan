@@ -35,7 +35,7 @@ class ActonSP2300(InstrumentDriver):
     '''
 
     def __init__(self, com, baud=9600, timeout=5):
-        
+
         self.ser = serial.Serial(com, baud, timeout=timeout)
         time.sleep(1)
 

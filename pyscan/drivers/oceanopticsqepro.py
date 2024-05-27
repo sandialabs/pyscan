@@ -33,8 +33,6 @@ class OceanOpticsQEPro(ItemAttribute):
         self.set_integration_time(.25)
         self._version = "0.0.1"
 
-
-
     def set_integration_time(self, value):
         '''
         Sets the integration time for the spectrum
