@@ -97,7 +97,10 @@ class InstrumentDriver(ItemAttribute):
         Parameters
         ----------
         settings : dict
-            dict containing settings for property. Must have the key "values", "range", or "indexed_values".
+            dict containing settings for property. Must have:
+                - the key "values", "range", or "indexed_values", or "dict_values"
+                - "write_string" and/or "query_string" to communication with instrument
+                - "return_type" is a function that converts the return string to a python type
 
         Returns
         -------
@@ -105,6 +108,16 @@ class InstrumentDriver(ItemAttribute):
         '''
 
         self['_{}_settings'.format(settings['name'])] = settings
+
+        command_strings = ['write_string', 'query_string']
+        if not any(string in settings for string in command_strings):
+            assert False, "'write_string' and/or 'query_string' must be in settings"
+
+        # read_only  properties do not need to have a required key in setting,
+        # but for the docstring to work a read_only property is created.
+        if 'write_string' not in settings:
+            if 'read_only' not in settings:
+                settings['read_only'] = settings['return_type'].__name__
 
         prop_type = ''
         if 'values' in settings:
@@ -121,16 +134,32 @@ class InstrumentDriver(ItemAttribute):
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
             prop_type = 'dict_values'
+        elif 'read_only' in settings:
+            prop_type = 'read_only'
         else:
-            assert False, "key used but not allowed"
+            assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 
         doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
                                                prop_type, settings[prop_type])
 
-        property_definition = property(
-            fget=lambda obj: self.get_instrument_property(obj, settings),
-            fset=lambda obj, new_value: set_function(obj, new_value, settings),
-            doc=doc_string)
+        # read-only
+        if 'write_string' not in settings:
+            property_definition = property(
+                fget=lambda obj: self.get_instrument_property(obj, settings),
+                fset=None,
+                doc=doc_string)
+        # write-only
+        elif 'query_string' not in settings:
+            property_definition = property(
+                fget=None,
+                fset=lambda obj, new_value: set_function(obj, new_value, settings),
+                doc=doc_string)
+        else:
+            property_definition = property(
+                fget=lambda obj: self.get_instrument_property(obj, settings),
+                fset=lambda obj, new_value: set_function(obj, new_value, settings),
+                doc=doc_string,
+            )
 
         setattr(self.__class__, settings['name'], property_definition)
 
