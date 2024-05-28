@@ -49,7 +49,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
         self.chassis = chassis
         self.slot = slot
         self.channel = channel
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.module = keysightSD1.SD_AIN()
         self.module.openWithSlot("", self.chassis, self.slot)

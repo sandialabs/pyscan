@@ -22,7 +22,7 @@ class HeliosSDK(ItemAttribute):
 
     def __init__(self):
 
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         pass
 

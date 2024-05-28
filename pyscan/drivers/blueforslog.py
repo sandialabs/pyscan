@@ -101,7 +101,7 @@ class BlueForsLog(object):
     def __init__(self, path, date='now'):
         self.path = Path(path)
         self.date = date
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
     def get_path(self, file):
 

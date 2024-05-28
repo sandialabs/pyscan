@@ -36,7 +36,7 @@ class YokogawaGS200(InstrumentDriver):
 
         self.dt = dt
         self.step_size = step_size
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.debug = False
         self.initialize_properties()

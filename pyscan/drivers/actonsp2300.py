@@ -40,7 +40,7 @@ class ActonSP2300(InstrumentDriver):
         time.sleep(1)
 
         self.debug = False
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.initialize_properties()
 

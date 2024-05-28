@@ -32,7 +32,7 @@ class BKPrecision9130B(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.initialize_properties()
 

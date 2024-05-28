@@ -47,7 +47,7 @@ class Stanford900(InstrumentDriver):
         self.instrument = instrument
         self.port = port
         self.module_id_string = None
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         # reset mainframe to default configuration (prevents conflicts between Matlab and Python)
         self.write('*RST')

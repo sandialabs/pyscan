@@ -14,7 +14,7 @@ class OxfordIGH(InstrumentDriver):
         self.set_remote_unlocked()
 
         self.debug = False
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.initialize_properties()
 

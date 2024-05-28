@@ -20,7 +20,7 @@ class ThorlabsMFF101(ItemAttribute):
     '''
 
     def __init__(self, serial):
-        self._version = "0.0.1"
+        self._version = "0.1.0"
         self.serial = c_char_p(bytes(serial, "utf-8"))
         self.build_device_list()
         self.open()

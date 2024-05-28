@@ -154,7 +154,7 @@ class ZurichHF2(ZurichDriver):
         self.channel = channel
         self.wf = channel + 6
         self.daq = ziPython.ziDAQServer('localhost', 8005)
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         self.debug = False
 

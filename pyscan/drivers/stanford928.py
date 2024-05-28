@@ -17,7 +17,7 @@ class Stanford928(Stanford900):  # pragma: no cover
         super().__init__(instrument, port, debug=debug)
         # Stanford900.__init__(self, instrument, port)
 
-        self._version = "0.0.1"
+        self._version = "0.1.0"
         self.init_settings()
         self.update_properties()
 

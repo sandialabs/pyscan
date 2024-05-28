@@ -31,7 +31,7 @@ class AmericanMagnetics430(InstrumentDriver):
         instrument.read_termination = '\r\n'
         instrument.write_termination = '\r'
 
-        self._version = "0.0.1"
+        self._version = "0.1.0"
 
         # visa object
         self.instrument = instrument
