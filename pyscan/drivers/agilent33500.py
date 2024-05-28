@@ -64,6 +64,7 @@ class Agilent33500(InstrumentDriver):
         self.channel = channel
 
         self.gain = 1
+        self._version = "0.1.0"
 
         self.debug = False
         self.initialize_properties()

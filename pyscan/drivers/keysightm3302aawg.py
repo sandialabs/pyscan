@@ -29,6 +29,8 @@ class KeysightM3302AAWG(ItemAttribute):
         self.chassis = chassis
         self.slot = slot
 
+        self._version = "0.1.0"
+
         self.module = keysightSD1.SD_AOU()
         self.module.openWithSlot("", self.chassis, self.slot)
 

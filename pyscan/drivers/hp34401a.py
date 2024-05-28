@@ -25,6 +25,8 @@ class HP34401A(InstrumentDriver):
         self.gain = 1
 
         self.debug = False
+        self._version = "0.1.0"
+
         self.initialize_properties()
 
     def initialize_properties(self):
