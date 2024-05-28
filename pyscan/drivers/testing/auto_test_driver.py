@@ -402,12 +402,8 @@ def check_properties(test_instrument):
     if (len(diff) > 0):
         print("Restored settings are different for the following: ", diff)
 
-    assert hasattr(test_instrument, 'version'), "The instrument had no attribute version"
-    print("The previous instrument version was: ", test_instrument.version)
-    try:
-        print("The instrument was last tested on: ", test_instrument.version_tested)
-    except Exception:
-        print("The last tested date could not be found. Check the driver_versions json for this driver.")
+    assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
+    print("The previous instrument version was: ", test_instrument._version)
 
 
 def write_log(device, exception):
