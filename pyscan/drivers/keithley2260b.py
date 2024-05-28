@@ -274,12 +274,6 @@ class Keithley2260B(InstrumentDriver):
             'values': ['BUS', 'IMM'],
             'return_type': str})
 
-    def update_properties(self):
-        properties = self.get_pyscan_properties()
-
-        for prop in properties:
-            self[prop]
-
     def measure_current(self):
 
         current = self.query('MEAS:SCAL:CURR:DC?')

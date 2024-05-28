@@ -227,12 +227,6 @@ class Stanford830(InstrumentDriver):
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
-    def update_properties(self):
-        properties = self.get_pyscan_properties()
-
-        for prop in properties:
-            self[prop]
-
     # # # Data storage methods
     def trigger(self):
         self.write('TRIG')

@@ -374,6 +374,12 @@ class InstrumentDriver(ItemAttribute):
             err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
 
+    def update_properties(self, properties):
+        properties = self.get_pyscan_properties()
+
+        for prop in properties:
+            self[prop]
+
     def get_pyscan_properties(self):
         '''
         Finds the pyscan style properties of this driver, i.e. those that end with "_settings"
