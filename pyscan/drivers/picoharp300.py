@@ -97,6 +97,8 @@ class PicoHarp300(ItemAttribute):
 
     def __init__(self, dev=0):
 
+        self._version = "0.1.0"
+
         retcode = phlib.PH_OpenDevice(ctypes.c_int(dev), hwSerial)
         if retcode == 0:
             print("{}S/N {}".format(dev, hwSerial.value.decode("utf-8")))

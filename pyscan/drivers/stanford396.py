@@ -50,6 +50,8 @@ class Stanford396(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+        self._version = "0.1.0"
+
         self.initialize_properties()
 
     def initialize_properties(self):
