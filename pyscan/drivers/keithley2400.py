@@ -39,7 +39,8 @@ class Keithley2400(InstrumentDriver):
 
         self.init_settings()
 
-        self.update_properties()
+        # consider switching to instrument driver update_properties() if possible.
+        self.update_props()
 
     def init_settings(self):
         self.gain = 1
@@ -86,7 +87,7 @@ class Keithley2400(InstrumentDriver):
         self.voltage_compliance_settings = {}
         self.voltage_compliance_settings['range'] = [0, 49.9]
 
-    def update_properties(self):
+    def update_props(self):
         '''
         Update properties by querying the instrument
         '''

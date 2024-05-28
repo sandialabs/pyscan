@@ -38,12 +38,7 @@ class AmericanMagnetics430(InstrumentDriver):
 
         self.instrument.clear()
 
-        self.update_properties()
-
-    def update_properties(self):
-        '''
-        update object information by querying magnet
-        '''
+        # self.update_properties()
         self.target_field
 
     def show_info(self):

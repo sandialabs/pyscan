@@ -48,9 +48,10 @@ class YokogawaGS200(InstrumentDriver):
         self.voltage_settings = {}
         self.voltage_settings['range'] = [-10, 10]
 
-        self.update_properties()
+        # consider switching to instrument drivers update_properties() if possible.
+        self.update_props()
 
-    def update_properties(self):
+    def update_props(self):
         '''
         Updates properties from instrument
         '''

@@ -33,6 +33,7 @@ class Agilent8275N(InstrumentDriver):
         self._version = "0.1.0"
 
         self.initialize_properties()
+        self.update_properties()
 
     def initialize_properties(self):
 
@@ -58,10 +59,3 @@ class Agilent8275N(InstrumentDriver):
             'query_string': ':OUTP:STAT?',
             'values': [0, 1],
             'return_type': int})
-
-        self.update_properties()
-
-    def update_properties(self):
-        self.frequency
-        self.amplitude
-        self.output
