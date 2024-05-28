@@ -26,9 +26,8 @@ class Stanford830(InstrumentDriver):
         Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
     harmonic : int
         Range: [1, 19999]
-    # has been deleted, no longer initialized, make sure regular amplitude included in doc string.
-    instrument_amplitude : float
-        Range:  [0, 5.0]
+    amplitude : float
+            Range:  [0.004, 5.0]
     input_configuration : int
         Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
     input_ground : int
@@ -125,7 +124,7 @@ class Stanford830(InstrumentDriver):
             'name': 'amplitude',
             'write_string': 'SLVL {}',
             'query_string': 'SLVL?',
-            'range': [0, 5.0],
+            'range': [0.004, 5.0],
             'return_type': float})
 
         # Input and Filter Properties:
@@ -463,27 +462,6 @@ class Stanford830(InstrumentDriver):
         index = expand_values.index(expand)
 
         self.write('OEXP {}, {}, {}'.format(channel, offset, index))
-
-    def auto_offset(self, source):
-        '''
-        Automatically sets the offset to the current value
-        of a data source
-
-        Parameters
-        ----------
-        source: str
-            Data source to be offset
-            Can be x, y, or r
-        '''
-
-        source_values = ['x', 'y', 'r']
-
-        if source not in source_values:
-            assert 0, 'Auto Offset source must be x, y, or r'
-
-        index = source_values.index(source) + 1
-
-        self.write('AOFF {}'.format(index))
 
     # Auxillary Input/Ouptut Methods
 

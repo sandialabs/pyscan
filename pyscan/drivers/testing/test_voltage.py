@@ -31,6 +31,7 @@ class TestVoltage(InstrumentDriver):
         self._voltage = 0
         self._power = 1
         self._output_state = 'off'
+        self._version = "0.1.0"
         self.black_list_for_testing = []
 
     def query(self, string):
@@ -80,3 +81,7 @@ class TestVoltage(InstrumentDriver):
             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
             'return_type': str
         })
+
+    @property
+    def version(self):
+        return self._version
