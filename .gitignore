@@ -119,6 +119,3 @@ dmypy.json
 backup
 .backup
 *.backup
-
-#ignoring Andy's test nb
-test.ipynb
