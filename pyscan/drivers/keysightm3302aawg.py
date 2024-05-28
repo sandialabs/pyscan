@@ -10,8 +10,8 @@ except:
     print('Could not load Keysight SD1')
 
 
-class KeysiteM3302AAWG(ItemAttribute):
-    '''Class to control Keysite M3302A PXIe AWG and Digitizer Combination
+class KeysightM3302AAWG(ItemAttribute):
+    '''Class to control Keysight M3302A PXIe AWG and Digitizer Combination
 
     Parameters
     ----------

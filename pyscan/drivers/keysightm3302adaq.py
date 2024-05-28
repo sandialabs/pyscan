@@ -10,11 +10,11 @@ except:
     print('Could not load Keysight SD1')
 
 
-class KeysiteM3302ADAQ(ItemAttribute):
+class KeysightM3302ADAQ(ItemAttribute):
     '''
-    Class for controling the Keysite M3302A DAQ sub module
+    Class for controling the Keysight M3302A DAQ sub module
 
-    Properties and fucntions are wrappers around keysite SDK
+    Properties and fucntions are wrappers around keysight SDK
 
     Parameters
     ----------
