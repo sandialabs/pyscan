@@ -407,14 +407,30 @@ class InstrumentDriver(ItemAttribute):
 
         doc = self.__doc__.split('\n')
 
-        r = re.compile(".*{} :".format(prop_name))
+        r = re.compile(".*{}:".format(prop_name))
         match = list(filter(r.match, doc))
+
         assert len(match) > 0, "No matches for {} documentation".format(prop_name)
         assert len(match) == 1, "Too many matches for {} documentation".format(prop_name)
         match = match[0]
+
         for i, string in enumerate(doc):
             if string == match:
                 break
-        doc_string = doc[i][3::] + '\n' + doc[i + 1][5::]
+
+        properties = self.get_pyscan_properties()
+        doc_string = doc[i][3::]
+
+        need_break = False
+        for j in range(len(properties)):
+            for prop in properties:
+                if prop in doc[i + 1 + j][4:(len('output_on_delay') + 4)] and prop != prop_name:
+                    need_break = True
+                    break
+            if need_break is True:
+                break
+            else:
+                doc_string = doc_string + '\n' + doc[i + 1 + j][5::]
+        print(doc_string)
 
         return doc_string

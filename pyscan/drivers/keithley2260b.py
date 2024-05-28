@@ -16,24 +16,19 @@ class Keithley2260B(InstrumentDriver):
 
     Properties
     ----------
-    ouptut_on_delay: float
+    output_on_delay: float
         Delay before output is turned on [0.00, 99.99]s
     ouptut_off_delay: float
         Delay before output is turned off [0.00, 99.99]s
-    ouptut_mode: str
+    output_mode: str
         CVHS - constant voltage high speed
         CCHS - constast current high speed
         CVLS - constant voltage low speed
         CCLS - constant current low speed
-    ouptut_on_delay: float
+    output_on_delay: float
         Delay before output is turned on [0.00, 99.99]s
-    ouptut_off_delay: float
+    output_off_delay: float
         Delay before output is turned off [0.00, 99.99]s
-    ouptut_mode: str
-        CVHS - constant voltage high speed
-        CCHS - constast current high speed
-        CVLS - constant voltage low speed
-        CCLS - constant current low speed
     output : int or str
         Turns the output on or off. Values: [0, 'off', 1, 'on']
     output_trigger_state: int or str
@@ -73,7 +68,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.debug = False
 
-        self._version = "0.1.0"
+        self._version = "0.1.1"
 
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
@@ -280,33 +275,10 @@ class Keithley2260B(InstrumentDriver):
             'return_type': str})
 
     def update_properties(self):
+        properties = self.get_pyscan_properties()
 
-        self.output_on_delay
-        self.output_off_delay
-        self.output_mode
-        self.output
-        self.output_trigger_state
-
-        self.smoothing
-
-        self.current
-        self.curret_trigger_amplitude
-        self.over_current_level
-        self.max_over_current_level
-        self.current_protection_state
-        self.current_rising_slew_rate
-        self.current_falling_slew_rate
-
-        self.resistance
-
-        self.voltage
-        self.voltage_trigger_amplitude
-        self.over_voltage_level
-        self.voltage_rising_slew_rate
-        self.voltage_falling_slew_rate
-
-        self.transient_trigger_source
-        self.output_trigger_source
+        for prop in properties:
+            self[prop]
 
     def measure_current(self):
 

@@ -73,8 +73,9 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "0.1.0"
+        self._version = "0.1.1"
         self.initialize_properties()
+        self.update_properties()
         self.black_list_for_testing = ['_input_configuration', "_time_constant", '_sample_rate']
 
     def initialize_properties(self):
@@ -226,34 +227,11 @@ class Stanford830(InstrumentDriver):
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
-        self.update_properties()
-
     def update_properties(self):
-        # Reference and phase
-        self.phase
-        self.reference_source
-        self.frequency
-        self.reference_slope
-        self.harmonic
-        self.amplitude
+        properties = self.get_pyscan_properties()
 
-        # Input configuration
-        self.input_configuration
-        self.input_ground
-        self.input_coupling
-        self.input_line_filter
-        self.input_line_filter
-
-        #
-        self.sensitivity
-        self.reserve_mode
-        self.time_constant
-        self.filter_slope
-        self.synchronous_filter
-
-        self.sample_rate
-        self.end_buffer_mode
-        self.trigger_mode
+        for prop in properties:
+            self[prop]
 
     # # # Data storage methods
     def trigger(self):
