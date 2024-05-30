@@ -125,23 +125,16 @@ class InstrumentDriver(ItemAttribute):
             if 'write_only' not in settings:
                 settings['write_only'] = settings['return_type'].__name__
 
-        prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
-            prop_type = 'values'
         elif ('range' in settings) and ('ranges' not in settings):
             set_function = self.set_range_property
-            prop_type = 'range'
         elif 'ranges' in settings:
             assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
-            prop_type = 'indexed_values'
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
-            prop_type = 'dict_values'
-        elif 'read_only' in settings:
-            prop_type = 'read_only'
         else:
             assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 

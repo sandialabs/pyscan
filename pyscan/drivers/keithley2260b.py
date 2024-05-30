@@ -29,10 +29,8 @@ class Keithley2260B(InstrumentDriver):
         Turns the output on or off. Values: [0, 'off', 1, 'on']
     output_trigger_state : int or str
         Sets or queries the output trigger state[0, 'off', 1, 'on']
-
     smoothing : str
         Sets or queries the level of smoothing ['low', 'middle', 'high]
-
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
@@ -65,7 +63,6 @@ class Keithley2260B(InstrumentDriver):
         NEEDS TO BE UPDATED
     output_trigger_source : str
         NEEDS TO BE UPDATED
-    
 
     Methods
     -------
