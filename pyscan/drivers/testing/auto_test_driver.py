@@ -4,7 +4,7 @@ import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
-from pyscan.general.get_version import get_version
+from pyscan.general.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
 
@@ -421,11 +421,11 @@ def write_log(device, exception):
     if exception is None:
         pre_string = "The tests were passed but...\n"
         new_line = "Passed with {} version v{} tested on pyscan version {} at {}".format(
-            driver_file_name, device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    else:
+            driver_file_name, device._version, get_pyscan_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    elif exception is not None:
         pre_string = "Tests failed with exception: \n{}\n".format(exception)
         new_line = "Failed with {} version v{} tested on pyscan version {} at {}".format(
-            driver_file_name, device._version, get_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            driver_file_name, device._version, get_pyscan_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     driver_file_name = driver_file_name + '_test_log.txt'
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -457,7 +457,7 @@ def write_log(device, exception):
         assert False, err_string
 
 
-def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
@@ -470,7 +470,8 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
     except Exception as e:
         exception = str(e)
 
-    write_log(device, exception)
+    if skip_log is False:
+        write_log(device, exception)
 
     if exception is not None:
         assert False, exception

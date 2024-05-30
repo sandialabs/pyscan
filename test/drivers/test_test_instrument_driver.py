@@ -4,6 +4,7 @@ import math
 import string
 from collections import OrderedDict
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
+from pyscan.drivers.testing.auto_test_driver import test_driver
 
 # #################### still need to add error flags for this file...
 # ##################### test more thouroughly with multiple instances to make sure
@@ -189,5 +190,4 @@ def test_testinstrumentdriver():
 
     check_properties(test_instrument)
 
-
-test_testinstrumentdriver()
+    test_driver(test_instrument)
