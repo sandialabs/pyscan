@@ -16,41 +16,56 @@ class Keithley2260B(InstrumentDriver):
 
     Properties
     ----------
-    output_on_delay: float
+    output_on_delay : float
         Delay before output is turned on [0.00, 99.99]s
-    ouptut_off_delay: float
+    output_off_delay : float
         Delay before output is turned off [0.00, 99.99]s
-    output_mode: str
+    output_mode : str
         CVHS - constant voltage high speed
         CCHS - constast current high speed
         CVLS - constant voltage low speed
         CCLS - constant current low speed
-    output_on_delay: float
-        Delay before output is turned on [0.00, 99.99]s
-    output_off_delay: float
-        Delay before output is turned off [0.00, 99.99]s
     output : int or str
         Turns the output on or off. Values: [0, 'off', 1, 'on']
-    output_trigger_state: int or str
+    output_trigger_state : int or str
         Sets or queries the output trigger state[0, 'off', 1, 'on']
 
-    smoothing: str
+    smoothing : str
         Sets or queries the level of smoothing ['low', 'middle', 'high]
 
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
+    current_trigger_amplitude : float
+        NEEDS TO BE UPDATED
+    over_current_level : float
+        NEEDS TO BE UPDATED
+    current_protection_state : float
+        NEEDS TO BE UPDATED
     current_rising_slew_rate : float
         Sets the value of the rising slew rate for current
         Range : [0.01, 54] Amps/s
     current_falling_slew_rate : float
         Sets the value of the falling slew rate for current
         Range : [0.01, 54] Amps/s
+    resistance : float
+        Sets the value of the internal resistance. Range: [0, 2.963]
     voltage : float
         Sets the value of the output voltage. Range: [0, 80] Volts.
         Use the method measure_voltage() to get the actual voltage.
-    resistance : float
-        Sets the value of the internal resistance. Range: [0, 2.963]
+    voltage_trigger_amplitude : float
+        NEEDS TO BE UPDATED
+    over_voltage_level : float
+        NEEDS TO BE UPDATED
+    voltage_rising_slew_rate : float
+        NEEDS TO BE UPDATED
+    voltage_falling_slew_rate : float
+        NEEDS TO BE UPDATED
+    transient_trigger_source : str
+        NEEDS TO BE UPDATED
+    output_trigger_source : str
+        NEEDS TO BE UPDATED
+    
 
     Methods
     -------
@@ -169,7 +184,7 @@ class Keithley2260B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'curret_trigger_amplitude',
+            'name': 'current_trigger_amplitude',
             'write_string': 'CURR:TRIG {}',
             'query_string': 'CURR:TRIG?',
             'range': [self.min_current_trigger_ampliutde,

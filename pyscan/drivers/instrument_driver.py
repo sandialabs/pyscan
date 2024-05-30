@@ -40,6 +40,8 @@ class InstrumentDriver(ItemAttribute):
 
         self.debug = debug
 
+        self._instrument_driver_version = '1.0.0'
+
     def query(self, string):
         '''
         Wrapper to pass string to the instrument object
@@ -143,8 +145,7 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 
-        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
+        doc_string = self.get_property_docstring(settings['name'])
 
         # read-only
         if 'write_string' not in settings:
@@ -378,7 +379,7 @@ class InstrumentDriver(ItemAttribute):
             err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
 
-    def update_properties(self, properties):
+    def update_properties(self):
         properties = self.get_pyscan_properties()
 
         for prop in properties:
@@ -432,11 +433,15 @@ class InstrumentDriver(ItemAttribute):
 
         doc_string = doc[i][4::]
 
-        for j in range(len(doc_string) - i):
+        for j in range(len(doc_string)):
+            try:
+                doc[i + 1 + j]
+            except:
+                break
             if (doc[i + 1 + j][0:1] == '\n') or (len(doc[i + 1 + j][0:7].strip()) != 0):
+                # print(repr(doc[i + 1 + j]))
                 break
             else:
                 doc_string = doc_string + '\n' + doc[i + 1 + j][4::]
-        print(doc_string)
 
         return doc_string
