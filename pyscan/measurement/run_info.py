@@ -89,12 +89,6 @@ class RunInfo(ItemAttribute):
             assert False, "More than one average scan is not allowed"
 
     @property
-    def version(self):
-        '''version of pyscan
-        '''
-        return get_version()
-
-    @property
     def scans(self):
         ''' Returns array of all scans
         '''
