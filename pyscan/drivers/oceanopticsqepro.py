@@ -31,6 +31,7 @@ class OceanOpticsQEPro(ItemAttribute):
             self.spec = Spectrometer.from_serial_number(sn)
         self.sn = sn
         self.set_integration_time(.25)
+        self._version = "0.1.0"
 
     def set_integration_time(self, value):
         '''

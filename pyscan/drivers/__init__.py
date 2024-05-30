@@ -15,9 +15,9 @@ from .hp34401a import HP34401A
 from .keithley2260b import Keithley2260B
 from .keithley2400 import Keithley2400
 from .kepcoBOP import KepcoBOP
-from .keysitem3302adaq import KeysiteM3302ADAQ
-from .keysitem3302aawg import KeysiteM3302AAWG
-from .keysite53230a import Keysite53230A
+from .keysightm3302adaq import KeysightM3302ADAQ
+from .keysightm3302aawg import KeysightM3302AAWG
+from .keysight53230a import Keysight53230A
 from .oxfordips120 import OxfordIPS120
 from .pulselaser import PulseLaser
 from .stanford396 import Stanford396

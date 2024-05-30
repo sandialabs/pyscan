@@ -23,6 +23,7 @@ class OxfordIPS120(InstrumentDriver):
 
         self.field_limit = 8
         self.field_rate_limit = 0.1
+        self._version = "0.1.0"
 
         self.debug = False
         self.initialize_properties()
