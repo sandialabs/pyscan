@@ -119,6 +119,10 @@ class InstrumentDriver(ItemAttribute):
             if 'read_only' not in settings:
                 settings['read_only'] = settings['return_type'].__name__
 
+        if 'query_string' not in settings:
+            if 'write_only' not in settings:
+                settings['write_only'] = settings['return_type'].__name__
+
         prop_type = ''
         if 'values' in settings:
             set_function = self.set_values_property
@@ -378,7 +382,9 @@ class InstrumentDriver(ItemAttribute):
         properties = self.get_pyscan_properties()
 
         for prop in properties:
-            self[prop]
+            settings = self['_{}_settings'.format(prop)]
+            if 'write_only' not in settings:
+                self[prop]
 
     def get_pyscan_properties(self):
         '''
@@ -413,7 +419,7 @@ class InstrumentDriver(ItemAttribute):
 
         doc = self.__doc__.split('\n')
 
-        r = re.compile(".*{}:".format(prop_name))
+        r = re.compile(".*{} :".format(prop_name))
         match = list(filter(r.match, doc))
 
         assert len(match) > 0, "No matches for {} documentation".format(prop_name)
@@ -424,19 +430,13 @@ class InstrumentDriver(ItemAttribute):
             if string == match:
                 break
 
-        properties = self.get_pyscan_properties()
-        doc_string = doc[i][3::]
+        doc_string = doc[i][4::]
 
-        need_break = False
-        for j in range(len(properties)):
-            for prop in properties:
-                if prop in doc[i + 1 + j][4:(len('output_on_delay') + 4)] and prop != prop_name:
-                    need_break = True
-                    break
-            if need_break is True:
+        for j in range(len(doc_string) - i):
+            if (doc[i + 1 + j][0:1] == '\n') or (len(doc[i + 1 + j][0:7].strip()) != 0):
                 break
             else:
-                doc_string = doc_string + '\n' + doc[i + 1 + j][5::]
+                doc_string = doc_string + '\n' + doc[i + 1 + j][4::]
         print(doc_string)
 
         return doc_string
