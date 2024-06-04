@@ -398,5 +398,3 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
     check_doc_strings(device)
 
     print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
-
-test_driver()
