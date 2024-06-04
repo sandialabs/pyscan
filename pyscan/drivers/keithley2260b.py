@@ -35,11 +35,13 @@ class Keithley2260B(InstrumentDriver):
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
     current_trigger_amplitude : float
-        NEEDS TO BE UPDATED
+        Sets or queries the current level in amps when a
+        software trigger has been generated.
     over_current_level : float
-        NEEDS TO BE UPDATED
+        Sets or queries the OCP (over-current protection)
+        level in amps.
     current_protection_state : float
-        NEEDS TO BE UPDATED
+        Turns OCP (over-current protection) on or off.
     current_rising_slew_rate : float
         Sets the value of the rising slew rate for current
         Range : [0.01, 54] Amps/s
@@ -52,17 +54,22 @@ class Keithley2260B(InstrumentDriver):
         Sets the value of the output voltage. Range: [0, 80] Volts.
         Use the method measure_voltage() to get the actual voltage.
     voltage_trigger_amplitude : float
-        NEEDS TO BE UPDATED
+        Sets or queries the voltage level in volts when a
+        software trigger has been generated.
     over_voltage_level : float
-        NEEDS TO BE UPDATED
+        Sets or queries the overvoltage protection level.
     voltage_rising_slew_rate : float
-        NEEDS TO BE UPDATED
+        Sets or queries the rising voltage slew rate. This is
+        only applicable for CV slew rate priority mode.
     voltage_falling_slew_rate : float
-        NEEDS TO BE UPDATED
+        Sets or queries the falling voltage slew rate. This is
+        only applicable for CV slew rate priority mode.
     transient_trigger_source : str
-        NEEDS TO BE UPDATED
+        Sets or queries the trigger source for the transient
+        system.
     output_trigger_source : str
-        NEEDS TO BE UPDATED
+        Sets or queries the trigger source for the output
+        system.
 
     Methods
     -------
