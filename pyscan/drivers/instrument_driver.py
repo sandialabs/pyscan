@@ -141,7 +141,7 @@ class InstrumentDriver(ItemAttribute):
         try:
             doc_string = self.get_property_docstring(settings['name'])
         except:
-            doc_string = ("No doc string found for {}.\n"
+            doc_string = ("No doc string found for {}.\n".format(settings['name'])
                           + "Please update the drivers doc string to include this attribute.")
 
         # read-only
