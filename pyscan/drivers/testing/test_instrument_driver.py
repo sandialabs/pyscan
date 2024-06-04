@@ -5,8 +5,14 @@ import pytest
 class TestInstrumentDriver(InstrumentDriver):
     '''Class that exhausts the possible properties of instrument driver to test instrument driver.
 
-    Properties
+    Parameters
     ----------
+    instrument : mock
+        Optional parameter.
+
+    Attributes
+    ----------
+    (Properties)
     float_values : float
         for testing float values property
     str_values : str

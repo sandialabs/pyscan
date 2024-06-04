@@ -8,6 +8,11 @@ class TestVoltage(InstrumentDriver):
 
     This is used in the demo jupyter notebooks.
 
+    Parameters
+    ----------
+    instrument : mock
+        Optional parameter.
+
     Attributes
     ----------
     (Properties)

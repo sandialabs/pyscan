@@ -340,6 +340,52 @@ def check_properties(test_instrument):
         print("Restored settings are different for the following: ", diff)
 
 
+# parses the instruments doc string and checks for each attribute
+def check_attribute_doc_strings(test_instrument):
+    settings = []
+    total_settings = 0
+    for attribute_name in test_instrument.__dict__.keys():
+        if "_settings" in attribute_name:
+            settings.append(attribute_name)
+            total_settings += 1
+
+    for setting in settings:
+        # if hasattr(test_instrument, 'black_list_for_testing'):
+        name = test_instrument[setting]['name']
+        try:
+            doc_string = test_instrument.get_property_docstring(name)
+        except Exception:
+            assert False, "Doc string could not be found for {}".format(name)
+
+        splits = doc_string.split('\n')
+        assert name in splits[0], "attribute name not found on first line of doc_string for {}".format(name)
+        assert len(splits) > 1, "doc string for {} found as only 1 line".format(name)
+        assert [len(splits[1]) > 3], "doc string's second line is not long enough for {}".format(name)
+
+
+# parses and checks the instruments doc string for proper formatting
+def check_doc_strings(test_instrument):
+    assert test_instrument.__doc__, "No doc string found for this driver."
+    doc_string = test_instrument.__doc__
+    try:
+        lines = doc_string.split('\n')
+    except Exception:
+        assert False, "doc string found but is only one line"
+
+    post_str = " not properly formatted or in doc string."
+
+    assert '    Parameters' in lines, "Input parameters" + post_str
+
+    assert '    Attributes\n    ----------\n    (Properties)\n' in doc_string, "Attributes" + post_str
+
+    following_lines = lines[lines.index('    Parameters'):]
+    for line in following_lines:
+        assert line.startswith('    ') or line == '', "Improper indentation of line {}".format(repr(line))
+
+    check_attribute_doc_strings(test_instrument)
+    # write formatting test cases here.
+
+
 def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
@@ -349,4 +395,8 @@ def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expecte
 
     check_properties(device)
 
+    check_doc_strings(device)
+
     print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
+
+test_driver()
