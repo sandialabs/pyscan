@@ -40,7 +40,7 @@ class InstrumentDriver(ItemAttribute):
 
         self.debug = debug
 
-        self._instrument_driver_version = '1.0.0'
+        self._instrument_driver_version = '0.2.0'
 
     def query(self, string):
         '''
