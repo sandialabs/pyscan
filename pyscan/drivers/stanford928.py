@@ -20,8 +20,7 @@ class Stanford928(Stanford900):  # pragma: no cover
         self._version = "0.1.0"
         self.init_settings()
 
-        # consider using instrument drivers update_properties() if possible.
-        self.update_props()
+        self.update_properties()
 
         if self._service_indicator == 1:
             print('Device indicates service is required for SIM928 {}'.format(self.port))
@@ -39,7 +38,8 @@ class Stanford928(Stanford900):  # pragma: no cover
         self.voltage_settings = {}
         self.voltage_settings['range'] = (-20.0, 20.0)
 
-    def update_props(self):
+    # consider using instrument drivers update_properties() if possible.
+    def update_properties(self):
         self.voltage
 
         self.output
