@@ -50,6 +50,7 @@ class YokogawaGS200(InstrumentDriver):
 
         self.update_properties()
 
+    # consider switching to instrument drivers update_properties() if possible.
     def update_properties(self):
         '''
         Updates properties from instrument

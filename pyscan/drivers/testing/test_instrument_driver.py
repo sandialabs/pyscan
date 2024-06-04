@@ -7,14 +7,16 @@ class TestInstrumentDriver(InstrumentDriver):
 
     Properties
     ----------
-    values :
-        for testing values property
-    range :
+    float_values : float
+        for testing float values property
+    str_values : str
+        for testing str values property
+    range : float
         for testing range property
 
-    indexed_values :
+    indexed_values : str
         for testing indexed_values property
-    dict_values :
+    dict_values : str
         for testing dict_values property
     '''
     # tells pytest this is not a test case

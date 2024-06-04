@@ -59,7 +59,7 @@ except ModuleNotFoundError:
     print('seabreeze module not found, Ocean Optics not imported')
 try:
     from .pulseblaster import PulseBlaster
-    from .pulseblasternv import NVPulseBlaster
+    # from .pulseblasternv import NVPulseBlaster
 except NameError:
     print('spinapi is not installed, PulseBlaster driver not loaded.')
 try:
