@@ -138,7 +138,11 @@ class InstrumentDriver(ItemAttribute):
         else:
             assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 
-        doc_string = self.get_property_docstring(settings['name'])
+        try:
+            doc_string = self.get_property_docstring(settings['name'])
+        except:
+            doc_string = ("No doc string found for {}.\n"
+                          + "Please update the drivers doc string to include this attribute.")
 
         # read-only
         if 'write_string' not in settings:
