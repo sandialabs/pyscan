@@ -14,8 +14,9 @@ class Keithley2260B(InstrumentDriver):
         Visa string or an instantiated instrument (return value from
         :func:`.new_instrument`)
 
-    Properties
+    Attributes
     ----------
+    (Properties)
     output_on_delay : float
         Delay before output is turned on [0.00, 99.99]s
     output_off_delay : float
