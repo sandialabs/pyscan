@@ -1,4 +1,13 @@
-# [0.3.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.3.0) (2024-05-16)
+# [0.4.0](https://github.com/sandialabs/pyscan/compare/v0.2.0...v0.4.0) (2024-05-30)
+
+
+### Features
+
+* Auto versioning, change log, and release ([a2cea93](https://github.com/sandialabs/pyscan/commit/a2cea93e6143d79e9d99c15970fe9f1bc53d3576))
+
+
+
+# [0.2.0](https://github.com/sandialabs/pyscan/compare/v0.1.0...v0.2.0) (2024-05-17)
 
 
 ### Bug Fixes
@@ -48,7 +57,6 @@
 * added get_version function to pyscan/general, implemented it in runfinfo, and also created a basic test file to ensure it works as expected. ([0e9fd49](https://github.com/sandialabs/pyscan/commit/0e9fd49e3720c392368e9efa44c1a6f9d7ba85f8))
 * added new workflow for testing versioning temporarily. ([2fdd155](https://github.com/sandialabs/pyscan/commit/2fdd155d3eb90dff372467fe025b7ffdd08852d8))
 * added workflow dispatch for ultimate versioning solution to temporarily test. ([842fecd](https://github.com/sandialabs/pyscan/commit/842fecd446a443cfdcc023d95ccd1e8260b8c361))
-* fake feature. ([6e40ac1](https://github.com/sandialabs/pyscan/commit/6e40ac16c157b50abd64f116044fc46d7cbf1c01))
 * Update VERSION.json ([91677f8](https://github.com/sandialabs/pyscan/commit/91677f8d0f51821dfdea19d9941ca2f275a11914))
 
 

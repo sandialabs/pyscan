@@ -141,7 +141,7 @@ def test_testinstrumentdriver():
 
     # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=2, num_range_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=14):
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=15):
         # iterate over all attributes to test accordingly using predefined functions
         values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 1, 1, 1
         values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []

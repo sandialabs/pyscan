@@ -74,7 +74,7 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "0.1.0"
+        self._version = "0.1.1"
 
         self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude", "_power_on_status_clear"]
 
@@ -304,49 +304,6 @@ class Stanford830(InstrumentDriver):
             'query_string': '*PSC?',
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
-
-    def update_properties(self):
-        # Reference and phase properties
-        self.phase
-        self.reference_source
-        self.frequency
-        self.reference_slope
-        self.harmonic
-        self.amplitude
-
-        # Input and filter properties
-        self.input_configuration
-        self.input_ground
-        self.input_coupling
-        self.input_line_filter
-
-        # Gain and Time Constant Properties
-        self.sensitivity
-        self.reserve_mode
-        self.time_constant
-        self.filter_slope
-        self.synchronous_filter
-
-        # Display and Output Properties
-
-        self.display1_output_source
-        self.display2_output_source
-
-        # Auxillary Input/Ouput Properties
-        self.auxillary_voltage1
-        self.auxillary_voltage2
-        self.auxillary_voltage3
-        self.auxillary_voltage4
-
-        # Data Storgae Properties
-        self.sample_rate
-        self.end_buffer_mode
-        self.trigger_mode
-
-        # Interface Properties
-        self.local_remote_control
-        self.gpib_overrided_state
-        self.power_on_status_clear
 
     # Display and Output Methods
     def get_display(self, display_number):
