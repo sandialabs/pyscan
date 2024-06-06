@@ -67,6 +67,12 @@ class Stanford830(InstrumentDriver):
         Indexed_values: ['one shot', 'loop']
     trigger_mode : int
         Indexed_values':  ['off', 'on']
+
+    Methods
+    -------
+
+    snap_xy()
+        
     '''
 
     def __init__(self, instrument):
@@ -970,6 +976,17 @@ class Stanford830(InstrumentDriver):
 
         self.reset()
 
+    def snap_xy(self):
+        '''
+        Shortcut to just snap the x and y data
+
+        Returns
+        [float, float]
+            array of two values that are the currently read x and y values
+        '''
+        
+        return self.snap('x', 'y')
+    
     # Get noise is depreciated, nees to be reworekd
 
     # def get_x_values(self, N=128, sample_rate=None):
