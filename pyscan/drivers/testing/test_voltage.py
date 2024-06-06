@@ -8,15 +8,20 @@ class TestVoltage(InstrumentDriver):
 
     This is used in the demo jupyter notebooks.
 
+    Parameters
+    ----------
+    instrument : mock
+        Optional parameter.
+
     Attributes
     ----------
     (Properties)
     voltage : float
-        Mimic a voltage, with default range [-10, 10]
+        Get/set a mock voltage, with default range [-10, 10]
     power : int
-        Mimic a power setting, with available values [1, 10]
+        Get/set a mock power setting, with available values [1, 10]
     output_state : int or str
-        Mimic an output state, with dict values 'on', 1, 'off', or 0
+        Get/set a mock output state, with dict values 'on', 1, 'off', or 0
     '''
 
     # tells pytest this is not a test case. Was necessary only on lab computer for some reason.
@@ -31,6 +36,7 @@ class TestVoltage(InstrumentDriver):
         self._voltage = 0
         self._power = 1
         self._output_state = 'off'
+        self._version = "0.1.0"
         self.black_list_for_testing = []
 
     def query(self, string):
@@ -80,3 +86,7 @@ class TestVoltage(InstrumentDriver):
             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
             'return_type': str
         })
+
+    @property
+    def version(self):
+        return self._version

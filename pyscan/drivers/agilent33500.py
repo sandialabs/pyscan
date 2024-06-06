@@ -64,6 +64,7 @@ class Agilent33500(InstrumentDriver):
         self.channel = channel
 
         self.gain = 1
+        self._version = "0.1.0"
 
         self.debug = False
         self.initialize_properties()
@@ -486,37 +487,6 @@ class Agilent33500(InstrumentDriver):
         for error in self.errors:
             error = error.replace('"', '').split(',')
             # check against known errors
-
-    def update_properties(self):
-        """Helper to get all class properties.
-
-        Mainly used during initialization.
-
-        Returns
-        -------
-
-        """
-
-        self.frequency
-        self.amplitude
-        self.voltage
-        self.voltage_autorange
-
-        # arb properties
-        self.function
-        self.arb_advance_mode
-        self.arb_filter
-        self.arb_sample_rate
-
-        self.burst_mode
-        self.burst_cycles
-        self.burst_state
-
-        self.output
-        self.output_load
-
-        self.trigger_source
-        self.errors
 
     @property
     def amplitude(self):

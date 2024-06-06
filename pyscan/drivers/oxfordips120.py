@@ -87,6 +87,8 @@ class OxfordIPS120(InstrumentDriver):
     def __init__(self, instrument, debug=False):
         super().__init__(instrument, debug)
 
+        self._version = "0.1.0"
+
         self.instrument.read_termination = "\r"
         self.instrument.write_termination = "\r"
         self.remote_control = "remote_unlocked"

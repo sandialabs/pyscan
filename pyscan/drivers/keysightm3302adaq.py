@@ -10,11 +10,11 @@ except:
     print('Could not load Keysight SD1')
 
 
-class KeysiteM3302ADAQ(ItemAttribute):
+class KeysightM3302ADAQ(ItemAttribute):
     '''
-    Class for controling the Keysite M3302A DAQ sub module
+    Class for controling the Keysight M3302A DAQ sub module
 
-    Properties and fucntions are wrappers around keysite SDK
+    Properties and fucntions are wrappers around keysight SDK
 
     Parameters
     ----------
@@ -49,6 +49,7 @@ class KeysiteM3302ADAQ(ItemAttribute):
         self.chassis = chassis
         self.slot = slot
         self.channel = channel
+        self._version = "0.1.0"
 
         self.module = keysightSD1.SD_AIN()
         self.module.openWithSlot("", self.chassis, self.slot)
