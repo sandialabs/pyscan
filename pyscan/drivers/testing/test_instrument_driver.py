@@ -41,6 +41,7 @@ class TestInstrumentDriver(InstrumentDriver):
         self._range = 0
         self._indexed_values = 'A'
         self._dict_values = 'off'
+        self._version = "0.1.0"
 
         self.update_properties()
         self.black_list_for_testing = ['_str_values']
@@ -144,6 +145,10 @@ class TestInstrumentDriver(InstrumentDriver):
         self.indexed_values
         self.dict_values
 
+    @property
+    def version(self):
+        return self._version
+
 
 class BadInstrumentDriver(InstrumentDriver):
     '''Class that mimics TestInstrumentDriver, but critically has bad blacklist values.
@@ -173,6 +178,7 @@ class BadInstrumentDriver(InstrumentDriver):
         self._range = 0
         self._indexed_values = 'A'
         self._dict_values = 'off'
+        self._version = "0.1.0"
 
         self.update_properties()
         self.black_list_for_testing = ['_nonexistent_property_name']
