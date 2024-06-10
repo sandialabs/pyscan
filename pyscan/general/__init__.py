@@ -10,7 +10,7 @@ from .recursive_to_item_attribute import recursive_to_itemattribute
 from .same_length import same_length
 from .set_difference import set_difference
 from .stack_or_append import stack_or_append
-from .get_version import get_version
+from .get_pyscan_version import get_pyscan_version
 
 # objects
 from .item_attribute import ItemAttribute

@@ -4,6 +4,9 @@ import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
+from pyscan.general.get_pyscan_version import get_pyscan_version
+import os
+from datetime import datetime
 
 '''
 WARNING!
@@ -22,6 +25,15 @@ BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 89
               'not ok', 'bad value', 'Andy is cool',
               [1, 2412, 19], [1, 191, 13, -5.3],
               {'Alfred': "Batman's uncle", 'or': 'imposter'}]
+
+
+missing_prop_str = "device did not have {} property, check it's in drivers initialize_properties or update_properties."
+prop_err_str1 = ("attempted to set {} property {} to {} but when queried returned {}."
+                 + "\n This is often a sign of interdependent properties that are not suitable for this auto testing."
+                 + "Check for interdependence and consider blacklisting.")
+prop_err_str2 = ("set {} property {} to {} but _{} returned {}."
+                 + "\n This is often a sign of interdependent properties that are not suitable for this auto testing."
+                 + "Check for interdependence and consider blacklisting.")
 
 
 # This function is critical step to ensuring safety when testing drivers with actual instruments
@@ -58,7 +70,7 @@ def validate_blacklist(test_instrument):
 
 def save_initial_state(device):
     saved_settings = []
-    # print(device.__dict__.keys())
+    print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
             '''try:
@@ -154,12 +166,38 @@ def check_attribute_values(device, attributes, ev):
         assert (device[attributes[i]] == ev[i]), err_string
 
 
+# designed for testing read only properties of any type
+def check_read_only_property(device, key):
+    name = device[key]['name']
+    settings = device[name + '_settings']
+    return_type = device
+
+    # I'm not sure that this will work. It might be that only the underscore property can be used to access
+    # the property value.
+    assert type(device[name]) is return_type, "read_only property {} returned type {} not {}".format(
+        name, type(device[name]), return_type)
+    assert type(device["_{}".format(name)]) is return_type, "read_only _property {} returned type {} not {}".format(
+        name, type(device["_{}".format(name)]), return_type)
+
+    assert 'write_string' not in settings, "read_only property {} has write_string {}".format(
+        name, settings['write_string'])
+
+    # I'm not sure that this will fail. If not, it should be that the original value remains the same no matter what
+    # you try to set it to.
+    for val in BAD_INPUTS:
+        with pytest.raises(Exception):
+            device[name] = val
+
+
 # check the set_values_property behavior
 def check_values_property(device, key):
     name = device[key]['name']
 
     # reset value to baseline for consistency between tests
-    device[name] = device[key]['values'][0]
+    try:
+        device[name] = device[key]['values'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     for val in BAD_INPUTS:
         if val not in device[key]['values']:
@@ -169,8 +207,9 @@ def check_values_property(device, key):
     for val in device[key]['values']:
         device[name] = val
         # ################ consider within a range here since may not return perfect value.
-        assert device[name] == val
-        assert device["_{}".format(name)] == val
+        assert device[name] == val, prop_err_str1.format('values', name, val, device[name])
+        assert device["_{}".format(name)] == val, prop_err_str2.format('values', name, val,
+                                                                       "_{}".format(name), device["_{}".format(name)])
 
     # reset value to baseline for consistency between tests
     device[name] = device[key]['values'][0]
@@ -183,7 +222,10 @@ def check_range_property(device, key):
     name = device[key]['name']
 
     # reset range to baseline for consistency between tests
-    device[name] = device[key]['range'][0]
+    try:
+        device[name] = device[key]['range'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     with pytest.raises(Exception):
         device[name] = min_range - .001
@@ -202,9 +244,9 @@ def check_range_property(device, key):
 
     for r in range(int(device[key]['range'][0]), int(device[key]['range'][0]), step):
         device[name] = r
-        assert device[name] == r
-        assert device['_{}'.format(name)] == r
-        # I do not expect this would be ubiquitous and will likely need to be reconsidered for actual drivers.
+        assert device[name] == r, prop_err_str1.format('range', name, r, device[name])
+        assert device['_{}'.format(name)] == r, prop_err_str2.format('range', name, r,
+                                                                     "_{}".format(name), device["_{}".format(name)])
 
     # reset range to baseline for consistency between tests
     device[name] = device[key]['range'][0]
@@ -216,7 +258,10 @@ def check_indexed_property(device, key):
     name = device[key]['name']
 
     # reset value to baseline for consistency between tests
-    device[name] = device[key]['indexed_values'][0]
+    try:
+        device[name] = device[key]['indexed_values'][0]
+    except Exception:
+        assert False, missing_prop_str.format(name)
 
     for item in BAD_INPUTS:
         if item not in device[key]['indexed_values']:
@@ -226,8 +271,9 @@ def check_indexed_property(device, key):
     for idx, iv in enumerate(device[key]['indexed_values']):
         # print(str(iv), str(idx), name, device[name])
         device[name] = iv
-        assert device[name] == iv, name + " not set up properly"
-        assert device["_{}".format(name)] == iv
+        assert device[name] == iv, prop_err_str1.format('indexed', name, iv, device[name])
+        assert device["_{}".format(name)] == iv, prop_err_str2.format('indexed', name, iv,
+                                                                      "_{}".format(name), device["_{}".format(name)])
         # print("underscore property is: ", device["_{}".format(name)])
 
     # reset value to baseline for consistency between tests
@@ -242,14 +288,21 @@ def check_dict_property(device, key):
 
     # reset the dict value to the first value for consistency between tests
     for k in ord_dict:
-        device[name] = k
+        try:
+            device[name] = k
+        except Exception:
+            assert False, missing_prop_str.format(name)
         break
 
     for k in device[key]['dict_values']:
         # print(k)
         device[name] = k
-        assert device[name] == device.find_first_key(ord_dict, ord_dict[k])
-        assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k])
+        err_str1 = ("{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
+            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
+        assert device[name] == device.find_first_key(ord_dict, ord_dict[k]), err_str1
+        err_str2 = ("_{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
+            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
+        assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k]), err_str2
 
     for bad_input in BAD_INPUTS:
         if isinstance(bad_input, typing.Hashable):
@@ -287,6 +340,7 @@ def check_properties(test_instrument):
         if "_settings" in attribute_name:
             settings.append(attribute_name)
             total_settings += 1
+    write_only_settings = []
 
     for name in settings:
         # if hasattr(test_instrument, 'black_list_for_testing'):
@@ -295,7 +349,12 @@ def check_properties(test_instrument):
         if base_name in test_instrument['black_list_for_testing']:
             continue
         keys = test_instrument[name].keys()
-        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+        if 'read_only' in keys:
+            check_read_only_property(test_instrument, name)
+        elif 'write_only' in keys:
+            write_only_settings.append(name)
+            continue
+        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
             check_values_property(test_instrument, name)
@@ -329,6 +388,10 @@ def check_properties(test_instrument):
               .format(len(test_instrument.black_list_for_testing)))
     except Exception:
         pass
+    if len(write_only_settings) > 0:
+        print("{} write only settings could not be auto tested... custom test cases recommended for this.".format(
+            len(write_only_settings)))
+        print("skipped write only settings include: {}".format(write_only_settings))
     total_tested = range_counter + values_counter + idx_vals_counter + dict_vals_counter
     print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
@@ -338,6 +401,60 @@ def check_properties(test_instrument):
     print("Settings restored to: {}".format(restored_settings))
     if (len(diff) > 0):
         print("Restored settings are different for the following: ", diff)
+
+    assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
+    print("The previous instrument version was: ", test_instrument._version)
+
+
+def write_log(device, exception):
+    try:
+        driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
+    except Exception:
+        if exception is None:
+            err_string = "The tests were passed but...\n"
+            err_string = err_string + "failed to log test history. Driver class file path not as expected."
+        else:
+            err_string = "Tests failed with exception: \n{}\n".format(exception)
+            err_string = err_string + "failed to log test history. Driver class file path not as expected."
+        assert False, err_string
+
+    if exception is None:
+        pre_string = "The tests were passed but...\n"
+        new_line = "Passed with {} version v{} tested on pyscan version {} at {}".format(
+            driver_file_name, device._version, get_pyscan_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    elif exception is not None:
+        pre_string = "Tests failed with exception: \n{}\n".format(exception)
+        new_line = "Failed with {} version v{} tested on pyscan version {} at {}".format(
+            driver_file_name, device._version, get_pyscan_version(), datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    driver_file_name = driver_file_name + '_test_log.txt'
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    directory = os.path.join(base_dir, '../testing/driver_test_logs/')
+    driver_test_logs_file_names = os.listdir(directory)
+    path = os.path.join(directory, driver_file_name)
+
+    if driver_file_name in driver_test_logs_file_names:
+        with open(path, 'r') as test_log:
+            existing_log = test_log.read()
+
+        with open(path, 'w') as test_log:
+            test_log.write(new_line + '\n')
+            test_log.write(existing_log)
+
+    else:
+        print("No test log file detected for this driver. Creating a new one.")
+
+        with open(path, 'w') as test_log:
+            test_log.write(new_line)
+
+    try:
+        with open(path, 'r') as test_log:
+            test_log.read()
+        print("The new test log for this driver is: ", new_line)
+    except Exception:
+        err_string = pre_string + "Test log seemed to save but could not be accessed."
+        err_string = err_string + "Please ensure test records are saving properly."
+        assert False, err_string
 
 
 # parses the instruments doc string and checks for each attribute
@@ -365,6 +482,7 @@ def check_attribute_doc_strings(test_instrument):
 
 # parses and checks the instruments doc string for proper formatting
 def check_doc_strings(test_instrument):
+    print("Checking driver doc string.")
     assert test_instrument.__doc__, "No doc string found for this driver."
     doc_string = test_instrument.__doc__
     try:
@@ -386,14 +504,30 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
         if expected_values is not None:
             check_attribute_values(device, expected_attributes, expected_values)
 
-    check_properties(device)
+    try:
+        check_properties(device)
+        exception = None
+    except Exception as e:
+        exception = str(e)
+
+    # Note, based on this execution order
+    # the driver log can pass the driver for functional tests success before ensuring doc string is properly formatted
+    if skip_log is False:
+        write_log(device, exception)
+
+    if exception is not None:
+        assert False, exception
+    else:
+        print("\033[1;32mTests passed, instrument {} looks ready to go.\033[0m".format(device.__class__.__name__))
+
+    check_doc_strings(device)
 
     check_doc_strings(device)
 

@@ -38,6 +38,12 @@ class InstrumentDriver(ItemAttribute):
         else:
             self.instrument = instrument
 
+        try:
+            inst_str = str(type(self.instrument))
+            self._driver_class = inst_str.split("'")[1].split(".")[-1]
+        except Exception:
+            pass
+
         self.debug = debug
 
         self._instrument_driver_version = '0.2.0'
@@ -186,7 +192,7 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string'])
-            assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
+            assert isinstance(value, str), ".query method for instrument {} did not return string".format(obj)
             value = value.strip("\n")
 
             if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
@@ -265,9 +271,15 @@ class InstrumentDriver(ItemAttribute):
 
         assert len(rng) == 2, "range setting requires 2 values"
         for val in rng:
-            assert (type(val) is int) or (type(val) is float), "range settings must be integers or floats"
+            assert (isinstance(val, int)) or (isinstance(val, float)), "range settings must be integers or floats"
         err_string = "range values must be integers or floats"
-        assert (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is np.float64), err_string
+        assert (
+            isinstance(
+                new_value, int)) or (
+            isinstance(
+                new_value, float)) or (
+                    isinstance(
+                        new_value, np.float64)), err_string
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
@@ -277,7 +289,8 @@ class InstrumentDriver(ItemAttribute):
                 setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
+            assert False, "Range error: {} must be between {} and {}, cannot be {}".format(
+                settings['name'], rng[0], rng[1], new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -301,7 +314,7 @@ class InstrumentDriver(ItemAttribute):
 
         values = settings['indexed_values']
 
-        if (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is str):
+        if (isinstance(new_value, int)) or (isinstance(new_value, float)) or (isinstance(new_value, str)):
             pass
         else:
             assert False

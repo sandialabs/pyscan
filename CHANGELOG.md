@@ -1,3 +1,17 @@
+# [0.5.0](https://github.com/sandialabs/pyscan/compare/v0.4.0...v0.5.0) (2024-06-06)
+
+
+### Bug Fixes
+
+* fixed issues with keithley2260b and Stanford830 preventing them from passing test cases. ([fadae52](https://github.com/sandialabs/pyscan/commit/fadae5204fc1e6d7caac10bf045417bf6f0160b0))
+
+
+### Features
+
+* completed solution for tracking driver versions and last date tested. ([45e0589](https://github.com/sandialabs/pyscan/commit/45e05894a6580d95686eadb4768fc7c8c251d414))
+
+
+
 # [0.4.0](https://github.com/sandialabs/pyscan/compare/v0.2.0...v0.4.0) (2024-05-30)
 
 
