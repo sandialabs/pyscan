@@ -70,9 +70,8 @@ class Stanford830(InstrumentDriver):
 
     Methods
     -------
-
     snap_xy()
-        
+        Returns array of current read x and read y values.
     '''
 
     def __init__(self, instrument):
@@ -981,12 +980,13 @@ class Stanford830(InstrumentDriver):
         Shortcut to just snap the x and y data
 
         Returns
+        -------
         [float, float]
             array of two values that are the currently read x and y values
         '''
-        
+
         return self.snap('x', 'y')
-    
+
     # Get noise is depreciated, nees to be reworekd
 
     # def get_x_values(self, N=128, sample_rate=None):
