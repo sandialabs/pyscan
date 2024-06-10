@@ -529,6 +529,4 @@ def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attribut
 
     check_doc_strings(device)
 
-    check_doc_strings(device)
-
     print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
