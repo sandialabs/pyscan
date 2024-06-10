@@ -2,9 +2,9 @@
 from .instrument_driver import InstrumentDriver
 
 
-class Keysite53230A(InstrumentDriver):
+class Keysight53230A(InstrumentDriver):
     '''
-    Class to control Keysite53230A function counter
+    Class to control Keysight53230A function counter
 
     Parameters
     ----------
@@ -20,6 +20,7 @@ class Keysite53230A(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+        self._version = "0.1.0"
 
         self.channel = channel
 

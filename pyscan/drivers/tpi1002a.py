@@ -69,6 +69,7 @@ class TPI1002A(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+        self._version = "0.1.0"
         self.instrument.baud_rate = 3000000
         self.initialize_properties()
         self.user_control = 1
