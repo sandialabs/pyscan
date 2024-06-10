@@ -10,8 +10,8 @@ except:
     print('Could not load Keysight SD1')
 
 
-class KeysiteM3302AAWG(ItemAttribute):
-    '''Class to control Keysite M3302A PXIe AWG and Digitizer Combination
+class KeysightM3302AAWG(ItemAttribute):
+    '''Class to control Keysight M3302A PXIe AWG and Digitizer Combination
 
     Parameters
     ----------
@@ -28,6 +28,8 @@ class KeysiteM3302AAWG(ItemAttribute):
 
         self.chassis = chassis
         self.slot = slot
+
+        self._version = "0.1.0"
 
         self.module = keysightSD1.SD_AOU()
         self.module.openWithSlot("", self.chassis, self.slot)

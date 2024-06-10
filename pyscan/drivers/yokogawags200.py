@@ -36,6 +36,7 @@ class YokogawaGS200(InstrumentDriver):
 
         self.dt = dt
         self.step_size = step_size
+        self._version = "0.1.0"
 
         self.debug = False
         self.initialize_properties()
@@ -49,6 +50,7 @@ class YokogawaGS200(InstrumentDriver):
 
         self.update_properties()
 
+    # consider switching to instrument drivers update_properties() if possible.
     def update_properties(self):
         '''
         Updates properties from instrument

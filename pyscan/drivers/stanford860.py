@@ -18,7 +18,7 @@ class Stanford860(InstrumentDriver):
         super().__init__(instrument)
 
         self.gain = 1
-
+        self._version = "0.1.0"
         self.debug = False
 
     def read_output(self, source):
