@@ -44,7 +44,7 @@ def check_3D_array(array):
     for k in array:
         for j in k:
             for i in j:
-                assert type(i) is np.float64
+                assert isinstance(i, np.float64)
                 # again, is this supposed to always be nan after running above save functions?
                 assert np.isnan(i)
 
@@ -103,11 +103,11 @@ def test_abstract_experiment():
         assert ms.check_runinfo() == 1
 
         assert hasattr(ms.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
-        assert type(ms.runinfo.long_name) is str, "Meta Sweep runinfo long name is not initialized as a string"
+        assert isinstance(ms.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
         assert len(ms.runinfo.long_name) == 15, "Meta Sweep runinfo long name is not 15 characters"
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
-        assert type(ms.runinfo.short_name) is str, "Meta Sweep runinfo short name is not initialized as a string"
+        assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
         assert len(ms.runinfo.short_name) == 7, "Meta Sweep runinfo short name is not 7 characters"
         assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
@@ -213,7 +213,7 @@ def test_abstract_experiment():
 
         # could maybe add to and clarify this
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
-        assert type(temp.runinfo.measured) is list, "save meta data didn't save runinfo.measured as a list"
+        assert isinstance(temp.runinfo.measured, list), "save meta data didn't save runinfo.measured as a list"
         assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
         # check that scans meta data was saved/loaded correctly

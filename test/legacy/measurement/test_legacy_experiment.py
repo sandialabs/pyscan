@@ -220,8 +220,9 @@ def check_loaded_expt_further(expt):
         device = expt.devices[device_name]
         check_loaded_dev_attributes(device, device, v_attributes)
 
-        assert type(device.debug) is bool, "devices " + device_name + " debug is not loaded as a boolean"
-        assert type(device._voltage) is float or type(device._voltage) is int, device_name + " voltage type error"
+        assert isinstance(device.debug, bool), "devices " + device_name + " debug is not loaded as a boolean"
+        assert isinstance(device._voltage, float) or isinstance(
+            device._voltage, int), device_name + " voltage type error"
 
     ''' Legacy loops nomenclature not supported for loaded expt...
     # check the runinfo loops
@@ -240,18 +241,18 @@ def check_loaded_expt_further(expt):
             assert isinstance(expt.runinfo[scan], ps.ItemAttribute), "loaded runinfo " + scan + " not item attribute"
 
     # check other attributes for proper type when loaded
-    assert type(expt.runinfo.measured) is list, "runinfo measured is not loaded as a list"
-    assert type(expt.runinfo.measure_function) is str, "runinfo measure function is not loaded as a string"
+    assert isinstance(expt.runinfo.measured, list), "runinfo measured is not loaded as a list"
+    assert isinstance(expt.runinfo.measure_function, str), "runinfo measure function is not loaded as a string"
     assert expt.runinfo.trigger_function is None, "runinfo trigger function is not loaded as None"
-    assert type(expt.runinfo.initial_pause) is float, "runinfo initial pause is not loaded as a float"
-    assert type(expt.runinfo.average_d) is int, "runinfo average_d is not loaded as a float"
-    assert type(expt.runinfo.verbose) is bool, "runinfo verbose is not loaded as a boolean"
-    assert type(expt.runinfo.time) is bool, "runinfo time is not loaded as a boolean"
-    assert type(expt.runinfo.long_name) is str, "runinfo long_name is not loaded as a string"
-    assert type(expt.runinfo.short_name) is str, "runinfo short_name is not loaded as a string"
+    assert isinstance(expt.runinfo.initial_pause, float), "runinfo initial pause is not loaded as a float"
+    assert isinstance(expt.runinfo.average_d, int), "runinfo average_d is not loaded as a float"
+    assert isinstance(expt.runinfo.verbose, bool), "runinfo verbose is not loaded as a boolean"
+    assert isinstance(expt.runinfo.time, bool), "runinfo time is not loaded as a boolean"
+    assert isinstance(expt.runinfo.long_name, str), "runinfo long_name is not loaded as a string"
+    assert isinstance(expt.runinfo.short_name, str), "runinfo short_name is not loaded as a string"
     # ### sometimes loaded expt doesn't have runinfo.running... why? Is this supposed to be allowed? ###
     if hasattr(expt.runinfo, 'running'):
-        assert type(expt.runinfo.running) is bool, "runinfo running is not loaded as a boolean"
+        assert isinstance(expt.runinfo.running, bool), "runinfo running is not loaded as a boolean"
     # runinfo.complete does not seem to be saved... do we want it to be
         # to know if the expt crashed before it could finish?
 

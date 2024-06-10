@@ -17,46 +17,60 @@ class Keithley2260B(InstrumentDriver):
     Attributes
     ----------
     (Properties)
-    ouptut_on_delay: float
+    output_on_delay : float
         Delay before output is turned on [0.00, 99.99]s
-    ouptut_off_delay: float
+    output_off_delay : float
         Delay before output is turned off [0.00, 99.99]s
-    ouptut_mode: str
-        CVHS - constant voltage high speed
-        CCHS - constast current high speed
-        CVLS - constant voltage low speed
-        CCLS - constant current low speed
-    ouptut_on_delay: float
-        Delay before output is turned on [0.00, 99.99]s
-    ouptut_off_delay: float
-        Delay before output is turned off [0.00, 99.99]s
-    ouptut_mode: str
+    output_mode : str
         CVHS - constant voltage high speed
         CCHS - constast current high speed
         CVLS - constant voltage low speed
         CCLS - constant current low speed
     output : int or str
         Turns the output on or off. Values: [0, 'off', 1, 'on']
-    output_trigger_state: int or str
+    output_trigger_state : int or str
         Sets or queries the output trigger state[0, 'off', 1, 'on']
-
-    smoothing: str
+    smoothing : str
         Sets or queries the level of smoothing ['low', 'middle', 'high]
-
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
+    current_trigger_amplitude : float
+        Sets or queries the current level in amps when a
+        software trigger has been generated.
+    over_current_level : float
+        Sets or queries the OCP (over-current protection)
+        level in amps.
+    current_protection_state : float
+        Turns OCP (over-current protection) on or off.
     current_rising_slew_rate : float
         Sets the value of the rising slew rate for current
         Range : [0.01, 54] Amps/s
     current_falling_slew_rate : float
         Sets the value of the falling slew rate for current
         Range : [0.01, 54] Amps/s
+    resistance : float
+        Sets the value of the internal resistance. Range: [0, 2.963]
     voltage : float
         Sets the value of the output voltage. Range: [0, 80] Volts.
         Use the method measure_voltage() to get the actual voltage.
-    resistance : float
-        Sets the value of the internal resistance. Range: [0, 2.963]
+    voltage_trigger_amplitude : float
+        Sets or queries the voltage level in volts when a
+        software trigger has been generated.
+    over_voltage_level : float
+        Sets or queries the overvoltage protection level.
+    voltage_rising_slew_rate : float
+        Sets or queries the rising voltage slew rate. This is
+        only applicable for CV slew rate priority mode.
+    voltage_falling_slew_rate : float
+        Sets or queries the falling voltage slew rate. This is
+        only applicable for CV slew rate priority mode.
+    transient_trigger_source : str
+        Sets or queries the trigger source for the transient
+        system.
+    output_trigger_source : str
+        Sets or queries the trigger source for the output
+        system.
 
     Methods
     -------
@@ -74,7 +88,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.debug = False
 
-        self._version = "0.0.1"
+        self._version = "0.1.1"
 
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
@@ -175,7 +189,7 @@ class Keithley2260B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'curret_trigger_amplitude',
+            'name': 'current_trigger_amplitude',
             'write_string': 'CURR:TRIG {}',
             'query_string': 'CURR:TRIG?',
             'range': [self.min_current_trigger_ampliutde,
@@ -279,35 +293,6 @@ class Keithley2260B(InstrumentDriver):
             'query_string': 'TRIG:OUTP:SOUR?',
             'values': ['BUS', 'IMM'],
             'return_type': str})
-
-    def update_properties(self):
-
-        self.output_on_delay
-        self.output_off_delay
-        self.output_mode
-        self.output
-        self.output_trigger_state
-
-        self.smoothing
-
-        self.current
-        self.curret_trigger_amplitude
-        self.over_current_level
-        self.max_over_current_level
-        self.current_protection_state
-        self.current_rising_slew_rate
-        self.current_falling_slew_rate
-
-        self.resistance
-
-        self.voltage
-        self.voltage_trigger_amplitude
-        self.over_voltage_level
-        self.voltage_rising_slew_rate
-        self.voltage_falling_slew_rate
-
-        self.transient_trigger_source
-        self.output_trigger_source
 
     def measure_current(self):
 

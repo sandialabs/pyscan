@@ -28,7 +28,10 @@ class Stanford620(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
+        self._version = "0.1.0"
+
         self.initialize_properties()
+        self.update_properties()
 
     def initialize_properties(self):
 
@@ -53,14 +56,6 @@ class Stanford620(InstrumentDriver):
             'query_string': 'AUTM?',
             'range': [0, 1],
             'return_type': int})
-
-        self.update_properties()
-
-    def update_properties(self):
-
-        self.arming_mode
-        self.mode
-        self.auto_start
 
     def get_counts(self):
 

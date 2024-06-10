@@ -42,6 +42,7 @@ class PrincetonPiMax4(ItemAttribute):
         self.file_manager = self.application.FileManager
 
         self.verbose = False
+        self._version = "0.1.0"
 
     def print_device_information(self):
         print("Experiment Device Information:")

@@ -31,17 +31,14 @@ class AmericanMagnetics430(InstrumentDriver):
         instrument.read_termination = '\r\n'
         instrument.write_termination = '\r'
 
+        self._version = "0.1.0"
+
         # visa object
         self.instrument = instrument
 
         self.instrument.clear()
 
-        self.update_properties()
-
-    def update_properties(self):
-        '''
-        update object information by querying magnet
-        '''
+        # self.update_properties()
         self.target_field
 
     def show_info(self):

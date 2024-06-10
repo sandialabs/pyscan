@@ -21,6 +21,7 @@ class KepcoBOP(InstrumentDriver):
                  ):
 
         self.instrument = instrument
+        self._version = "0.1.0"
 
         # magnetic field properties
         self.tesla_per_amp = tesla_per_amp

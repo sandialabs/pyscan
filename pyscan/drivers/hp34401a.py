@@ -25,12 +25,12 @@ class HP34401A(InstrumentDriver):
         self.gain = 1
 
         self.debug = False
-        self.initialize_properties()
+        self._version = "0.1.0"
 
-    def initialize_properties(self):
+        self.initialize_properties()
         self.update_properties()
 
-    def update_properties(self):
+    def initialize_properties(self):
         pass
 
     def measure_voltage(self):

@@ -3,6 +3,7 @@ from pyscan.general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict
 import numpy as np
+import re
 
 
 class InstrumentDriver(ItemAttribute):
@@ -17,8 +18,18 @@ class InstrumentDriver(ItemAttribute):
 
     Methods
     -------
+    query(string)
+    write(string)
+    read()
+    find_first_key(dictionary, machine_value)
     add_device_property(settings)
-
+    get_instrument_property()
+    set_values_property()
+    set_range_property()
+    set_index_values_property()
+    set_dict_values_property()
+    get_pyscan_properties()
+    get_property_docstring(prop_name)
     '''
 
     def __init__(self, instrument, debug=False):
@@ -27,7 +38,15 @@ class InstrumentDriver(ItemAttribute):
         else:
             self.instrument = instrument
 
+        try:
+            inst_str = str(type(self.instrument))
+            self._driver_class = inst_str.split("'")[1].split(".")[-1]
+        except Exception:
+            pass
+
         self.debug = debug
+
+        self._instrument_driver_version = '0.2.0'
 
     def query(self, string):
         '''
@@ -108,28 +127,28 @@ class InstrumentDriver(ItemAttribute):
             if 'read_only' not in settings:
                 settings['read_only'] = settings['return_type'].__name__
 
-        prop_type = ''
+        if 'query_string' not in settings:
+            if 'write_only' not in settings:
+                settings['write_only'] = settings['return_type'].__name__
+
         if 'values' in settings:
             set_function = self.set_values_property
-            prop_type = 'values'
         elif ('range' in settings) and ('ranges' not in settings):
             set_function = self.set_range_property
-            prop_type = 'range'
         elif 'ranges' in settings:
             assert False, "ranges no longer accepted, must use method to set multiple properties at the same time."
         elif 'indexed_values' in settings:
             set_function = self.set_indexed_values_property
-            prop_type = 'indexed_values'
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
-            prop_type = 'dict_values'
-        elif 'read_only' in settings:
-            prop_type = 'read_only'
         else:
             assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 
-        doc_string = "{} : {}\n {}: {}".format(settings['name'], settings['return_type'].__name__,
-                                               prop_type, settings[prop_type])
+        try:
+            doc_string = self.get_property_docstring(settings['name'])
+        except:
+            doc_string = ("No doc string found for {}.\n".format(settings['name'])
+                          + "Please update the drivers doc string to include this attribute.")
 
         # read-only
         if 'write_string' not in settings:
@@ -173,7 +192,7 @@ class InstrumentDriver(ItemAttribute):
 
         if not obj.debug:
             value = obj.query(settings['query_string'])
-            assert type(value) is str, ".query method for instrument {} did not return string".format(obj)
+            assert isinstance(value, str), ".query method for instrument {} did not return string".format(obj)
             value = value.strip("\n")
 
             if ('values' in settings) and ('indexed_' not in settings) and ('dict_' not in settings):
@@ -252,9 +271,15 @@ class InstrumentDriver(ItemAttribute):
 
         assert len(rng) == 2, "range setting requires 2 values"
         for val in rng:
-            assert (type(val) is int) or (type(val) is float), "range settings must be integers or floats"
+            assert (isinstance(val, int)) or (isinstance(val, float)), "range settings must be integers or floats"
         err_string = "range values must be integers or floats"
-        assert (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is np.float64), err_string
+        assert (
+            isinstance(
+                new_value, int)) or (
+            isinstance(
+                new_value, float)) or (
+                    isinstance(
+                        new_value, np.float64)), err_string
 
         if rng[0] <= new_value <= rng[1]:
             if not self.debug:
@@ -264,7 +289,8 @@ class InstrumentDriver(ItemAttribute):
                 setattr(obj, '_' + settings['name'],
                         settings['write_string'].format(new_value))
         else:
-            assert False, "Range error: {} must be between {} and {}".format(settings['name'], rng[0], rng[1])
+            assert False, "Range error: {} must be between {} and {}, cannot be {}".format(
+                settings['name'], rng[0], rng[1], new_value)
 
     def set_indexed_values_property(self, obj, new_value, settings):
         '''
@@ -288,7 +314,7 @@ class InstrumentDriver(ItemAttribute):
 
         values = settings['indexed_values']
 
-        if (type(new_value) is int) or (type(new_value) is float) or (type(new_value) is str):
+        if (isinstance(new_value, int)) or (isinstance(new_value, float)) or (isinstance(new_value, str)):
             pass
         else:
             assert False
@@ -362,3 +388,70 @@ class InstrumentDriver(ItemAttribute):
                 possible.append('{}'.format(string))
             err_string = "Value Error:\n{} must be one of: {}".format(settings['name'], possible)
             assert False, err_string
+
+    def update_properties(self):
+        properties = self.get_pyscan_properties()
+
+        for prop in properties:
+            settings = self['_{}_settings'.format(prop)]
+            if 'write_only' not in settings:
+                self[prop]
+
+    def get_pyscan_properties(self):
+        '''
+        Finds the pyscan style properties of this driver, i.e. those that end with "_settings"
+
+        Returns
+        -------
+        list :
+            list of property names for the current driver
+        '''
+
+        r = re.compile(".*_settings")
+        pyscan_properties = list(filter(r.match, self.keys()))
+        pyscan_properties = [prop[1:] for prop in pyscan_properties]
+        pyscan_properties = [prop.replace('_settings', '') for prop in pyscan_properties]
+        return pyscan_properties
+
+    def get_property_docstring(self, prop_name):
+        '''
+        Gets the doc string for a property from an instance of this class
+
+        Parameters
+        ----------
+        prop_name : str
+            The name of the property to get the doc string of
+
+        Returns
+        -------
+        str :
+            The two doc string lines for the property
+        '''
+
+        doc = self.__doc__.split('\n')
+
+        r = re.compile(".*{} :".format(prop_name))
+        match = list(filter(r.match, doc))
+
+        assert len(match) > 0, "No matches for {} documentation".format(prop_name)
+        assert len(match) == 1, "Too many matches for {} documentation".format(prop_name)
+        match = match[0]
+
+        for i, string in enumerate(doc):
+            if string == match:
+                break
+
+        doc_string = doc[i][4::]
+
+        for j in range(len(doc_string)):
+            try:
+                doc[i + 1 + j]
+            except:
+                break
+            if (doc[i + 1 + j][0:1] == '\n') or (len(doc[i + 1 + j][0:7].strip()) != 0):
+                # print(repr(doc[i + 1 + j]))
+                break
+            else:
+                doc_string = doc_string + '\n' + doc[i + 1 + j][4::]
+
+        return doc_string

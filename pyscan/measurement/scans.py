@@ -181,7 +181,7 @@ class AverageScan(AbstractScan):
     '''
 
     def __init__(self, n_average, dt=0):
-        assert type(n_average) is int, "n_average input for average scan must be an int"
+        assert isinstance(n_average, int), "n_average input for average scan must be an int"
         assert n_average >= 1, "average scan's n_average must be 1 or more"
         assert n_average != np.inf, "average scan's n_average must not be np.inf"
 

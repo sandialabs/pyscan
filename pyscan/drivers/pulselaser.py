@@ -8,6 +8,8 @@ class PulseLaser(InstrumentDriver):
 
     def __init__(self, com):
         print(com)
+        self._version = "0.1.0"
+
         self.instrument = serial.Serial(port=com,
                                         baudrate=9600,
                                         parity=serial.PARITY_NONE,

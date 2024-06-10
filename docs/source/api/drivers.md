@@ -51,13 +51,13 @@
 .. automodule:: pyscan.drivers.kepcoBOP
 	:members:
 
-.. automodule:: pyscan.drivers.keysite53230a
+.. automodule:: pyscan.drivers.keysight53230a
 	:members:
 
-.. automodule:: pyscan.drivers.keysitem3302aawg
+.. automodule:: pyscan.drivers.keysightm3302aawg
 	:members:
 
-.. automodule:: pyscan.drivers.keysitem3302adaq
+.. automodule:: pyscan.drivers.keysightm3302adaq
 	:members:
 
 .. automodule:: pyscan.drivers.oxfordigh
