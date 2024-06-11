@@ -1,3 +1,12 @@
+## [0.5.1](https://github.com/sandialabs/pyscan/compare/v0.5.0...v0.5.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* **build:** replaced ipykernel with jupyter in setup.py so that all packages required to run jupyter notebooks are automatically installed when pyscan is. ([aa06263](https://github.com/sandialabs/pyscan/commit/aa06263d9fbb5ab6a3cf0f227b7b4cd699ec087f))
+
+
+
 # [0.5.0](https://github.com/sandialabs/pyscan/compare/v0.4.0...v0.5.0) (2024-06-06)
 
 
