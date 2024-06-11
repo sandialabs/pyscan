@@ -171,7 +171,7 @@ class Keithley2260B(InstrumentDriver):
 
         # Removing smoothing because there is ambiguity between implementations
         # on different models/firmwares
-        
+
         # self.add_device_property({
         #     'name': 'smoothing',
         #     'write_string': 'SENS:AVER:COUN {}',
