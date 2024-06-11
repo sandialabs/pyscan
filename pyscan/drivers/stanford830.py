@@ -396,7 +396,10 @@ class Stanford830(InstrumentDriver):
         response = self.query('OEXP? {}'.format(channel)).strip('\n')
         response = response.split(',')
 
-        return self._channel1_offset, self._channel1_expand
+        setattr(self, '_channel{}_offset', response[0])
+        setattr(self, '_channel{}_expand', response[1])
+
+        return response
 
     def set_channel_offset_expand(self, channel, offset, expand):
         '''
@@ -584,13 +587,13 @@ class Stanford830(InstrumentDriver):
         sources = ['x', 'y', 'r', 'theta', 'aux1', 'aux2', 'aux3',
                    'aux4', 'frequency', 'display1', 'display2']
 
-        assert (len(args) >= 2) and (len(args <= 6)), 'Snap accepts 2 to 6 readable sources'
+        assert (len(args) >= 2) and (len(args) <= 6), 'Snap accepts 2 to 6 readable sources'
 
         for source in args:
             assert source in sources, (
                 'Readable sources include x, y, r, theta, aux1, aux2, aux3, aux4, frequency, display1, display2')
 
-        indicies = [sources.index(arg) + 1 for arg in args]
+        indicies = [str(sources.index(arg) + 1) for arg in args]
         query_string = 'SNAP? ' + ', '.join(indicies)
         responses = self.query(query_string).strip('\n')
 
