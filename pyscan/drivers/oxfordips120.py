@@ -184,8 +184,8 @@ class OxfordIPS120(InstrumentDriver):
                 "write_string": "$I{}",
                 "query_string": "R5",
                 "range": [
-                    np.round(-self.field_limit / self.field_to_current,2),
-                    np.round(self.field_limit / self.field_to_current,2)
+                    np.round(-self.field_limit / self.field_to_current, 2),
+                    np.round(self.field_limit / self.field_to_current, 2)
                 ],
                 "return_type": ips120_float,
             }
