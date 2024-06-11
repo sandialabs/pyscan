@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from time import time, sleep
+import numpy as np
 from .instrument_driver import InstrumentDriver
 
 
@@ -79,6 +80,8 @@ class OxfordIPS120(InstrumentDriver):
             summarize state of the magnet
         print_status()
             not implemented yet
+        print_properties()
+            not_implemented yet
         hold()
             activity_control with checks
         to_zero()
@@ -174,13 +177,16 @@ class OxfordIPS120(InstrumentDriver):
             }
         )
 
+        # TODO: fix all rounding issues related to T->A and precision
         self.add_device_property(
             {
                 "name": "current_set_point",
                 "write_string": "$I{}",
                 "query_string": "R5",
-                "range": [-self.field_limit / self.field_to_current,
-                          self.field_limit / self.field_to_current],
+                "range": [
+                    np.round(-self.field_limit / self.field_to_current,2),
+                    np.round(self.field_limit / self.field_to_current,2)
+                ],
                 "return_type": ips120_float,
             }
         )
@@ -190,8 +196,10 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "current_rate",
                 "write_string": "$S{}",
                 "query_string": "R6",
-                "range": [-self.field_rate_limit / self.field_to_current,
-                          self.field_rate_limit / self.field_to_current],
+                "range": [
+                    np.round(-self.field_rate_limit / self.field_to_current, 2),
+                    np.round(self.field_rate_limit / self.field_to_current, 2)
+                ],
                 "return_type": ips120_float,
             }
         )
@@ -202,7 +210,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "output_current",
                 "query_string": "R0",
-                "readonly": float,
+                "read_only": float,
                 "return_type": ips120_float
             }
         )
@@ -397,6 +405,7 @@ class OxfordIPS120(InstrumentDriver):
         """
         pass
 
+    # TODO: combine hold(), to_set_point() and to_zero() into activity property
     def hold(self):
         if not self.remote_status:
             raise IPS120Error(
@@ -418,6 +427,7 @@ class OxfordIPS120(InstrumentDriver):
             )
         self.activity_control = "to_zero"
 
+    # TODO: should be a property
     def heater(self, state):
         """
         Set the state of the heater.  Record the time when the heater was changed
