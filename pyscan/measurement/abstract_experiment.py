@@ -9,7 +9,6 @@ from pyscan.general import (ItemAttribute,
                             recursive_to_dict,
                             is_list_type)
 from pyscan.measurement.scans import PropertyScan, RepeatScan
-from pyscan.general.json_converter import RecursiveDictEncoder
 
 
 class AbstractExperiment(ItemAttribute):
