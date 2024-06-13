@@ -9,7 +9,7 @@ from pyscan.general import (ItemAttribute,
                             recursive_to_dict,
                             is_list_type)
 from pyscan.measurement.scans import PropertyScan, RepeatScan
-from pyscan.general.json_encoder import NumpyEncoder
+from pyscan.general.json_converter import RecursiveDictEncoder
 
 
 class AbstractExperiment(ItemAttribute):
@@ -230,8 +230,8 @@ class AbstractExperiment(ItemAttribute):
         data = recursive_to_dict(self.__dict__)
 
         with h5py.File(save_name, 'a') as f:
-            f.attrs['runinfo'] = json.dumps(data['runinfo'], cls=NumpyEncoder)
-            f.attrs['devices'] = json.dumps(data['devices'], cls=NumpyEncoder)
+            f.attrs['runinfo'] = json.dumps(data['runinfo'])
+            f.attrs['devices'] = json.dumps(data['devices'])
 
     def start_thread(self):
         '''Starts experiment as a background thread, this works in conjunction with live plot

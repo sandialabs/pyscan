@@ -27,8 +27,15 @@ def recursive_to_dict(obj_dict):
         # is a dict
         elif isinstance(value, dict):
             new_dict[key] = recursive_to_dict(value)
+        # if it is a np integer
+        elif isinstance(value, (np.integer, np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64,
+                                np.uint8, np.uint16, np.uint32, np.uint64)):
+            new_dict[key] = int(value)
+        # if it is a np floating value
+        elif isinstance(value, (np.floating, np.float_, np.float16, np.float32, np.float64)):
+            new_dict[key] = float(value)
         # if it is an np array
-        elif isinstance(value, np.ndarray):
+        elif isinstance(value, (np.ndarray, np.array)):
             new_dict[key] = value.tolist()
         # is an iterator
         elif hasattr(value, "__iter__"):
