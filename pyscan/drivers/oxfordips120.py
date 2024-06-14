@@ -202,7 +202,7 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "field_set_point",
                 "write_string": "$J{}",
                 "query_string": "R8",
-                "range": [-self.field_limit, self.field_limit],
+                "range": [-self._field_limit, self._field_limit],
                 "return_type": ips120_float,
             }
         )
@@ -212,7 +212,7 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "field_rate",
                 "write_string": "$T{}",
                 "query_string": "R9",
-                "range": [-self.field_rate_limit, self.field_rate_limit],
+                "range": [-self._field_rate_limit, self._field_rate_limit],
                 "return_type": ips120_float,
             }
         )
@@ -224,8 +224,8 @@ class OxfordIPS120(InstrumentDriver):
                 "write_string": "$I{}",
                 "query_string": "R5",
                 "range": [
-                    np.round(-self.field_limit / self.field_to_current, 2),
-                    np.round(self.field_limit / self.field_to_current, 2),
+                    np.round(-self._field_limit / self._field_to_current_ratio, 2),
+                    np.round(self._field_limit / self._field_to_current_ratio, 2),
                 ],
                 "return_type": ips120_float,
             }
@@ -237,8 +237,8 @@ class OxfordIPS120(InstrumentDriver):
                 "write_string": "$S{}",
                 "query_string": "R6",
                 "range": [
-                    np.round(-self.field_rate_limit / self.field_to_current, 2),
-                    np.round(self.field_rate_limit / self.field_to_current, 2),
+                    np.round(-self._field_rate_limit / self._field_to_current_ratio, 2),
+                    np.round(self._field_rate_limit / self._field_to_current_ratio, 2),
                 ],
                 "return_type": ips120_float,
             }
