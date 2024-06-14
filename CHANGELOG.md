@@ -1,3 +1,22 @@
+## [0.5.2](https://github.com/sandialabs/pyscan/compare/v0.5.1...v0.5.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* **driver:** removed smoothing from keithley2260b, added __del__ ([30feab6](https://github.com/sandialabs/pyscan/commit/30feab624e89f77641e15185becde39eedb1ff55))
+
+
+
+## [0.5.1](https://github.com/sandialabs/pyscan/compare/v0.5.0...v0.5.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* **build:** replaced ipykernel with jupyter in setup.py so that all packages required to run jupyter notebooks are automatically installed when pyscan is. ([aa06263](https://github.com/sandialabs/pyscan/commit/aa06263d9fbb5ab6a3cf0f227b7b4cd699ec087f))
+* **build:** replaced ipykernel with jupyter in setup.py so that all packages required to run jupyter notebooks are automatically installed when pyscan is. [skip ci] ([17704b5](https://github.com/sandialabs/pyscan/commit/17704b599114a7f9b42b3df2726d3b50c5bcb7d6))
+
+
+
 # [0.5.0](https://github.com/sandialabs/pyscan/compare/v0.4.0...v0.5.0) (2024-06-06)
 
 
