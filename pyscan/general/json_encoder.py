@@ -3,6 +3,49 @@ import numpy as np
 
 
 class CustomJSONEncoder(json.JSONEncoder):
+    """
+    A custom JSON encoder subclassing json.JSONEncoder to handle additional data types.
+    Used in pyscan to properly format data for json.dumps when saving metadata.
+
+    This encoder extends the default JSONEncoder to support serialization of several
+    additional Python data types, including NumPy data types and objects with a __dict__
+    attribute, making it suitable for serializing more complex Python objects into JSON format.
+
+    The encoder handles the following data types specifically:
+    - None: Serialized as the string 'None'.
+    - Boolean, String, Integer, Float: Serialized using the default JSON serialization.
+    - Callable objects: Serialized by converting their __dict__ attribute using recursive_to_dict.
+    - Dictionaries: Serialized using recursive_to_dict to handle nested dictionaries.
+    - Classes (type objects): Serialized as is (may require custom handling).
+    - NumPy integers and floats: Serialized as standard Python integers and floats.
+    - NumPy arrays: Serialized as lists using the tolist() method.
+    - Objects with a __dict__ attribute: Serialized by converting their __dict__ attribute using recursive_to_dict.
+    - Iterators (excluding strings, bytes, and byte arrays): Serialized as lists.
+
+    For any other data types not explicitly handled, the encoder falls back to the default
+    JSONEncoder handling, which may raise a TypeError if the type is not serializable.
+
+    Methods
+    -------
+    default(obj):
+        Overridden method from json.JSONEncoder that specifies how to serialize the supported data types.
+
+    recursive_to_dict(obj_dict):
+        Helper method to recursively serialize objects and dictionaries, particularly useful for
+        objects with nested dictionaries or __dict__ attributes.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> data = {
+    ...     "numpy_int": np.int32(10),
+    ...     "numpy_float": np.float64(3.14),
+    ...     "numpy_array": np.array([1, 2, 3]),
+    ...     "custom_object": CustomObject()
+    ... }
+    >>> encoded_str = json.dumps(data, cls=CustomJSONEncoder)
+    """
+
     def default(self, obj):
         if obj is None:
             return 'None'
