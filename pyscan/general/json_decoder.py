@@ -20,7 +20,7 @@ def item_attribute_object_hook(data):
     for key, value in data.items():
         if isinstance(value, dict):
             # Recursively convert nested dictionaries
-            value = itemattribute_object_hook(value)
+            value = item_attribute_object_hook(value)
         new_data[key] = value
 
     return new_data
