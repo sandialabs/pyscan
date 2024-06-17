@@ -62,7 +62,7 @@ class CustomJSONEncoder(json.JSONEncoder):
                               np.uint8, np.uint16, np.uint32, np.uint64)):
             return int(obj)
         # Handle numpy floating values
-        elif isinstance(obj, (np.floating, np.float_, np.float16, np.float32, np.float64)):
+        elif isinstance(obj, (np.floating, np.float16, np.float32, np.float64)):
             return float(obj)
         # Handle numpy arrays
         elif isinstance(obj, np.ndarray):
