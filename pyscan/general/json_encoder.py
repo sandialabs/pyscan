@@ -77,7 +77,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return float(obj)
         # Handle numpy arrays
         elif isinstance(obj, np.ndarray):
-            print("Object is a numpy array, converting to list")
+            # print("Object is a numpy array, converting to list")
             return obj.tolist()
         else:
             # print(f"Attempting to use super().default for object {obj} of type {type(obj)}")
