@@ -67,4 +67,8 @@ def load_experiment(file_name):
             expt[key] = (f[key][:]).astype('float64')
         f.close()
 
+        # generate runinfo.measured list
+        measured = [key for key in expt.keys() if key != "runinfo" and key != "devices"]
+        expt.runinfo.measured = measured
+
         return expt
