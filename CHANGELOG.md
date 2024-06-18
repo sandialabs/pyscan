@@ -1,9 +1,30 @@
+## [0.5.3](https://github.com/sandialabs/pyscan/compare/v0.5.2...v0.5.3) (2024-06-18)
+
+
+### Bug Fixes
+
+* **core:** added a json converter class in json_encoder.py to pyscan/general. This is now implemented in the save_metadata method of abstract_experiment.py which enables numpy values to be used as data inputs before saving. The converter changes the numpy values to standard python values and no longer throws the same type error as before. ([09ebcde](https://github.com/sandialabs/pyscan/commit/09ebcdee8c09966ea18e4754ff99f4bb5bc2c692))
+* **core:** added working json converter for runinfo and devices metadata now implemented in abstract experiment's save_metadata method. ([c7e17ce](https://github.com/sandialabs/pyscan/commit/c7e17ce765f0357b609860bf265f9f3a35fa594a))
+* **core:** corrected the issue plesiopterys identified with saving numpy data types and consolidated the json converter added in the last commit to the pre existing recursive_to_dict function which can now handle numpy data types for saving. ([18c4baf](https://github.com/sandialabs/pyscan/commit/18c4baffbb5298539e342fedf872dc19b85b3234))
+
+
+
+## [0.5.2](https://github.com/sandialabs/pyscan/compare/v0.5.1...v0.5.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* **driver:** removed smoothing from keithley2260b, added __del__ ([30feab6](https://github.com/sandialabs/pyscan/commit/30feab624e89f77641e15185becde39eedb1ff55))
+
+
+
 ## [0.5.1](https://github.com/sandialabs/pyscan/compare/v0.5.0...v0.5.1) (2024-06-11)
 
 
 ### Bug Fixes
 
 * **build:** replaced ipykernel with jupyter in setup.py so that all packages required to run jupyter notebooks are automatically installed when pyscan is. ([aa06263](https://github.com/sandialabs/pyscan/commit/aa06263d9fbb5ab6a3cf0f227b7b4cd699ec087f))
+* **build:** replaced ipykernel with jupyter in setup.py so that all packages required to run jupyter notebooks are automatically installed when pyscan is. [skip ci] ([17704b5](https://github.com/sandialabs/pyscan/commit/17704b599114a7f9b42b3df2726d3b50c5bcb7d6))
 
 
 
