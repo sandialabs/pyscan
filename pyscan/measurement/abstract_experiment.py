@@ -72,7 +72,6 @@ class AbstractExperiment(ItemAttribute):
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
-        print(save_name)
 
         # Create scan arrays
         with h5py.File(save_name, 'a') as f:
