@@ -3,6 +3,7 @@ import h5py
 import json
 from pathlib import Path
 import numpy as np
+from datetime import datetime
 from threading import Thread as thread
 from time import strftime
 from pyscan.general import (ItemAttribute,
@@ -71,6 +72,7 @@ class AbstractExperiment(ItemAttribute):
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
+        print(save_name)
 
         # Create scan arrays
         with h5py.File(save_name, 'a') as f:
@@ -93,6 +95,10 @@ class AbstractExperiment(ItemAttribute):
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
+                # Check if the name already exists in this dataset to avoid overlapping
+                if name in f:
+                    continue
+
                 if is_list_type(data[name]) and ndim > 0:
                     dims = (*scan_dims, * np.array(data[name]).shape)
                     self[name] = np.zeros(dims) * np.nan
@@ -161,7 +167,10 @@ class AbstractExperiment(ItemAttribute):
             assert False, "More than one repeat scan detected. This is not allowed."
 
         self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
+        # Get the microseconds part and format it to 7 decimal places as a fraction of a second
+        fractional_seconds = f"{datetime.now().microsecond / 1000000:.7f}"[2:]
         self.runinfo.short_name = self.runinfo.long_name[8:]
+        self.runinfo.long_name = self.runinfo.long_name + f"_{fractional_seconds}"
 
         self.runinfo.check()
 
