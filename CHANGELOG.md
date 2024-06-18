@@ -1,3 +1,14 @@
+## [0.5.3](https://github.com/sandialabs/pyscan/compare/v0.5.2...v0.5.3) (2024-06-18)
+
+
+### Bug Fixes
+
+* **core:** added a json converter class in json_encoder.py to pyscan/general. This is now implemented in the save_metadata method of abstract_experiment.py which enables numpy values to be used as data inputs before saving. The converter changes the numpy values to standard python values and no longer throws the same type error as before. ([09ebcde](https://github.com/sandialabs/pyscan/commit/09ebcdee8c09966ea18e4754ff99f4bb5bc2c692))
+* **core:** added working json converter for runinfo and devices metadata now implemented in abstract experiment's save_metadata method. ([c7e17ce](https://github.com/sandialabs/pyscan/commit/c7e17ce765f0357b609860bf265f9f3a35fa594a))
+* **core:** corrected the issue plesiopterys identified with saving numpy data types and consolidated the json converter added in the last commit to the pre existing recursive_to_dict function which can now handle numpy data types for saving. ([18c4baf](https://github.com/sandialabs/pyscan/commit/18c4baffbb5298539e342fedf872dc19b85b3234))
+
+
+
 ## [0.5.2](https://github.com/sandialabs/pyscan/compare/v0.5.1...v0.5.2) (2024-06-11)
 
 
