@@ -4,7 +4,7 @@ import pickle
 import json
 from pathlib import Path
 from pyscan.general import ItemAttribute
-from pyscan.general.json_decoder import item_attribute_object_hook
+from pyscan.general.json_decoder import CustomJSONDecoder
 
 
 def load_experiment(file_name):
@@ -56,9 +56,9 @@ def load_experiment(file_name):
         expt = ItemAttribute()
 
         f = h5py.File('{}'.format(file_name), 'r')
-        expt.runinfo = json.loads(f.attrs['runinfo'], object_hook=item_attribute_object_hook)
+        expt.runinfo = json.loads(f.attrs['runinfo'], cls=CustomJSONDecoder)
 
-        expt.devices = json.loads(f.attrs['devices'], object_hook=item_attribute_object_hook)
+        expt.devices = json.loads(f.attrs['devices'], cls=CustomJSONDecoder)
 
         for key, value in f.items():
             expt[key] = (f[key][:]).astype('float64')

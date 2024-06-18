@@ -1,26 +1,31 @@
 from pyscan.general import ItemAttribute
+import json
 
 
-def item_attribute_object_hook(data):
-    '''
-    Function to be used as the object_hook in json.loads to convert dictionaries
-    into ItemAttribute objects.
+class CustomJSONDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(object_hook=self.item_attribute_object_hook, *args, **kwargs)
 
-    Parameters
-    ----------
-    data : dict
-        The dictionary to convert.
+    def item_attribute_object_hook(self, data):
+        '''
+        Function to be used as the object_hook in json.loads to convert dictionaries
+        into ItemAttribute objects.
 
-    Returns
-    -------
-    ItemAttribute
-    '''
-    new_data = ItemAttribute()
+        Parameters
+        ----------
+        data : dict
+            The dictionary to convert.
 
-    for key, value in data.items():
-        if isinstance(value, dict):
-            # Recursively convert nested dictionaries
-            value = item_attribute_object_hook(value)
-        new_data[key] = value
+        Returns
+        -------
+        ItemAttribute
+        '''
+        new_data = ItemAttribute()
 
-    return new_data
+        for key, value in data.items():
+            if isinstance(value, dict):
+                # Recursively convert nested dictionaries
+                value = self.item_attribute_object_hook(value)
+            new_data[key] = value
+
+        return new_data

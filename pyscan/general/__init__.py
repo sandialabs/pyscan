@@ -12,4 +12,4 @@ from .same_length import same_length
 from .set_difference import set_difference
 from .stack_or_append import stack_or_append
 from .get_pyscan_version import get_pyscan_version
-from .json_decoder import item_attribute_object_hook
+from .json_decoder import CustomJSONDecoder
