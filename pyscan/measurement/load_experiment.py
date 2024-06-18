@@ -3,8 +3,7 @@ import h5py
 import pickle
 import json
 from pathlib import Path
-from pyscan.general import ItemAttribute
-from pyscan.general.json_decoder import item_attribute_object_hook
+from pyscan.general import ItemAttribute, recursive_to_itemattribute
 
 
 def load_experiment(file_name):
@@ -36,7 +35,7 @@ def load_experiment(file_name):
             open('{}.pkl'.format(file_name), "rb"))
 
         expt = ItemAttribute()
-        # expt.runinfo = ItemAttribute()
+        expt.runinfo = ItemAttribute()
         expt.devices = ItemAttribute()
 
         for key, value in meta_data['runinfo'].items():
@@ -54,11 +53,15 @@ def load_experiment(file_name):
 
     elif data_version == 0.2:
         expt = ItemAttribute()
+        expt.runinfo = ItemAttribute()
+        expt.devices = ItemAttribute()
 
         f = h5py.File('{}'.format(file_name), 'r')
-        expt.runinfo = json.loads(f.attrs['runinfo'], object_hook=item_attribute_object_hook)
+        runinfo = json.loads(f.attrs['runinfo'])
+        expt.runinfo = recursive_to_itemattribute(runinfo)
 
-        expt.devices = json.loads(f.attrs['devices'], object_hook=item_attribute_object_hook)
+        devices = json.loads(f.attrs['devices'])
+        expt.devices = recursive_to_itemattribute(devices)
 
         for key, value in f.items():
             expt[key] = (f[key][:]).astype('float64')
