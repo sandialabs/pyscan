@@ -98,7 +98,7 @@ class CustomJSONEncoder(json.JSONEncoder):
                                     np.uint8, np.uint16, np.uint32, np.uint64)):
                 new_dict[key] = int(value)
             # if it is a np floating value
-            elif isinstance(value, (np.floating, np.float16, np.float32, np.float64)):
+            elif isinstance(value, (np.floating, np.float_, np.float16, np.float32, np.float64)):
                 new_dict[key] = float(value)
             # if it is an np array
             elif isinstance(value, np.ndarray):
