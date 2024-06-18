@@ -66,13 +66,13 @@ class OxfordIPS120(InstrumentDriver):
     (Write-only properties)
 
     remote_control: str
-            Set local/remote to "local_locked", "remote_locked", "local_unlocked", "remote_unlocked"
+        Set local/remote to "local_locked", "remote_locked", "local_unlocked", "remote_unlocked"
     communications_protocol: str
-            Set rate and set point precision to "normal", "extended"
+        Set rate and set point precision to "normal", "extended"
     heater_control: str
-            Set heater to "off", "on", "force"
+        Set heater to "off", "on", "force"
     activity_control: str
-            Set sweep activity to "hold", "to_set_point", "to_zero", "clamp"
+        Set sweep activity to "hold", "to_set_point", "to_zero", "clamp"
 
     Methods
     -------
