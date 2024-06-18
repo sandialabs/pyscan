@@ -1,7 +1,3 @@
-Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:06:04
-Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:06:04
-Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:06:04
-Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:06:04
 Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:00:57
 Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:00:57
 Passed with test_instrument_driver version v0.1.0 tested on pyscan version v0.5.1 at 2024-06-17 10:00:57
