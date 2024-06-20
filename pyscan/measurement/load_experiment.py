@@ -68,7 +68,8 @@ def load_experiment(file_name):
         f.close()
 
         # generate runinfo.measured list
-        measured = [key for key in expt.keys() if key != "runinfo" and key != "devices"]
+        measured = [key for key in expt.keys() if key != "runinfo" and key != "devices" and key != "repeat"
+                    and key != "v1_voltage" and key != "v2_voltage" and key != "v3_voltage" and key != "v4_voltage"]
         expt.runinfo.measured = measured
 
         return expt
