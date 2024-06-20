@@ -39,7 +39,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return f"<class '{obj.__name__}'>"
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
             if debug is True:
-                print(f"obj {obj} was instance of InstrumentDriver or ItemAttribute.")
+                print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
             return obj.__dict__
         elif isinstance(obj, range):
             if debug is True:
