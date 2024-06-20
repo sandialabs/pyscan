@@ -36,7 +36,7 @@ def load_experiment(file_name):
             open('{}.pkl'.format(file_name), "rb"))
 
         expt = ItemAttribute()
-        # expt.runinfo = ItemAttribute()
+        expt.runinfo = ItemAttribute()
         expt.devices = ItemAttribute()
 
         for key, value in meta_data['runinfo'].items():
