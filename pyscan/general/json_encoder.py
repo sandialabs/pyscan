@@ -38,26 +38,36 @@ class CustomJSONEncoder(json.JSONEncoder):
         if type(obj) is type:
             return f"<class '{obj.__name__}'>"
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
-            print(f"obj {obj} was instance of InstrumentDriver")
+            if debug is True:
+                print(f"obj {obj} was instance of InstrumentDriver.")
             return obj.__dict__
         elif isinstance(obj, range):
+            if debug is True:
+                print(f"obj {obj} was instance of range.")
             return list(obj)
         # Handle numpy integers
         elif isinstance(obj, (np.integer, np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64,
                               np.uint8, np.uint16, np.uint32, np.uint64)):
-            # print("Object is a numpy integer, converting to int")
+            if debug is True:
+                print(f"Object {obj} is a numpy integer, converting to int.")
             return int(obj)
         # Handle numpy floating values
         elif isinstance(obj, (np.floating, np.float16, np.float32, np.float64)):
-            # print("Object is a numpy floating value, converting to float")
+            if debug is True:
+                print(f"Object {obj} is a numpy floating value, converting to float.")
             return float(obj)
         # Handle numpy arrays
         elif isinstance(obj, np.ndarray):
-            # print("Object is a numpy array, converting to list")
+            if debug is True:
+                print(f"Object {obj} is a numpy array, converting to list.")
             return obj.tolist()
         elif callable(obj):
-            return {obj.__name__: inspect.getsource(obj)}
+            if debug is True:
+                print(f"obj {obj} is a function, returning source code.")
+            return inspect.getsource(obj)
         elif isinstance(obj, (WindowsPath, Path)):  # This covers both WindowsPath and PosixPath
+            if debug is True:
+                print(f"obj {obj} is a Path or WindowsPath, returning string of the path.")
             return str(obj)
         else:
             return super().default(obj)
