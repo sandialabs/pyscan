@@ -20,12 +20,12 @@ class CustomJSONDecoder(json.JSONDecoder):
         -------
         ItemAttribute
         '''
-        new_data = ItemAttribute()
+        if type(data) is dict:
+            new_data = ItemAttribute()
 
-        for key, value in data.items():
-            if isinstance(value, dict):
-                # Recursively convert nested dictionaries
-                value = self.item_attribute_object_hook(value)
-            new_data[key] = value
+            for key, value in data.items():
+                new_data[key] = value
+        else:
+            new_data = data
 
         return new_data
