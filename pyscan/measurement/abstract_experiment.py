@@ -94,10 +94,6 @@ class AbstractExperiment(ItemAttribute):
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
-                # Check if the name already exists in this dataset to avoid overlapping
-                if name in f:
-                    continue
-
                 if is_list_type(data[name]) and ndim > 0:
                     dims = (*scan_dims, * np.array(data[name]).shape)
                     self[name] = np.zeros(dims) * np.nan
@@ -165,11 +161,17 @@ class AbstractExperiment(ItemAttribute):
         if num_repeat_scans > 1:
             assert False, "More than one repeat scan detected. This is not allowed."
 
-        self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
-        # Get the microseconds part and format it to 7 decimal places as a fraction of a second
-        fractional_seconds = f"{datetime.now().microsecond / 1000000:.7f}"[2:]
+        base_name = strftime("%Y%m%dT%H%M%S")
+        save_path = self.runinfo.data_path / '{}.hdf5'.format(base_name)
+        count = 0
+
+        while save_path.exists():
+            count += 1
+            save_path = self.runinfo.data_path / f'{base_name}-{count}.hdf5'
+
+        self.runinfo.long_name = save_path.stem
+
         self.runinfo.short_name = self.runinfo.long_name[8:]
-        self.runinfo.long_name = self.runinfo.long_name + f"_{fractional_seconds}"
 
         self.runinfo.check()
 
