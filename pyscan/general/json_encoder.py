@@ -1,71 +1,47 @@
 import json
 import numpy as np
+from pyscan.general.item_attribute import ItemAttribute
+from pyscan.drivers.instrument_driver import InstrumentDriver
+import inspect
+from pathlib import Path, WindowsPath
 
 
 class CustomJSONEncoder(json.JSONEncoder):
     """
-    A custom JSON encoder subclass that extends json.JSONEncoder to provide
-    serialization for additional Python data types not supported by the default
-    JSON encoder.
+    A custom JSON encoder subclass that extends json.JSONEncoder to handle additional Python data types
+    not supported by the default JSON encoder. This includes handling of custom objects, numpy data types,
+    function objects, and pathlib Path objects, among others.
 
-    This encoder is capable of handling the following data types directly:
-    - NoneType: Serialized to JSON null.
-    - Callable objects: Serialized by their name using the __name__ attribute.
-    - Objects with a __dict__ attribute: Serialized as dictionaries, excluding
-      specified keys to skip.
-    - Dictionaries: Serialized as JSON objects, excluding specified keys to skip.
-    - Lists: Serialized as JSON arrays.
-    - Range and Tuple: Serialized as lists by converting them to lists.
-    - Boolean, String, Integer, and Float: Serialized to their corresponding JSON types.
-    - Numpy integers and floating values: Serialized by converting them to Python
-      int or float types.
-    - Numpy arrays: Serialized as lists by converting them using the tolist() method.
-
-    Attributes that are not directly serializable and not explicitly handled will
-    be passed to the super().default() method, which may raise a TypeError if the
-    type is not supported.
-
-    Parameters:
-    - obj (any): The object to serialize.
-
-    Returns:
-    - The serialized object, ready for JSON encoding.
-
-    Note:
-    - Certain keys can be skipped during the serialization of objects with __dict__
-      attributes by adding them to the `keys_to_skip` set.
+    The encoder attempts to serialize various non-standard objects to a JSON-compatible format, applying
+    specific conversions based on the object type. If an object is already JSON serializable, the encoder
+    falls back to the default method provided by the superclass.
     """
 
-    def default(self, obj):
-        # Print the type of the object being processed for debugging
-        # print(f"Processing object type: {type(obj)}")
+    def default(self, obj, debug=False):
+        """
+        Convert non-serializable objects to a serializable format.
 
-        keys_to_skip = {'logger', 'expt_thread', 'data_path', 'instrument', 'module_id_string', 'spec'}
+        Parameters:
+        - obj: The object to serialize.
 
-        if obj is None:
-            # Explicitly handle None, although this should be handled by the default encoder
-            # print("Object is None, which is serializable by default.")
-            return obj
-        if hasattr(obj, "__call__"):
-            # print(f"Object is callable, returning name: {obj.__name__}")
-            return obj.__name__
-        elif hasattr(obj, "__dict__"):
-            # print("Object has __dict__, processing dictionary items...")
-            return {k: self.default(v) for k, v in obj.__dict__.items() if k not in keys_to_skip}
-        elif isinstance(obj, dict):
-            # Handle dictionaries explicitly
-            # print("Object is a dictionary, processing dictionary items...")
-            return {k: self.default(v) for k, v in obj.items() if k not in keys_to_skip}
-        elif isinstance(obj, list):
-            # Handle lists explicitly
-            # print("Object is a list, processing list items...")
-            return [self.default(item) for item in obj]
-        elif isinstance(obj, (range, tuple)):
-            # Handle range objects by converting them to lists
-            # print("Object is a range or tuple, converting to list")
+        Returns:
+        - A serializable representation of `obj` or raises a TypeError if the object cannot be serialized.
+        """
+        if debug is True:
+            print(f"Processing object {obj} of type: {type(obj)}")
+            try:
+                print(f"Obj name is: {obj.__name__}")
+            except:
+                pass
+        # keys_to_skip = {'logger', 'expt_thread', 'data_path', 'instrument', 'module_id_string', 'spec'}
+
+        if type(obj) is type:
+            return f"<class '{obj.__name__}'>"
+        elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
+            print(f"obj {obj} was instance of InstrumentDriver")
+            return obj.__dict__
+        elif isinstance(obj, range):
             return list(obj)
-        elif isinstance(obj, (bool, str, int, float)):
-            return obj
         # Handle numpy integers
         elif isinstance(obj, (np.integer, np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64,
                               np.uint8, np.uint16, np.uint32, np.uint64)):
@@ -79,6 +55,9 @@ class CustomJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             # print("Object is a numpy array, converting to list")
             return obj.tolist()
+        elif callable(obj):
+            return {obj.__name__: inspect.getsource(obj)}
+        elif isinstance(obj, (WindowsPath, Path)):  # This covers both WindowsPath and PosixPath
+            return str(obj)
         else:
-            # print(f"Attempting to use super().default for object {obj} of type {type(obj)}")
             return super().default(obj)
