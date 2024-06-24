@@ -94,6 +94,8 @@ class AbstractExperiment(ItemAttribute):
 
         with h5py.File(save_name, 'a') as f:
             for name in self.runinfo.measured:
+                if name in f:
+                    continue
                 if is_list_type(data[name]) and ndim > 0:
                     dims = (*scan_dims, * np.array(data[name]).shape)
                     self[name] = np.zeros(dims) * np.nan
