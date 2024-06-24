@@ -83,7 +83,8 @@ class Experiment(AbstractExperiment):
 
                         if np.all(np.array(self.runinfo.indicies) == 0):
                             for key, value in data.items():
-                                self.runinfo.measured.append(key)
+                                if key not in self.runinfo.measured:
+                                    self.runinfo.measured.append(key)
                             self.preallocate(data)
 
                         for key, value in data.items():
