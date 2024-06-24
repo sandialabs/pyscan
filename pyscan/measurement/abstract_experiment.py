@@ -3,7 +3,6 @@ import h5py
 import json
 from pathlib import Path
 import numpy as np
-from datetime import datetime
 from threading import Thread as thread
 from time import strftime
 from pyscan.general import (ItemAttribute,
