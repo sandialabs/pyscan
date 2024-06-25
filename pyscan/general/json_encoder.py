@@ -36,7 +36,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         # keys_to_skip = {'logger', 'expt_thread', 'data_path', 'instrument', 'module_id_string', 'spec'}
 
         if type(obj) is type:
-            return f"<class '{obj.__name__}'>"
+            return f"<class '{obj.__name__}'>" # DISCUSS WITH ANDY, could return "float" instead of "<class 'float'>"
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
             if debug is True:
                 print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
