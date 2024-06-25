@@ -36,7 +36,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         # keys_to_skip = {'logger', 'expt_thread', 'data_path', 'instrument', 'module_id_string', 'spec'}
 
         if type(obj) is type:
-            return f"<class '{obj.__name__}'>" # DISCUSS WITH ANDY, could return "float" instead of "<class 'float'>"
+            return f"<class '{obj.__name__}'>"  # DISCUSS WITH ANDY, could return "float" instead of "<class 'float'>"
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
             if debug is True:
                 print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
@@ -64,7 +64,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         elif callable(obj):
             if debug is True:
                 print(f"obj {obj} is a function, returning source code.")
-            return inspect.getsource(obj)
+            return inspect.getsource(obj)  # Talk with Andy about this and perhaps implementing in load_expt?
         elif isinstance(obj, (WindowsPath, Path)):  # This covers both WindowsPath and PosixPath
             if debug is True:
                 print(f"obj {obj} is a Path or WindowsPath, returning string of the path.")
