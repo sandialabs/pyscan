@@ -12,6 +12,7 @@ import pytest
 from io import StringIO
 import sys
 import shutil
+import re
 
 
 # for testing default trigger function with empty function
@@ -47,6 +48,24 @@ def check_3D_array(array):
                 assert isinstance(i, np.float64)
                 # again, is this supposed to always be nan after running above save functions?
                 assert np.isnan(i)
+
+
+def is_valid_long_name(s):
+    # Define the regex pattern
+    # ^ asserts position at start of a line
+    # \d{4} matches exactly 4 digits (year)
+    # \d{2} matches exactly 2 digits (month and day, respectively)
+    # T is a literal character
+    # \d{6} matches exactly 6 digits (hour, minute, second)
+    # (-\d+)? optionally matches a dash followed by one or more digits
+    # $ asserts position at the end of a line
+    pattern = r'^\d{4}\d{2}\d{2}T\d{6}(-\d+)?$'
+
+    # Use re.match to check if the string matches the pattern
+    if re.match(pattern, s):
+        return True
+    else:
+        return False
 
 
 def test_meta_sweep():
@@ -104,6 +123,7 @@ def test_meta_sweep():
 
         assert hasattr(ms.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
+        assert is_valid_long_name(ms.runinfo.long_name), "runinfo long_name is not properly formatted"
         assert len(ms.runinfo.long_name) >= 15, "Meta Sweep runinfo long name is not 15 or more characters"
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
