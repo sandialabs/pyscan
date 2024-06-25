@@ -82,9 +82,9 @@ class Experiment(AbstractExperiment):
                             self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
                         if np.all(np.array(self.runinfo.indicies) == 0):
+                            self.runinfo.measured = []
                             for key, value in data.items():
-                                if key not in self.runinfo.measured:
-                                    self.runinfo.measured.append(key)
+                                self.runinfo.measured.append(key)
                             self.preallocate(data)
 
                         for key, value in data.items():
@@ -173,6 +173,7 @@ class Experiment(AbstractExperiment):
 
                         # if on the first row of data, log the data names in self.runinfo.measured
                         if np.all(np.array(self.runinfo.indicies) == 0):
+                            self.runinfo.measured = []
                             for key, value in data.items():
                                 self.runinfo.measured.append(key)
                             self.preallocate(data)
