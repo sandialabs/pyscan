@@ -141,14 +141,15 @@ def test_testinstrumentdriver():
 
     # implements above checks for all attributes by type
     def check_properties(test_instrument, num_val_props=2, num_range_props=1,
-                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=15):
+                         num_idx_vals_props=1, num_dict_vals_props=1, total_att=16):
         # iterate over all attributes to test accordingly using predefined functions
         values_counter, range_counter, idx_vals_counter, dict_vals_counter = 0, 1, 1, 1
         values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
         for key in test_instrument.__dict__.keys():
             try:
                 keys = test_instrument[key].keys()
-                if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+                if (('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys)
+                        and ('read_only' not in keys)):
                     values_counter += 1
                     values_idx.append(values_counter)
                     check_values_property(key)
@@ -169,7 +170,7 @@ def test_testinstrumentdriver():
             except:
                 idx_vals_counter += 1
             try:
-                if 'dict_values' in test_instrument[key].keys():
+                if ('dict_values' in test_instrument[key].keys()) and ('write_only' not in keys):
                     dict_vals_counter += 1
                     dict_vals_idx.append(dict_vals_counter)
                     check_dict_property(key)

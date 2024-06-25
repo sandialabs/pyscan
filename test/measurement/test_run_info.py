@@ -3,6 +3,8 @@ Pytest functions to test the Runinfo class
 '''
 
 import pyscan as ps
+import pytest
+from pyscan.measurement.run_info import drop
 
 
 #  ######## need to add tests for runinfo's different @property definitions.
@@ -25,13 +27,6 @@ def test_init_from_noparams():
             err_string = "runinfo scan" + str(counter) + " (Property Scan) " + attribute_name + " not intialized"
             assert hasattr(scan, attribute_name), err_string
             counter += 1
-
-    # for checking that runinfo attributes are as expected
-    def check_attribute(runinfo, attribute, attribute_name, expected):
-        err_string1 = "runinfo " + attribute_name + " not initialized"
-        assert hasattr(runinfo, attribute_name), err_string1
-        err_string2 = "runinfo " + attribute_name + " not " + str(expected) + " when intialized"
-        assert (attribute is expected or attribute == expected), err_string2
 
     # check that runinfo scans are initialized correctly
     def check_runinfo_scans():
@@ -70,6 +65,13 @@ def test_init_from_noparams():
 
     check_runinfo_scans()
 
+    # for checking that runinfo attributes are as expected
+    def check_attribute(runinfo, attribute, attribute_name, expected):
+        err_string1 = "runinfo " + attribute_name + " not initialized"
+        assert hasattr(runinfo, attribute_name), err_string1
+        err_string2 = "runinfo " + attribute_name + " not " + str(expected) + " when intialized"
+        assert (attribute is expected or attribute == expected), err_string2
+
     # check that runinfo attributes are initialized correctly
     def check_runinfo_attributes():
         # check that static initialized correctly
@@ -97,3 +99,43 @@ def test_init_from_noparams():
         check_attribute(runinfo=init_runinfo, attribute=init_runinfo.verbose, attribute_name='verbose', expected=False)
 
     check_runinfo_attributes()
+
+    def check_runinfo_at_properties():
+        assert type(init_runinfo.dims) is tuple, "runinfo.dims not initialized as tuple"
+        assert len(init_runinfo.dims) == 0, "runinfo.dims not initialized as empty"
+
+        assert type(init_runinfo.average_dims) is tuple, "runinfo.average_dims not initialized as tuple"
+        assert len(init_runinfo.average_dims) == 0, "runinfo.average_dims not initialized as empty"
+
+        assert type(init_runinfo.ndim) is int, "runinfo.ndim not initialized as int"
+        assert init_runinfo.ndim == 0, "runinfo.ndim not initialized as 0"
+
+        assert type(init_runinfo.n_average_dim) is int, "runinfo.n_average_dim not initialized as int"
+        assert init_runinfo.n_average_dim == 0, "runinfo.n_average_dim not initialized as 0"
+
+        assert type(init_runinfo.indicies) is tuple, "runinfo.indicies not initialized as tuple"
+        assert len(init_runinfo.indicies) == 0, "runinfo.indicies not initialized as empty"
+
+        assert type(init_runinfo.line_indicies) is tuple, "runinfo.line_indicies not initialized as tuple"
+        assert len(init_runinfo.line_indicies) == 0, "runinfo.line_indicies not initialized as empty"
+
+        assert type(init_runinfo.average_indicies) is tuple, "runinfo.average_indicies not initialized as tuple"
+        assert len(init_runinfo.average_indicies) == 0, "runinfo.average_indicies not initialized as empty"
+
+        with pytest.raises(IndexError):
+            init_runinfo.average_index, "tuple index out of range when trying to call average_index"
+
+        assert init_runinfo.has_average_scan is False, "runinfo registered as having average scan on initialization."
+
+        # now testing legacy nomenclature
+        assert init_runinfo.loop0 == init_runinfo.scan0, "loop0 did not return scan0. Not backward compatible."
+        assert init_runinfo.loop1 == init_runinfo.scan1, "loop1 did not return scan1. Not backward compatible."
+        assert init_runinfo.loop2 == init_runinfo.scan2, "loop2 did not return scan2. Not backward compatible."
+        assert init_runinfo.loop3 == init_runinfo.scan3, "loop3 did not return scan3. Not backward compatible."
+
+        assert init_runinfo.loops == init_runinfo.scans, "loops did not return scans. Not backward compatible."
+
+        # testing function included at the end of runinfo.py, but not in runinfo as a method
+        assert drop([0, 1, 2, 3], 2) == [0, 1, 3]
+
+    check_runinfo_at_properties()
