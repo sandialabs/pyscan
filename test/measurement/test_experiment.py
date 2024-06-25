@@ -8,6 +8,7 @@ from random import random
 import shutil
 import numpy as np
 import pytest
+import time
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -890,8 +891,13 @@ def test_4D_multi_data():
     # check the meta path was set successfully
     check_meta_path(expt)
 
-    # run the experiment
+    # run the experiment while also testing for expected runtime
+    st = time.time()
     expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert .1 <= runtime <= 1, f"runtime was {runtime} for 4D_multi_data expt was not within expected range."
 
     # for checking the experiments attributes and output after running
     def check_expt_attributes(expt, loaded=False):
@@ -971,8 +977,13 @@ def test_1D_repeat():
     # check the meta path was set successfully
     check_meta_path(expt)
 
-    # run the experiment
+    # run the experiment while also testing for expected runtime
+    st = time.time()
     expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert .1 <= runtime <= 1, f"runtime was {runtime} for 1D_repeat expt was not within expected range."
 
     def check_expt_attributes(expt, loaded=False):
         # check the experiment keys, runinfo, and devices attributes
