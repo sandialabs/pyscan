@@ -43,7 +43,7 @@ def loaded_modifier(loaded):
 
 
 # for setting up the experiments
-def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1):
+def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1, dt=0):
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()
 
@@ -52,19 +52,19 @@ def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1)
     if (repeat is True):
         runinfo.scan0 = ps.RepeatScan(repeat_num)
     else:
-        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage', dt=dt)
 
         if (num_devices > 1):
             devices.v2 = ps.TestVoltage()
-            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage', dt=dt)
 
         if (num_devices > 2):
             devices.v3 = ps.TestVoltage()
-            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage', dt=dt)
 
         if (num_devices > 3):
             devices.v4 = ps.TestVoltage()
-            runinfo.scan3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage', dt=dt)
 
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
@@ -952,6 +952,38 @@ def test_4D_multi_data():
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
+
+
+def test_runtime_w_dt():
+    """
+    Testing 4D scan, measurement and loaded file
+
+    Returns
+    --------
+    None
+    """
+
+    # set up experiment
+    expt = set_up_experiment(num_devices=4, measure_function=measure_up_to_3D, dt=.1)
+
+    # check the experiment was initialized correctly
+    check_expt_init(expt)
+
+    expt.check_runinfo()
+
+    # check the experiment run info was initialized successfully
+    check_expt_runinfo(expt)
+
+    # check the meta path was set successfully
+    check_meta_path(expt)
+
+    # run the experiment while also testing for expected runtime
+    st = time.time()
+    expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert 2 <= runtime <= 10, f"runtime was {runtime} for 4D_multi_data expt was not within expected range."
 
 
 def test_1D_repeat():
