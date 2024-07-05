@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from time import time, sleep
+from time import sleep, time
+
+import numpy as np
+
 from .instrument_driver import InstrumentDriver
 
 
@@ -15,76 +18,97 @@ class OxfordIPS120(InstrumentDriver):
 
     Attributes
     ----------
-    Properties:
+    (Properties)
 
-        field: float
-        current_rate: float
-        current_set_point: float
-        field_set_point: float
-            range defined by property field_limit (T): [-8, 8]
-        field_rate: float
-            range defined by property field_rate_limit (T/min): [0, 0.2]
+    field: float
+        Get/set target field sweep (blocking)
+    current_rate: float
+        Get/set rate for changing magnet current
+    current_set_point: float
+        Get/set set point for magnet current
+    field_set_point: float
+        Get/set set point for magnet field; range defined by attribute field_limit: [-8, 8]
+    field_rate: float
+        Get/set rate for changing magnet field; range defined by attribute field_rate_limit: [0, 0.2]
 
-    Read-only properties:
+    (Read-only properties)
 
-        output_current: float
-            current in magnet power supply
-        voltage: float
-            voltage across leads
-        output_field: float
-            field from current in magnet power supply (not actual field if persistent)
-        software_voltage_limit: float
-            max voltage
-        persistent_current: float
-            current in magnet where heater was turned off
-        trip_field: float
-            field where last magnet quench occurred
-        persistent_current: float
-            field in magnet where heater was turned off
-        switch_heater_current: float
-            current in switch heater
-        safe_current_limit_negative: float
-            max negative current
-        safe_current_limit_positive: float
-            max positive current
-        lead_resistance: float
-            resistance
-        magnet_inductance: float
-            inductance
-        version: str
-            power supply model
-        status_string: str
+    output_current: read-only
+        Get current in magnet power supply
+    voltage: read-only
+        Get voltage across leads
+    measured_current: read-only
+        Get measured current in leads
+    output_field: read-only
+        Get field from current in magnet power supply (not actual field if persistent)
+    software_voltage_limit: read-only
+        Get max voltage
+    persistent_current: read-only
+        Get current in magnet where heater was turned off
+    trip_field: read-only
+        Get field where last magnet quench occurred
+    persistent_field: read-only
+        Get field in magnet where heater was turned off
+    switch_heater_current: read-only
+        Get current in switch heater
+    safe_current_limit_negative: read-only
+        Get max negative current
+    safe_current_limit_positive: read-only
+        Get max positive current
+    lead_resistance: read-only
+        Get resistance
+    magnet_inductance: read-only
+        Get inductance
+    firmware_version: read-only
+        Get power supply model
+    status_string: read-only
 
-    Write-only properties:
+    (Write-only properties)
 
-        remote_control
-                "local_locked", "remote_locked", "local_unlocked", "remote_unlocked"
-        communications_protocol
-                "normal", "extended"
-        heater_control
-                "off", "on", "force"
-        activity_control
-                "hold", "to_set_point", "to_zero", "clamp"
+    remote_control: str
+        Set local/remote to "local_locked", "remote_locked", "local_unlocked", "remote_unlocked"
+    communications_protocol: str
+        Set rate and set point precision to "normal", "extended"
+    heater_control: str
+        Set heater to "off", "on", "force"
+    activity_control: str
+        Set sweep activity to "hold", "to_set_point", "to_zero", "clamp"
 
     Methods
     -------
-        heater()
-            turn heater on/off and deal correctly with persistent mode
-        print_state()
-            summarize state of the magnet
-        print_status()
-            not implemented yet
-        hold()
-            activity_control with checks
-        to_zero()
-            activity_control with checks
-        to_set_point()
-            activity_control with checks
-        clamp()
-            activity_control with checks
+    heater()
+        turn heater on/off and deal correctly with persistent mode
+    print_state()
+        summarize state of the magnet
+    print_status()
+        not implemented yet
+    print_properties()
+        not_implemented yet
+    hold()
+        activity_control with checks
+    to_zero()
+        activity_control with checks
+    to_set_point()
+        activity_control with checks
+    clamp()
+        activity_control with checks
     """
 
-    def __init__(self, instrument, debug=False):
+    def __init__(
+        self,
+        instrument,
+        *,
+        field_limit,
+        field_rate_limit,
+        field_to_current_ratio,
+        debug=False,
+    ):
+        """
+        OxfordIPS120 initilization requires keyword arguments:
+            field_limit: maximum magnetic field (T)
+            field_rate_limit: maximum sweep rate (T/min)
+            field_to_current_ratio: constant to switch between field and current (T/A)
+        """
         super().__init__(instrument, debug)
 
         self._version = "0.1.0"
@@ -106,18 +130,21 @@ class OxfordIPS120(InstrumentDriver):
             print(f"Message in buffer: {message}")
 
         # magnet specific settings
-        self.field_limit = 8  # oxford triton in 518/1112
-        self.field_rate_limit = 0.2
-        self.field_to_current = 5 / 22.456  # Tesla/Amp
+        self._field_limit = field_limit
+        self._field_rate_limit = field_rate_limit
+        self._field_to_current_ratio = field_to_current_ratio
 
         self.debug = debug
         self.initialize_properties()
+        self.update_properties()
+
+        self.check_field_to_current_ratio()
 
     def query(self, string, timeout=1):
-        '''
+        """
         Overload query for IPS120
         Read until status indicates full message is received.
-        '''
+        """
         # message = self.query(string)
         self.write(string)
         stb = self.instrument.read_stb()
@@ -139,6 +166,28 @@ class OxfordIPS120(InstrumentDriver):
 
         raise IPS120Error("IPS120 query Timeout")
 
+    def check_field_to_current_ratio(self):
+        """
+        Compare safe_current_limit_positive to the field_limit
+        """
+
+        calculated_current_limit = self._field_limit / self._field_to_current_ratio
+        # IPS120 has 4 dig accuracy in ratio and 2 dig accuracy in safe_current limits
+        # we need to check the calculated current to tolerance of +- 0.01 A
+        tol = 0.01
+        safe_current = self.safe_current_limit_positive
+        if (calculated_current_limit > safe_current - tol) and (
+            calculated_current_limit < safe_current + tol
+        ):
+
+            return
+
+        assert (
+            False
+        ), "field_limit and field_to_current_ratio ({}) not consistent with IPS120 safe_current ({})".format(
+            calculated_current_limit, safe_current
+        )
+
     def initialize_properties(self):
         """
         The IPS120 does not have traditional get/set parameters.  The control
@@ -153,7 +202,7 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "field_set_point",
                 "write_string": "$J{}",
                 "query_string": "R8",
-                "range": [-self.field_limit, self.field_limit],
+                "range": [-self._field_limit, self._field_limit],
                 "return_type": ips120_float,
             }
         )
@@ -163,18 +212,21 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "field_rate",
                 "write_string": "$T{}",
                 "query_string": "R9",
-                "range": [-self.field_rate_limit, self.field_rate_limit],
+                "range": [-self._field_rate_limit, self._field_rate_limit],
                 "return_type": ips120_float,
             }
         )
 
+        # TODO: fix all rounding issues related to T->A and precision
         self.add_device_property(
             {
                 "name": "current_set_point",
                 "write_string": "$I{}",
                 "query_string": "R5",
-                "range": [-self.field_limit / self.field_to_current,
-                          self.field_limit / self.field_to_current],
+                "range": [
+                    np.round(-self._field_limit / self._field_to_current_ratio, 2),
+                    np.round(self._field_limit / self._field_to_current_ratio, 2),
+                ],
                 "return_type": ips120_float,
             }
         )
@@ -184,50 +236,46 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "current_rate",
                 "write_string": "$S{}",
                 "query_string": "R6",
-                "range": [-self.field_rate_limit / self.field_to_current,
-                          self.field_rate_limit / self.field_to_current],
+                "range": [
+                    np.round(-self._field_rate_limit / self._field_to_current_ratio, 2),
+                    np.round(self._field_rate_limit / self._field_to_current_ratio, 2),
+                ],
                 "return_type": ips120_float,
             }
         )
+
+        # read-only properties
 
         self.add_device_property(
             {
                 "name": "output_current",
                 "query_string": "R0",
-                "readonly": float,
-                "return_type": ips120_float
+                "read_only": float,
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
-            {
-                "name": "voltage",
-                "query_string": "R1",
-                "return_type": ips120_float
-            }
+            {"name": "voltage", "query_string": "R1", "return_type": ips120_float}
         )
 
         self.add_device_property(
             {
                 "name": "measured_current",
                 "query_string": "R2",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
-            {
-                "name": "output_field",
-                "query_string": "R7",
-                "return_type": ips120_float
-            }
+            {"name": "output_field", "query_string": "R7", "return_type": ips120_float}
         )
 
         self.add_device_property(
             {
                 "name": "software_voltage_limit",
                 "query_string": "R15",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -235,7 +283,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "persistent_current",
                 "query_string": "R16",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -243,7 +291,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "trip_field",  # mA
                 "query_string": "R17",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -251,7 +299,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "persistent_field",
                 "query_string": "R18",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -259,7 +307,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "switch_heater_current",
                 "query_string": "R20",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -267,7 +315,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "safe_current_limit_negative",
                 "query_string": "R21",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -275,7 +323,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "safe_current_limit_positive",
                 "query_string": "R22",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -283,7 +331,7 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "lead_resistance",
                 "query_string": "R23",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
@@ -291,33 +339,31 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "magnet_inductance",
                 "query_string": "R24",
-                "return_type": ips120_float
+                "return_type": ips120_float,
             }
         )
 
         self.add_device_property(
-            {
-                "name": "version",
-                "query_string": "V",
-                "return_type": str
-            }
+            {"name": "firmware_version", "query_string": "V", "return_type": str}
         )
 
         self.add_device_property(
-            {
-                "name": "status_string",
-                "query_string": "X",
-                "return_type": str
-            }
+            {"name": "status_string", "query_string": "X", "return_type": str}
         )
 
-        # write-only property
+        # write-only properties
+
         self.add_device_property(
             {
                 "name": "remote_control",
                 "write_string": "$C{}",
-                "dict_values": {"local_locked": 0, "remote_locked": 1, "local_unlocked": 2, "remote_unlocked": 3},
-                "return_type": int
+                "dict_values": {
+                    "local_locked": 0,
+                    "remote_locked": 1,
+                    "local_unlocked": 2,
+                    "remote_unlocked": 3,
+                },
+                "return_type": int,
             }
         )
 
@@ -325,8 +371,11 @@ class OxfordIPS120(InstrumentDriver):
             {
                 "name": "communications_protocol",
                 "write_string": "Q{}",  # no echo since this command clears output buffer
-                "dict_values": {"normal": 0, "extended": 4},  # do not allow switch to <CR><LF>
-                "return_type": int
+                "dict_values": {
+                    "normal": 0,
+                    "extended": 4,
+                },  # do not allow switch to <CR><LF>
+                "return_type": int,
             }
         )
 
@@ -335,7 +384,7 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "heater_control",
                 "write_string": "$H{}",
                 "indexed_values": ["off", "on", "force"],
-                "return_type": int
+                "return_type": int,
             }
         )
 
@@ -344,28 +393,9 @@ class OxfordIPS120(InstrumentDriver):
                 "name": "activity_control",
                 "write_string": "$A{}",
                 "dict_values": {"hold": 0, "to_set_point": 1, "to_zero": 2, "clamp": 4},
-                "return_type": int
+                "return_type": int,
             }
         )
-
-        self.field
-        self.field_set_point
-        self.field_rate
-        self.current_set_point
-        self.current_rate
-        self.output_current
-        self.voltage
-        self.output_field
-        self.software_voltage_limit
-        self.persistent_current
-        self.trip_field
-        self.persistent_field
-        self.switch_heater_current
-        self.safe_current_limit_negative
-        self.safe_current_limit_positive
-        self.lead_resistance
-        self.magnet_inductance
-        self.version
 
     def print_state(self):
         """
@@ -407,6 +437,7 @@ class OxfordIPS120(InstrumentDriver):
         """
         pass
 
+    # TODO: combine hold(), to_set_point() and to_zero() into activity property
     def hold(self):
         if not self.remote_status:
             raise IPS120Error(
@@ -428,6 +459,7 @@ class OxfordIPS120(InstrumentDriver):
             )
         self.activity_control = "to_zero"
 
+    # TODO: should be a property
     def heater(self, state):
         """
         Set the state of the heater.  Record the time when the heater was changed
@@ -440,7 +472,9 @@ class OxfordIPS120(InstrumentDriver):
 
         # TODO: deal with persistent magnet
         if self.persistent_status:
-            raise IPS120Error("take magnet out of persistent mode before changing heater")
+            raise IPS120Error(
+                "take magnet out of persistent mode before changing heater"
+            )
 
         if state == "on":
             if not self.heater_status:
@@ -469,9 +503,9 @@ class OxfordIPS120(InstrumentDriver):
 
     @property
     def field(self):
-        '''
+        """
         TODO add settings dictionary with range to make this consistent with pyscan property
-        '''
+        """
         self._field = self.output_field
         return self._field
 
@@ -683,16 +717,16 @@ class IPS120Error(Exception):
 
 
 def ips120_float(string):
-    '''
+    """
     Helper function used with return_type to drop character and convert to a float.
-    '''
+    """
 
     return float(string[1:])
 
 
 def ips120_int(string):
-    '''
+    """
     Helper function used with return_type to drop character and convert to a float.
-    '''
+    """
 
     return int(string[1:])

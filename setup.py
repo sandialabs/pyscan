@@ -21,7 +21,7 @@ def read(fname):
 setup(
     name="pyscan",
     version=get_version(),
-    author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah",
+    author="Andrew M. Mounce, Michael P. Lilly, Jasmine J. Mah, Ryan S. Brost",
     author_email="amounce@sandia.gov",
     description=(
         """
@@ -48,8 +48,7 @@ setup(
         'ipywidgets',
         'h5py',
         'matplotlib',
-        # if ipykernel fails, force specific python version that will work rather than omitting ipykernel requirement.
-        'ipykernel',
+        'jupyter',
         'pytest',
     ],
     extras_require={'oceanoptics': ['seabreeze']},
