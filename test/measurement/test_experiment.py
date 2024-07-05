@@ -8,6 +8,8 @@ from random import random
 import shutil
 import numpy as np
 import pytest
+import re
+import os
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -1121,7 +1123,7 @@ def test_fast_experiments():
 
     # Create RunInfo instance and set scan0 to PropertyScan
     runinfo = ps.RunInfo()
-    runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 1)}, prop='voltage', dt=0.000000001)
+    runinfo.scan0 = ps.RepeatScan(1, dt=0.0000001)
 
     # Set RunInfo measure_function (remember, it takes a Experiment object as a parameter and
     # returns an ItemAttribute containing data).
@@ -1129,13 +1131,25 @@ def test_fast_experiments():
 
     # Create a Experiment class with the RunInfo and Devices just created
     expt = ps.Experiment(runinfo, devices, time=True)
-    try:
+
+    long_names = []
+
+    while len(long_names) < 3:
         expt.run()
-        expt.run()
-        expt.run()
-        expt.run()
-        expt.run()
-        expt.run()
-        expt.run()
-    except Exception:
-        assert False, f"Fast experiments did not run properly, possible file name overlap. Exception: {Exception}"
+        if len(long_names) == 0:
+            long_names.append(expt.runinfo.long_name)
+        elif (expt.runinfo.long_name[:15] == long_names[0][:15]):
+            long_names.append(expt.runinfo.long_name)
+        else:
+            long_names = [expt.runinfo.long_name]
+
+    err_str = f"First long name '{long_names[0]}' does not match expected date/time format."
+    assert re.match(r'^\d{8}T\d{6}$', long_names[0]), err_str
+    err_str = f"-1 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[1] == long_names[0] + '-1', err_str
+    err_str = f"-2 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[2] == long_names[0] + '-2', err_str
+
+    for name in long_names:
+        save_path = expt.runinfo.data_path / '{}.hdf5'.format(name)
+        assert os.path.exists(save_path), f"Expected file at path'{save_path}' was not found."
