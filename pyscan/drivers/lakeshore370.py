@@ -27,6 +27,9 @@ class Lakeshore370(InstrumentDriver):
 
         super().__init__(instrument)
 
+        self.instrument.read_termination = "\r\n"
+        self.instrument.write_termination = "\r\n"
+
         self.debug = debug
         self._version = "0.1.0"
 
@@ -38,22 +41,50 @@ class Lakeshore370(InstrumentDriver):
 
     def initialize_properties(self):
 
-        # Reference and Phase properties
-
-        # baud: RS232 baud rate, int
-        #     Range: [?, ?]
+        # communication
         self.add_device_property({
-            'name': 'baud',
-            'write_string': 'BAUD {}',
-            'query_string': 'BAUD?',
-            'range': [9600, ...],
-            'return_type': int})
+            'name': 'mode',
+            'write_string': 'MODE {}',
+            'query_string': 'MODE?',
+            'indexed_values': ["local", "remote", "remote with local lockout"],
+            'return_type': int,
+        })
 
-        # beep: audible alarm beeper
-        #     Range: [?, ?]
+        # control commands
         self.add_device_property({
-            'name': 'baud',
-            'write_string': 'BAUD {}',
-            'query_string': 'BAUD?',
-            'range': [9600, ...],
-            'return_type': int})
+            'name': 'control_mode',
+            'write_string': 'CMODE {}',
+            'query_string': 'CMODE?',
+            'indexed_values': ["n/a", "closed loop PID", "zone tuning", "open loop", "off"],
+            'return_type': int,
+        })
+
+        # NOTE: add control units
+
+        self.add_device_property({
+            'name': 'set_point',
+            'write_string': 'SETP {}',
+            'query_string': 'SETP?',
+            'range': [0, 300],
+            'return_type': float,
+        })
+
+        # heater commands
+
+        # NOTE: set heater output selection (current or power)
+
+        self.add_device_property({
+            'name': 'heater_output',
+            'write_string': 'HTR {}',
+            'query_string': 'HTR?',
+            'range': [0, 100],
+            'return_type': float,
+        })
+
+        self.add_device_property({
+            'name': 'heater_range',
+            'write_string': 'HTRRNG {}',
+            'query_string': 'HTRRNG?',
+            'indexed_values': ['off', 31.6e-6, 100e-6, 316e-6, 1e-3, 3.16e-3, 10e-3, 31.6e-3, 100e-3],
+            'return_type': int,
+        })

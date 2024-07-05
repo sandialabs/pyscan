@@ -18,6 +18,7 @@ from .kepcoBOP import KepcoBOP
 from .keysightm3302adaq import KeysightM3302ADAQ
 from .keysightm3302aawg import KeysightM3302AAWG
 from .keysight53230a import Keysight53230A
+from .lakeshore370 import Lakeshore370
 from .oxfordips120 import OxfordIPS120
 from .pulselaser import PulseLaser
 from .stanford396 import Stanford396
