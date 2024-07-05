@@ -63,7 +63,7 @@ class PyscanJSONEncoder(json.JSONEncoder):
         elif callable(obj):
             if debug is True:
                 print(f"obj {obj} is a function, returning source code.")
-            return inspect.getsource(obj)
+            return inspect.getsource(obj)  # Talk with Andy about this and perhaps implementing in load_expt?
         elif isinstance(obj, (WindowsPath, Path)):  # This covers both WindowsPath and PosixPath
             if debug is True:
                 print(f"obj {obj} is a Path or WindowsPath, returning string of the path.")
