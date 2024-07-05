@@ -1,1 +1,1 @@
-Passed with test_voltage version v0.1.0 tested on pyscan version v0.5.3 at 2024-06-25 10:10:55
+Passed with test_voltage version v0.1.0 tested on pyscan version v0.5.3 at 2024-07-05 11:41:28
