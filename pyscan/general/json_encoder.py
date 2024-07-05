@@ -6,7 +6,7 @@ import inspect
 from pathlib import Path, WindowsPath
 
 
-class CustomJSONEncoder(json.JSONEncoder):
+class PyscanJSONEncoder(json.JSONEncoder):
     """
     A custom JSON encoder subclass that extends json.JSONEncoder to handle additional Python data types
     not supported by the default JSON encoder. This includes handling of custom objects, numpy data types,
@@ -36,23 +36,22 @@ class CustomJSONEncoder(json.JSONEncoder):
         # keys_to_skip = {'logger', 'expt_thread', 'data_path', 'instrument', 'module_id_string', 'spec'}
 
         if type(obj) is type:
-            return f"<class '{obj.__name__}'>"
+            return obj.__name__
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
             if debug is True:
                 print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
             return obj.__dict__
-        elif isinstance(obj, range):
+        elif isinstance(obj, (range, tuple)):
             if debug is True:
-                print(f"obj {obj} was instance of range.")
+                print(f"obj {obj} was instance of {type(obj)}.")
             return list(obj)
         # Handle numpy integers
-        elif isinstance(obj, (np.integer, np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64,
-                              np.uint8, np.uint16, np.uint32, np.uint64)):
+        elif isinstance(obj, np.integer):
             if debug is True:
                 print(f"Object {obj} is a numpy integer, converting to int.")
             return int(obj)
         # Handle numpy floating values
-        elif isinstance(obj, (np.floating, np.float16, np.float32, np.float64)):
+        elif isinstance(obj, np.floating):
             if debug is True:
                 print(f"Object {obj} is a numpy floating value, converting to float.")
             return float(obj)

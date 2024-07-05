@@ -8,7 +8,7 @@ from time import strftime
 from pyscan.general import (ItemAttribute,
                             is_list_type)
 from pyscan.measurement.scans import PropertyScan, RepeatScan
-from pyscan.general.json_encoder import CustomJSONEncoder
+from pyscan.general.json_encoder import PyscanJSONEncoder
 
 
 class AbstractExperiment(ItemAttribute):
@@ -227,8 +227,8 @@ class AbstractExperiment(ItemAttribute):
         save_name = str(save_path.absolute())
 
         with h5py.File(save_name, 'a') as f:
-            f.attrs['runinfo'] = json.dumps(self.runinfo, cls=CustomJSONEncoder)
-            f.attrs['devices'] = json.dumps(self.devices, cls=CustomJSONEncoder)
+            f.attrs['runinfo'] = json.dumps(self.runinfo, cls=PyscanJSONEncoder)
+            f.attrs['devices'] = json.dumps(self.devices, cls=PyscanJSONEncoder)
 
     def start_thread(self):
         '''Starts experiment as a background thread, this works in conjunction with live plot

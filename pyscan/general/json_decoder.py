@@ -2,7 +2,7 @@ from pyscan.general import ItemAttribute
 import json
 
 
-class CustomJSONDecoder(json.JSONDecoder):
+class PyscanJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
         super().__init__(object_hook=self.item_attribute_object_hook, *args, **kwargs)
 
@@ -21,10 +21,7 @@ class CustomJSONDecoder(json.JSONDecoder):
         ItemAttribute
         '''
         if type(data) is dict:
-            new_data = ItemAttribute()
-
-            for key, value in data.items():
-                new_data[key] = value
+            new_data = ItemAttribute(data)
         else:
             new_data = data
 
