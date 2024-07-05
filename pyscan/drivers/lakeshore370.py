@@ -2,7 +2,7 @@
 from .instrument_driver import InstrumentDriver
 
 
-class Stanford830(InstrumentDriver):
+class Lakeshore370(InstrumentDriver):
     '''
     Class to control Lakeshore 370 AC resistance bridge
 
@@ -23,6 +23,7 @@ class Stanford830(InstrumentDriver):
     '''
 
     def __init__(self, instrument, debug=False):
+        # NOTE: change termination characters
 
         super().__init__(instrument)
 
@@ -47,7 +48,6 @@ class Stanford830(InstrumentDriver):
             'query_string': 'BAUD?',
             'range': [9600, ...],
             'return_type': int})
-
 
         # beep: audible alarm beeper
         #     Range: [?, ?]
