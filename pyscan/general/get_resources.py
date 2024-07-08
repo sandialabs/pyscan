@@ -1,7 +1,89 @@
 from pyvisa import ResourceManager, VisaIOError
 
 
-def get_resources(black_list=[], target=None):
+def get_resources(list_resources=True):
+    rm = ResourceManager()
+    rs = rm.list_resources()
+
+    for r in rs:
+        try:
+            # Connect to the instrument
+            res = rm.open_resource(r)
+        except VisaIOError as e:
+            print(f"{e}\n Could not connect to instrument {r}, may already be connected elsewhere.")
+            continue
+
+        if list_resources is True:
+            try:
+                # Try to query the I.D. of the instrument
+                name = res.query('*IDN?')
+                # If found, print the resource as well as the I.D.
+                print(r, name)
+            except VisaIOError:
+                pass
+
+        # Important. Close the connection.
+        res.close()
+
+    return rs
+
+
+def capture_resource(unique_identifier):
+    assert type(unique_identifier) is str, "unique identifier parameter input not a string."
+    rm = ResourceManager()
+    rs = rm.list_resources()
+
+    target_found = False
+    target = None
+    err_str = "Multiple resources found with the same 'unique' identifier. Choose an exclusive identifier."
+    for r in rs:
+        try:
+            # Connect to the instrument
+            res = rm.open_resource(r)
+        except VisaIOError:
+            continue
+
+        # Check if there is a target and if it is in the resource string
+        if unique_identifier in r:
+            print(f"Target found in resource {r}")
+
+            if target_found:
+                target.close()
+                res.close()
+                assert False, err_str
+
+            target = res
+            target_found = True
+            continue
+
+        try:
+            # Try to query the I.D. of the instrument
+            name = res.query('*IDN?')
+            # Check if there is a target resource and whether this is it
+            if unique_identifier in name:
+                print(f"Target found in resource {r} with name {name}")
+
+                if target_found:
+                    target.close()
+                    res.close()
+                    assert False, err_str
+
+                target = res
+                target_found = True
+                continue
+
+        except VisaIOError:
+            pass
+        # Important. Close the connection.
+        res.close()
+
+    if target_found:
+        return target
+    else:
+        assert False, "Target not found. Make sure your unique identifier in resource string or id query response."
+
+
+def old_get_resources(black_list=[], target=None):
     """
     Function that scans for connected VISA resources,
     optionally filtering out specified resources, and
