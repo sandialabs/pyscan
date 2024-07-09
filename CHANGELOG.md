@@ -1,3 +1,18 @@
+# [0.6.0](https://github.com/sandialabs/pyscan/compare/v0.5.4...v0.6.0) (2024-07-09)
+
+
+### Bug Fixes
+
+* **core:** fixed json decoder to now be standard decoder that converts dictionaries into ItemAttributes while still being generalizable. ([09210a9](https://github.com/sandialabs/pyscan/commit/09210a9d2ff03a6a047701b23440ec85b35ba22c))
+* **core:** fixed JSON encoder to fully remove recursive_to_dict and be entirely independent. Seems to be working and passing all test cases; however, a saved expt file should be evaluated to confirm this is working before pulling these changes. ([2d94b8e](https://github.com/sandialabs/pyscan/commit/2d94b8ead48f63552d31350f2f437899437b2e4c))
+
+
+### Features
+
+* **general): measured function now fully saved as runinfo metadata. chore(general:** fixed json encoder again, this time it is using native functions more and only accounting for unsupported data types. ([2547d43](https://github.com/sandialabs/pyscan/commit/2547d43af38bbe967721b7d97c58aa441e5ae32e))
+
+
+
 ## [0.5.4](https://github.com/sandialabs/pyscan/compare/v0.5.3...v0.5.4) (2024-07-09)
 
 
