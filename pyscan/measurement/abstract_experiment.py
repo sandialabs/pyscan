@@ -6,9 +6,9 @@ import numpy as np
 from threading import Thread as thread
 from time import strftime
 from pyscan.general import (ItemAttribute,
-                            recursive_to_dict,
                             is_list_type)
 from pyscan.measurement.scans import PropertyScan, RepeatScan
+from pyscan.general.pyscan_json_encoder import PyscanJSONEncoder
 
 
 class AbstractExperiment(ItemAttribute):
@@ -160,7 +160,16 @@ class AbstractExperiment(ItemAttribute):
         if num_repeat_scans > 1:
             assert False, "More than one repeat scan detected. This is not allowed."
 
-        self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
+        base_name = strftime("%Y%m%dT%H%M%S")
+        save_path = self.runinfo.data_path / '{}.hdf5'.format(base_name)
+        count = 0
+
+        while save_path.exists():
+            count += 1
+            save_path = self.runinfo.data_path / f'{base_name}-{count}.hdf5'
+
+        self.runinfo.long_name = save_path.stem
+
         self.runinfo.short_name = self.runinfo.long_name[8:]
 
         self.runinfo.check()
@@ -226,11 +235,9 @@ class AbstractExperiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        data = recursive_to_dict(self.__dict__)
-
         with h5py.File(save_name, 'a') as f:
-            f.attrs['runinfo'] = json.dumps(data['runinfo'])
-            f.attrs['devices'] = json.dumps(data['devices'])
+            f.attrs['runinfo'] = json.dumps(self.runinfo, cls=PyscanJSONEncoder)
+            f.attrs['devices'] = json.dumps(self.devices, cls=PyscanJSONEncoder)
 
     def start_thread(self):
         '''Starts experiment as a background thread, this works in conjunction with live plot
