@@ -160,7 +160,16 @@ class AbstractExperiment(ItemAttribute):
         if num_repeat_scans > 1:
             assert False, "More than one repeat scan detected. This is not allowed."
 
-        self.runinfo.long_name = strftime("%Y%m%dT%H%M%S")
+        base_name = strftime("%Y%m%dT%H%M%S")
+        save_path = self.runinfo.data_path / '{}.hdf5'.format(base_name)
+        count = 0
+
+        while save_path.exists():
+            count += 1
+            save_path = self.runinfo.data_path / f'{base_name}-{count}.hdf5'
+
+        self.runinfo.long_name = save_path.stem
+
         self.runinfo.short_name = self.runinfo.long_name[8:]
 
         self.runinfo.check()
