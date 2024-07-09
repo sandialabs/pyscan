@@ -3,8 +3,8 @@ from pyvisa import ResourceManager, VisaIOError
 
 def get_resources(list_resources=True):
     """
-    Returns a list of connected VISA GPIB addresses and optionally
-    (by default) prints them paired with their corresponding ID strings.
+    Returns a list of connected VISA GPIB addresses and optionally (by default)
+    tries to print them paired with their corresponding ID strings.
 
     This function uses the PyVISA library to return a list of all resources (instruments) available to the system.
     It tries to connect to each instrument and prints the error message if unable to.
@@ -13,7 +13,7 @@ def get_resources(list_resources=True):
     Parameters
     ----------
     list_resources : bool
-        If True (default), queries and prints instrument connection addresses paired with their ID strings.
+        If True (default), queries and prints instrument connection addresses paired with their ID strings if available.
         If False, only returns the available resources without querying their IDs.
 
     Returns
