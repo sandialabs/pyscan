@@ -1,3 +1,49 @@
+# [0.6.0](https://github.com/sandialabs/pyscan/compare/v0.5.4...v0.6.0) (2024-07-09)
+
+
+### Bug Fixes
+
+* **core:** fixed json decoder to now be standard decoder that converts dictionaries into ItemAttributes while still being generalizable. ([09210a9](https://github.com/sandialabs/pyscan/commit/09210a9d2ff03a6a047701b23440ec85b35ba22c))
+* **core:** fixed JSON encoder to fully remove recursive_to_dict and be entirely independent. Seems to be working and passing all test cases; however, a saved expt file should be evaluated to confirm this is working before pulling these changes. ([2d94b8e](https://github.com/sandialabs/pyscan/commit/2d94b8ead48f63552d31350f2f437899437b2e4c))
+
+
+### Features
+
+* **general): measured function now fully saved as runinfo metadata. chore(general:** fixed json encoder again, this time it is using native functions more and only accounting for unsupported data types. ([2547d43](https://github.com/sandialabs/pyscan/commit/2547d43af38bbe967721b7d97c58aa441e5ae32e))
+
+
+
+## [0.5.4](https://github.com/sandialabs/pyscan/compare/v0.5.3...v0.5.4) (2024-07-09)
+
+
+### Bug Fixes
+
+* **core:** added a json converter class in json_encoder.py to pyscan/general. This is now implemented in the save_metadata method of abstract_experiment.py which enables numpy values to be used as data inputs before saving. The converter changes the numpy values to standard python values and no longer throws the same type error as before. ([c2c2b8f](https://github.com/sandialabs/pyscan/commit/c2c2b8ffb3f8d1860f6dc6612b2c83eddc21a28f))
+* **core:** added working json converter for runinfo and devices metadata now implemented in abstract experiment's save_metadata method. ([11f43a3](https://github.com/sandialabs/pyscan/commit/11f43a3c247dd4294d079ffd20b360572ffc3ed8))
+* **core:** corrected the issue plesiopterys identified with saving numpy data types and consolidated the json converter added in the last commit to the pre existing recursive_to_dict function which can now handle numpy data types for saving. ([fb66ad8](https://github.com/sandialabs/pyscan/commit/fb66ad8727acfd33b6f59feef6b7a68d023d052f))
+* **core:** fixed issue causing multiple experiments run with the same runinfo to fail. These sequential experiments would improperly double runinfo.measured by appending the same values to it more than once. Then when data was tried to be preallocated in abstract expt it would fail. ([cb093a2](https://github.com/sandialabs/pyscan/commit/cb093a25c5e86edb62b2a22ed7eab91fa73a1956))
+* **core:** Fixed the issue with saving if experiments are run 'too fast'. Will now handle ultra fast experiments (up to a micro second or more) which was tested with demo nb 1 using a dt of 0.000000001 and consecutive experiments. ([bba1bca](https://github.com/sandialabs/pyscan/commit/bba1bcac7561a8f9e03083d3b12951223ccba4d4))
+* **core:** updated experiment.py to reinitialize runinfo.measured as an empty list before populating at the beginning of every experiment run. This was causing issues with running subsequent experiments with the same runinfo, and is necessary to prevent runinfo.measured from being reused if runinfo.measure_function changed between runs. ([bbc1be8](https://github.com/sandialabs/pyscan/commit/bbc1be8958081385c4cfe3d23f5ab6eae83b8c82))
+
+
+### Reverts
+
+* Revert "fix(core): added a json converter class in json_encoder.py to pyscan/general. This is now implemented in the save_metadata method of abstract_experiment.py which enables numpy values to be used as data inputs before saving. The converter changes the numpy values to standard python values and no longer throws the same type error as before." ([30dbdd5](https://github.com/sandialabs/pyscan/commit/30dbdd5c25186ee3278894588b9a9121a354d7eb))
+* Revert "fix(core): corrected the issue plesiopterys identified with saving numpy data types and consolidated the json converter added in the last commit to the pre existing recursive_to_dict function which can now handle numpy data types for saving." ([30c601d](https://github.com/sandialabs/pyscan/commit/30c601d6b2db2f3a8aa66debedbcbc5b2a1e7f70))
+* Revert "chore(core): removed old import from abstract_experiment." ([9d7a10b](https://github.com/sandialabs/pyscan/commit/9d7a10bc51932f65bc8bcdba3a35af651f681dbd))
+* Revert "chore(core): fix: fixed misuse of np.array n recursive_to_dict that was causing a type error." ([a56704d](https://github.com/sandialabs/pyscan/commit/a56704d650242ca73d9b3b988e50d64806fbb572))
+* Revert "fix(core): added working json converter for runinfo and devices metadata now implemented in abstract experiment's save_metadata method." ([0d122b0](https://github.com/sandialabs/pyscan/commit/0d122b0d20b999797e136728ca792c092a06adeb))
+* Revert "docs(general): added doc string to json_encoder.py CustomJSONEncoder class." ([1224b06](https://github.com/sandialabs/pyscan/commit/1224b06b573e94347e983ba7fa4156d6b27d97c7))
+* Revert "chore(core): removed no longer used recursive_to_dict import from abstract expt." ([7d5b6e9](https://github.com/sandialabs/pyscan/commit/7d5b6e91487a310b8ef15a8000b9bcabb38cdbae))
+* Revert "refactor(general): replaced recursive_to_item_attribute with json decoder item_attribute_object_hook." ([6dcfdc1](https://github.com/sandialabs/pyscan/commit/6dcfdc1b01811f81fc5e969addce0fb479595521))
+* Revert "chore(general): updated the general __init__.py to account for the file changes from previous commits and import successfully with a new order since itemattribute is used in other pyscan/general modules now." ([27ae91c](https://github.com/sandialabs/pyscan/commit/27ae91c7a1495e05e7887897972ae94ddef886c9))
+* Revert "chore(general): fixed improper spelling in the json_decoder." ([205c33a](https://github.com/sandialabs/pyscan/commit/205c33ac3071adfd3c942c7a65258054baf4d67a))
+* Revert "chore(general): fixed improper spelling in the json_decoder." ([6e5b788](https://github.com/sandialabs/pyscan/commit/6e5b788fe880b43df8fe30ec9e637e6af8b6f3e0))
+* Revert "chore(general): fixed error breaking pytests with decoder referencing np.float_ which was removed in numpy 2.0." ([0886669](https://github.com/sandialabs/pyscan/commit/0886669c34b46721029ed4c810ea9fc2a04c8342))
+* Revert "chore(general): fixed error breaking pytests with decoder referencing np.float_ which was removed in numpy 2.0." ([a32e84d](https://github.com/sandialabs/pyscan/commit/a32e84d3a5c5524d53e7b79aa7d48085e160ada2))
+
+
+
 ## [0.5.3](https://github.com/sandialabs/pyscan/compare/v0.5.2...v0.5.3) (2024-06-18)
 
 

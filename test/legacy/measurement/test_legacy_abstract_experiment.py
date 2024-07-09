@@ -12,6 +12,7 @@ import pytest
 from io import StringIO
 import sys
 import shutil
+import re
 
 
 # for testing default trigger function with empty function
@@ -104,7 +105,8 @@ def test_meta_sweep():
 
         assert hasattr(ms.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
-        assert len(ms.runinfo.long_name) == 15, "Meta Sweep runinfo long name is not 15 characters"
+        # check that the long name is formatted with values for YYYYMMDDTHHMMSS, and optionally a - followed by digits.
+        assert re.match(r'^\d{8}T\d{6}(-\d+)?$', ms.runinfo.long_name), "runinfo long_name is not properly formatted"
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
