@@ -8,6 +8,8 @@ from random import random
 import shutil
 import numpy as np
 import pytest
+import re
+import os
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -1093,3 +1095,61 @@ def test_underscore_property():
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
+
+
+def test_fast_experiments():
+    devices = ps.ItemAttribute()
+
+    devices.v1 = ps.TestVoltage()  # Device 1
+    devices.v2 = ps.TestVoltage()  # Device 2
+    devices.v3 = ps.TestVoltage()  # Device 3
+
+    def get_voltage_data(expt):
+        """
+        Reads the voltage from v1, v2, and v3 devices. Also adds a calculated value vsum.
+        """
+
+        devices = expt.devices
+
+        d = ps.ItemAttribute()
+
+        d.v1_readout = devices.v1.voltage
+        d.v2_readout = devices.v2.voltage
+        d.v3_readout = devices.v3.voltage
+
+        d.vsum = d.v1_readout + d.v2_readout + d.v3_readout
+
+        return d
+
+    # Create RunInfo instance and set scan0 to PropertyScan
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.RepeatScan(1, dt=0.0000001)
+
+    # Set RunInfo measure_function (remember, it takes a Experiment object as a parameter and
+    # returns an ItemAttribute containing data).
+    runinfo.measure_function = get_voltage_data
+
+    # Create a Experiment class with the RunInfo and Devices just created
+    expt = ps.Experiment(runinfo, devices, time=True)
+
+    long_names = []
+
+    while len(long_names) < 3:
+        expt.run()
+        if len(long_names) == 0:
+            long_names.append(expt.runinfo.long_name)
+        elif (expt.runinfo.long_name[:15] == long_names[0][:15]):
+            long_names.append(expt.runinfo.long_name)
+        else:
+            long_names = [expt.runinfo.long_name]
+
+    err_str = f"First long name '{long_names[0]}' does not match expected date/time format."
+    assert re.match(r'^\d{8}T\d{6}$', long_names[0]), err_str
+    err_str = f"-1 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[1] == long_names[0] + '-1', err_str
+    err_str = f"-2 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[2] == long_names[0] + '-2', err_str
+
+    for name in long_names:
+        save_path = expt.runinfo.data_path / '{}.hdf5'.format(name)
+        assert os.path.exists(save_path), f"Expected file at path'{save_path}' was not found."
