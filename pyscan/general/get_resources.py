@@ -1,7 +1,7 @@
 from pyvisa import ResourceManager, VisaIOError
 
 
-def get_resources(list_resources=True):
+def get_resources(print_resources=True):
     """
     Returns a list of connected VISA GPIB addresses and optionally (by default)
     tries to print them paired with their corresponding ID strings.
@@ -23,6 +23,7 @@ def get_resources(list_resources=True):
     """
     rm = ResourceManager()
     resources_listed = rm.list_resources()
+    resource_dict = {}
 
     for r in resources_listed:
         try:
@@ -32,16 +33,21 @@ def get_resources(list_resources=True):
             print(f"{e}\n Could not connect to instrument {r}, may already be connected elsewhere.")
             continue
 
-        if list_resources is True:
-            try:
-                # Try to query the I.D. of the instrument
-                name = res.query('*IDN?')
-                # If found, print the resource as well as the I.D.
+        try:
+            # Try to query the I.D. of the instrument
+            name = res.query('*IDN?')
+            resource_dict[r] = name
+
+            # If found and print resources is true, print the resource as well as the I.D.
+            if print_resources is True:
                 print(r, name)
-            except VisaIOError:
-                pass
+        except VisaIOError:
+            resource_dict[r] = "Instrument I.D. could not be queried."
+            if print_resources is True:
+                print(r, "Instrument I.D. could not be queried.")
 
-        # Important. Close the connection.
-        res.close()
+        # We are no longer closing the connection by defualt since this could close connections that were open before
+        # and there is no way of telling if a connection was already open automatically.
+        # res.close()
 
-    return resources_listed
+    return resource_dict
