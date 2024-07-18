@@ -271,10 +271,6 @@ class Experiment(AbstractExperiment):
 
         self.runinfo.running = True
 
-        for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan):
-                self.continuous_experiment()
-
         if self.runinfo.average_d == -1:
             self.generic_experiment()
 
