@@ -43,11 +43,11 @@ class Experiment(AbstractExperiment):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
 
         # this var is used to track if the expt is continuous or not. Determines run behavior.
-        continuous_count = 0
+        run_count = 0
 
         t0 = (datetime.now()).timestamp()
         # Use for scan, but break if self.runinfo.running=False
-        while continuous_count >= 0:
+        while run_count >= 0:
             for m in range(self.runinfo.scan3.n):
                 self.runinfo.scan3.i = m
                 self.runinfo.scan3.iterate(m, self.devices)
@@ -85,7 +85,7 @@ class Experiment(AbstractExperiment):
                             if self.runinfo.time:
                                 self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
-                            if np.all(np.array(self.runinfo.indicies) == 0) and (continuous_count == 0):
+                            if np.all(np.array(self.runinfo.indicies) == 0) and (run_count == 0):
                                 self.runinfo.measured = []
                                 for key, value in data.items():
                                     self.runinfo.measured.append(key)
@@ -100,7 +100,7 @@ class Experiment(AbstractExperiment):
                                 self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
                             if self.runinfo.continuous_expt is True:
-                                self.continuous_save_point(continuous_count)
+                                self.continuous_save_point(run_count)
                             else:
                                 self.save_point()
 
@@ -127,12 +127,11 @@ class Experiment(AbstractExperiment):
                     break
 
             if self.runinfo.continuous_expt is True:
-                continuous_count += 1
-            else:
-                continuous_count -= 1
-
-            if continuous_count > 0:
+                run_count += 1
+                self.runinfo.run_count = run_count
                 self.reallocate()
+            else:
+                run_count -= 1
 
         self.runinfo.complete = True
         self.runinfo.running = False
