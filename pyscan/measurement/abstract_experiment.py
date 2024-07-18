@@ -67,23 +67,64 @@ class AbstractExperiment(ItemAttribute):
             ItemAttribute containing data
         '''
 
-        # I beleive we want to change this to allow for dynamic allocation, or perhaps create a new method for this.
+        if self.runinfo.continuous_expt is True:
+            self.continuous_preallocate(data)
+        else:
+            save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
+            save_name = str(save_path.absolute())
+
+            # Create scan arrays
+            with h5py.File(save_name, 'a') as f:
+                for s in self.runinfo.scans:
+                    for key, values in s.scan_dict.items():
+                        self[key] = values
+                        f[key] = values
+
+            # Create arrays in self and make hdf5 version
+            # Possibilies 1. data is a list, dims are list
+            #             2. data is a float, dims are list,
+            #             3. data is list , dims are 0
+            #             4. datais a float, dims are 0
+            if self.runinfo.average_d == -1:
+                scan_dims = self.runinfo.dims
+                ndim = self.runinfo.ndim
+            else:
+                scan_dims = self.runinfo.average_dims
+                ndim = self.runinfo.n_average_dim
+
+            with h5py.File(save_name, 'a') as f:
+                for name in self.runinfo.measured:
+                    if is_list_type(data[name]) and ndim > 0:
+                        dims = (*scan_dims, * np.array(data[name]).shape)
+                        self[name] = np.zeros(dims) * np.nan
+                        f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    elif (not is_list_type(data[name])) and (ndim > 0):
+                        dims = scan_dims
+                        self[name] = np.zeros(dims) * np.nan
+                        f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    elif is_list_type(data[name]) and (ndim == 0):
+                        dims = np.array(data[name]).shape
+                        self[name] = np.zeros(dims) * np.nan
+                        f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    else:
+                        self[name] = np.nan
+                        f.create_dataset(name, shape=[1, ], fillvalue=np.nan, dtype='float64')
+
+    def continuous_preallocate(self, data, debug=False):
+        ''' Functions similarly to preallocate; however,
+        continuous_preallocate preallocates in a way that can be resized and expanded endlessly,
+        essentially adding another dimension by default, which is only useful for expts where
+        hdf5 memory cannot be preallocated because the measurement size is indeterminate.'''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        # Create scan arrays
         with h5py.File(save_name, 'a') as f:
             for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
                     self[key] = values
                     f[key] = values
 
-        # Create arrays in self and make hdf5 version
-        # Possibilies 1. data is a list, dims are list
-        #             2. data is a float, dims are list,
-        #             3. data is list , dims are 0
-        #             4. datais a float, dims are 0
         if self.runinfo.average_d == -1:
             scan_dims = self.runinfo.dims
             ndim = self.runinfo.ndim
@@ -91,24 +132,85 @@ class AbstractExperiment(ItemAttribute):
             scan_dims = self.runinfo.average_dims
             ndim = self.runinfo.n_average_dim
 
-        with h5py.File(save_name, 'a') as f:
-            for name in self.runinfo.measured:
+        with h5py.File(save_name, 'a') as hdf:
+            for name in data.__dict__.keys():
                 if is_list_type(data[name]) and ndim > 0:
+                    if debug is True:
+                        print("preallocate 1")
                     dims = (*scan_dims, * np.array(data[name]).shape)
+                    d_shape = (1,) + dims
                     self[name] = np.zeros(dims) * np.nan
-                    f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    chunks = tuple(min(d, 64) for d in dims)
+                    d_chunks = (1,) + chunks
+                    max_shape = tuple(None for _ in dims)  # Adjusted maxshape
+                    d_max_shape = (None,) + max_shape
+                    hdf.create_dataset(name, shape=d_shape, maxshape=d_max_shape,
+                                       fillvalue=np.nan, dtype='float64', chunks=d_chunks)
                 elif (not is_list_type(data[name])) and (ndim > 0):
+                    if debug is True:
+                        print("preallocate 2")
                     dims = scan_dims
                     self[name] = np.zeros(dims) * np.nan
-                    f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    hdf.create_dataset(name, shape=(1, dims[0]), maxshape=(None, dims[0]),
+                                       fillvalue=np.nan, dtype='float64', chunks=(1, dims[0]))
                 elif is_list_type(data[name]) and (ndim == 0):
+                    if debug is True:
+                        print("preallocate 3")
                     dims = np.array(data[name]).shape
                     self[name] = np.zeros(dims) * np.nan
-                    f.create_dataset(name, shape=dims, fillvalue=np.nan, dtype='float64')
+                    hdf.create_dataset(name, shape=dims, maxshape=(None,),
+                                       fillvalue=np.nan, dtype='float64', chunks=(ndim,))
                 else:
+                    if debug is True:
+                        print("preallocate 4")
                     self[name] = np.nan
-                    f.create_dataset(name, shape=[1, ], fillvalue=np.nan, dtype='float64')
+                    hdf.create_dataset(name, shape=[1, ], maxshape=(None,),
+                                       fillvalue=np.nan, dtype='float64', chunks=(ndim,))
 
+    def reallocate(self, debug=False):
+        save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
+        save_name = str(save_path.absolute())
+
+        with h5py.File(save_name, 'a') as hdf:
+            for name in self.runinfo.measured:
+                if name in hdf:
+                    dataset = hdf[name]
+                    current_shape = dataset.shape
+                    if len(current_shape) == 2:
+                        if debug is True:
+                            print("dataset shape is: ", dataset.shape, " dset shape[0] is: ", dataset.shape[0])
+                        new_size = (dataset.shape[0] + 1, dataset.shape[1])
+                        if debug is True:
+                            print("new size is: ", new_size)
+                        dataset.resize(new_size)
+                        if debug is True:
+                            print("resized dset is: ", dataset.shape, " and shape 0: ", dataset.shape[0])
+                        # fill the new part with nans
+                        dataset[current_shape[0]:] = np.nan
+                    elif len(current_shape) > 2:
+                        # Expand the first dimension, there might be a problem here...
+                        # new_shape = (current_shape[0] + self[name].shape[0],) + current_shape[1:]
+                        if debug is True:
+                            print("old shape part 2 is: ", current_shape)
+                        new_shape = (dataset.shape[0] + 1,) + current_shape[1:]
+                        if debug is True:
+                            print("new shape part 2 is: ", new_shape)
+
+                        # Resize the dataset to the new shape
+                        dataset.resize(new_shape)
+                        # Optionally, fill the new elements with specific data
+                        # Be careful with multi-dimensional slicing and filling, make sure this is done right.
+                        if len(current_shape) > 2:
+                            # Create a slice object for filling the new elements, not sure this is formatted correctly.
+                            fill_slice = ((slice(current_shape[0], None),)
+                                          + tuple(slice(0, dim) for dim in current_shape[1:]))
+                            dataset[fill_slice] = np.nan
+
+                else:
+                    assert False, f"cannot reallocate dataset {name}, not found in file."
+
+    # this function seems redundant/dead, since it is already accomplished by preallocate()
+    # consider deleting this dead code if it truly smells.
     def preallocate_line(self, data):
         '''Preallocate line data based on the first value of the measurement function
 
@@ -209,6 +311,52 @@ class AbstractExperiment(ItemAttribute):
                     f[key][self.runinfo.average_indicies, ...] = self[key][self.runinfo.average_indicies, ...]
                 else:
                     f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
+
+    def continuous_save_point(self, continuous_count, debug=False):
+        save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
+        save_name = str(save_path.absolute())
+
+        with h5py.File(save_name, 'a') as f:
+            for key in self.runinfo.measured:
+                if debug is True:
+                    print(f"key is {key}")
+                if continuous_count == 0:
+                    if not is_list_type(self[key]):
+                        if debug is True:
+                            print("save after if 1-1.")
+                        f[key][continuous_count * f[key].shape[0]:] = self[key]
+                    # checks if the shapes of the files dataset and the measured dataset shape are the same.
+                    elif f[key].shape == self[key].shape:
+                        if debug is True:
+                            print("save after if 1-2.")
+                        f[key][continuous_count * f[key].shape[0]:] = self[key][:]
+                    elif self.runinfo.average_d == -1:
+                        if debug is True:
+                            print("save after if 1-3.")
+                        f[key][continuous_count] = self[key]
+                    else:
+                        if debug is True:
+                            print("save after if 1-4.")
+                        f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
+                elif continuous_count > 0:
+                    if not is_list_type(self[key]):
+                        if debug is True:
+                            print("save after if 2-1.")
+                        f[key][continuous_count * self[key].shape[0]:] = self[key]
+                    if len(self[key].shape) == 1:
+                        if debug is True:
+                            print("save after if 2-2.")
+                        if f[key][0].shape == self[key].shape:
+                            if debug is True:
+                                print("save after if 2-3.")
+                            f[key][continuous_count] = self[key][:]
+                    elif len(self[key].shape) > 1:
+                        if debug is True:
+                            print("save after if 2-4.")
+                        if f[key][0].shape == self[key].shape:
+                            if debug is True:
+                                print("save after if 2-5.")
+                            f[key][continuous_count] = self[key]
 
     def save_row(self):
         '''Saves full scan0 of data at once. Does not return anything.

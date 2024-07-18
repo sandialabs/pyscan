@@ -42,82 +42,97 @@ class Experiment(AbstractExperiment):
             for i in range(6):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
 
+        # this var is used to track if the expt is continuous or not. Determines run behavior.
+        continuous_count = 0
+
         t0 = (datetime.now()).timestamp()
         # Use for scan, but break if self.runinfo.running=False
-        for m in range(self.runinfo.scan3.n):
-            self.runinfo.scan3.i = m
-            self.runinfo.scan3.iterate(m, self.devices)
-            sleep(self.runinfo.scan3.dt)
+        while continuous_count >= 0:
+            for m in range(self.runinfo.scan3.n):
+                self.runinfo.scan3.i = m
+                self.runinfo.scan3.iterate(m, self.devices)
+                sleep(self.runinfo.scan3.dt)
 
-            for k in range(self.runinfo.scan2.n):
-                self.runinfo.scan2.i = k
-                self.runinfo.scan2.iterate(k, self.devices)
-                sleep(self.runinfo.scan2.dt)
+                for k in range(self.runinfo.scan2.n):
+                    self.runinfo.scan2.i = k
+                    self.runinfo.scan2.iterate(k, self.devices)
+                    sleep(self.runinfo.scan2.dt)
 
-                for j in range(self.runinfo.scan1.n):
-                    self.runinfo.scan1.i = j
-                    self.runinfo.scan1.iterate(j, self.devices)
-                    sleep(self.runinfo.scan1.dt)
+                    for j in range(self.runinfo.scan1.n):
+                        self.runinfo.scan1.i = j
+                        self.runinfo.scan1.iterate(j, self.devices)
+                        sleep(self.runinfo.scan1.dt)
 
-                    for i in range(self.runinfo.scan0.n):
-                        self.runinfo.scan0.i = i
-                        indicies = self.runinfo.indicies
+                        for i in range(self.runinfo.scan0.n):
+                            self.runinfo.scan0.i = i
+                            indicies = self.runinfo.indicies
 
-                        if self.runinfo.time:
-                            self.runinfo.t0[indicies] = (datetime.now()).timestamp()
+                            if self.runinfo.time:
+                                self.runinfo.t0[indicies] = (datetime.now()).timestamp()
 
-                        self.runinfo.scan0.iterate(i, self.devices)
+                            self.runinfo.scan0.iterate(i, self.devices)
 
-                        if self.runinfo.time:
-                            self.runinfo.t1[indicies] = (datetime.now()).timestamp()
+                            if self.runinfo.time:
+                                self.runinfo.t1[indicies] = (datetime.now()).timestamp()
 
-                        sleep(self.runinfo.scan0.dt)
+                            sleep(self.runinfo.scan0.dt)
 
-                        if self.runinfo.time:
-                            self.runinfo.t2[indicies] = (datetime.now()).timestamp()
+                            if self.runinfo.time:
+                                self.runinfo.t2[indicies] = (datetime.now()).timestamp()
 
-                        data = self.runinfo.measure_function(self)
+                            data = self.runinfo.measure_function(self)
 
-                        if self.runinfo.time:
-                            self.runinfo.t3[indicies] = (datetime.now()).timestamp()
+                            if self.runinfo.time:
+                                self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
-                        if np.all(np.array(self.runinfo.indicies) == 0):
-                            self.runinfo.measured = []
+                            if np.all(np.array(self.runinfo.indicies) == 0) and (continuous_count == 0):
+                                self.runinfo.measured = []
+                                for key, value in data.items():
+                                    self.runinfo.measured.append(key)
+                                self.preallocate(data)
+
                             for key, value in data.items():
-                                self.runinfo.measured.append(key)
-                            self.preallocate(data)
+                                if is_list_type(self[key]):
+                                    self[key][self.runinfo.indicies] = value
+                                else:
+                                    self[key] = value
+                            if self.runinfo.time:
+                                self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
-                        for key, value in data.items():
-                            if is_list_type(self[key]):
-                                self[key][self.runinfo.indicies] = value
+                            if self.runinfo.continuous_expt is True:
+                                self.continuous_save_point(continuous_count)
                             else:
-                                self[key] = value
-                        if self.runinfo.time:
-                            self.runinfo.t4[indicies] = (datetime.now()).timestamp()
+                                self.save_point()
 
-                        self.save_point()
+                            if self.runinfo.time:
+                                self.runinfo.t5[indicies] = (datetime.now()).timestamp()
 
-                        if self.runinfo.time:
-                            self.runinfo.t5[indicies] = (datetime.now()).timestamp()
+                            if self.runinfo.running is False:
+                                self.runinfo.complete = 'stopped'
+                                break
 
+                        # Check if complete, stopped early
                         if self.runinfo.running is False:
                             self.runinfo.complete = 'stopped'
                             break
 
-                    # Check if complete, stopped early
                     if self.runinfo.running is False:
                         self.runinfo.complete = 'stopped'
                         break
 
+                if self.runinfo.verbose:
+                    print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
 
-            if self.runinfo.verbose:
-                print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
-            if self.runinfo.running is False:
-                self.runinfo.complete = 'stopped'
-                break
+            if self.runinfo.continuous_expt is True:
+                continuous_count += 1
+            else:
+                continuous_count -= 1
+
+            if continuous_count > 0:
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False
@@ -255,6 +270,10 @@ class Experiment(AbstractExperiment):
         self.get_time()
 
         self.runinfo.running = True
+
+        for scan in self.runinfo.scans:
+            if isinstance(scan, ps.ContinuousScan):
+                self.continuous_experiment()
 
         if self.runinfo.average_d == -1:
             self.generic_experiment()

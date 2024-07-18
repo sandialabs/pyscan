@@ -64,6 +64,7 @@ class RunInfo(ItemAttribute):
 
         self.verbose = False
         self._pyscan_version = get_pyscan_version()
+        self.continuous = False
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
