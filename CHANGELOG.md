@@ -1,3 +1,17 @@
+# [0.7.0](https://github.com/sandialabs/pyscan/compare/v0.6.0...v0.7.0) (2024-07-16)
+
+
+### Bug Fixes
+
+* **test:** fixed test_test_instrument_driver.py to account for read_only and write_only properties added to test_instrument_driver.py. This now solves the issue with auto_test_driver not failing with read and write only properties and ensures they are auto tested for future compatibility. ([f4554cd](https://github.com/sandialabs/pyscan/commit/f4554cd9869d6f950f8965e470ee1209c802e017))
+
+
+### Features
+
+* **drivers:** adding a built in get_resources function that can return a list of available resources along with their names, and capture a target resource for initializing drivers. ([02971f6](https://github.com/sandialabs/pyscan/commit/02971f63888f95ec430873f90e21fe6c0a2df68f))
+
+
+
 # [0.6.0](https://github.com/sandialabs/pyscan/compare/v0.5.4...v0.6.0) (2024-07-09)
 
 
