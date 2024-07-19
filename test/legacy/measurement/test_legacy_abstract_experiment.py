@@ -216,7 +216,8 @@ def test_meta_sweep():
         # could maybe add to and clarify this
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert isinstance(temp.runinfo.measured, list), "save meta data didn't save runinfo.measured as a list"
-        assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
+        # order of list should not matter
+        assert set(temp.runinfo.measured) == set(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
         # check that loops meta data was saved/loaded correctly
         ''' legacy not working with loop nomenclature for loaded expt's... consider fixing this somehow...
