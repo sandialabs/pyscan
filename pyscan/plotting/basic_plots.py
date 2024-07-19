@@ -55,9 +55,15 @@ def plot2D(expt, **kwarg):
 
     pg = PlotGenerator(expt, d=2, **kwarg)
 
-    plt.pcolormesh(pg.x, pg.y, pg.data.T,
+    c = plt.pcolormesh(pg.x, pg.y, pg.data.T,
                    vmin=pg.get_data_range()[0],
                    vmax=pg.get_data_range()[1])
+    cax = plt.gcf().axes[-1]
+    if cax.get_label() == '<colorbar>':
+        cax.cla()
+        plt.colorbar(c, cax=cax)
+    else:
+        plt.colorbar(c)
 
     plt.title(pg.get_title())
     plt.xlabel(pg.get_xlabel())
