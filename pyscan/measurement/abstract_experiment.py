@@ -150,12 +150,18 @@ class AbstractExperiment(ItemAttribute):
                     if debug is True:
                         print("preallocate 2")
                     dims = scan_dims
+                    d_shape = (1,) + dims
                     self[name] = np.zeros(dims) * np.nan
-                    hdf.create_dataset(name, shape=(1, dims[0]), maxshape=(None, dims[0]),
-                                       fillvalue=np.nan, dtype='float64', chunks=(1, dims[0]))
+                    chunks = tuple(min(d, 64) for d in dims)
+                    d_chunks = (1,) + chunks
+                    max_shape = tuple(None for _ in dims)  # Adjusted maxshape
+                    d_max_shape = (None,) + max_shape
+                    hdf.create_dataset(name, shape=d_shape, maxshape=d_max_shape,
+                                       fillvalue=np.nan, dtype='float64', chunks=d_chunks)
                 elif is_list_type(data[name]) and (ndim == 0):
                     if debug is True:
                         print("preallocate 3")
+                    ##### WARNING, THIS WILL (LIKELU) FAIL AS IS....
                     dims = np.array(data[name]).shape
                     self[name] = np.zeros(dims) * np.nan
                     hdf.create_dataset(name, shape=dims, maxshape=(None,),
@@ -163,6 +169,7 @@ class AbstractExperiment(ItemAttribute):
                 else:
                     if debug is True:
                         print("preallocate 4")
+                    ##### WARNING, THIS WILL (LIKELU) FAIL AS IS....
                     self[name] = np.nan
                     hdf.create_dataset(name, shape=[1, ], maxshape=(None,),
                                        fillvalue=np.nan, dtype='float64', chunks=(ndim,))
@@ -319,7 +326,7 @@ class AbstractExperiment(ItemAttribute):
         with h5py.File(save_name, 'a') as f:
             for key in self.runinfo.measured:
                 if debug is True:
-                    print(f"key is {key}")
+                    print(f"key is {key} \n self[key] is {self[key]}")
                 if continuous_count == 0:
                     if not is_list_type(self[key]):
                         if debug is True:

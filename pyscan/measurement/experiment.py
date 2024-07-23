@@ -5,6 +5,7 @@ from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.is_list_type import is_list_type
 import numpy as np
 from datetime import datetime
+import time
 
 
 class Experiment(AbstractExperiment):
@@ -46,8 +47,15 @@ class Experiment(AbstractExperiment):
         run_count = 0
 
         t0 = (datetime.now()).timestamp()
+        og_diff = 0
+        time_diff = 0
         # Use for scan, but break if self.runinfo.running=False
         while run_count >= 0:
+            if self.runinfo.continuous_expt is True:
+                # st = time.time()
+                print(f"Continuous experiment run {run_count} times with runtime diff {time_diff} (og diff {og_diff}).",
+                      end='\r', flush=True)
+                pass
             for m in range(self.runinfo.scan3.n):
                 self.runinfo.scan3.i = m
                 self.runinfo.scan3.iterate(m, self.devices)
@@ -129,7 +137,17 @@ class Experiment(AbstractExperiment):
             if self.runinfo.continuous_expt is True:
                 run_count += 1
                 self.runinfo.run_count = run_count
+                st = time.time()
                 self.reallocate()
+                et = time.time()
+                time_diff = et - st
+                if run_count == 1:
+                    og_diff = time_diff
+                diff_limit = og_diff * 10
+                if time_diff >= .1:
+                    print(f"time diff: {diff_limit} exceeded {diff_limit} of 10x {og_diff} on run: {run_count}.")
+                    run_count = -1
+                    break
             else:
                 run_count -= 1
 
