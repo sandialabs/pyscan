@@ -70,17 +70,17 @@ def validate_blacklist(test_instrument):
 
 def save_initial_state(device):
     saved_settings = []
-    print(device.__dict__.keys())
+    # print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
             '''try:
                 name = "_{}".format(device[attribute_name]['name'])
                 val = device[name]
             except (Exception):'''
+            if "write_only" in device[attribute_name].keys():
+                continue
             name = "{}".format(device[attribute_name]['name'])
             val = device[name]
-            if 'ranges' in device[attribute_name].keys():
-                val = tuple(val)
             saved_settings.append((name, val))
             # print(device.__dict__.keys())
 
@@ -100,9 +100,11 @@ def restore_initial_state(device, saved_settings):
             assert val == device[setter], err_msg
             restored_settings.append((setter, device[setter]))
             continue
-
-        if 'ranges' in device["_{}_settings".format(setter)].keys():
+        elif 'read_only' in device["_{}_settings".format(setter)].keys():
+            continue
+        elif 'ranges' in device["_{}_settings".format(setter)].keys():
             val = device["_{}_settings".format(setter)]['return_type'](val)
+
         try:
             device[setter] = val
         except Exception:
@@ -132,22 +134,24 @@ def reset_device_properties(device):
         if var_name in device.black_list_for_testing:
             blacklisted.append((var_name, device[var_name]))
             continue
-        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+        elif 'read_only' in keys:
+            continue
+        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             device[var_name] = device[name]['values'][0]
-        elif 'range' in device[name].keys():
+        elif 'range' in keys:
             device[var_name] = device[name]['range'][0]
-        elif 'ranges' in device[name].keys():
+        elif 'ranges' in keys:
             # write to reset val later
             pass
-        elif 'indexed_values' in device[name].keys():
+        elif 'indexed_values' in keys:
             device[var_name] = device[name]['indexed_values'][0]
-        elif 'dict_values' in device[name].keys():
+        elif 'dict_values' in keys:
             for key in device[name]['dict_values'].keys():
                 device[var_name] = key
                 break
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
-                name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+                name, ['values', 'range', 'indexed_values', 'dict_values', 'read_only'])
 
     if len(blacklisted) > 0:
         print("These blacklisted settings and their corresponding values were not reset: ", blacklisted)
@@ -169,11 +173,9 @@ def check_attribute_values(device, attributes, ev):
 # designed for testing read only properties of any type
 def check_read_only_property(device, key):
     name = device[key]['name']
-    settings = device[name + '_settings']
-    return_type = device
+    settings = device['_' + name + '_settings']
+    return_type = settings['return_type']
 
-    # I'm not sure that this will work. It might be that only the underscore property can be used to access
-    # the property value.
     assert type(device[name]) is return_type, "read_only property {} returned type {} not {}".format(
         name, type(device[name]), return_type)
     assert type(device["_{}".format(name)]) is return_type, "read_only _property {} returned type {} not {}".format(
@@ -182,8 +184,6 @@ def check_read_only_property(device, key):
     assert 'write_string' not in settings, "read_only property {} has write_string {}".format(
         name, settings['write_string'])
 
-    # I'm not sure that this will fail. If not, it should be that the original value remains the same no matter what
-    # you try to set it to.
     for val in BAD_INPUTS:
         with pytest.raises(Exception):
             device[name] = val
@@ -353,7 +353,6 @@ def check_properties(test_instrument):
             check_read_only_property(test_instrument, name)
         elif 'write_only' in keys:
             write_only_settings.append(name)
-            continue
         elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
@@ -403,7 +402,6 @@ def check_properties(test_instrument):
         print("Restored settings are different for the following: ", diff)
 
     assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
-    print("The previous instrument version was: ", test_instrument._version)
 
 
 def write_log(device, exception):
