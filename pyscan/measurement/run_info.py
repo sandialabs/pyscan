@@ -2,6 +2,7 @@
 from pyscan.general.item_attribute import ItemAttribute
 from pyscan.general.get_pyscan_version import get_pyscan_version
 from .scans import PropertyScan, AverageScan
+import pyscan as ps
 
 
 class RunInfo(ItemAttribute):
@@ -64,7 +65,6 @@ class RunInfo(ItemAttribute):
 
         self.verbose = False
         self._pyscan_version = get_pyscan_version()
-        self.continuous_expt = False
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
@@ -108,6 +108,33 @@ class RunInfo(ItemAttribute):
         return self._dims
 
     @property
+    def continuous_dims(self):
+        ''' Returns tuple containing the length of each scan, in order from scan0 to scan3, and excludes scans of size 1
+        '''
+        continuous_scan_num = 0
+        for i in range(4):
+            if isinstance(self[f'scan{i}'], ps.ContinuousScan):
+                continuous_scan_num = i
+                break
+        if continuous_scan_num == 0:
+            dims = (self.scan0.n,)
+        elif continuous_scan_num == 1:
+            dims = (self.scan0.n,
+                    self.scan1.n)
+        elif continuous_scan_num == 2:
+            dims = (self.scan0.n,
+                    self.scan1.n,
+                    self.scan2.n)
+        elif continuous_scan_num == 3:
+            dims = (self.scan0.n,
+                    self.scan1.n,
+                    self.scan2.n,
+                    self.scan3.n)
+        dims = [n for n in dims]
+        self._dims = tuple(dims)
+        return self._dims
+
+    @property
     def average_dims(self):
         ''' Returns tuple containing the length of each scan, excluding scans of size 1 and the averaged scan
         '''
@@ -120,6 +147,13 @@ class RunInfo(ItemAttribute):
         ''' Returns number of non 1 sized scans
         '''
         self._ndim = len(self.dims)  # why is this stored as a property? It is never used
+        return self._ndim
+
+    @property
+    def continuous_ndim(self):
+        ''' Returns number of non 1 sized scans
+        '''
+        self._ndim = len(self.continuous_dims)  # why is this stored as a property? It is never used
         return self._ndim
 
     @property

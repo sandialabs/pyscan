@@ -5,7 +5,6 @@ from pyscan.measurement.abstract_experiment import AbstractExperiment
 from pyscan.general.is_list_type import is_list_type
 import numpy as np
 from datetime import datetime
-import time
 
 
 class Experiment(AbstractExperiment):
@@ -43,19 +42,19 @@ class Experiment(AbstractExperiment):
             for i in range(6):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
 
-        # this var is used to track if the expt is continuous or not. Determines run behavior.
+        t0 = (datetime.now()).timestamp()
+
+        # check whether the experiment should run continuously
+        continuous_expt = False
+        for scan in self.runinfo.scans:
+            if isinstance(scan, ps.ContinuousScan):
+                continuous_expt = True
+
+        # temp run count... delete when done. Leaving for demo purposes at the moment
         run_count = 0
 
-        t0 = (datetime.now()).timestamp()
-        og_diff = 0
-        time_diff = 0
         # Use for scan, but break if self.runinfo.running=False
-        while run_count >= 0:
-            if self.runinfo.continuous_expt is True:
-                # st = time.time()
-                print(f"Continuous experiment run {run_count} times with runtime diff {time_diff} (og diff {og_diff}).",
-                      end='\r', flush=True)
-                pass
+        while self.runinfo.running is True:
             for m in range(self.runinfo.scan3.n):
                 self.runinfo.scan3.i = m
                 self.runinfo.scan3.iterate(m, self.devices)
@@ -93,10 +92,7 @@ class Experiment(AbstractExperiment):
                             if self.runinfo.time:
                                 self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
-                            if np.all(np.array(self.runinfo.indicies) == 0) and (run_count == 0):
-                                self.runinfo.measured = []
-                                for key, value in data.items():
-                                    self.runinfo.measured.append(key)
+                            if np.all(np.array(self.runinfo.indicies) == 0):
                                 self.preallocate(data)
 
                             for key, value in data.items():
@@ -107,10 +103,8 @@ class Experiment(AbstractExperiment):
                             if self.runinfo.time:
                                 self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
-                            if self.runinfo.continuous_expt is True:
-                                self.continuous_save_point(run_count)
-                            else:
-                                self.save_point()
+                            # print(f"running save_point {run_count}")
+                            self.save_point()
 
                             if self.runinfo.time:
                                 self.runinfo.t5[indicies] = (datetime.now()).timestamp()
@@ -133,26 +127,14 @@ class Experiment(AbstractExperiment):
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
-
-            if self.runinfo.continuous_expt is True:
-                run_count += 1
-                self.runinfo.run_count = run_count
-                st = time.time()
-                self.reallocate()
-                et = time.time()
-                time_diff = et - st
-                if run_count == 1:
-                    og_diff = time_diff
-                diff_limit = og_diff * 10
-                if time_diff >= .1:
-                    print(f"time diff: {diff_limit} exceeded {diff_limit} of 10x {og_diff} on run: {run_count}.")
-                    run_count = -1
-                    break
+            if continuous_expt is True and run_count < 2:
+                self.runinfo.running = True
+                self.reallocate(data)
+                # run_count += 1
             else:
-                run_count -= 1
-
-        self.runinfo.complete = True
-        self.runinfo.running = False
+                self.runinfo.complete = True
+                self.runinfo.running = False
+                break
 
         if self.runinfo.time:
             try:

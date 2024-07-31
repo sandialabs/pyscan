@@ -142,7 +142,7 @@ class RepeatScan(AbstractScan):
         '''Constructor method
         '''
         assert nrepeat > 0, "nrepeat must be > 0"
-        assert nrepeat != np.inf, "nrepeat is np.inf"
+        assert nrepeat != np.inf, "nrepeat is np.inf, make a continuous scan instead."
         self.scan_dict = {}
         self.scan_dict['repeat'] = list(range(nrepeat))
 
@@ -167,6 +167,26 @@ class RepeatScan(AbstractScan):
         Not used
         '''
         return 1
+
+
+class ContinuousScan(AbstractScan):
+    def __init__(self, dt=0):
+        self.scan_dict = {}
+        self.scan_dict['continuous'] = []
+
+        self.device_names = ['continuous']
+        self.dt = dt
+
+        self.run_count = 0
+        # number of times to repeat per expt run
+        self.n = 1
+        # current experiment number index
+        self.i = 0
+
+    def iterate(self, index, devices):
+        self.i = self.run_count
+        self.run_count += 1
+        self.scan_dict['continuous'].append(self.i)
 
 
 class AverageScan(AbstractScan):
