@@ -109,28 +109,14 @@ class RunInfo(ItemAttribute):
 
     @property
     def continuous_dims(self):
-        ''' Returns tuple containing the length of each scan, in order from scan0 to scan3, and excludes scans of size 1
+        ''' Returns tuple containing the length of each scan, up to the ContinuousScan when found.
         '''
-        continuous_scan_num = 0
-        for i in range(4):
-            if isinstance(self[f'scan{i}'], ps.ContinuousScan):
-                continuous_scan_num = i
+        dims = []
+        for i in range(4):  # assuming only 4 scans
+            scan = self[f'scan{i}']
+            dims.append(scan.n)
+            if isinstance(scan, ps.ContinuousScan):
                 break
-        if continuous_scan_num == 0:
-            dims = (self.scan0.n,)
-        elif continuous_scan_num == 1:
-            dims = (self.scan0.n,
-                    self.scan1.n)
-        elif continuous_scan_num == 2:
-            dims = (self.scan0.n,
-                    self.scan1.n,
-                    self.scan2.n)
-        elif continuous_scan_num == 3:
-            dims = (self.scan0.n,
-                    self.scan1.n,
-                    self.scan2.n,
-                    self.scan3.n)
-        dims = [n for n in dims]
         self._dims = tuple(dims)
         return self._dims
 

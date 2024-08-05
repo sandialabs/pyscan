@@ -114,7 +114,8 @@ class AbstractExperiment(ItemAttribute):
 
             with h5py.File(save_name, 'a') as f:
                 for name in self.runinfo.measured:
-                    print(f"for {name} data is : {data[name]}, and ndim is: {ndim}")
+                    if debug is True:
+                        print(f"for {name} data is : {data[name]}, and ndim is: {ndim}")
                     if is_list_type(data[name]) and ndim > 0:
                         if debug is True:
                             print(f"with measured name {name} preallocate1")
@@ -171,7 +172,12 @@ class AbstractExperiment(ItemAttribute):
                         # new_shape = (current_shape[0] + self[name].shape[0],) + current_shape[1:]
                         if debug is True:
                             print("old shape part 2 is: ", current_shape)
-                        new_shape = (dataset.shape[0] + 1,) + current_shape[1:]
+
+                        new_shape_list = list(current_shape)
+                        dim_index = len(self.runinfo.continuous_dims) - 1
+                        new_shape_list[dim_index] += 1
+                        new_shape = tuple(new_shape_list)
+
                         if debug is True:
                             print("new shape part 2 is: ", new_shape)
 
@@ -180,7 +186,7 @@ class AbstractExperiment(ItemAttribute):
                         # Optionally, fill the new elements with specific data
                         # Be careful with multi-dimensional slicing and filling, make sure this is done right.
                         if len(current_shape) > 2:
-                            # Create a slice object for filling the new elements, not sure this is formatted correctly.
+                            # Create a slice object for filling the new elements, is this is formatted correctly?
                             fill_slice = ((slice(current_shape[0], None),)
                                           + tuple(slice(0, dim) for dim in current_shape[1:]))
                             dataset[fill_slice] = np.nan
@@ -272,7 +278,7 @@ class AbstractExperiment(ItemAttribute):
 
         pass
 
-    def save_continuous_scan_dict(self, save_name):
+    def save_continuous_scan_dict(self, save_name, debug=False):
         for scan in self.runinfo.scans:
             if isinstance(scan, ps.ContinuousScan):
                 run_count = scan.run_count
@@ -285,7 +291,8 @@ class AbstractExperiment(ItemAttribute):
                             del f[key]
                             f.create_dataset(key, shape=[1, ], maxshape=(None,), chunks=(1,),
                                              fillvalue=np.nan, dtype='float64')
-                            print("new dataset created")
+                            if debug is True:
+                                print("new dataset created")
                             self[key] = values
                             f[key][...] = values
         else:
@@ -293,7 +300,7 @@ class AbstractExperiment(ItemAttribute):
                 for s in self.runinfo.scans:
                     for key, values in s.scan_dict.items():
                         if key == 'continuous':
-                            f[key].resize((f[key].shape[0] + 1,))
+                            f[key].resize((len(s.scan_dict[key]),))
                             self[key] = values
                             f[key][values[-1]] = values[-1]
 
@@ -313,7 +320,7 @@ class AbstractExperiment(ItemAttribute):
                 run_count = scan.run_count - 1
 
         if continuous is True:
-            self.save_continuous_scan_dict(save_name)
+            self.save_continuous_scan_dict(save_name, debug)
 
         with h5py.File(save_name, 'a') as f:
             for key in self.runinfo.measured:
@@ -340,8 +347,8 @@ class AbstractExperiment(ItemAttribute):
                     if run_count > 0:
                         if debug is True:
                             print("SAVE 2. run counter was > 0")
-                            print("f[key].shape is: ", f[key].shape)
-                        f[key][run_count] = self[key][:]
+                            print(f"f[{key}].shape is: ", f[key].shape)
+                        f[key][:] = self[key][:]
                     else:
                         if debug is True:
                             print("SAVE 3. run counter0")

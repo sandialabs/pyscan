@@ -130,7 +130,8 @@ class Experiment(AbstractExperiment):
             if continuous_expt is True and run_count < 2:
                 self.runinfo.running = True
                 self.reallocate(data)
-                # run_count += 1
+                # for demonstration purposes. Delete this here and above before merge!
+                run_count += 1
             else:
                 self.runinfo.complete = True
                 self.runinfo.running = False
