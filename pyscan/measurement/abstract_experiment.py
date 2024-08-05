@@ -8,7 +8,7 @@ from threading import Thread as thread
 from time import strftime
 from pyscan.general import (ItemAttribute,
                             is_list_type)
-from pyscan.measurement.scans import PropertyScan, RepeatScan
+from pyscan.measurement.scans import PropertyScan, RepeatScan, ContinuousScan
 from pyscan.general.pyscan_json_encoder import PyscanJSONEncoder
 
 
@@ -235,6 +235,7 @@ class AbstractExperiment(ItemAttribute):
         '''
 
         num_repeat_scans = 0
+        num_continuous_scans = 0
         for scan in self.runinfo.scans:
             scan.check_same_length()
             if isinstance(scan, PropertyScan):
@@ -243,9 +244,13 @@ class AbstractExperiment(ItemAttribute):
                     assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
             if isinstance(scan, RepeatScan):
                 num_repeat_scans += 1
+            if isinstance(scan, ContinuousScan):
+                num_repeat_scans += 1
 
         if num_repeat_scans > 1:
             assert False, "More than one repeat scan detected. This is not allowed."
+        if num_continuous_scans > 1:
+            assert False, "More than one continuous scan detected. This is not allowed."
 
         base_name = strftime("%Y%m%dT%H%M%S")
         save_path = self.runinfo.data_path / '{}.hdf5'.format(base_name)

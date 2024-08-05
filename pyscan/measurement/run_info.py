@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
 from pyscan.general.get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan
+from .scans import PropertyScan, AverageScan, ContinuousScan
 import pyscan as ps
 
 
@@ -88,6 +88,24 @@ class RunInfo(ItemAttribute):
         # throw an error if more than one average scan is found
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
+
+        # find the scan set to continuous scan (if any) and determine the index
+        continuous_scan_index = -1
+        for i, scan in enumerate(self.scans):
+            if isinstance(scan, ps.ContinuousScan):
+                continuous_scan_index = i
+
+        # If there is a ContinuousScan, ensure it is the highest level scan
+        if continuous_scan_index != -1:
+            for i in range(continuous_scan_index + 1, len(self.scans)):
+                assert isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0, \
+                    f"ContinuousScan found at scan{continuous_scan_index} but is not the highest level scan."
+
+            # Ensure that any scan below the ContinuousScan is not an empty PropertyScan
+            # MAKE SURE WE WANT THIS!
+            for i in range(continuous_scan_index):
+                assert not (isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0), \
+                    f"ContinuousScan found at scan{continuous_scan_index} but there is an empty PropertyScan below it."
 
     @property
     def scans(self):
