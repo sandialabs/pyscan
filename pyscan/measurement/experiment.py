@@ -93,7 +93,6 @@ class Experiment(AbstractExperiment):
                         if self.runinfo.time:
                             self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
-                        # print(f"running save_point {run_count}")
                         self.save_point()
 
                         if self.runinfo.time:
@@ -103,20 +102,32 @@ class Experiment(AbstractExperiment):
                             self.runinfo.complete = 'stopped'
                             break
 
+                        if isinstance(self.runinfo.scan0, ps.ContinuousScan):
+                            self.reallocate()
+
                     # Check if complete, stopped early
                     if self.runinfo.running is False:
                         self.runinfo.complete = 'stopped'
                         break
 
+                    if isinstance(self.runinfo.scan1, ps.ContinuousScan):
+                        self.reallocate()
+
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
+
+                if isinstance(self.runinfo.scan2, ps.ContinuousScan):
+                    self.reallocate()
 
             if self.runinfo.verbose:
                 print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
+
+            if isinstance(self.runinfo.scan3, ps.ContinuousScan):
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False

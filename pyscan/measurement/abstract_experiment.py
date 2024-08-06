@@ -147,52 +147,66 @@ class AbstractExperiment(ItemAttribute):
                         f.create_dataset(name, shape=[1, ], maxshape=(None,), chunks=(1,),
                                          fillvalue=np.nan, dtype='float64')
 
-    def reallocate(self, data, debug=False):
+    def reallocate(self, debug=False):
+        # check if the continuous expt needs to be stopped before reallocating
+        stop = False
+        for scan in self.runinfo.scans:
+            if isinstance(scan, ps.ContinuousScan) and hasattr(scan, 'stop_at'):
+                if scan.stop_at <= scan.i + 1:
+                    stop = True
+
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
         with h5py.File(save_name, 'a') as hdf:
+            if stop is False:
+                for name in self.runinfo.measured:
+                    if name in hdf:
+                        dataset = hdf[name]
+                        current_shape = dataset.shape
+                        if len(current_shape) == 1:
+                            if debug is True:
+                                print("dataset shape is: ", dataset.shape, " dset shape[0] is: ", dataset.shape[0])
+                            new_size = (dataset.shape[0] + 1,)
+                            if debug is True:
+                                print("new size is: ", new_size)
+                            dataset.resize(new_size)
+                            if debug is True:
+                                print("resized dset is: ", dataset.shape, " and shape 0: ", dataset.shape[0])
+                            # fill the new part with nans
+                            dataset[current_shape[0]:] = np.nan
+                        elif len(current_shape) > 1:
+                            # Expand the first dimension, there might be a problem here...
+                            # new_shape = (current_shape[0] + self[name].shape[0],) + current_shape[1:]
+                            if debug is True:
+                                print("old shape part 2 is: ", current_shape)
+
+                            new_shape_list = list(current_shape)
+                            dim_index = len(self.runinfo.continuous_dims) - 1
+                            new_shape_list[dim_index] += 1
+                            new_shape = tuple(new_shape_list)
+
+                            if debug is True:
+                                print("new shape part 2 is: ", new_shape)
+
+                            # Resize the dataset to the new shape
+                            dataset.resize(new_shape)
+                            # Optionally, fill the new elements with specific data
+                            # Be careful with multi-dimensional slicing and filling, make sure this is done right.
+                            if len(current_shape) > 2:
+                                # Create a slice object for filling the new elements, is this is formatted correctly?
+                                fill_slice = ((slice(current_shape[0], None),)
+                                              + tuple(slice(0, dim) for dim in current_shape[1:]))
+                                dataset[fill_slice] = np.nan
+                    else:
+                        assert False, f"cannot reallocate dataset {name}, not found in file."
+
             for name in self.runinfo.measured:
                 if name in hdf:
-                    dataset = hdf[name]
-                    current_shape = dataset.shape
-                    if len(current_shape) == 1:
-                        if debug is True:
-                            print("dataset shape is: ", dataset.shape, " dset shape[0] is: ", dataset.shape[0])
-                        new_size = (dataset.shape[0] + 1,)
-                        if debug is True:
-                            print("new size is: ", new_size)
-                        dataset.resize(new_size)
-                        if debug is True:
-                            print("resized dset is: ", dataset.shape, " and shape 0: ", dataset.shape[0])
-                        # fill the new part with nans
-                        dataset[current_shape[0]:] = np.nan
-                    elif len(current_shape) > 1:
-                        # Expand the first dimension, there might be a problem here...
-                        # new_shape = (current_shape[0] + self[name].shape[0],) + current_shape[1:]
-                        if debug is True:
-                            print("old shape part 2 is: ", current_shape)
+                    self[name] = hdf[name][:]
 
-                        new_shape_list = list(current_shape)
-                        dim_index = len(self.runinfo.continuous_dims) - 1
-                        new_shape_list[dim_index] += 1
-                        new_shape = tuple(new_shape_list)
-
-                        if debug is True:
-                            print("new shape part 2 is: ", new_shape)
-
-                        # Resize the dataset to the new shape
-                        dataset.resize(new_shape)
-                        # Optionally, fill the new elements with specific data
-                        # Be careful with multi-dimensional slicing and filling, make sure this is done right.
-                        if len(current_shape) > 2:
-                            # Create a slice object for filling the new elements, is this is formatted correctly?
-                            fill_slice = ((slice(current_shape[0], None),)
-                                          + tuple(slice(0, dim) for dim in current_shape[1:]))
-                            dataset[fill_slice] = np.nan
-
-                else:
-                    assert False, f"cannot reallocate dataset {name}, not found in file."
+            if stop is True:
+                self.stop()
 
     # this function seems redundant/dead, since it is already accomplished by preallocate()
     # consider deleting this dead code if it truly smells.

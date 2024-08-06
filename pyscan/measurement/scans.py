@@ -175,7 +175,7 @@ class RepeatScan(AbstractScan):
 
 
 class ContinuousScan(AbstractScan):
-    def __init__(self, dt=0):
+    def __init__(self, dt=0, stop_at=None):
         self.scan_dict = {}
         self.scan_dict['continuous'] = []
 
@@ -187,11 +187,17 @@ class ContinuousScan(AbstractScan):
         self.n = 1
         # current experiment number index
         self.i = 0
+        if stop_at is not None:
+            self.stop_at = stop_at
 
     def iterate(self, index, devices):
         self.i = self.run_count
         self.run_count += 1
         self.scan_dict['continuous'].append(self.i)
+
+    def iterator(self):
+        # returns an infinite iterator, overwriting Abstract scans default iterator
+        return iter(int, 1)
 
 
 class AverageScan(AbstractScan):
