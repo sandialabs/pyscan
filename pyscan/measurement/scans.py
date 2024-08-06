@@ -19,6 +19,10 @@ class AbstractScan(ItemAttribute):
         '''A function to be implemented by inheriting Scan classes'''
         pass
 
+    # This must be a method and not an attribute as iterators can only be used once
+    def iterator(self):
+        return iter(self.nrange)
+
 
 class PropertyScan(AbstractScan):
     '''
@@ -108,6 +112,7 @@ class FunctionScan(AbstractScan):
         self.dt = dt
         self.i = 0
         self.n = len(values)
+        self.nrange = range(self.n)
 
     def iterate(self, index, devices):
         '''

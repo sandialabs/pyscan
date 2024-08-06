@@ -68,5 +68,7 @@ class PyscanJSONEncoder(json.JSONEncoder):
             if debug is True:
                 print(f"obj {obj} is a Path or WindowsPath, returning string of the path.")
             return str(obj)
+        elif type(obj) is type(iter(range(1))):
+            return list(obj)
         else:
             return super().default(obj)
