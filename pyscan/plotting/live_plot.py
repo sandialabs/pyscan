@@ -51,8 +51,7 @@ def live_plot(plotting_function, dt=1):
 
 
 def multi_live_plot(plotting_functions, subplot_locators=None, projections=None, nrows=1, ncols=1,
-                    width_ratios=None, height_ratios=None, subplot_kw=None,
-                    gridspec_kw=None, dt=1):
+                    subplot_kw={}, dt=1):
     '''
     Generates a function that executes all plotting_function provided while data
     is still being taken in Jupyter notebooks. Used by the live plotting
@@ -70,25 +69,14 @@ def multi_live_plot(plotting_functions, subplot_locators=None, projections=None,
         If omitted, then plotting functions will occupy the axes object according to
         their index position.
     projections: list, optional
-        list of projections such as '3d', 'polar', according to each plotting function.
+        list of projections such as None, '3d', 'polar', according to each plotting function.
         If ommitted, all plots default to 2d.
     nrows : int, optional
-        How many rows to add to the multiplot.
+        How many rows to add to the multiplot. Only used if subplot_locators are not provided.
     ncols : int, optional
-        How many cols to add to the multiplot.
-    width_ratios : array-like of length ncols, optional
-        Defines the relative widths of the columns. Each column gets a relative width of
-        `width_ratios[i] / sum(width_ratios)`. If not given, all columns will have the same
-        width. Equivalent to `gridspec_kw={'width_ratios': [...]}`.
-    height_ratios : array-like of length nrows, optional
-        Defines the relative heights of the rows. Each row gets a relative height of
-        `height_ratios[i] / sum(height_ratios)`. If not given, all rows will have the same
-        height. Convenience for `gridspec_kw={'height_ratios': [...]}`.
+        How many cols to add to the multiplot. Only used if subplot_locators are not provided.
     subplot_kw : dict
         Dict with keywords passed to matplotlib's `add_subplot` call used to create each subplot.
-    gridspec_kw : dict
-        Dict with keywords passed to matplotlib's `GridSpec` constructor used to create the grid the
-        subplots are placed on.
     dt : float
         Time in s between refreshes
 
@@ -123,8 +111,8 @@ def multi_live_plot(plotting_functions, subplot_locators=None, projections=None,
         while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
             sleep(1)
 
-        fig, axs = plt.subplots(nrows, ncols, width_ratios=width_ratios, height_ratios=height_ratios,
-                                subplot_kw=subplot_kw, gridspec_kw=gridspec_kw)
+            fig = plt.figure(layout="constrained")
+            plt.ion()
 
         def plot():
             if subplot_locators:
@@ -136,9 +124,9 @@ def multi_live_plot(plotting_functions, subplot_locators=None, projections=None,
                         projection = None
                     # check if subplot locator is int or tuple
                     if isinstance(subplot_locator, int):
-                        ax = plt.subplot(subplot_locator, projection=projection)
+                        ax = fig.add_subplot(subplot_locator, projection=projection, **subplot_kw)
                     elif isinstance(subplot_locator, tuple):
-                        ax = plt.subplot(*subplot_locator, projection=projection)
+                        ax = fig.add_subplot(*subplot_locator, projection=projection, **subplot_kw)
                     func(expt, ax, *arg, **kwarg)
             else:
                 for i, func in enumerate(plotting_functions):
@@ -146,22 +134,21 @@ def multi_live_plot(plotting_functions, subplot_locators=None, projections=None,
                         projection = projections[i]
                     else:
                         projection = None
-                    ax = plt.subplot(nrows, ncols, i + 1)
+                    ax = fig.add_subplot(nrows, ncols, i + 1, projection=projection, **subplot_kw)
                     func(expt, ax, *arg, **kwarg)
-
-        plt.ion()
+            plt.tight_layout()
 
         while expt.runinfo.running:
             sleep(dt)
 
-            plt.gca().cla()
+            plt.clf()
 
             plot()
 
             display.display(plt.gcf())
             display.clear_output(wait=True)
 
-        plt.gca().cla()
+        plt.clf()
 
         plot()
 
