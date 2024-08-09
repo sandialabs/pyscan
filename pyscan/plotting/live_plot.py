@@ -111,8 +111,8 @@ def multi_live_plot(plotting_functions, subplot_locators=None, projections=None,
         while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
             sleep(1)
 
-            fig = plt.figure(layout="constrained")
-            plt.ion()
+        fig = plt.figure(layout="constrained")
+        plt.ion()
 
         def plot():
             if subplot_locators:
