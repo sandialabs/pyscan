@@ -83,6 +83,7 @@ html_theme_options = {
     # "collapse_navigation": not is_release_build,
     "show_prev_next": True,
     "navbar_align": "left",
+    "show_toc_level": 2,
     # social media links
     "icon_links": [
         {
