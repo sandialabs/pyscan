@@ -148,6 +148,9 @@ class AbstractExperiment(ItemAttribute):
                                          fillvalue=np.nan, dtype='float64')
 
     def reallocate(self, debug=False):
+        '''
+        Reallocates memory for continuous experiments save files and measurement attribute arrays.
+        '''
         # check if the continuous expt needs to be stopped before reallocating
         stop = False
         for scan in self.runinfo.scans:
@@ -158,54 +161,71 @@ class AbstractExperiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
+        self.runinfo.new_slices = {}
+
         with h5py.File(save_name, 'a') as hdf:
             if stop is False:
                 for name in self.runinfo.measured:
                     if name in hdf:
                         dataset = hdf[name]
                         current_shape = dataset.shape
+                        new_shape = list(current_shape)
+
                         if len(current_shape) == 1:
                             if debug is True:
                                 print("dataset shape is: ", dataset.shape, " dset shape[0] is: ", dataset.shape[0])
-                            new_size = (dataset.shape[0] + 1,)
+                            new_shape[0] += 1
                             if debug is True:
-                                print("new size is: ", new_size)
-                            dataset.resize(new_size)
+                                print("new size is: ", new_shape)
+                            dataset.resize(tuple(new_shape))
                             if debug is True:
                                 print("resized dset is: ", dataset.shape, " and shape 0: ", dataset.shape[0])
                             # fill the new part with nans
                             dataset[current_shape[0]:] = np.nan
                         elif len(current_shape) > 1:
                             # Expand the first dimension, there might be a problem here...
-                            # new_shape = (current_shape[0] + self[name].shape[0],) + current_shape[1:]
                             if debug is True:
                                 print("old shape part 2 is: ", current_shape)
 
-                            new_shape_list = list(current_shape)
                             dim_index = len(self.runinfo.continuous_dims) - 1
-                            new_shape_list[dim_index] += 1
-                            new_shape = tuple(new_shape_list)
+                            new_shape[dim_index] += 1
 
                             if debug is True:
                                 print("new shape part 2 is: ", new_shape)
 
                             # Resize the dataset to the new shape
-                            dataset.resize(new_shape)
-                            # Optionally, fill the new elements with specific data
-                            # Be careful with multi-dimensional slicing and filling, make sure this is done right.
-                            if len(current_shape) > 2:
-                                # Create a slice object for filling the new elements, is this is formatted correctly?
-                                fill_slice = ((slice(current_shape[0], None),)
-                                              + tuple(slice(0, dim) for dim in current_shape[1:]))
-                                dataset[fill_slice] = np.nan
+                            dataset.resize(tuple(new_shape))
+
+                            # Create a mask for the new part
+                            slices = tuple(slice(original_dim, new_dim) for original_dim,
+                                           new_dim in zip(current_shape, new_shape))
+                            mask = np.zeros(new_shape, dtype=bool)
+                            mask[slices] = True
+
+                            # Fill the new part with NaN values
+                            dataset[mask] = np.nan
+
+                            self.runinfo.new_slices[name] = tuple(slice(current_dim, new_dim) for current_dim,
+                                                                  new_dim in zip(current_shape, new_shape))
+
+                            if debug is True:
+                                print("Original shape:", current_shape)
+                                print("New shape:", dataset.shape)
+
                     else:
                         assert False, f"cannot reallocate dataset {name}, not found in file."
 
-            for name in self.runinfo.measured:
-                if name in hdf:
-                    self[name] = hdf[name][:]
+                    # reallocate for the self[key] to accomodate additional data
+                    if debug is True:
+                        print(f"{name} original shape: {self[name].shape} with self[{name}] = {self[name]}")
+                    self[name] = np.pad(self[name],
+                                        [(0, new_dim - original_dim) for original_dim,
+                                        new_dim in zip(current_shape, new_shape)],
+                                        mode='constant', constant_values=np.nan)
+                    if debug is True:
+                        print(f"new {name} shape: {self[name].shape} with self[{name}] = {self[name]}")
 
-            if stop is True:
+            elif stop is True:
                 self.stop()
 
     # this function seems redundant/dead, since it is already accomplished by preallocate()
@@ -259,7 +279,7 @@ class AbstractExperiment(ItemAttribute):
             if isinstance(scan, RepeatScan):
                 num_repeat_scans += 1
             if isinstance(scan, ContinuousScan):
-                num_repeat_scans += 1
+                num_continuous_scans += 1
 
         if num_repeat_scans > 1:
             assert False, "More than one repeat scan detected. This is not allowed."
@@ -298,6 +318,9 @@ class AbstractExperiment(ItemAttribute):
         pass
 
     def save_continuous_scan_dict(self, save_name, debug=False):
+        '''
+        Increments continuous scan_dict to match run count for continuous experiments. Saves this change to file.
+        '''
         for scan in self.runinfo.scans:
             if isinstance(scan, ps.ContinuousScan):
                 run_count = scan.run_count
@@ -314,72 +337,99 @@ class AbstractExperiment(ItemAttribute):
                                 print("new dataset created")
                             self[key] = values
                             f[key][...] = values
-        else:
-            with h5py.File(save_name, 'a') as f:
-                for s in self.runinfo.scans:
-                    for key, values in s.scan_dict.items():
-                        if key == 'continuous':
-                            f[key].resize((len(s.scan_dict[key]),))
-                            self[key] = values
-                            f[key][values[-1]] = values[-1]
+        with h5py.File(save_name, 'a') as f:
+            for s in self.runinfo.scans:
+                for key, values in s.scan_dict.items():
+                    if key == 'continuous':
+                        f[key].resize((len(s.scan_dict[key]),))
+                        self[key] = values
+                        f[key][values[-1]] = values[-1]
 
-    def save_point(self, debug=False):
+    def save_point(self, data, debug=False):
         '''
         Saves single point of data for current scan indicies. Does not return anything.
         '''
+
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
         run_count = 0
         continuous = False
+        stop = False
 
         for scan in self.runinfo.scans:
             if isinstance(scan, ps.ContinuousScan):
                 continuous = True
                 run_count = scan.run_count - 1
+                if hasattr(scan, 'stop_at'):
+                    if scan.stop_at <= scan.i:
+                        stop = True
+        if debug is True and continuous is True:
+            print(f"run_count is {run_count}")
 
-        if continuous is True:
-            self.save_continuous_scan_dict(save_name, debug)
+        if continuous is False:
+            for key, value in data.items():
+                if is_list_type(self[key]):
+                    self[key][self.runinfo.indicies] = value
+                else:
+                    self[key] = value
+        elif continuous is True and stop is False:
+            if all(index == 0 for index in self.runinfo.indicies):
+                self.save_continuous_scan_dict(save_name, debug)
 
-        with h5py.File(save_name, 'a') as f:
-            for key in self.runinfo.measured:
-                try:
-                    original_file_shape = self[key].shape
-                    original_file_shape[0] = original_file_shape[0] - run_count
-                except:
-                    pass
-
-                if debug is True:
-                    print(f"key {key} is with ", "f[key].shape is: ", f[key].shape)
-                    try:
-                        print("self[key].shape is: ", self[key].shape)
-                    except:
-                        pass
-
-                if not is_list_type(self[key]):
-                    if debug is True:
-                        print("SAVE 1. self[key] was not list type")
-                    f[key][run_count:] = self[key]
-                elif np.array([original_file_shape == self[key].shape]).all():
-                    if debug is True:
-                        print("data same as original file shape, self[key][:] is : ", self[key][:])
+            continuous_indicies = self.runinfo.indicies + (run_count,)
+            for key, value in data.items():
+                if is_list_type(self[key][0]):
                     if run_count > 0:
                         if debug is True:
-                            print("SAVE 2. run counter was > 0")
-                            print(f"f[{key}].shape is: ", f[key].shape)
-                        f[key][:] = self[key][:]
-                    else:
+                            print(f"before saving point self[{key}] is: {self[key]}")
+                        self[key][continuous_indicies] = value
                         if debug is True:
-                            print("SAVE 3. run counter0")
-                        f[key][:] = self[key][:]
-                elif self.runinfo.average_d == -1:
-                    if debug is True:
-                        print("SAVE 4. av d == -1")
-                    f[key][self.runinfo.average_indicies, ...] = self[key][self.runinfo.average_indicies, ...]
+                            print(f"after saving point self[{key}] is: {self[key]}")
+                    else:
+                        self[key][self.runinfo.indicies] = value
                 else:
+                    self[key][run_count] = value
+
+        with h5py.File(save_name, 'a') as f:
+            if stop is False:
+                for key in self.runinfo.measured:
                     if debug is True:
-                        print("SAVE 5. av d != -1")
-                    f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
+                        print(f"key {key} is with ", "f[key].shape is: ", f[key].shape)
+                        try:
+                            print(f"self[{key}].shape is: ", self[key].shape)
+                        except:
+                            pass
+
+                    if not is_list_type(self[key]):
+                        if debug is True:
+                            print(f"SAVE 1. self[{key}] was not list type")
+                        f[key][:] = self[key]
+                    else:
+                        try:
+                            original_file_shape = self[key].shape
+                            original_file_shape[0] = original_file_shape[0] - run_count
+                        except:
+                            pass
+                        if np.array([original_file_shape == self[key].shape]).all():
+                            if debug is True:
+                                print(f"data same as original file shape, self[{key}][:] is : ", self[key][:])
+                            if run_count > 0:
+                                if debug is True:
+                                    print(f"SAVE 2. f[{key}].shape is: {f[key].shape} with shape is {self[key].shape}")
+                                f[key][continuous_indicies] = self[key][continuous_indicies]
+                            else:
+                                if debug is True:
+                                    print(f"SAVE 3. with self[{key}] = {self[key]}")
+                                f[key][:] = self[key][:]
+                        elif self.runinfo.average_d == -1:
+                            if debug is True:
+                                print("SAVE 4. av d == -1")
+                            f[key][self.runinfo.average_indicies, ...] = self[key][self.runinfo.average_indicies, ...]
+                        else:
+                            if debug is True:
+                                print("SAVE 5. av d != -1")
+                            f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
 
     def save_row(self):
         '''Saves full scan0 of data at once. Does not return anything.

@@ -135,6 +135,7 @@ class RunInfo(ItemAttribute):
             dims.append(scan.n)
             if isinstance(scan, ps.ContinuousScan):
                 break
+
         self._dims = tuple(dims)
         return self._dims
 

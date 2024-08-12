@@ -193,7 +193,12 @@ class ContinuousScan(AbstractScan):
     def iterate(self, index, devices):
         self.i = self.run_count
         self.run_count += 1
-        self.scan_dict['continuous'].append(self.i)
+
+        if hasattr(self, "stop_at"):
+            if not self.stop_at <= self.i:
+                self.scan_dict['continuous'].append(self.i)
+        else:
+            self.scan_dict['continuous'].append(self.i)
 
     def iterator(self):
         # returns an infinite iterator, overwriting Abstract scans default iterator

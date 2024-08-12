@@ -85,15 +85,10 @@ class Experiment(AbstractExperiment):
                         if np.all(np.array(self.runinfo.indicies) == 0):
                             self.preallocate(data)
 
-                        for key, value in data.items():
-                            if is_list_type(self[key]):
-                                self[key][self.runinfo.indicies] = value
-                            else:
-                                self[key] = value
                         if self.runinfo.time:
                             self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
-                        self.save_point()
+                        self.save_point(data)
 
                         if self.runinfo.time:
                             self.runinfo.t5[indicies] = (datetime.now()).timestamp()
