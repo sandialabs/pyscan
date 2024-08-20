@@ -6,7 +6,7 @@ from IPython import display
 from pyscan.general import is_list_type, is_numeric_type
 
 
-def oscilloscope(measure_function, histo_range=100, dt=0.001):
+def oscilloscope(measure_function, histo_range=100, dt=0.001, numy=1):
     '''
     Takes a function that returns a value and plots live until function is killed
 
@@ -20,6 +20,8 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
         Time in s between datapoints being taken
     normalize_max :
         normalize maximum of data to 1
+    numy : int
+        Number of datasets to plot
 
     Returns
     -------
@@ -27,6 +29,9 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
 
     '''
 
+    fig, ax = plt.subplots()
+    if numy==2:
+        ax2 = ax.twinx()
     plt.axis()
     plt.ion()
 
@@ -82,17 +87,19 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
                 if np.any(np.array(y)):
                     y_data = y
             elif i < histo_range:
-                data = np.append(data, [new_data])
+                data = np.array(list(data)+[new_data])
                 x_data = np.append(x_data, [x])
                 if y:
                     y_data = np.append(y_data, [y])
             else:
-                data = np.append(data[1:], [new_data])
+                data = np.array(list(data[1:])+[new_data])
                 x_data = np.append(x_data[1:], [x])
                 if y:
                     y_data = np.append(y_data[1:], [y])
 
             plt.gca().cla()
+            if numy==2:
+                ax2.cla()
 
             plt.title("Oscilloscope {}".format(i))
 
@@ -104,11 +111,22 @@ def oscilloscope(measure_function, histo_range=100, dt=0.001):
                 plt.xlim(x_data[0], x_data[-1])
 
             if dims == 1:
-                plt.plot(x_data.T, data.T)
+                if numy==1:
+                    plt.plot(x_data.T, data.T, 'o-')
+                    ypad=(np.max(data)-np.min(data))/20
+                    plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
+                elif numy==2:
+                    ax.plot(x_data.T, data.T[0], 'o-')
+                    ypad=(np.max(data.T[0])-np.min(data.T[0]))/20
+                    ax.set_ylim(np.min(data.T[0])-ypad,np.max(data.T[0])+ypad)
+                    ax2.plot(x_data.T, data.T[1], 'o-r')
+                    y2pad=(np.max(data.T[1])-np.min(data.T[1]))/20
+                    ax2.set_ylim(np.min(data.T[1])-y2pad,np.max(data.T[1])+y2pad)
+                else:
+                    [plt.plot(x_data.T, dat, 'o-') for dat in data.T]
+                    ypad=(np.max(data)-np.min(data))/20
+                    plt.ylim(np.min(data)-ypad,np.max(data)+ypad)
                 plt.xlabel(x_name)
-                ypad = (np.max(data) - np.min(data)) / 20
-                plt.ylim(np.min(data) - ypad, np.max(data) + ypad)
-                plt.xlim(x_data[0], x_data[-1])
 
             if dims == 2:
                 plt.pcolormesh(x_data, y_data, data.T)
