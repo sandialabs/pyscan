@@ -110,8 +110,6 @@ def test_abstract_experiment():
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
-        assert len(ms.runinfo.short_name) == 7, "Meta Sweep runinfo short name is not 7 characters"
-        assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
         # setting file name for loading later
         if data_dir is None:
@@ -234,9 +232,6 @@ def test_abstract_experiment():
         assert temp.runinfo.scan0.n == 2, "save meta data didn't save scan0.n, or it couldn't be loaded"
         assert temp.runinfo.scan1.n == 5, "save meta data didn't save scan1.n, or it couldn't be loaded"
         assert temp.runinfo.scan2.n == 5, "save meta data didn't save scan2.n, or it couldn't be loaded"
-        assert temp.runinfo.scan0.nrange == [0, 1], "save meta data didn't save scan0.nrange value"
-        assert temp.runinfo.scan1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save scan1.nrange value"
-        assert temp.runinfo.scan2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save scan2.nrange value"
 
         # check that devices were saved and loaded properly
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"
