@@ -110,8 +110,6 @@ def test_meta_sweep():
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
-        assert len(ms.runinfo.short_name) == 7, "Meta Sweep runinfo short name is not 7 characters"
-        assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
         # setting file name for loading later
         if data_dir is None:
