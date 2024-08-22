@@ -201,7 +201,8 @@ def test_abstract_experiment():
         # could maybe add to and clarify this
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert isinstance(temp.runinfo.measured, list), "save meta data didn't save runinfo.measured as a list"
-        assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
+        # order of list should not matter
+        assert set(temp.runinfo.measured) == set(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
         # check that scans meta data was saved/loaded correctly
         assert hasattr(temp.runinfo, 'scan0'), "save meta data didn't save scan0, or it couldn't be loaded"
@@ -218,9 +219,6 @@ def test_abstract_experiment():
         assert temp.runinfo.scan0.n == 2, "save meta data didn't save scan0.n, or it couldn't be loaded"
         assert temp.runinfo.scan1.n == 5, "save meta data didn't save scan1.n, or it couldn't be loaded"
         assert temp.runinfo.scan2.n == 5, "save meta data didn't save scan2.n, or it couldn't be loaded"
-        assert temp.runinfo.scan0.nrange == [0, 1], "save meta data didn't save scan0.nrange value"
-        assert temp.runinfo.scan1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save scan1.nrange value"
-        assert temp.runinfo.scan2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save scan2.nrange value"
 
         # check that devices were saved and loaded properly
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"

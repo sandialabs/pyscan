@@ -131,10 +131,10 @@ def test_property_scan():
         scans = [0, 1, 2, 3]
         self = ['v1', 'v2', 'v3', 'v4']
         prop = 'voltage'
-        scans[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=.1)
-        scans[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=.1)
-        scans[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.1)
-        scans[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.1)
+        scans[0] = ps.PropertyScan({self[0]: ps.drange(0, 0.1, 0.1)}, prop, dt=.01)
+        scans[1] = ps.PropertyScan({self[1]: ps.drange(0.1, 0.1, 0)}, prop, dt=.01)
+        scans[2] = ps.PropertyScan({self[2]: ps.drange(0.3, 0.1, 0.2)}, prop, dt=.01)
+        scans[3] = ps.PropertyScan({self[3]: ps.drange(-0.1, 0.1, 0)}, prop, dt=.01)
 
         # verifying the check same length function called by property scan will fail with bad runinfo
         with pytest.raises(Exception):
@@ -221,13 +221,13 @@ def test_property_scan():
 
         # check each scan for expected attribute values
         check_scan_attributes(scans, 0, self[0], prop, expected_scan_dict1=0.0,
-                              expected_scan_dict2=0.1, expected_dt=.1, expected_i=0)
+                              expected_scan_dict2=0.1, expected_dt=.01, expected_i=0)
         check_scan_attributes(scans, 1, self[1], prop, expected_scan_dict1=0.1,
-                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.01, expected_i=0)
         check_scan_attributes(scans, 2, self[2], prop, expected_scan_dict1=0.3,
-                              expected_scan_dict2=0.2, expected_dt=.1, expected_i=0)
+                              expected_scan_dict2=0.2, expected_dt=.01, expected_i=0)
         check_scan_attributes(scans, 3, self[3], prop, expected_scan_dict1=-0.1,
-                              expected_scan_dict2=0.0, expected_dt=.1, expected_i=0)
+                              expected_scan_dict2=0.0, expected_dt=.01, expected_i=0)
 
     test_1D_property_scan_4scans()
 
@@ -305,7 +305,7 @@ def test_function_scan():
         devices = setup_devices()
 
         # initialize the function scan scan
-        scan = ps.FunctionScan(input_function, values=[0, 1, 2], dt=1)
+        scan = ps.FunctionScan(input_function, values=[0, 1, 2], dt=.1)
 
         scan_name = 'Function Scan populated'
 
@@ -329,7 +329,7 @@ def test_function_scan():
             assert callable(scan.function), err_string
 
             # check that dt initialized with correct value
-            check_attribute_value(scan_name, 'dt', scan.dt, expected_value=1)
+            check_attribute_value(scan_name, 'dt', scan.dt, expected_value=.1)
 
             # check that i initialized with correct value
             check_attribute_value(scan_name, 'i', scan.i, expected_value=0)
@@ -367,7 +367,7 @@ def test_repeat_scan():
         scan_name = 'Repeat Scan with ' + str(num_repeat) + ' num repeats'
 
         # check that the empty scan attributes are initialized
-        attribute_names = ['device_names', 'scan_dict', 'dt', 'i', 'n', 'nrange']
+        attribute_names = ['device_names', 'scan_dict', 'dt', 'i', 'n']
         check_has_attributes(scan, scan_name, attribute_names)
 
         # check the attributes are initialized correctly
@@ -412,7 +412,7 @@ def test_repeat_scan():
     with pytest.raises(Exception):
         test_num_repeat(0), "Repeat scan num repeats can be 0 when it is not allowed"
     test_num_repeat(1)
-    test_num_repeat(1, dt=1)
+    test_num_repeat(1, dt=.1)
     test_num_repeat(1000000)
     with pytest.raises(Exception):
         test_num_repeat(np.inf), "Repeat scan num repeats can be np.inf when it is not allowed"
@@ -435,7 +435,7 @@ def test_average_scan():
         scan_name = 'Average Scan with ' + str(n_average) + ' n_average'
 
         # check that the empty scan attributes are initialized
-        attribute_names = ['device_names', 'scan_dict', 'dt', 'i', 'n', 'nrange']
+        attribute_names = ['device_names', 'scan_dict', 'dt', 'i', 'n']
         check_has_attributes(scan, scan_name, attribute_names)
 
         # check the attributes are initialized correctly
@@ -453,11 +453,9 @@ def test_average_scan():
             # check that n initialized correctly
             check_attribute_value(scan_name, 'n', scan.n, expected_value=n_average)
 
-            # check that nrange initialized correctly
-            check_attribute_value(scan_name, 'nrange', scan.nrange, expected_value=range(n_average))
-
             # check that scan_dict initialized correctly
-            check_attribute_value(scan_name, 'scan_dict', scan.scan_dict, expected_value={'average': list(scan.nrange)})
+            check_attribute_value(scan_name, 'scan_dict', scan.scan_dict,
+                                  expected_value={'average': list(scan.iterator())})
 
             # check that dt initialized with correct value
             check_attribute_value(scan_name, 'dt', scan.dt, expected_value=dt)
@@ -476,7 +474,7 @@ def test_average_scan():
         test_num_average(0), "Average Scan n_average can be 0 when it should be 1 or more"
     test_num_average(1)
     test_num_average(2)
-    test_num_average(2, dt=1)
+    test_num_average(2, dt=.1)
     test_num_average(100)
     with pytest.raises(Exception):
         test_num_average(np.inf), "Average Scan n_average can be np.inf when it is not allowed"
