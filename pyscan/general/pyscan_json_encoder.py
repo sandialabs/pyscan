@@ -2,7 +2,15 @@ import json
 import numpy as np
 from pyscan.general.item_attribute import ItemAttribute
 from pyscan.drivers.instrument_driver import InstrumentDriver
-from pyvisa.resources.gpib import GPIBInstrument
+from pyvisa.resources.gpib import (
+    FirewireInstrument,
+    GPIBInstrument,
+    PXIInstrument,
+    SerialInstrument,
+    TCPIPInstrument,
+    USBInstrument,
+    VXIInstrument,
+)
 import inspect
 from pathlib import Path, WindowsPath
 
@@ -71,9 +79,20 @@ class PyscanJSONEncoder(json.JSONEncoder):
             return str(obj)
         elif type(obj) is type(iter(range(1))):
             return list(obj)
-        elif isinstance(obj, GPIBInstrument):
+        elif isinstance(
+            obj,
+            (
+                FirewireInstrument,
+                GPIBInstrument,
+                PXIInstrument,
+                SerialInstrument,
+                TCPIPInstrument,
+                USBInstrument,
+                VXIInstrument,
+            ),
+        ):
             if debug is True:
-                print(f"obj {obj} is a pyvisa GPIBInstrument, returning resource name.")
+                print(f"obj {obj} is a pyvisa instrument, returning resource name.")
             return obj.resource_name
         else:
             return super().default(obj)
