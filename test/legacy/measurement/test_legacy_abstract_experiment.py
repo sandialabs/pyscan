@@ -289,6 +289,3 @@ def test_meta_sweep():
         # This should not work with preallocate_line as is,
         # because it doesn't factor data dimension into it's preallocation
         test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D, allocate='preallocate_line')
-
-
-test_meta_sweep()

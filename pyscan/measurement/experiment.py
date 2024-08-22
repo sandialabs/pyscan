@@ -178,9 +178,6 @@ class Experiment(AbstractExperiment):
 
                         # if on the first row of data, log the data names in self.runinfo.measured
                         if np.all(np.array(self.runinfo.indicies) == 0):
-                            self.runinfo.measured = []
-                            for key, value in data.items():
-                                self.runinfo.measured.append(key)
                             self.preallocate(data)
 
                         self.rolling_average(data)
@@ -189,9 +186,9 @@ class Experiment(AbstractExperiment):
                             self.runinfo.complete = 'stopped'
                             break
 
-                        self.save_point()
+                        self.save_point(data)
 
-                    # self.save_row()
+                    # self.save_row(data)
 
                     # Check if complete, stopped early
                     if self.runinfo.running is False:

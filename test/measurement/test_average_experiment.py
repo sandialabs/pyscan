@@ -184,7 +184,7 @@ def check_multi_data_results(expt, num_devices, shape1=[2], shape2=[2, 2], shape
 
 ##################### TEST CASES BEGIN HERE #####################
 
-def test_averagesweep():
+def test_average_experiment():
     """
     Testing AverageSweep
 
