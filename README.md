@@ -57,11 +57,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 **Current development team:**
 - Andy Mounce amounce@sandia.gov
-- Jasmine Mah jjmah@sandia.gov
-- Ryan Brost rsbrost@sandia.gov
-
-**Past contributors:**
-A special thanks to all pyscan contributors: [Pyscan Contributors](https://github.com/sandialabs/pyscan/wiki/Pyscan-wall-of-fame#past-and-current-contributors)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
