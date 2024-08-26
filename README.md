@@ -55,8 +55,7 @@ For the full instructions on how to use pyscan library, [read the docs](https://
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-**Current development team:**
-- Andy Mounce amounce@sandia.gov
+For questions please contact: Andy Mounce amounce@sandia.gov
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
