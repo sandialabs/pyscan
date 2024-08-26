@@ -3,13 +3,13 @@ import numpy as np
 from pyscan.general.item_attribute import ItemAttribute
 from pyscan.drivers.instrument_driver import InstrumentDriver
 from pyvisa.resources.gpib import (
-    FirewireInstrument,
+    # FirewireInstrument,
     GPIBInstrument,
-    PXIInstrument,
+    # PXIInstrument,
     SerialInstrument,
     TCPIPInstrument,
     USBInstrument,
-    VXIInstrument,
+    # VXIInstrument,
 )
 import inspect
 from pathlib import Path, WindowsPath
@@ -82,13 +82,13 @@ class PyscanJSONEncoder(json.JSONEncoder):
         elif isinstance(
             obj,
             (
-                FirewireInstrument,
+                # FirewireInstrument,
                 GPIBInstrument,
-                PXIInstrument,
+                # PXIInstrument,
                 SerialInstrument,
                 TCPIPInstrument,
                 USBInstrument,
-                VXIInstrument,
+                # VXIInstrument,
             ),
         ):
             if debug is True:
