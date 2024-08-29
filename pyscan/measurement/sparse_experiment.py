@@ -84,7 +84,7 @@ class SparseExperiment(AbstractExperiment):
                                     else:
                                         self[key] = value
 
-                                self.save_point()
+                                self.save_point(data)
 
                         if self.runinfo.running is False:
                             self.runinfo.complete = 'stopped'

@@ -369,11 +369,16 @@ class AbstractExperiment(ItemAttribute):
 
         if continuous is False:
             if self.runinfo.average_d == -1:
-                for key, value in data.items():
-                    if is_list_type(self[key]):
-                        self[key][self.runinfo.indicies] = value
-                    else:
-                        self[key] = value
+                try:
+                    sample = self.runinfo.sparse_points[self.runinfo.indicies]
+                except:
+                    sample = True
+                if sample:
+                    for key, value in data.items():
+                        if is_list_type(self[key]):
+                            self[key][self.runinfo.indicies] = value
+                        else:
+                            self[key] = value
         elif continuous is True and stop is False:
             if all(index == 0 for index in self.runinfo.indicies):
                 self.save_continuous_scan_dict(save_name, debug)
