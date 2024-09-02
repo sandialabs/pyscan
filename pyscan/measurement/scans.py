@@ -179,7 +179,7 @@ class ContinuousScan(AbstractScan):
         self.dt = dt
 
         self.run_count = 0
-        # number of times to repeat per expt run
+        # essentially run_count
         self.n = 1
         # current experiment number index
         self.i = 0

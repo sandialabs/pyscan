@@ -154,22 +154,22 @@ class Experiment(AbstractExperiment):
                 return
 
         # Use for scan, but break if self.runinfo.running=False
-        for m in range(self.runinfo.scan3.n):
+        for m in self.runinfo.scan3.iterator():
             self.runinfo.scan3.i = m
             self.runinfo.scan3.iterate(m, self.devices)
             sleep(self.runinfo.scan3.dt)
 
-            for k in range(self.runinfo.scan2.n):
+            for k in self.runinfo.scan2.iterator():
                 self.runinfo.scan2.i = k
                 self.runinfo.scan2.iterate(k, self.devices)
                 sleep(self.runinfo.scan2.dt)
 
-                for j in range(self.runinfo.scan1.n):
+                for j in self.runinfo.scan1.iterator():
                     self.runinfo.scan1.i = j
                     self.runinfo.scan1.iterate(j, self.devices)
                     sleep(self.runinfo.scan1.dt)
 
-                    for i in range(self.runinfo.scan0.n):
+                    for i in self.runinfo.scan0.iterator():
                         self.runinfo.scan0.i = i
                         self.runinfo.scan0.iterate(i, self.devices)
                         sleep(self.runinfo.scan0.dt)

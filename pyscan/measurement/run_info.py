@@ -145,20 +145,8 @@ class RunInfo(ItemAttribute):
                 self.scan2.n,
                 self.scan3.n)
         dims = [n for n in dims if n != 1]
-        self._dims = tuple(dims)
-        return self._dims
-
-    @property
-    def continuous_dims(self):
-        ''' Returns tuple containing the length of each scan, up to the ContinuousScan when found.
-        '''
-        dims = []
-        for i in range(4):  # assuming only 4 scans
-            scan = self[f'scan{i}']
-            dims.append(scan.n)
-            if isinstance(scan, ps.ContinuousScan):
-                break
-
+        if self.continuous:
+            dims.append(1)
         self._dims = tuple(dims)
         return self._dims
 
@@ -174,14 +162,7 @@ class RunInfo(ItemAttribute):
     def ndim(self):
         ''' Returns number of non 1 sized scans
         '''
-        self._ndim = len(self.dims)  # why is this stored as a property? It is never used
-        return self._ndim
-
-    @property
-    def continuous_ndim(self):
-        ''' Returns number of non 1 sized scans
-        '''
-        self._ndim = len(self.continuous_dims)  # why is this stored as a property? It is never used
+        self._ndim = len(self.dims)
         return self._ndim
 
     @property
@@ -201,6 +182,8 @@ class RunInfo(ItemAttribute):
                           self.scan2.i,
                           self.scan3.i)
         self._indicies = self._indicies[:self.ndim]
+        if self.continuous:
+            self._indicies = self._indicies[:-1]
         return tuple(self._indicies)
 
     @property

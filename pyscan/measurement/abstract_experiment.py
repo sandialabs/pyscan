@@ -69,13 +69,10 @@ class AbstractExperiment(ItemAttribute):
         '''
 
         skip = False
-        continuous = False
-
-        for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan):
-                continuous = True
-                if scan.run_count - 1 > 0:
-                    skip = True
+        if self.runinfo.continuous:
+            continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
+            if continuous_scan.run_count - 1 > 0:
+                skip = True
 
         if not skip:
             self.runinfo.measured = []
@@ -98,12 +95,8 @@ class AbstractExperiment(ItemAttribute):
             #             3. data is list , dims are 0
             #             4. datais a float, dims are 0
             if self.runinfo.average_d == -1:
-                if continuous is False:
-                    scan_dims = self.runinfo.dims  # was () for rp 1, (2,) for rp 2< (3,) for rp3
-                    ndim = self.runinfo.ndim
-                elif continuous is True:
-                    scan_dims = self.runinfo.continuous_dims
-                    ndim = self.runinfo.continuous_ndim
+                scan_dims = self.runinfo.dims  # was () for rp 1, (2,) for rp 2< (3,) for rp3
+                ndim = self.runinfo.ndim
 
                 if debug is True:
                     print("scan dims are: ", scan_dims, " and ndim is: ", ndim)
@@ -181,7 +174,7 @@ class AbstractExperiment(ItemAttribute):
                             if debug is True:
                                 print("old shape part 2 is: ", current_shape)
 
-                            dim_index = len(self.runinfo.continuous_dims) - 1
+                            dim_index = len(self.runinfo.dims) - 1
                             new_shape[dim_index] += 1
 
                             if debug is True:
