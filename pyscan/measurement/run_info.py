@@ -100,7 +100,8 @@ class RunInfo(ItemAttribute):
                     used_scan_index = count_down
             else:
                 assert not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0), \
-                    f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index})."
+                    (f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index}).\n"
+                     + "Scans must be populated in sequential order.")
 
         # find the scan set to continuous scan (if any) and determine the index
         self.continuous = False
