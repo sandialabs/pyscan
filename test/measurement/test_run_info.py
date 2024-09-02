@@ -3,6 +3,7 @@ Pytest functions to test the Runinfo class
 '''
 
 import pyscan as ps
+import pytest
 
 
 #  ######## need to add tests for runinfo's different @property definitions.
@@ -97,3 +98,10 @@ def test_init_from_noparams():
         check_attribute(runinfo=init_runinfo, attribute=init_runinfo.verbose, attribute_name='verbose', expected=False)
 
     check_runinfo_attributes()
+
+    init_runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    init_runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    init_runinfo.check()
+    with pytest.raises(Exception):
+        init_runinfo.scan3 = ps.PropertyScan({'v3': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        init_runinfo.check()
