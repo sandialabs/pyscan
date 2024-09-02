@@ -63,6 +63,9 @@ class RunInfo(ItemAttribute):
         self.initial_pause = 0.1
         self.average_d = -1
 
+        # Assumed not a continuous expt. If there is a continuous scan this will be set to true in self.check()
+        self.continuous = False
+
         self.verbose = False
         self._pyscan_version = get_pyscan_version()
 
@@ -104,7 +107,6 @@ class RunInfo(ItemAttribute):
                      + "Scans must be populated in sequential order.")
 
         # find the scan set to continuous scan (if any) and determine the index
-        self.continuous = False
         for i, scan in enumerate(self.scans):
             if isinstance(scan, ps.ContinuousScan):
                 self.continuous = True
