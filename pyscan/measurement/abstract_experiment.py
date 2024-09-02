@@ -151,12 +151,6 @@ class AbstractExperiment(ItemAttribute):
         '''
         Reallocates memory for continuous experiments save files and measurement attribute arrays.
         '''
-        # check if the continuous expt needs to be stopped before reallocating
-        stop = False
-        for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan) and hasattr(scan, 'n_max'):
-                if scan.n_max <= scan.i + 1:
-                    stop = True
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
@@ -164,7 +158,7 @@ class AbstractExperiment(ItemAttribute):
         self.runinfo.new_slices = {}
 
         with h5py.File(save_name, 'a') as hdf:
-            if stop is False:
+            if not self.runinfo.stop_continuous(plus_one=True):
                 for name in self.runinfo.measured:
                     if name in hdf:
                         dataset = hdf[name]
@@ -225,7 +219,7 @@ class AbstractExperiment(ItemAttribute):
                     if debug is True:
                         print(f"new {name} shape: {self[name].shape} with self[{name}] = {self[name]}")
 
-            elif stop is True:
+            elif self.runinfo.stop_continuous:
                 self.stop()
 
     # this function seems redundant/dead, since it is already accomplished by preallocate()
@@ -345,7 +339,40 @@ class AbstractExperiment(ItemAttribute):
                         self[key] = values
                         f[key][values[-1]] = values[-1]
 
-    def save_point(self, data, debug=False):
+    def assign_values(self, data):
+        if self.runinfo.average_d == -1:
+            try:
+                sample = self.runinfo.sparse_points[self.runinfo.indicies]
+            except:
+                sample = True
+            if sample:
+                for key, value in data.items():
+                    if is_list_type(self[key]):
+                        self[key][self.runinfo.indicies] = value
+                    else:
+                        self[key] = value
+
+    def assign_continuous_values(self, data, save_name, run_count, debug=False):
+        if all(index == 0 for index in self.runinfo.indicies):
+            self.save_continuous_scan_dict(save_name, debug)
+
+        continuous_indicies = self.runinfo.indicies + (run_count,)
+        for key, value in data.items():
+            if is_list_type(self[key][0]):
+                if run_count > 0:
+                    if debug is True:
+                        print(f"before saving point self[{key}] is: {self[key]}")
+                    self[key][continuous_indicies] = value
+                    if debug is True:
+                        print(f"after saving point self[{key}] is: {self[key]}")
+                else:
+                    self[key][self.runinfo.indicies] = value
+            else:
+                self[key][run_count] = value
+
+        return continuous_indicies
+
+    def save_point(self, data):
         '''
         Saves single point of data for current scan indicies. Does not return anything.
         '''
@@ -353,63 +380,24 @@ class AbstractExperiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        run_count = 0
-        continuous = False
-        stop = False
+        continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
+        run_count = continuous_scan.i
+        stop = self.runinfo.stop_continuous()
 
         for scan in self.runinfo.scans:
             if isinstance(scan, ps.ContinuousScan):
-                continuous = True
                 run_count = scan.run_count - 1
-                if hasattr(scan, 'n_max'):
-                    if scan.n_max <= scan.i:
-                        stop = True
-        if debug is True and continuous is True:
-            print(f"run_count is {run_count}")
 
-        if continuous is False:
-            if self.runinfo.average_d == -1:
-                try:
-                    sample = self.runinfo.sparse_points[self.runinfo.indicies]
-                except:
-                    sample = True
-                if sample:
-                    for key, value in data.items():
-                        if is_list_type(self[key]):
-                            self[key][self.runinfo.indicies] = value
-                        else:
-                            self[key] = value
-        elif continuous is True and stop is False:
-            if all(index == 0 for index in self.runinfo.indicies):
-                self.save_continuous_scan_dict(save_name, debug)
+        if not self.runinfo.continuous:
+            self.assign_values(data)
 
-            continuous_indicies = self.runinfo.indicies + (run_count,)
-            for key, value in data.items():
-                if is_list_type(self[key][0]):
-                    if run_count > 0:
-                        if debug is True:
-                            print(f"before saving point self[{key}] is: {self[key]}")
-                        self[key][continuous_indicies] = value
-                        if debug is True:
-                            print(f"after saving point self[{key}] is: {self[key]}")
-                    else:
-                        self[key][self.runinfo.indicies] = value
-                else:
-                    self[key][run_count] = value
+        elif self.runinfo.continuous and not stop:
+            continuous_indicies = self.assign_continuous_values(data, save_name, run_count)
 
         with h5py.File(save_name, 'a') as f:
-            if stop is False:
+            if not stop:
                 for key in self.runinfo.measured:
-                    if debug is True:
-                        print(f"key {key} is with ", "f[key].shape is: ", f[key].shape)
-                        try:
-                            print(f"self[{key}].shape is: ", self[key].shape)
-                        except:
-                            pass
-
                     if not is_list_type(self[key]):
-                        if debug is True:
-                            print(f"SAVE 1. self[{key}] was not list type")
                         f[key][:] = self[key]
                     else:
                         try:
@@ -418,23 +406,13 @@ class AbstractExperiment(ItemAttribute):
                         except:
                             pass
                         if np.array([original_file_shape == self[key].shape]).all():
-                            if debug is True:
-                                print(f"data same as original file shape, self[{key}][:] is : ", self[key][:])
                             if run_count > 0:
-                                if debug is True:
-                                    print(f"SAVE 2. f[{key}].shape is: {f[key].shape} with shape is {self[key].shape}")
                                 f[key][continuous_indicies] = self[key][continuous_indicies]
                             else:
-                                if debug is True:
-                                    print(f"SAVE 3. with self[{key}] = {self[key]}")
                                 f[key][:] = self[key][:]
                         elif self.runinfo.average_d == -1:
-                            if debug is True:
-                                print("SAVE 4. av d == -1")
                             f[key][self.runinfo.average_indicies, ...] = self[key][self.runinfo.average_indicies, ...]
                         else:
-                            if debug is True:
-                                print("SAVE 5. av d != -1")
                             f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
 
     def save_row(self):
