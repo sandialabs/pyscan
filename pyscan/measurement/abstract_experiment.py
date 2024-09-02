@@ -380,8 +380,11 @@ class AbstractExperiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
-        continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
-        run_count = continuous_scan.i
+        if self.runinfo.continuous:
+            continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
+            run_count = continuous_scan.i
+        else:
+            run_count = 0
         stop = self.runinfo.stop_continuous()
 
         for scan in self.runinfo.scans:

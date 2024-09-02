@@ -118,14 +118,15 @@ class RunInfo(ItemAttribute):
 
     def stop_continuous(self, plus_one=False):
         stop = False
-        continuous_scan = self.scans[self.continuous_scan_index]
-        if hasattr(continuous_scan, 'n_max'):
-            if plus_one is False:
-                if continuous_scan.n_max <= continuous_scan.i:
-                    stop = True
-            elif plus_one is True:
-                if continuous_scan.n_max <= continuous_scan.i + 1:
-                    stop = True
+        if self.continuous:
+            continuous_scan = self.scans[self.continuous_scan_index]
+            if hasattr(continuous_scan, 'n_max'):
+                if plus_one is False:
+                    if continuous_scan.n_max <= continuous_scan.i:
+                        stop = True
+                elif plus_one is True:
+                    if continuous_scan.n_max <= continuous_scan.i + 1:
+                        stop = True
 
         return stop
 
