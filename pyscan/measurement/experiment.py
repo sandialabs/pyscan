@@ -188,6 +188,9 @@ class Experiment(AbstractExperiment):
 
                         self.save_point(data)
 
+                        if isinstance(self.runinfo.scan0, ps.ContinuousScan):
+                            self.reallocate()
+
                     # self.save_row(data)
 
                     # Check if complete, stopped early
@@ -195,14 +198,23 @@ class Experiment(AbstractExperiment):
                         self.runinfo.complete = 'stopped'
                         break
 
+                    if isinstance(self.runinfo.scan1, ps.ContinuousScan):
+                        self.reallocate()
+
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
+
+                if isinstance(self.runinfo.scan2, ps.ContinuousScan):
+                    self.reallocate()
 
             print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
+
+            if isinstance(self.runinfo.scan3, ps.ContinuousScan):
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False

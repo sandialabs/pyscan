@@ -144,7 +144,6 @@ class AbstractExperiment(ItemAttribute):
         '''
         Reallocates memory for continuous experiments save files and measurement attribute arrays.
         '''
-
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())
 
@@ -345,11 +344,10 @@ class AbstractExperiment(ItemAttribute):
                     else:
                         self[key] = value
 
-    def assign_continuous_values(self, data, save_name, run_count, debug=False):
+    def assign_continuous_values(self, data, save_name, run_count, continuous_indicies, debug=False):
         if all(index == 0 for index in self.runinfo.indicies):
             self.save_continuous_scan_dict(save_name, debug)
 
-        continuous_indicies = self.runinfo.indicies + (run_count,)
         for key, value in data.items():
             if is_list_type(self[key][0]):
                 if run_count > 0:
@@ -363,8 +361,6 @@ class AbstractExperiment(ItemAttribute):
             else:
                 self[key][run_count] = value
 
-        return continuous_indicies
-
     def save_point(self, data):
         '''
         Saves single point of data for current scan indicies. Does not return anything.
@@ -376,6 +372,9 @@ class AbstractExperiment(ItemAttribute):
         if self.runinfo.continuous:
             continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
             run_count = continuous_scan.i
+            continuous_indicies = self.runinfo.indicies + (run_count,)
+            if self.runinfo.average_d >= 0:
+                continuous_indicies = self.runinfo.average_indicies + (run_count,)
         else:
             run_count = 0
         stop = self.runinfo.stop_continuous()
@@ -384,11 +383,11 @@ class AbstractExperiment(ItemAttribute):
             if isinstance(scan, ps.ContinuousScan):
                 run_count = scan.run_count - 1
 
-        if not self.runinfo.continuous:
+        if not self.runinfo.continuous and self.runinfo.average_d == -1:
             self.assign_values(data)
 
-        elif self.runinfo.continuous and not stop:
-            continuous_indicies = self.assign_continuous_values(data, save_name, run_count)
+        elif self.runinfo.continuous and not stop and self.runinfo.average_d == -1:
+            self.assign_continuous_values(data, save_name, run_count, continuous_indicies)
 
         with h5py.File(save_name, 'a') as f:
             if not stop:
