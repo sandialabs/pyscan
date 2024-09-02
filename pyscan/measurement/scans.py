@@ -171,7 +171,7 @@ class RepeatScan(AbstractScan):
 
 
 class ContinuousScan(AbstractScan):
-    def __init__(self, dt=0, stop_at=None):
+    def __init__(self, dt=0, n_max=None):
         self.scan_dict = {}
         self.scan_dict['continuous'] = []
 
@@ -183,15 +183,15 @@ class ContinuousScan(AbstractScan):
         self.n = 1
         # current experiment number index
         self.i = 0
-        if stop_at is not None:
-            self.stop_at = stop_at
+        if n_max is not None:
+            self.n_max = n_max
 
     def iterate(self, index, devices):
         self.i = self.run_count
         self.run_count += 1
 
         if hasattr(self, "stop_at"):
-            if not self.stop_at <= self.i:
+            if not self.n_max <= self.i:
                 self.scan_dict['continuous'].append(self.i)
         else:
             self.scan_dict['continuous'].append(self.i)

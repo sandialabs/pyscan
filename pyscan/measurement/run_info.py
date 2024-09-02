@@ -89,23 +89,31 @@ class RunInfo(ItemAttribute):
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
 
+        # make sure there are no empty scans inbetween used scans.
+        used_scan_found = False
+        scans = self.scans
+        for i in range(len(scans)):
+            count_down = len(scans) - i - 1
+            if used_scan_found is False:
+                if not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0):
+                    used_scan_found = True
+                    used_scan_index = count_down
+            else:
+                assert not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0), \
+                    f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index})."
+
         # find the scan set to continuous scan (if any) and determine the index
-        continuous_scan_index = -1
+        self.continuous = False
         for i, scan in enumerate(self.scans):
             if isinstance(scan, ps.ContinuousScan):
-                continuous_scan_index = i
+                self.continuous = True
+                self.continuous_scan_index = i
 
         # If there is a ContinuousScan, ensure it is the highest level scan
-        if continuous_scan_index != -1:
-            for i in range(continuous_scan_index + 1, len(self.scans)):
+        if self.continuous:
+            for i in range(self.continuous_scan_index + 1, len(self.scans)):
                 assert isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0, \
-                    f"ContinuousScan found at scan{continuous_scan_index} but is not the highest level scan."
-
-            # Ensure that any scan below the ContinuousScan is not an empty PropertyScan
-            # MAKE SURE WE WANT THIS!
-            for i in range(continuous_scan_index):
-                assert not (isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0), \
-                    f"ContinuousScan found at scan{continuous_scan_index} but there is an empty PropertyScan below it."
+                    f"ContinuousScan found at scan{self.continuous_scan_index} but is not the highest level scan."
 
     @property
     def scans(self):

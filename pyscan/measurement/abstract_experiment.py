@@ -154,8 +154,8 @@ class AbstractExperiment(ItemAttribute):
         # check if the continuous expt needs to be stopped before reallocating
         stop = False
         for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan) and hasattr(scan, 'stop_at'):
-                if scan.stop_at <= scan.i + 1:
+            if isinstance(scan, ps.ContinuousScan) and hasattr(scan, 'n_max'):
+                if scan.n_max <= scan.i + 1:
                     stop = True
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
@@ -361,8 +361,8 @@ class AbstractExperiment(ItemAttribute):
             if isinstance(scan, ps.ContinuousScan):
                 continuous = True
                 run_count = scan.run_count - 1
-                if hasattr(scan, 'stop_at'):
-                    if scan.stop_at <= scan.i:
+                if hasattr(scan, 'n_max'):
+                    if scan.n_max <= scan.i:
                         stop = True
         if debug is True and continuous is True:
             print(f"run_count is {run_count}")
