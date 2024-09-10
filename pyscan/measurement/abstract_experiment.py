@@ -296,5 +296,3 @@ class MetaSweep(AbstractExperiment):
 
     warning_msg = ("Use of legacy nomenclature detected but no longer supported, use at your own risk!\n"
                    + "You entered MetaSweep, use AbstractExperiment instead.")
-    print(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
-    pass
