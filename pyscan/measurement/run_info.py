@@ -148,6 +148,8 @@ class RunInfo(ItemAttribute):
                 self.scan3.n)
         dims = [n for n in dims if n != 1]
         if self.continuous:
+            if len(dims) - 1 == self.continuous_scan_index:
+                dims = dims[:-1]
             dims.append(1)
         self._dims = tuple(dims)
         return self._dims

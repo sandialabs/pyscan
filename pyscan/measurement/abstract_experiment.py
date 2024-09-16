@@ -71,7 +71,7 @@ class AbstractExperiment(ItemAttribute):
         skip = False
         if self.runinfo.continuous:
             continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
-            if continuous_scan.run_count - 1 > 0:
+            if continuous_scan.i > 0:
                 skip = True
 
         if not skip:
@@ -309,7 +309,7 @@ class AbstractExperiment(ItemAttribute):
         '''
         for scan in self.runinfo.scans:
             if isinstance(scan, ps.ContinuousScan):
-                run_count = scan.run_count
+                run_count = scan.n
 
         if run_count == 1:
             with h5py.File(save_name, 'a') as f:
@@ -378,10 +378,6 @@ class AbstractExperiment(ItemAttribute):
         else:
             run_count = 0
         stop = self.runinfo.stop_continuous()
-
-        for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan):
-                run_count = scan.run_count - 1
 
         if not self.runinfo.continuous and self.runinfo.average_d == -1:
             self.assign_values(data)
@@ -454,6 +450,12 @@ class AbstractExperiment(ItemAttribute):
 
         self.runinfo.running = False
         self.runinfo.complete = 'stopped'
+
+        # account for redundant run in the case of a continuous expt
+        if self.runinfo.continuous:
+            self.runinfo.scans[self.runinfo.continuous_scan_index].i -= 1
+            self.runinfo.scans[self.runinfo.continuous_scan_index].n -= 1
+
         print('Stopping Experiment')
 
     def run(self):

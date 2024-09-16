@@ -202,7 +202,7 @@ def test_abstract_experiment():
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert isinstance(temp.runinfo.measured, list), "save meta data didn't save runinfo.measured as a list"
         # order of list should not matter
-        assert set(temp.runinfo.measured) == set(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
+        assert set(temp.runinfo.measured) == set(data.__dict__.keys()), "save_metadata failed to save runinfo.measured"
 
         # check that scans meta data was saved/loaded correctly
         assert hasattr(temp.runinfo, 'scan0'), "save meta data didn't save scan0, or it couldn't be loaded"

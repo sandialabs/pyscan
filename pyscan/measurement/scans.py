@@ -218,16 +218,13 @@ class ContinuousScan(AbstractScan):
 
     def iterator(self):
         '''
-        The following iterator increments i by one each time. This could be used to increment n; however,
-        this causes issues with the dims and indicies required for preallocating, saving, and reallocating
-        continuously at present. Could be incorporated at a later date if these issues are addressed, but will
-        require significant changes. Since continuous scan is a specialized circumstance, I don't think is important
-        since i captures the data without affecting the runinfo dims.
+        The following iterator increments continuous scan i and n by one each time continuously.
         '''
         def incrementing_n():
             while True:
                 yield self.i
                 self.i += 1
+                self.n += 1
 
         iterator = iter(incrementing_n())
 
