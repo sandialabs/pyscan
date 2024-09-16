@@ -62,4 +62,8 @@ setup(
         "Operating System :: Unix"
     ],
     python_requires='>=3.6',
+    include_package_data=True,  # Ensure package data is included
+    package_data={
+        'pyscan': ['VERSION.json'],  # Specify the package data to include
+    },
 )
