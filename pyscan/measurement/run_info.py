@@ -63,10 +63,7 @@ class RunInfo(ItemAttribute):
         self.average_d = -1
 
         self.verbose = False
-        try:
-            self._pyscan_version = get_pyscan_version()
-        except:
-            self._pyscan_version = "undetected"
+        self._pyscan_version = get_pyscan_version()
 
     def check(self):
         '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
