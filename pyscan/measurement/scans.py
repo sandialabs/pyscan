@@ -11,16 +11,21 @@ class AbstractScan(ItemAttribute):
 
     def iterate(self, index, devices):
         '''
-        A function to be implemented by inheriting Scan classes
+        A function to be implemented by inheriting Scan classes.
         '''
         pass
 
     def check_same_length(self):
-        '''A function to be implemented by inheriting Scan classes'''
+        '''
+        A function to be implemented by inheriting Scan classes.
+        '''
         pass
 
     # This must be a method and not an attribute as iterators can only be used once
     def iterator(self):
+        '''
+        Returns an iterator for the scan over its n range.
+        '''
         return iter(range(self.n))
 
 
@@ -72,7 +77,8 @@ class PropertyScan(AbstractScan):
                 continue
 
     def check_same_length(self):
-        '''Check that the input_dict has values that are arrays of the same length
+        '''
+        Check that the input_dict has values that are arrays of the same length.
         '''
 
         if len(list(self.scan_dict.keys())) > 0:
@@ -85,7 +91,8 @@ class PropertyScan(AbstractScan):
 
 
 class FunctionScan(AbstractScan):
-    '''Class for iterating a function with input values inside an
+    '''
+    Class for iterating a function with input values inside an
     experimental loop. Inherits from `pyscan.measurement.scans.AbstractScan`.
 
     Parameters
@@ -141,7 +148,8 @@ class RepeatScan(AbstractScan):
     '''
 
     def __init__(self, nrepeat, dt=0):
-        '''Constructor method
+        '''
+        Constructor method.
         '''
         assert nrepeat > 0, "nrepeat must be > 0"
         assert nrepeat != np.inf, "nrepeat is np.inf, make a continuous scan instead."
@@ -156,7 +164,8 @@ class RepeatScan(AbstractScan):
         self.i = 0
 
     def iterate(self, index, devices):
-        '''Iterates repeat loop
+        '''
+        Iterates repeat loop.
         '''
 
         # Need a method here to iterate infinitely/continuously.
@@ -171,6 +180,18 @@ class RepeatScan(AbstractScan):
 
 
 class ContinuousScan(AbstractScan):
+    '''
+    Class for performing a continuous scan, which runs indefinitely or until a specified maximum number of iterations.
+    Inherits from `pyscan.measurement.scans.AbstractScan`.
+
+    Parameters
+    ----------
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by experiment classes, defaults to 0.
+    n_max : int, optional
+        Maximum number of iterations to run. If not specified, the scan will run indefinitely.
+    '''
+
     def __init__(self, dt=0, n_max=None):
         self.scan_dict = {}
         self.scan_dict['continuous'] = []
@@ -187,7 +208,6 @@ class ContinuousScan(AbstractScan):
             self.n_max = n_max
 
     def iterate(self, index, devices):
-        self.i = self.run_count
         self.run_count += 1
 
         if hasattr(self, "stop_at"):
@@ -197,12 +217,27 @@ class ContinuousScan(AbstractScan):
             self.scan_dict['continuous'].append(self.i)
 
     def iterator(self):
+        '''
+        The following iterator increments i by one each time. This could be used to increment n; however,
+        this causes issues with the dims and indicies required for preallocating, saving, and reallocating
+        continuously at present. Could be incorporated at a later date if these issues are addressed, but will
+        require significant changes. Since continuous scan is a specialized circumstance, I don't think is important
+        since i captures the data without affecting the runinfo dims.
+        '''
+        def incrementing_n():
+            while True:
+                yield self.i
+                self.i += 1
+
+        iterator = iter(incrementing_n())
+
         # returns an infinite iterator, overwriting Abstract scans default iterator
-        return iter(int, 1)
+        return iterator
 
 
 class AverageScan(AbstractScan):
-    '''Class for averaging inner loops.
+    '''
+    Class for averaging inner loops.
 
     Parameters
     ----------
