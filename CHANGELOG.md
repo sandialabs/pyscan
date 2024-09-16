@@ -1,3 +1,12 @@
+## [0.7.1](https://github.com/sandialabs/pyscan/compare/v0.7.0...v0.7.1) (2024-09-13)
+
+
+### Bug Fixes
+
+* **core:** fixing ability for empty property scans inbetween used scans. Now adding a check to block this. Scans must be populated in sequential order. ([91b7c41](https://github.com/sandialabs/pyscan/commit/91b7c41df565755cb744bb216ca43066b90214f3))
+
+
+
 # [0.7.0](https://github.com/sandialabs/pyscan/compare/v0.6.0...v0.7.0) (2024-07-16)
 
 
