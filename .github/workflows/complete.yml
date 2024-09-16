@@ -47,6 +47,7 @@ jobs:
   
   complete2:
     runs-on: ubuntu-latest
+    needs: complete  # This ensures complete2 runs after complete
 
     steps:
     - uses: actions/checkout@v3
