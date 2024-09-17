@@ -1,10 +1,21 @@
 import pyscan as ps
+import pytest
 
 
 def test_legacy():
+    '''
+    Ensure that legacy naming convention fails.
+    '''
     devices = ps.ItemAttribute()
     runinfo = ps.RunInfo()
-    sweep = ps.Sweep(runinfo, devices)
-
-    err_msg = "Legacy nomenclature failed. Sweep not initialized as Experiment or MetaSweep not as Abstract Experiment."
-    assert isinstance(sweep, ps.Experiment), err_msg
+    with pytest.raises(Exception):
+        runinfo.loop0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    with pytest.raises(Exception):
+        runinfo.loop1 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    with pytest.raises(Exception):
+        runinfo.loop2 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    with pytest.raises(Exception):
+        runinfo.loop3 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+    with pytest.raises(Exception):
+        sweep = ps.Sweep(runinfo, devices)
+        assert isinstance(sweep, ps.Experiment)
