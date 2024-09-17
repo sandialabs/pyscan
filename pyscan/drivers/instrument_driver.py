@@ -142,7 +142,8 @@ class InstrumentDriver(ItemAttribute):
         elif 'dict_values' in settings:
             set_function = self.set_dict_values_property
         elif 'read_only' in settings:
-            pass # should something else be done?
+            # read_only does not require a set_function
+            pass
         else:
             assert False, "Key 'values', 'range', indexed_values', 'read_only', or 'dict_values' must be in settings."
 

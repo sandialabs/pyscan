@@ -8,6 +8,9 @@ from random import random
 import shutil
 import numpy as np
 import pytest
+import time
+import re
+import os
 
 
 ##################### FUNCTIONS USED BY TEST CASES #####################
@@ -42,7 +45,7 @@ def loaded_modifier(loaded):
 
 
 # for setting up the experiments
-def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1):
+def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1, dt=0):
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()
 
@@ -51,19 +54,19 @@ def set_up_experiment(num_devices, measure_function, repeat=False, repeat_num=1)
     if (repeat is True):
         runinfo.scan0 = ps.RepeatScan(repeat_num)
     else:
-        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
+        runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage', dt=dt)
 
         if (num_devices > 1):
             devices.v2 = ps.TestVoltage()
-            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0.1, 0.1, 0)}, 'voltage', dt=dt)
 
         if (num_devices > 2):
             devices.v3 = ps.TestVoltage()
-            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage')
+            runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0.3, 0.1, 0.2)}, 'voltage', dt=dt)
 
         if (num_devices > 3):
             devices.v4 = ps.TestVoltage()
-            runinfo.scan3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage')
+            runinfo.scan3 = ps.PropertyScan({'v4': ps.drange(-0.1, 0.1, 0)}, 'voltage', dt=dt)
 
         if (num_devices > 4):
             assert False, "num_devices > 4 not implemented in testing"
@@ -890,8 +893,13 @@ def test_4D_multi_data():
     # check the meta path was set successfully
     check_meta_path(expt)
 
-    # run the experiment
+    # run the experiment while also testing for expected runtime
+    st = time.time()
     expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert .1 <= runtime <= 1, f"runtime was {runtime} for 4D_multi_data expt was not within expected range."
 
     # for checking the experiments attributes and output after running
     def check_expt_attributes(expt, loaded=False):
@@ -948,6 +956,38 @@ def test_4D_multi_data():
     shutil.rmtree('./backup')
 
 
+def test_runtime_w_dt():
+    """
+    Testing 4D scan, measurement and loaded file
+
+    Returns
+    --------
+    None
+    """
+
+    # set up experiment
+    expt = set_up_experiment(num_devices=4, measure_function=measure_up_to_3D, dt=.1)
+
+    # check the experiment was initialized correctly
+    check_expt_init(expt)
+
+    expt.check_runinfo()
+
+    # check the experiment run info was initialized successfully
+    check_expt_runinfo(expt)
+
+    # check the meta path was set successfully
+    check_meta_path(expt)
+
+    # run the experiment while also testing for expected runtime
+    st = time.time()
+    expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert 2 <= runtime <= 10, f"runtime was {runtime} for 4D_multi_data expt was not within expected range."
+
+
 def test_1D_repeat():
     """
     Testing 1D repeat scan, measurement and loaded file
@@ -971,8 +1011,13 @@ def test_1D_repeat():
     # check the meta path was set successfully
     check_meta_path(expt)
 
-    # run the experiment
+    # run the experiment while also testing for expected runtime
+    st = time.time()
     expt.run()
+    et = time.time()
+
+    runtime = et - st
+    assert .1 <= runtime <= 1, f"runtime was {runtime} for 1D_repeat expt was not within expected range."
 
     def check_expt_attributes(expt, loaded=False):
         # check the experiment keys, runinfo, and devices attributes
@@ -1093,3 +1138,61 @@ def test_underscore_property():
     check_load_expt(temp)
 
     shutil.rmtree('./backup')
+
+
+def test_fast_experiments():
+    devices = ps.ItemAttribute()
+
+    devices.v1 = ps.TestVoltage()  # Device 1
+    devices.v2 = ps.TestVoltage()  # Device 2
+    devices.v3 = ps.TestVoltage()  # Device 3
+
+    def get_voltage_data(expt):
+        """
+        Reads the voltage from v1, v2, and v3 devices. Also adds a calculated value vsum.
+        """
+
+        devices = expt.devices
+
+        d = ps.ItemAttribute()
+
+        d.v1_readout = devices.v1.voltage
+        d.v2_readout = devices.v2.voltage
+        d.v3_readout = devices.v3.voltage
+
+        d.vsum = d.v1_readout + d.v2_readout + d.v3_readout
+
+        return d
+
+    # Create RunInfo instance and set scan0 to PropertyScan
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.RepeatScan(1, dt=0.0000001)
+
+    # Set RunInfo measure_function (remember, it takes a Experiment object as a parameter and
+    # returns an ItemAttribute containing data).
+    runinfo.measure_function = get_voltage_data
+
+    # Create a Experiment class with the RunInfo and Devices just created
+    expt = ps.Experiment(runinfo, devices, time=True)
+
+    long_names = []
+
+    while len(long_names) < 3:
+        expt.run()
+        if len(long_names) == 0:
+            long_names.append(expt.runinfo.long_name)
+        elif (expt.runinfo.long_name[:15] == long_names[0][:15]):
+            long_names.append(expt.runinfo.long_name)
+        else:
+            long_names = [expt.runinfo.long_name]
+
+    err_str = f"First long name '{long_names[0]}' does not match expected date/time format."
+    assert re.match(r'^\d{8}T\d{6}$', long_names[0]), err_str
+    err_str = f"-1 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[1] == long_names[0] + '-1', err_str
+    err_str = f"-2 long name '{long_names[1]}' does not match expected increment or format."
+    assert long_names[2] == long_names[0] + '-2', err_str
+
+    for name in long_names:
+        save_path = expt.runinfo.data_path / '{}.hdf5'.format(name)
+        assert os.path.exists(save_path), f"Expected file at path'{save_path}' was not found."
