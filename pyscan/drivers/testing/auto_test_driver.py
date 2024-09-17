@@ -528,7 +528,8 @@ def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attribut
             exception = str(e) + es
 
         # Note, based on this execution order
-        # the driver log can pass the driver for functional tests success before ensuring doc string is properly formatted
+        # the driver log can pass the driver for functional tests success
+        # before ensuring doc string is properly formatted
         if skip_log is False:
             write_log(device, exception)
 
@@ -539,4 +540,4 @@ def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attribut
 
     check_doc_strings(device)
 
-    print(f"\033[92m Docstring looking good. \033[0m")
+    print("\033[92m Docstring looking good. \033[0m")

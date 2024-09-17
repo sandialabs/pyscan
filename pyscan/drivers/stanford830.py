@@ -30,7 +30,7 @@ class Stanford830(InstrumentDriver):
     harmonic : int
         Gets/sets the demodulation harmonic. Range: [1, 19999]
     amplitude : float
-        Gets/sets the output amplitude. Range: [0.004, 5.0]    
+        Gets/sets the output amplitude. Range: [0.004, 5.0]
     input_configuration : str
         Gets/sets the analog input mode.
         Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8'].
