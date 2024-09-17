@@ -3,7 +3,7 @@ import json
 
 
 # function that gets the overarching version of pyscan from VERSION.json
-def get_pyscan_version(path="../../VERSION.json"):
+def get_pyscan_version(path="../VERSION.json"):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(base_dir, path)
     with open(path) as version_file:
@@ -11,4 +11,4 @@ def get_pyscan_version(path="../../VERSION.json"):
         if type(version) is str:
             return 'v' + version
         else:
-            return "no valid version found"
+            assert False, "no valid version found"
