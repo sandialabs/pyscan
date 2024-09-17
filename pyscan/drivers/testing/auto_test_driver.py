@@ -70,7 +70,7 @@ def validate_blacklist(test_instrument):
 
 def save_initial_state(device):
     saved_settings = []
-    print(device.__dict__.keys())
+    # print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
             '''try:
@@ -173,8 +173,8 @@ def check_attribute_values(device, attributes, ev):
 # designed for testing read only properties of any type
 def check_read_only_property(device, key):
     name = device[key]['name']
-    settings = device[name + '_settings']
-    return_type = device
+    settings = device['_' + name + '_settings']
+    return_type = device[key]['return_type']
 
     # I'm not sure that this will work. It might be that only the underscore property can be used to access
     # the property value.
@@ -336,7 +336,7 @@ def check_properties(test_instrument):
     reset_settings = save_initial_state(test_instrument)
     print("Reset state for the {} was: {}".format(instrument_name, reset_settings))
 
-    print("Beginning tests for: ", test_instrument.__class__.__name__)
+    print("\n\nBeginning tests for: ", test_instrument.__class__.__name__, " version ", test_instrument._version)
 
     settings = []
     total_settings = 0
@@ -383,7 +383,7 @@ def check_properties(test_instrument):
     diff = set(restored_settings) ^ set(saved_settings)
 
     mid_string = 'properties found and tested out of'
-    print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
+    print("\n{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
     print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
@@ -402,12 +402,12 @@ def check_properties(test_instrument):
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
-    print("Settings restored to: {}".format(restored_settings))
+    print("\nSettings restored to: {}".format(restored_settings))
     if (len(diff) > 0):
         print("Restored settings are different for the following: ", diff)
 
     assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
-    print("The previous instrument version was: ", test_instrument._version)
+    # print("The (previous) instrument version was: ", test_instrument._version)
 
 
 def write_log(device, exception):
@@ -476,7 +476,7 @@ def check_attribute_doc_strings(test_instrument):
         try:
             doc_string = test_instrument.get_property_docstring(name)
         except Exception:
-            assert False, "Doc string could not be found for {}".format(name)
+            assert False, "Doc string could not be found or not properly formatted for {}".format(name)
 
         splits = doc_string.split('\n')
         assert name in splits[0], "attribute name not found on first line of doc_string for {}".format(name)
@@ -508,29 +508,35 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
+                debug=False):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
         if expected_values is not None:
             check_attribute_values(device, expected_attributes, expected_values)
 
-    try:
+    if debug:
         check_properties(device)
-        exception = None
-    except Exception as e:
-        exception = str(e)
-
-    # Note, based on this execution order
-    # the driver log can pass the driver for functional tests success before ensuring doc string is properly formatted
-    if skip_log is False:
-        write_log(device, exception)
-
-    if exception is not None:
-        assert False, exception
+        print(f"\033[92m Tests passed, instrument {device.__class__.__name__} should be ready to go. \033[0m")
     else:
-        print("\033[1;32mTests passed, instrument {} looks ready to go.\033[0m".format(device.__class__.__name__))
+        try:
+            check_properties(device)
+            exception = None
+        except Exception as e:
+            es = " To debug, rerun the tests with the debug parameter set to true: test_driver(driver, debug=True)"
+            exception = str(e) + es
+
+        # Note, based on this execution order
+        # the driver log can pass the driver for functional tests success before ensuring doc string is properly formatted
+        if skip_log is False:
+            write_log(device, exception)
+
+        if exception is not None:
+            assert False, exception
+        else:
+            print("\033[1;32mTests passed, instrument {} looks ready to go.\n\033[0m".format(device.__class__.__name__))
 
     check_doc_strings(device)
 
-    print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
+    print(f"\033[92m Docstring looking good. \033[0m")

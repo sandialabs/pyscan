@@ -16,32 +16,32 @@ class Stanford830(InstrumentDriver):
     Attributes
     ----------
     (Properties)
-    id: read-only
+    id : read-only
         Gets the id string of the device.
     phase : float
         Gets/sets the phase of the device. Range: [-180, 180]
     reference_source : str
-        Get/sets the reference source. Indexed_values: ['external', 'internal']. 
+        Get/sets the reference source. Indexed_values: ['external', 'internal'].
     frequency : float
         Gets/sets/ the frequency. Range: [0.001, 102000]
     reference_slope : int
-        Gets/sets the slope of the frequency refeference. 
+        Gets/sets the slope of the frequency refeference.
         Indexed_values: ['sine zero', 'ttl rising', 'ttl falling'].
     harmonic : int
         Gets/sets the demodulation harmonic. Range: [1, 19999]
     amplitude : float
         Gets/sets the output amplitude. Range: [0.004, 5.0]    
     input_configuration : str
-        Gets/sets the analog input mode. 
+        Gets/sets the analog input mode.
         Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8'].
     input_ground : str
         Get/sets the input ground.
         Indexed_values: ['AC', 'DC']
     input_coupling : str
-        Gets/sets the input coupling. 
+        Gets/sets the input coupling.
         Indexed_values: ['AC', 'DC']
     input_line_filter : str
-        Gets/sets the line filer of the input. 
+        Gets/sets the line filer of the input.
         Indexed_values: ['none', 'line', '2xline', 'both']
     sensitivity : float
         Gets/sets the sensitivy (max input).
@@ -70,10 +70,10 @@ class Stanford830(InstrumentDriver):
     synchronous_filter : str
         Gets/sets the synchronous filter state
         Indexed_values:  ['off', 'on']
-    display1_output_source: str
+    display1_output_source : str
         Gets/sets the displayed source on display 1
         Indexed values ['x', 'display']
-    display2_output_source: str
+    display2_output_source : str
         Gets/sets the displayed source on display 2
         Indexed values['y', 'display']
     auxillary_voltage1 : float
@@ -82,12 +82,12 @@ class Stanford830(InstrumentDriver):
     auxillary_voltage2 : float
         Gets/sets the channel 2 auxillary output voltage
         range - [-10.5, 10.500]
-    auxillary_voltage2 : float
+    auxillary_voltage3 : float
         Gets/sets the channel 3 auxillary output voltage
         range - [-10.5, 10.500]
-    auxillary_voltage2 : float
+    auxillary_voltage4 : float
         Gets/sets the channel 4 auxillary output voltage
-        range - [-10.5, 10.500] 
+        range - [-10.5, 10.500]
     sample_rate : float
         Get/sets the sample rate in Hz
         Indexed_values:  [0.0625, .125, .250, .5, 1,
@@ -349,7 +349,6 @@ class Stanford830(InstrumentDriver):
             'query_string': 'TSTR?',
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
-
 
     # Display and Output Methods
     def get_display(self, display_number):
