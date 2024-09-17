@@ -19,6 +19,10 @@ class AbstractScan(ItemAttribute):
         '''A function to be implemented by inheriting Scan classes'''
         pass
 
+    # This must be a method and not an attribute as iterators can only be used once
+    def iterator(self):
+        return iter(range(self.n))
+
 
 class PropertyScan(AbstractScan):
     '''
@@ -74,12 +78,10 @@ class PropertyScan(AbstractScan):
         if len(list(self.scan_dict.keys())) > 0:
             if same_length(list(self.scan_dict.values())):
                 self.n = len(list(self.scan_dict.values())[0])  # self.n is the length of the input_dict arrays.
-                self.nrange = range(self.n)
             else:
                 assert 0, 'Values are not of the same length'
         else:
             self.n = 1  # n=1 is required to allow the run() function to proceed atleast once.
-            self.nrange = range(1)
 
 
 class FunctionScan(AbstractScan):
@@ -150,7 +152,6 @@ class RepeatScan(AbstractScan):
         self.dt = dt
 
         self.n = nrepeat
-        self.nrange = range(self.n)
 
         self.i = 0
 
@@ -187,8 +188,7 @@ class AverageScan(AbstractScan):
 
         self.scan_dict = {}
         self.n = n_average
-        self.nrange = range(self.n)
-        self.scan_dict['average'] = list(self.nrange)
+        self.scan_dict['average'] = list(self.iterator())
         self.device_names = ['average']
         self.i = 0
         self.dt = dt

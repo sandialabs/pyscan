@@ -1,3 +1,38 @@
+## [0.7.2](https://github.com/sandialabs/pyscan/compare/v0.7.1...v0.7.2) (2024-09-17)
+
+
+### Bug Fixes
+
+* **install:** now install without -e will work since version file moved to pyscan folder. Version workflow set to track accordingly. Install and runinfo will now fail if version not detected. ([62bd629](https://github.com/sandialabs/pyscan/commit/62bd6291857490b6738b7f85e05f035bb1d06467))
+* **install:** updating complete.yml to run jobs in parallel, and updated setup.py to explicity include pyscan/VERSION.json when using pip install . ([84a1982](https://github.com/sandialabs/pyscan/commit/84a198212d433b23600ef5d9ce13adf099789f43))
+* **measurement:** Update run_info.py ([68f0df2](https://github.com/sandialabs/pyscan/commit/68f0df2e06eab5e2021945fb8b6715b16022fa50))
+* **workflows:** updating complete.yml to ensure the job complete2 does not have race condition, conflict, or other unwanted interaction with the job complete. ([acac485](https://github.com/sandialabs/pyscan/commit/acac485c89cf4e4b3bf3ed46712a0c95e86cca94))
+
+
+
+## [0.7.1](https://github.com/sandialabs/pyscan/compare/v0.7.0...v0.7.1) (2024-09-13)
+
+
+### Bug Fixes
+
+* **core:** fixing ability for empty property scans inbetween used scans. Now adding a check to block this. Scans must be populated in sequential order. ([91b7c41](https://github.com/sandialabs/pyscan/commit/91b7c41df565755cb744bb216ca43066b90214f3))
+
+
+
+# [0.7.0](https://github.com/sandialabs/pyscan/compare/v0.6.0...v0.7.0) (2024-07-16)
+
+
+### Bug Fixes
+
+* **test:** fixed test_test_instrument_driver.py to account for read_only and write_only properties added to test_instrument_driver.py. This now solves the issue with auto_test_driver not failing with read and write only properties and ensures they are auto tested for future compatibility. ([f4554cd](https://github.com/sandialabs/pyscan/commit/f4554cd9869d6f950f8965e470ee1209c802e017))
+
+
+### Features
+
+* **drivers:** adding a built in get_resources function that can return a list of available resources along with their names, and capture a target resource for initializing drivers. ([02971f6](https://github.com/sandialabs/pyscan/commit/02971f63888f95ec430873f90e21fe6c0a2df68f))
+
+
+
 # [0.6.0](https://github.com/sandialabs/pyscan/compare/v0.5.4...v0.6.0) (2024-07-09)
 
 

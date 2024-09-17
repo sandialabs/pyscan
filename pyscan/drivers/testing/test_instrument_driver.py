@@ -24,10 +24,6 @@ class TestInstrumentDriver(InstrumentDriver):
         for testing indexed_values property
     dict_values : str
         for testing dict_values property
-    read_only : str
-        for testing read_only porperties
-    write_only : int
-        for testing write only properties
     '''
     # tells pytest this is not a test case
     __test__ = False
@@ -45,7 +41,6 @@ class TestInstrumentDriver(InstrumentDriver):
         self._range = 0
         self._indexed_values = 'A'
         self._dict_values = 'off'
-        self._read_only = '0'
         self._version = "0.1.0"
 
         self.update_properties()
@@ -66,9 +61,6 @@ class TestInstrumentDriver(InstrumentDriver):
         elif string == 'DICT_VALUES?':
             val = self._dict_values_settings['dict_values'][self._dict_values]
             return str(val)
-        elif string == 'READ_ONLY?':
-            val = str(self._read_only)
-            return val
 
     def write(self, string):
         if 'FLOAT_VALUES' in string:
@@ -135,21 +127,6 @@ class TestInstrumentDriver(InstrumentDriver):
             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
             'return_type': str
         })
-
-        self.add_device_property({
-            'name': 'read_only',
-            'query_string': 'READ_ONLY?',
-            'values': [0, 1],
-            'return_type': str
-        })
-
-        self.add_device_property({
-            'name': 'write_only',
-            'write_string': 'WRITE_ONLY {}',
-            'dict_values': {"0": 0, "1": 1},
-            'return_type': int
-        })
-
         with pytest.raises(Exception):
             self.add_device_property({
                 'name': 'bad_values',
@@ -167,7 +144,6 @@ class TestInstrumentDriver(InstrumentDriver):
         self.range
         self.indexed_values
         self.dict_values
-        self.read_only
 
     @property
     def version(self):
