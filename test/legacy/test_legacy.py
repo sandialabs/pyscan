@@ -19,3 +19,6 @@ def test_legacy():
     with pytest.raises(Exception):
         sweep = ps.Sweep(runinfo, devices)
         assert isinstance(sweep, ps.Experiment)
+    with pytest.raises(Exception):
+        metasweep = ps.MetaSweep(runinfo, devices, None)
+        assert isinstance(metasweep, ps.AbstractExperiment)

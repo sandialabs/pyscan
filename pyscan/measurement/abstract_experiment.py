@@ -293,8 +293,8 @@ class MetaSweep(AbstractExperiment):
     '''
     Present for backwards compatibility. Renamed to :class:`.AbstractExperiment`.
     '''
-
-    warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
-                   + "You entered MetaSweep, use AbstractExperiment instead.")
-    raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
-    assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"
+    def __init__(self, runinfo, devices, data_dir):
+        warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
+                       + "You entered MetaSweep, use AbstractExperiment instead.")
+        raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
+        assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"
