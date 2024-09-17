@@ -88,6 +88,20 @@ class RunInfo(ItemAttribute):
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
 
+        # make sure there are no empty scans inbetween used scans.
+        used_scan_found = False
+        scans = self.scans
+        for i in range(len(scans)):
+            count_down = len(scans) - i - 1
+            if used_scan_found is False:
+                if not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0):
+                    used_scan_found = True
+                    used_scan_index = count_down
+            else:
+                assert not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0), \
+                    (f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index}).\n"
+                     + "Scans must be populated in sequential order.")
+
     @property
     def scans(self):
         ''' Returns array of all scans
