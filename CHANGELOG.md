@@ -1,3 +1,12 @@
+## [0.7.3](https://github.com/sandialabs/pyscan/compare/v0.7.2...v0.7.3) (2024-09-24)
+
+
+### Bug Fixes
+
+* fixing pyscan init to install more robustly. ([63fe2b1](https://github.com/sandialabs/pyscan/commit/63fe2b1adf8d6ae57da2d8741f182f6e839445e2))
+
+
+
 ## [0.7.2](https://github.com/sandialabs/pyscan/compare/v0.7.1...v0.7.2) (2024-09-17)
 
 
@@ -5,6 +14,7 @@
 
 * **install:** now install without -e will work since version file moved to pyscan folder. Version workflow set to track accordingly. Install and runinfo will now fail if version not detected. ([62bd629](https://github.com/sandialabs/pyscan/commit/62bd6291857490b6738b7f85e05f035bb1d06467))
 * **install:** updating complete.yml to run jobs in parallel, and updated setup.py to explicity include pyscan/VERSION.json when using pip install . ([84a1982](https://github.com/sandialabs/pyscan/commit/84a198212d433b23600ef5d9ce13adf099789f43))
+* **install:** updating complete.yml to run jobs in parallel, and updated setup.py to explicity include pyscan/VERSION.json when using pip install . [skip ci] ([d8f0974](https://github.com/sandialabs/pyscan/commit/d8f0974d4cc2c6564bb969b96182dbdcd644ff14))
 * **measurement:** Update run_info.py ([68f0df2](https://github.com/sandialabs/pyscan/commit/68f0df2e06eab5e2021945fb8b6715b16022fa50))
 * **workflows:** updating complete.yml to ensure the job complete2 does not have race condition, conflict, or other unwanted interaction with the job complete. ([acac485](https://github.com/sandialabs/pyscan/commit/acac485c89cf4e4b3bf3ed46712a0c95e86cca94))
 
