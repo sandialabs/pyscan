@@ -410,7 +410,7 @@ def check_properties(test_instrument):
     # print("The (previous) instrument version was: ", test_instrument._version)
 
 
-def write_log(device, exception):
+def write_log(device, exception=None):
     try:
         driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
     except Exception:
@@ -508,36 +508,24 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
-                debug=False):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
         if expected_values is not None:
             check_attribute_values(device, expected_attributes, expected_values)
 
-    if debug:
-        check_properties(device)
-        print(f"\033[92m Tests passed, instrument {device.__class__.__name__} should be ready to go. \033[0m")
-    else:
-        try:
-            check_properties(device)
-            exception = None
-        except Exception as e:
-            es = " To debug, rerun the tests with the debug parameter set to true: test_driver(driver, debug=True)"
-            exception = str(e) + es
+    check_properties(device)
+    print(f"\033[92m Driver tests passed, instrument: {device.__class__.__name__} looks ready to go. \033[0m")
 
-        # Note, based on this execution order
-        # the driver log can pass the driver for functional tests success
-        # before ensuring doc string is properly formatted
-        if skip_log is False:
-            write_log(device, exception)
+    # Note, based on this execution order
+    # the driver log can pass the driver for functional tests success
+    # before ensuring doc string is properly formatted
+    if skip_log is False:
+        write_log(device)
 
-        if exception is not None:
-            assert False, exception
-        else:
-            print("\033[1;32mTests passed, instrument {} looks ready to go.\n\033[0m".format(device.__class__.__name__))
+    print("\033[1;32m Driver test results logged. \033[0m")
 
     check_doc_strings(device)
 
-    print("\033[92m Docstring looking good. \033[0m")
+    print("\033[92m Docstring tests passed and looking good. \033[0m")
