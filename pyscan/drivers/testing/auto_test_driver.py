@@ -7,6 +7,7 @@ from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
 from pyscan.general.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
+import re
 
 '''
 WARNING!
@@ -484,6 +485,38 @@ def check_attribute_doc_strings(test_instrument):
         assert [len(splits[1]) > 3], "doc string's second line is not long enough for {}".format(name)
 
 
+def extract_attributes_from_docstring(doc_string):
+    # Assuming attributes are listed under 'Attributes' section
+    attributes = []
+    in_attributes_section = False
+    for line in doc_string.split('\n'):
+        if 'Attributes' in line:
+            in_attributes_section = True
+        elif in_attributes_section:
+            if line.strip() == '':
+                break
+            match = re.match(r'\s*(\w+)\s*:', line)
+            if match:
+                attributes.append(match.group(1))
+    return attributes
+
+
+def extract_methods_from_docstring(doc_string):
+    # Assuming methods are listed under 'Methods' section
+    methods = []
+    in_methods_section = False
+    for line in doc_string.split('\n'):
+        if 'Methods' in line:
+            in_methods_section = True
+        elif in_methods_section:
+            if line.strip() == '':
+                break
+            match = re.match(r'\s*(\w+)\s*\(', line)
+            if match:
+                methods.append(match.group(1))
+    return methods
+
+
 # parses and checks the instruments doc string for proper formatting
 def check_doc_strings(test_instrument):
     print("Checking driver doc string.")
@@ -505,6 +538,18 @@ def check_doc_strings(test_instrument):
         assert line.startswith('    ') or line == '', "Improper indentation of line {}".format(repr(line))
 
     check_attribute_doc_strings(test_instrument)
+
+    # Extract attributes and methods from the docstring
+    attributes = extract_attributes_from_docstring(doc_string)
+    methods = extract_methods_from_docstring(doc_string)
+
+    # Check that each attribute and method in the docstring exists in the test_instrument
+    for attribute in attributes:
+        assert hasattr(test_instrument, attribute), f"Attribute '{attribute}' listed in docstring but not the driver."
+
+    for method in methods:
+        assert hasattr(test_instrument, method), f"Method '{method}' listed in docstring but not the driver."
+
     # write formatting test cases here.
 
 
