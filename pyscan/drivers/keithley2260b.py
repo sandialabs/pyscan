@@ -30,8 +30,6 @@ class Keithley2260B(InstrumentDriver):
         Turns the output on or off. Values: [0, 'off', 1, 'on']
     output_trigger_state : int or str
         Sets or queries the output trigger state[0, 'off', 1, 'on']
-    smoothing : str
-        Sets or queries the level of smoothing ['low', 'middle', 'high]
     current : int
         Sets the value of the output current. Range: [0, 27] Amps.
         Use the method measure_current() to get the actual current.
@@ -88,7 +86,7 @@ class Keithley2260B(InstrumentDriver):
 
         self.debug = False
 
-        self._version = "0.1.1"
+        self._version = "0.1.2"
 
         # Get current limits
         self.max_current = float(self.query('CURR? MAX').strip('\n'))
@@ -170,12 +168,16 @@ class Keithley2260B(InstrumentDriver):
             'return_type': int})
 
         # SENS:AVER:COUN properties
-        self.add_device_property({
-            'name': 'smoothing',
-            'write_string': 'SENS:AVER:COUN {}',
-            'query_string': 'SENS:AVER:COUN?',
-            'indexed_values': ['low', 'middle', 'high'],
-            'return_type': int})
+
+        # Removing smoothing because there is ambiguity between implementations
+        # on different models/firmwares
+
+        # self.add_device_property({
+        #     'name': 'smoothing',
+        #     'write_string': 'SENS:AVER:COUN {}',
+        #     'query_string': 'SENS:AVER:COUN?',
+        #     'indexed_values': ['low', 'middle', 'high'],
+        #     'return_type': int})
 
         # SOURce properties
         # SOURce:CURRent properties
@@ -319,3 +321,7 @@ class Keithley2260B(InstrumentDriver):
     def output_trigger(self):
 
         self.write('TRIG:OUTP')
+
+    def __del__(self):
+
+        self.instrument.close()
