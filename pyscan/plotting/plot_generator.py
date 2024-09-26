@@ -142,16 +142,8 @@ class PlotGenerator(object):
         if (self.d == 2) and (self.data.ndim > 2):
             if self.index3D is None:
                 self.index3D = 0
-                # take the latest level if there are three scans and point data
-                if self.expt.runinfo.ndim == 3:
-                    # get latest row that is being filled (i.e. first data point is not 0)
-                    for i in range(self.data.shape[2]):
-                        if self.data[0, 0, i]:
-                            self.index3D = i
-                else:
-                    self.index3D = 0
-            self.data_name = self.data_name + '[{}/{}]'.format(self.index3D + 1, self.data.shape[2])
-            self.data = self.data.T[self.index3D].T
+            self.data_name = self.data_name + '[{}/{}]'.format(self.index3D, self.data.shape[2])
+            self.data = self.data[:, :, self.index3D]
 
     def get_title(self):
         '''
