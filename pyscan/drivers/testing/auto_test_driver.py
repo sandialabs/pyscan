@@ -8,6 +8,7 @@ from pyscan.general.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
 import re
+import pprint
 
 '''
 WARNING!
@@ -331,11 +332,14 @@ def check_properties(test_instrument):
     instrument_name = test_instrument.__class__.__name__
     # values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
     saved_settings = save_initial_state(test_instrument)
-    print("Initial state for the {} was: {}".format(instrument_name, saved_settings))
+    print("Initial state for the {} was: ".format(instrument_name))
+    pprint.pprint(saved_settings)
+    print("\n")
 
     reset_device_properties(test_instrument)
     reset_settings = save_initial_state(test_instrument)
-    print("Reset state for the {} was: {}".format(instrument_name, reset_settings))
+    print("Reset state for the {} was: ".format(instrument_name))
+    pprint.pprint(reset_settings)
 
     print("\n\nBeginning tests for: ", test_instrument.__class__.__name__, " version ", test_instrument._version)
 
@@ -403,9 +407,11 @@ def check_properties(test_instrument):
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
-    print("\nSettings restored to: {}".format(restored_settings))
+    print("\nSettings restored to: ")
+    pprint.pprint(restored_settings)
     if (len(diff) > 0):
-        print("Restored settings are different for the following: ", diff)
+        print("\nRestored settings are different for the following: ", diff)
+    print("\n")
 
     assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
     # print("The (previous) instrument version was: ", test_instrument._version)
