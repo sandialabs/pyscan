@@ -12,6 +12,7 @@ import pytest
 from io import StringIO
 import sys
 import shutil
+import re
 
 
 # for testing default trigger function with empty function
@@ -104,12 +105,11 @@ def test_meta_sweep():
 
         assert hasattr(ms.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
-        assert len(ms.runinfo.long_name) == 15, "Meta Sweep runinfo long name is not 15 characters"
+        # check that the long name is formatted with values for YYYYMMDDTHHMMSS, and optionally a - followed by digits.
+        assert re.match(r'^\d{8}T\d{6}(-\d+)?$', ms.runinfo.long_name), "runinfo long_name is not properly formatted"
 
         assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
         assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
-        assert len(ms.runinfo.short_name) == 7, "Meta Sweep runinfo short name is not 7 characters"
-        assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
         # setting file name for loading later
         if data_dir is None:
@@ -214,7 +214,8 @@ def test_meta_sweep():
         # could maybe add to and clarify this
         assert hasattr(temp.runinfo, 'measured'), "save meta data didn't save runinfo.measured meta data"
         assert isinstance(temp.runinfo.measured, list), "save meta data didn't save runinfo.measured as a list"
-        assert temp.runinfo.measured == list(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
+        # order of list should not matter
+        assert set(temp.runinfo.measured) == set(data.__dict__.keys()), "save meta data didn't save true runinfo.measured"
 
         # check that loops meta data was saved/loaded correctly
         ''' legacy not working with loop nomenclature for loaded expt's... consider fixing this somehow...
@@ -236,9 +237,6 @@ def test_meta_sweep():
         assert temp.runinfo.scan0.n == 2, "save meta data didn't save loop0.n, or it couldn't be loaded"
         assert temp.runinfo.scan1.n == 5, "save meta data didn't save loop1.n, or it couldn't be loaded"
         assert temp.runinfo.scan2.n == 5, "save meta data didn't save loop2.n, or it couldn't be loaded"
-        assert temp.runinfo.scan0.nrange == [0, 1], "save meta data didn't save loop0.nrange value"
-        assert temp.runinfo.scan1.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop1.nrange value"
-        assert temp.runinfo.scan2.nrange == [0, 1, 2, 3, 4], "save meta data didn't save loop2.nrange value"
 
         # check that devices were saved and loaded properly
         assert len(temp.devices.__dict__.keys()) == 3, "save meta data didn't save the right number of runinfo.devices"

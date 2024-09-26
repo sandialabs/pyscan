@@ -28,7 +28,7 @@ jobs:
       uses: TriPSs/conventional-changelog-action@v5.2.1
       with:
         github-token: ${{ secrets.AMM }}
-        version-file: 'VERSION.json'
+        version-file: 'pyscan/VERSION.json'
         release-count: 0
         git-message: ${{ github.event.head_commit.message }}
 
