@@ -156,7 +156,8 @@ def reset_device_properties(device):
                 name, ['values', 'range', 'indexed_values', 'dict_values', 'read_only'])
 
     if len(blacklisted) > 0:
-        print("These blacklisted settings and their corresponding values were not reset: ", blacklisted)
+        print("Blacklisted settings that will not be tested or changed are: ")
+        pprint.pprint(blacklisted)
 
 
 # check that the initialized state has the expected attributes
@@ -323,7 +324,7 @@ def check_dict_property(device, key):
 
 
 # implements above checks for all attributes by type
-def check_properties(test_instrument):
+def check_properties(test_instrument, verbose=True):
     # This is a critical step to ensuring safety when testing drivers with actual instruments
     validate_blacklist(test_instrument)
 
@@ -332,16 +333,19 @@ def check_properties(test_instrument):
     instrument_name = test_instrument.__class__.__name__
     # values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
     saved_settings = save_initial_state(test_instrument)
-    print("Initial state for the {} was: ".format(instrument_name))
-    pprint.pprint(saved_settings)
-    print("\n")
+    if verbose:
+        print("Initial state for the {} was: ".format(instrument_name))
+        pprint.pprint(saved_settings)
+        print("\n")
 
     reset_device_properties(test_instrument)
     reset_settings = save_initial_state(test_instrument)
-    print("Reset state for the {} was: ".format(instrument_name))
-    pprint.pprint(reset_settings)
+    if verbose:
+        print("Reset state for the {} was: ".format(instrument_name))
+        pprint.pprint(reset_settings)
+        print("\n")
 
-    print("\n\nBeginning tests for: ", test_instrument.__class__.__name__, " version ", test_instrument._version)
+    print("\nBeginning tests for: ", test_instrument.__class__.__name__, " version ", test_instrument._version)
 
     settings = []
     total_settings = 0
@@ -407,8 +411,11 @@ def check_properties(test_instrument):
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
-    print("\nSettings restored to: ")
-    pprint.pprint(restored_settings)
+
+    if verbose:
+        print("\nSettings restored to: ")
+        pprint.pprint(restored_settings)
+
     if (len(diff) > 0):
         print("\nRestored settings are different for the following: ", diff)
     print("\n")
@@ -417,7 +424,7 @@ def check_properties(test_instrument):
     # print("The (previous) instrument version was: ", test_instrument._version)
 
 
-def write_log(device, exception=None):
+def write_log(device, exception=None, save_multiple_lines=False):
     try:
         driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
     except Exception:
@@ -445,12 +452,14 @@ def write_log(device, exception=None):
     path = os.path.join(directory, driver_file_name)
 
     if driver_file_name in driver_test_logs_file_names:
-        with open(path, 'r') as test_log:
-            existing_log = test_log.read()
+        if save_multiple_lines:
+            with open(path, 'r') as test_log:
+                existing_log = test_log.read()
 
         with open(path, 'w') as test_log:
             test_log.write(new_line + '\n')
-            test_log.write(existing_log)
+            if save_multiple_lines:
+                test_log.write(existing_log)
 
     else:
         print("No test log file detected for this driver. Creating a new one.")
@@ -492,18 +501,29 @@ def check_attribute_doc_strings(test_instrument):
 
 
 def extract_attributes_from_docstring(doc_string):
-    # Assuming attributes are listed under 'Attributes' section
+    # Assuming attributes are listed with 4 leading spaces and followed by a colon
     attributes = []
     in_attributes_section = False
+
     for line in doc_string.split('\n'):
+        # Check if we've reached the Methods section
+        if 'Methods' in line:
+            break  # Stop processing if we've reached Methods
+
+        # Check for the start of Attributes section
         if 'Attributes' in line:
             in_attributes_section = True
-        elif in_attributes_section:
+            continue  # Go to the next line to read attributes
+
+        # If we are in the Attributes section, extract attributes
+        if in_attributes_section:
             if line.strip() == '':
-                break
-            match = re.match(r'\s*(\w+)\s*:', line)
+                continue  # Skip empty lines
+            # Match lines that start with 4 spaces and contain a word followed by a colon
+            match = re.match(r'^\s{4}(\w+)\s*:', line)
             if match:
                 attributes.append(match.group(1))
+
     return attributes
 
 
@@ -511,6 +531,7 @@ def extract_methods_from_docstring(doc_string):
     # Assuming methods are listed under 'Methods' section
     methods = []
     in_methods_section = False
+
     for line in doc_string.split('\n'):
         if 'Methods' in line:
             in_methods_section = True
@@ -520,6 +541,7 @@ def extract_methods_from_docstring(doc_string):
             match = re.match(r'\s*(\w+)\s*\(', line)
             if match:
                 methods.append(match.group(1))
+
     return methods
 
 
@@ -559,14 +581,15 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
+                verbose=True):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
         if expected_values is not None:
             check_attribute_values(device, expected_attributes, expected_values)
 
-    check_properties(device)
+    check_properties(device, verbose)
     print(f"\033[92m Driver tests passed, instrument: {device.__class__.__name__} looks ready to go. \033[0m")
 
     # Note, based on this execution order
