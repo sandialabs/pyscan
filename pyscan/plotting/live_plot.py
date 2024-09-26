@@ -24,7 +24,6 @@ def live_plot(plotting_function, dt=1):
     '''
 
     def live_plot_function(expt=None, *arg, **kwarg):
-
         while (expt.runinfo.running is True and len(expt.runinfo.measured) < 1):
             sleep(1)
 

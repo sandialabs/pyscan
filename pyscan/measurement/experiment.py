@@ -27,7 +27,6 @@ class Experiment(AbstractExperiment):
         The path to save the data, defaults to './backup'
     verbose: bool, optional
         Indicates whether to print status updates, defaults to `False`
-
     '''
 
     def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False):
