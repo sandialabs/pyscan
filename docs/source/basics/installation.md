@@ -20,10 +20,8 @@ git clone https://github.com/sandialabs/pyscan
 3. Install pyscan with
 
 ```
-pip install -e .
+pip install .
 ```
-
-The `-e` makes the package editable, so that if you make modifications to your drivers, for example, you don't need to reinstall the package. This is the recommended method of installation since pyscan is largely intended to be modified when you add drivers for new instruments.
 
 ## Additional Requirements
 
