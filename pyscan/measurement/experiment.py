@@ -267,4 +267,12 @@ class Experiment(AbstractExperiment):
 
 # legacy naming convention
 class Sweep(Experiment):
-    pass
+    '''
+    Present for backwards compatibility. Renamed to :class:`.Experiment`.
+    '''
+
+    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False):
+        warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
+                       + "You entered Sweep, use Experiment instead.")
+        raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
+        assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"

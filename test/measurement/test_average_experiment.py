@@ -1,5 +1,5 @@
 '''
-Pytest functions to test the AverageSweep experiment class
+Pytest functions to test the AverageExperiment experiment class
 '''
 
 
@@ -101,16 +101,16 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
     # instantiate expt based on additional parameters
     if data_dir is None:
         if verbose is False:
-            expt = ps.Sweep(runinfo, devices)
+            expt = ps.Experiment(runinfo, devices)
         elif verbose is True:
-            expt = ps.Sweep(runinfo, devices, verbose=verbose)
+            expt = ps.Experiment(runinfo, devices, verbose=verbose)
         else:
             assert False, "Invalid verbose entry. Must be boolean."
     elif isinstance(data_dir, str):
         if verbose is False:
-            expt = ps.Sweep(runinfo, devices, data_dir)
+            expt = ps.Experiment(runinfo, devices, data_dir)
         elif verbose is True:
-            expt = ps.Sweep(runinfo, devices, data_dir, verbose)
+            expt = ps.Experiment(runinfo, devices, data_dir, verbose)
         else:
             assert False, "Invalid verbose entry. Must be boolean."
     else:
@@ -184,9 +184,9 @@ def check_multi_data_results(expt, num_devices, shape1=[2], shape2=[2, 2], shape
 
 ##################### TEST CASES BEGIN HERE #####################
 
-def test_averagesweep():
+def test_averageexperiment():
     """
-    Testing AverageSweep
+    Testing AverageExperiment
 
     Returns
     --------
@@ -276,6 +276,6 @@ def test_averagesweep():
     test_variations(bad=True)
 
     with pytest.raises(Exception):
-        test_variations(n_average=-1), "Averagesweep's n_average must be 1 or more"
+        test_variations(n_average=-1), "AverageExperiment's n_average must be 1 or more"
     with pytest.raises(Exception):
-        test_variations(n_average=0), "Averagesweep's n_average must be 1 or more"
+        test_variations(n_average=0), "AverageExperiment's n_average must be 1 or more"

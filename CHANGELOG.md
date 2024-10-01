@@ -1,3 +1,13 @@
+## [0.7.4](https://github.com/sandialabs/pyscan/compare/v0.7.3...v0.7.4) (2024-10-01)
+
+
+### Bug Fixes
+
+* **measurement:** fixed sparse experiment to use scan naming convention rather than loop. ([423ce39](https://github.com/sandialabs/pyscan/commit/423ce39cb05f751a09a313682c46c2254cc6472e))
+* **plotting:** updating loop nomenclature to scan in plot_generator. ([af27aa6](https://github.com/sandialabs/pyscan/commit/af27aa626df4cf0bc3b78f8cb6847ca9a5ec9c49))
+
+
+
 ## [0.7.3](https://github.com/sandialabs/pyscan/compare/v0.7.2...v0.7.3) (2024-09-24)
 
 
