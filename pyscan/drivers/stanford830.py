@@ -100,7 +100,7 @@ class Stanford830(InstrumentDriver):
     trigger_mode : int
         Gets/sets the trigger mode state
         Indexed_values':  ['off', 'on']
-    buffer_points: read-only
+    buffer_points : read-only
         Gets the number of points stored in the buffer.
 
     Methods
@@ -136,7 +136,7 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "1.0.1"
+        self._version = "1.0.2"
 
         self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude"]
 
@@ -348,6 +348,12 @@ class Stanford830(InstrumentDriver):
             'write_string': 'TSTR {}',
             'query_string': 'TSTR?',
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
+            'return_type': int})
+
+        self.add_device_property({
+            'name': 'buffer_points',
+            'query_string': 'SPTS?',
+            'read_only': True,
             'return_type': int})
 
     # Display and Output Methods
