@@ -592,14 +592,13 @@ def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attribut
     check_properties(device, verbose)
     print(f"\033[92m Driver tests passed, instrument: {device.__class__.__name__} looks ready to go. \033[0m")
 
+    check_doc_strings(device)
+    print("\033[92m Docstring tests passed and looking good. \033[0m")
+
     # Note, based on this execution order
     # the driver log can pass the driver for functional tests success
     # before ensuring doc string is properly formatted
     if skip_log is False:
         write_log(device)
 
-    print("\033[1;32m Driver test results logged. \033[0m")
-
-    check_doc_strings(device)
-
-    print("\033[92m Docstring tests passed and looking good. \033[0m")
+    print(f"\033[1;32m {device.__class__.__name__} test results logged. \033[0m")
