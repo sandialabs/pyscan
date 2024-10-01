@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from .plot_generator import PlotGenerator
 from .live_plot import live_plot
+from time import sleep
 
 
 def plot1D(expt, **kwarg):
@@ -24,6 +25,15 @@ def plot1D(expt, **kwarg):
     """
 
     pg = PlotGenerator(expt, d=1, **kwarg)
+
+    # this ensures that continuous expts are plotted correctly when an n_max parameter is implemented.
+    if expt.runinfo.continuous is True and expt.runinfo.running is False:
+        n_max = expt.runinfo.scans[expt.runinfo.continuous_scan_index].n_max
+        if len(pg.x) - 1 == n_max:
+            # give a time buffer to make sure the most recent state of the expt is registered.
+            # otherwise the plot will break as it finishes. May need to extend for low performing processors.
+            sleep(3)
+            pg.x = pg.x[:-1]
 
     plt.plot(pg.x, pg.data)
 
@@ -54,6 +64,15 @@ def plot2D(expt, **kwarg):
     """
 
     pg = PlotGenerator(expt, d=2, **kwarg)
+
+    # this ensures that continuous expts are plotted correctly when an n_max parameter is implemented.
+    if expt.runinfo.continuous is True and expt.runinfo.running is False:
+        n_max = expt.runinfo.scans[expt.runinfo.continuous_scan_index].n_max
+        if len(pg.y) - 1 == n_max:
+            # give a time buffer to make sure the most recent state of the expt is registered.
+            # otherwise the plot will break as it finishes. May need to extend for low performing processors.
+            sleep(3)
+            pg.y = pg.y[:-1]
 
     plt.pcolormesh(pg.x, pg.y, pg.data.T,
                    vmin=pg.get_data_range()[0],
