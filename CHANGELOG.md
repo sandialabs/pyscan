@@ -1,9 +1,30 @@
+# [0.8.0](https://github.com/sandialabs/pyscan/compare/v0.7.4...v0.8.0) (2024-10-01)
+
+
+### Bug Fixes
+
+* tried updating killswitch example notebook to skip last cell on nbmake workflow. ([cd2b930](https://github.com/sandialabs/pyscan/commit/cd2b930214923d5f1ff0304b6e45a59829c7903f))
+
+
+### Features
+
+* Added live_multi_plot function ([3502a7d](https://github.com/sandialabs/pyscan/commit/3502a7df2bf5e1e397e79c9dff983bc4e3b178d4))
+
+
+### Reverts
+
+* **general:** restoring main version of get_pyscan_version. ([b341479](https://github.com/sandialabs/pyscan/commit/b341479300ca90be17e98a5f6bd0d7c19ddb8a2a))
+* **measurement:** restoring main version of run_info.py. ([9d3558e](https://github.com/sandialabs/pyscan/commit/9d3558efe5053e927314bf78213034eb46322ba2))
+
+
+
 ## [0.7.4](https://github.com/sandialabs/pyscan/compare/v0.7.3...v0.7.4) (2024-10-01)
 
 
 ### Bug Fixes
 
 * **measurement:** fixed sparse experiment to use scan naming convention rather than loop. ([423ce39](https://github.com/sandialabs/pyscan/commit/423ce39cb05f751a09a313682c46c2254cc6472e))
+* **measurement:** fixed sparse experiment to use scan naming convention rather than loop. [skip ci] ([ea71d69](https://github.com/sandialabs/pyscan/commit/ea71d6908264d88dc005d64d723f2dadb042850c))
 * **plotting:** updating loop nomenclature to scan in plot_generator. ([af27aa6](https://github.com/sandialabs/pyscan/commit/af27aa626df4cf0bc3b78f8cb6847ca9a5ec9c49))
 
 
