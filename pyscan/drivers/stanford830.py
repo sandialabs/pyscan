@@ -76,17 +76,17 @@ class Stanford830(InstrumentDriver):
     display2_output_source : str
         Gets/sets the displayed source on display 2
         Indexed values['y', 'display']
-    auxillary_voltage1 : float
-        Gets/sets the channel 1 auxillary output voltage
+    auxiliary_voltage1 : float
+        Gets/sets the channel 1 auxiliary output voltage
         range - [-10.5, 10.500]
-    auxillary_voltage2 : float
-        Gets/sets the channel 2 auxillary output voltage
+    auxiliary_voltage2 : float
+        Gets/sets the channel 2 auxiliary output voltage
         range - [-10.5, 10.500]
-    auxillary_voltage3 : float
-        Gets/sets the channel 3 auxillary output voltage
+    auxiliary_voltage3 : float
+        Gets/sets the channel 3 auxiliary output voltage
         range - [-10.5, 10.500]
-    auxillary_voltage4 : float
-        Gets/sets the channel 4 auxillary output voltage
+    auxiliary_voltage4 : float
+        Gets/sets the channel 4 auxiliary output voltage
         range - [-10.5, 10.500]
     sample_rate : float
         Get/sets the sample rate in Hz
@@ -136,7 +136,7 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "1.0.2"
+        self._version = "1.0.3"
 
         self.black_list_for_testing = [
             '_input_configuration',
@@ -297,31 +297,31 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['y', 'display'],
             'return_type': int})
 
-        # Auxillary Input/Ouput Properties
+        # auxiliary Input/Ouput Properties
 
         self.add_device_property({
-            'name': 'auxillary_voltage1',
+            'name': 'auxiliary_voltage1',
             'write_string': 'AUXV 1, {}',
             'query_string': 'AUXV? 1',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage2',
+            'name': 'auxiliary_voltage2',
             'write_string': 'AUXV 2, {}',
             'query_string': 'AUXV? 2',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage3',
+            'name': 'auxiliary_voltage3',
             'write_string': 'AUXV 3, {}',
             'query_string': 'AUXV? 3',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage4',
+            'name': 'auxiliary_voltage4',
             'write_string': 'AUXV 4, {}',
             'query_string': 'AUXV? 4',
             'range': [-10.5, 10.500],
@@ -478,20 +478,20 @@ class Stanford830(InstrumentDriver):
 
         self.write('OEXP {}, {}, {}'.format(channel, offset, index))
 
-    # Auxillary Input/Ouptut Methods
+    # auxiliary Input/Ouptut Methods
 
     def read_aux_input(self, index):
         '''
-        Reads the voltage input to an auxillary input channel
+        Reads the voltage input to an auxiliary input channel
 
         Parameters
         ----------
         index: int
-            Auxillary input channel number 1, 2, 3, or 4
+            auxiliary input channel number 1, 2, 3, or 4
         '''
 
         indicies = [1, 2, 3, 4]
-        assert index in indicies, 'Auxillary input index must be 1, 2, 3, or 4'
+        assert index in indicies, 'auxiliary input index must be 1, 2, 3, or 4'
 
         return float(self.query('OAUX ? {}'.format(index)))
 
