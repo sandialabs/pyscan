@@ -97,8 +97,7 @@ def restore_initial_state(device, saved_settings):
         val = setting[1]
 
         if _name in device.black_list_for_testing:
-            err_msg = ("WARNING! BLACKLISTED PROPERTY WAS SOMEHOW CHANGED. Was {}, now {}\n".format(val, device[setter])
-                       + "PROCEED WITH CAUTION!")
+            err_msg = f"WARNING! BLACKLISTED PROPERTY WAS SOMEHOW CHANGED. Was {val}, now {device[setter]}\n"
             assert val == device[setter], err_msg
             restored_settings.append((setter, device[setter]))
             continue
@@ -386,8 +385,8 @@ def check_properties(test_instrument, verbose=True):
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
                 name, ['values', 'range', 'indexed_values', 'dict_values'])
-
-    restored_settings = restore_initial_state(test_instrument, saved_settings)
+        print(name)
+        restored_settings = restore_initial_state(test_instrument, saved_settings)
 
     diff = set(restored_settings) ^ set(saved_settings)
 

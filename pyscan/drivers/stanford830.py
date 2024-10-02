@@ -138,7 +138,11 @@ class Stanford830(InstrumentDriver):
         self.debug = False
         self._version = "1.0.2"
 
-        self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude"]
+        self.black_list_for_testing = [
+            '_input_configuration',
+            "_time_constant",
+            "_amplitude",
+            "_sensitivity"]
 
         self.initialize_properties()
         self.update_properties()
