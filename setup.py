@@ -50,8 +50,9 @@ setup(
         'matplotlib',
         'jupyter',
         'pytest',
+        'nbmake'
+        'seabreeze'
     ],
-    extras_require={'oceanoptics': ['seabreeze']},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "License :: MIT",
