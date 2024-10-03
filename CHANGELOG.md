@@ -1,3 +1,16 @@
+## [0.8.1](https://github.com/sandialabs/pyscan/compare/v0.8.0...v0.8.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* **driver Stanford830:** learned to spell, fixed test notebook bug ([be9b137](https://github.com/sandialabs/pyscan/commit/be9b1376fb895486fd799050d483886951432723))
+* **driver:** black listed stanford830 sensitivity for autotesting, depends on time constant ([0f8cedd](https://github.com/sandialabs/pyscan/commit/0f8cedda52b4b5d04598536205bb5d860ce5b31d))
+* **driver:** fixed srs830 snap and offset_expand bugs ([4170268](https://github.com/sandialabs/pyscan/commit/4170268604b56ae86b059168c88ab2b4f0e38b35))
+* **driver:** fixed Stanford830 buffer points as read only, complete driver? ([dc2a5be](https://github.com/sandialabs/pyscan/commit/dc2a5be3ece234081c51384ea714ed99190df741))
+* **test)(driver:** fixed both test cases and srs830 driver so it is now passing the test cases. A debug setting is included to debug the test_driver() function; however, this will bypass the test log. An updated error message is included to point to setting the debug parameter to true for debugging purposes. ([74c835d](https://github.com/sandialabs/pyscan/commit/74c835d8329d82b28fb0260d8db6b7e21302d011))
+
+
+
 # [0.8.0](https://github.com/sandialabs/pyscan/compare/v0.7.4...v0.8.0) (2024-10-01)
 
 
