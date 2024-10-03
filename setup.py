@@ -50,7 +50,7 @@ setup(
         'matplotlib',
         'jupyter',
         'pytest',
-        'nbmake'
+        'nbmake',
         'seabreeze'
     ],
     classifiers=[
