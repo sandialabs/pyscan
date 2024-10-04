@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from pyscan.general.item_attribute import ItemAttribute
-from pyscan.drivers.instrument_driver import InstrumentDriver
+from ..drivers.instrument_driver import InstrumentDriver
 from pyvisa.resources import (
     # FirewireInstrument,
     GPIBInstrument,
