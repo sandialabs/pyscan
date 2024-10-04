@@ -1,6 +1,15 @@
 from pyscan.general.item_attribute import ItemAttribute
 
 
+def sense_tqp_to_frequency(SensTqp):
+    return 70e6 / 8 / (SensTqp + 30)
+
+
+def frequency_to_sense_tqp(frequency):
+
+    return 70 * 1e6 / 8 / frequency - 30
+
+
 class HeliosSDK(ItemAttribute):
 
     def __init__(self):
@@ -207,4 +216,3 @@ def SensTqp_to_frequency(SensTqp):
 def frequency_to_SenseTqp(frequency):
 
     return 70 * 1e6 / 8 / frequency - 30
-

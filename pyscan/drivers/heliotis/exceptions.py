@@ -1,5 +1,6 @@
-from itemattribute import ItemAttribute
+from ...general.item_attribute import ItemAttribute
 from ..exceptions.external_package_excpetion import ExternalPackageException
+
 
 class HeliosImportException(ItemAttribute):
 
