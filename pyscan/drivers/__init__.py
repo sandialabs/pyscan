@@ -1,9 +1,7 @@
 import os
 
-
 # Objects
 from .instrument_driver import InstrumentDriver
-
 
 # Instrument Drivers
 from .agilent33500 import Agilent33500
@@ -18,15 +16,6 @@ from .hp34401a import HP34401A
 from .keithley2260b import Keithley2260B
 from .keithley2400 import Keithley2400
 from .kepcoBOP import KepcoBOP
-
-if os.path.exists(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python'):
-    from .keysightm3302adaq import KeysightM3302ADAQ
-    from .keysightm3302aawg import KeysightM3302AAWG
-else:
-    from .keysightsd1_exceptoin import KeysightSD1Error as KeysightM3302ADAQ
-    from .keysightsd1_exceptoin import KeysightSD1Error as KeysightM3302AAWG
-
-from .keysight53230a import Keysight53230A
 from .oxfordips120 import OxfordIPS120
 from .pulselaser import PulseLaser
 from .stanford396 import Stanford396
@@ -41,43 +30,15 @@ from .tpi1002a import TPI1002A
 from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
-try:
-    from .helioscamera import HeliosCamera
-
-except ModuleNotFoundError:
-    print('Helios Camera not installed')
-
-try:
-    from .thorlabsbsc203 import BSC203
-except ModuleNotFoundError:
-    print('msl not installed, Thorlabs BSC203 driver not loaded')
-
-try:
-    from .oceanopticsqepro import OceanOpticsQEPro
-except ModuleNotFoundError:
-    print('seabreeze module not found, Ocean Optics not imported')
-try:
-    from .pulseblaster import PulseBlaster
-    # from .pulseblasternv import NVPulseBlaster
-except NameError:
-    print('spinapi is not installed, PulseBlaster driver not loaded.')
-try:
-    from .thorlabsbsc203 import ThorlabsBSC203
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsBSC203 not loaded')
-try:
-    from .thorlabsbpc303 import ThorlabsBPC303
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsBPC303 not loaded')
-try:
-    from .thorlabsmff101 import ThorlabsMFF101
-except ModuleNotFoundError:
-    print('Thorlabs Kinesis not found, ThorlabsMFF101 not loaded')
+# Brand collections
+from .heliotis import *
+from .keysight import *
+from .thorlabs import *
+from .spin_core import *
 
 
 # Methods
 from .new_instrument import new_instrument
-
 
 # Test Devices
 from .testing.test_voltage import TestVoltage
