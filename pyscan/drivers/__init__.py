@@ -1,3 +1,6 @@
+import os
+
+
 # Objects
 from .instrument_driver import InstrumentDriver
 
@@ -15,8 +18,14 @@ from .hp34401a import HP34401A
 from .keithley2260b import Keithley2260B
 from .keithley2400 import Keithley2400
 from .kepcoBOP import KepcoBOP
-from .keysightm3302adaq import KeysightM3302ADAQ
-from .keysightm3302aawg import KeysightM3302AAWG
+
+if os.path.exists(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python'):
+    from .keysightm3302adaq import KeysightM3302ADAQ
+    from .keysightm3302aawg import KeysightM3302AAWG
+else:
+    from .keysightsd1_exceptoin import KeysightSD1Error as KeysightM3302ADAQ
+    from .keysightsd1_exceptoin import KeysightSD1Error as KeysightM3302AAWG
+
 from .keysight53230a import Keysight53230A
 from .oxfordips120 import OxfordIPS120
 from .pulselaser import PulseLaser
@@ -31,16 +40,6 @@ from .stanford928 import Stanford928
 from .tpi1002a import TPI1002A
 from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
-
-try:
-    from .attocubeANC350 import AttocubeANC350
-except ModuleNotFoundError:
-    print('pylablib not found, AttocubeANC350 not loaded')
-
-try:
-    from .baslercamera import BaslerCamera
-except ModuleNotFoundError:
-    print('Basler Camera software not found, BaserCamera not loaded')
 
 try:
     from .helioscamera import HeliosCamera

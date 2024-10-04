@@ -51,7 +51,8 @@ setup(
         'jupyter',
         'pytest',
         'nbmake',
-        'seabreeze'
+        'seabreeze',
+        'pylablib'
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
