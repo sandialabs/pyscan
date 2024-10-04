@@ -1,3 +1,4 @@
+from .thorlabsitc4001 import ThorLabsITC4001
 import importlib.util
 import sys
 from .exceptions import ThorlabsKinesisImportException
@@ -13,5 +14,3 @@ else:
     from .exceptions import ThorlabsKinesisImportException as ThorlabsBPC303
     from .exceptions import ThorlabsKinesisImportException as ThorlabsBSC203
     from .exceptions import ThorlabsKinesisImportException as ThorlabsMFF101
-
-from .thorlabsitc4001 import ThorLabsITC4001

@@ -1,6 +1,6 @@
 from pyscan.general.item_attribute import ItemAttribute
 import ctypes
-from .spin_api_wrapper import *
+from . import spin_api_wrapper as pb
 
 
 PULSE_PROGRAM = 0
@@ -32,6 +32,7 @@ Inst = enum(
     WAIT=8,
     RTI=9
 )
+
 
 class SpinCoreAPI(ItemAttribute):
     '''
@@ -86,7 +87,7 @@ class SpinCoreAPI(ItemAttribute):
         with some channels always on for total_time, seconds
     '''
 
-    def __init__(self, clock, board=0, **kwarg):
+    def __init__(self, clock, board=0, debug=False, **kwarg):
 
         for key, value in kwarg.items():
             self[key] = value
@@ -95,6 +96,7 @@ class SpinCoreAPI(ItemAttribute):
 
         self.clock = clock
         self.board = board
+        self.debug = debug
 
         self.init_pb()
 

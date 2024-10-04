@@ -9,7 +9,7 @@ try:
 except:
     spinapi = CDLL("spinapi")
 
-get_version = spinapi.pb_pb_get_version
+get_version = spinapi.pb_get_version
 get_version.restype = (c_char_p)
 
 get_error = spinapi.pb_get_error
@@ -66,4 +66,3 @@ inst_pbonly.argtype =\
      c_int,  # inst_data
      c_double)  # timing value)
 inst_pbonly.restype = (c_int)
-

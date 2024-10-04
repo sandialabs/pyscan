@@ -15,8 +15,7 @@ except BaseException as err:
     print('Path Error' + str(err))
 
 from libHeLIC import LibHeLIC
-from pyscan.general.item_attribute import ItemAttribute
-from .helios_sdk import HeliosSDK
+from .helios_sdk import HeliosSDK, sense_tqp_to_frequency, frequency_to_sense_tqp
 
 
 class HeliosCamera(HeliosSDK):
@@ -125,15 +124,15 @@ class HeliosCamera(HeliosSDK):
     @property
     def frequency(self):
 
-        self._frequency = SensTqp_to_frequency(self.internal_tqp)
+        self._frequency = sense_tqp_to_frequency(self.internal_tqp)
         return self._frequency
 
     @frequency.setter
     def frequency(self, x):
 
         if (x >= 2121) and (x <= 291666):
-            self.internal_tqp = int(frequency_to_SenseTqp(x))
-            self._frequency = frequency_to_SenseTqp(self.internal_tqp)
+            self.internal_tqp = int(frequency_to_sense_tqp(x))
+            self._frequency = frequency_to_sense_tqp(self.internal_tqp)
         else:
             print("Bad frequency, must be 2121Hz < f < 291,666 Hz")
 
