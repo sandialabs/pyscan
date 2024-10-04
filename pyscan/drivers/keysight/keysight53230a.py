@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .instrument_driver import InstrumentDriver
+from ..instrument_driver import InstrumentDriver
 
 
 class Keysight53230A(InstrumentDriver):

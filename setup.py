@@ -51,7 +51,9 @@ setup(
         'jupyter',
         'pytest',
         'nbmake',
-        'seabreeze'
+        'seabreeze',
+        'pylablib',
+        'pyscan-tlk'
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
