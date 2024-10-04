@@ -1,9 +1,21 @@
+## [0.8.3](https://github.com/sandialabs/pyscan/compare/v0.8.2...v0.8.3) (2024-10-04)
+
+
+### Bug Fixes
+
+* **driver:** fixed flake8 errors and a few other imports ([140fda3](https://github.com/sandialabs/pyscan/commit/140fda3ac28a3394fb60a8a6e40134474adcb125))
+* **driver:** fixed ocean optics, attocube, and keysightsd1 import messages ([145b8b7](https://github.com/sandialabs/pyscan/commit/145b8b796aaf61ee5e2151de416dab4e521c135a))
+* **drivers:** fixed thorlabs and pulseblaster to not thor import errors ([2505ba9](https://github.com/sandialabs/pyscan/commit/2505ba948aff24aa96d6e3ad98c18a30e3fea97d))
+
+
+
 ## [0.8.2](https://github.com/sandialabs/pyscan/compare/v0.8.1...v0.8.2) (2024-10-04)
 
 
 ### Bug Fixes
 
 * **driver:** fixed flake8 errors and a few other imports ([922316d](https://github.com/sandialabs/pyscan/commit/922316d697e41eb1cc5fa4d6457a3cecee071850))
+* **driver:** fixed flake8 errors and a few other imports [skip ci] ([b82cf44](https://github.com/sandialabs/pyscan/commit/b82cf443ab3a38a1b0558eefe52c7a72914608cc))
 * **driver:** fixed ocean optics, attocube, and keysightsd1 import messages ([cbfd373](https://github.com/sandialabs/pyscan/commit/cbfd373828b736497b47b7a25896f20e68ad5dd1))
 * **drivers:** fixed thorlabs and pulseblaster to not thor import errors ([3483a34](https://github.com/sandialabs/pyscan/commit/3483a344da9740d5e6e22fbe3646be63b10c8880))
 
