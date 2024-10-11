@@ -1,3 +1,79 @@
+## [0.8.3](https://github.com/sandialabs/pyscan/compare/v0.8.2...v0.8.3) (2024-10-04)
+
+
+### Bug Fixes
+
+* **driver:** fixed flake8 errors and a few other imports ([140fda3](https://github.com/sandialabs/pyscan/commit/140fda3ac28a3394fb60a8a6e40134474adcb125))
+* **driver:** fixed ocean optics, attocube, and keysightsd1 import messages ([145b8b7](https://github.com/sandialabs/pyscan/commit/145b8b796aaf61ee5e2151de416dab4e521c135a))
+* **drivers:** fixed thorlabs and pulseblaster to not thor import errors ([2505ba9](https://github.com/sandialabs/pyscan/commit/2505ba948aff24aa96d6e3ad98c18a30e3fea97d))
+
+
+
+## [0.8.2](https://github.com/sandialabs/pyscan/compare/v0.8.1...v0.8.2) (2024-10-04)
+
+
+### Bug Fixes
+
+* **driver:** fixed flake8 errors and a few other imports ([922316d](https://github.com/sandialabs/pyscan/commit/922316d697e41eb1cc5fa4d6457a3cecee071850))
+* **driver:** fixed flake8 errors and a few other imports [skip ci] ([b82cf44](https://github.com/sandialabs/pyscan/commit/b82cf443ab3a38a1b0558eefe52c7a72914608cc))
+* **driver:** fixed ocean optics, attocube, and keysightsd1 import messages ([cbfd373](https://github.com/sandialabs/pyscan/commit/cbfd373828b736497b47b7a25896f20e68ad5dd1))
+* **drivers:** fixed thorlabs and pulseblaster to not thor import errors ([3483a34](https://github.com/sandialabs/pyscan/commit/3483a344da9740d5e6e22fbe3646be63b10c8880))
+
+
+
+## [0.8.1](https://github.com/sandialabs/pyscan/compare/v0.8.0...v0.8.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* **driver Stanford830:** learned to spell, fixed test notebook bug ([be9b137](https://github.com/sandialabs/pyscan/commit/be9b1376fb895486fd799050d483886951432723))
+* **driver:** black listed stanford830 sensitivity for autotesting, depends on time constant ([0f8cedd](https://github.com/sandialabs/pyscan/commit/0f8cedda52b4b5d04598536205bb5d860ce5b31d))
+* **driver:** fixed srs830 snap and offset_expand bugs ([4170268](https://github.com/sandialabs/pyscan/commit/4170268604b56ae86b059168c88ab2b4f0e38b35))
+* **driver:** fixed Stanford830 buffer points as read only, complete driver? ([dc2a5be](https://github.com/sandialabs/pyscan/commit/dc2a5be3ece234081c51384ea714ed99190df741))
+* **test)(driver:** fixed both test cases and srs830 driver so it is now passing the test cases. A debug setting is included to debug the test_driver() function; however, this will bypass the test log. An updated error message is included to point to setting the debug parameter to true for debugging purposes. ([74c835d](https://github.com/sandialabs/pyscan/commit/74c835d8329d82b28fb0260d8db6b7e21302d011))
+
+
+
+# [0.8.0](https://github.com/sandialabs/pyscan/compare/v0.7.4...v0.8.0) (2024-10-01)
+
+
+### Bug Fixes
+
+* tried updating killswitch example notebook to skip last cell on nbmake workflow. ([cd2b930](https://github.com/sandialabs/pyscan/commit/cd2b930214923d5f1ff0304b6e45a59829c7903f))
+
+
+### Features
+
+* Added live_multi_plot function ([3502a7d](https://github.com/sandialabs/pyscan/commit/3502a7df2bf5e1e397e79c9dff983bc4e3b178d4))
+
+
+### Reverts
+
+* **general:** restoring main version of get_pyscan_version. ([b341479](https://github.com/sandialabs/pyscan/commit/b341479300ca90be17e98a5f6bd0d7c19ddb8a2a))
+* **measurement:** restoring main version of run_info.py. ([9d3558e](https://github.com/sandialabs/pyscan/commit/9d3558efe5053e927314bf78213034eb46322ba2))
+
+
+
+## [0.7.4](https://github.com/sandialabs/pyscan/compare/v0.7.3...v0.7.4) (2024-10-01)
+
+
+### Bug Fixes
+
+* **measurement:** fixed sparse experiment to use scan naming convention rather than loop. ([423ce39](https://github.com/sandialabs/pyscan/commit/423ce39cb05f751a09a313682c46c2254cc6472e))
+* **measurement:** fixed sparse experiment to use scan naming convention rather than loop. [skip ci] ([ea71d69](https://github.com/sandialabs/pyscan/commit/ea71d6908264d88dc005d64d723f2dadb042850c))
+* **plotting:** updating loop nomenclature to scan in plot_generator. ([af27aa6](https://github.com/sandialabs/pyscan/commit/af27aa626df4cf0bc3b78f8cb6847ca9a5ec9c49))
+
+
+
+## [0.7.3](https://github.com/sandialabs/pyscan/compare/v0.7.2...v0.7.3) (2024-09-24)
+
+
+### Bug Fixes
+
+* fixing pyscan init to install more robustly. ([63fe2b1](https://github.com/sandialabs/pyscan/commit/63fe2b1adf8d6ae57da2d8741f182f6e839445e2))
+
+
+
 ## [0.7.2](https://github.com/sandialabs/pyscan/compare/v0.7.1...v0.7.2) (2024-09-17)
 
 
@@ -5,6 +81,7 @@
 
 * **install:** now install without -e will work since version file moved to pyscan folder. Version workflow set to track accordingly. Install and runinfo will now fail if version not detected. ([62bd629](https://github.com/sandialabs/pyscan/commit/62bd6291857490b6738b7f85e05f035bb1d06467))
 * **install:** updating complete.yml to run jobs in parallel, and updated setup.py to explicity include pyscan/VERSION.json when using pip install . ([84a1982](https://github.com/sandialabs/pyscan/commit/84a198212d433b23600ef5d9ce13adf099789f43))
+* **install:** updating complete.yml to run jobs in parallel, and updated setup.py to explicity include pyscan/VERSION.json when using pip install . [skip ci] ([d8f0974](https://github.com/sandialabs/pyscan/commit/d8f0974d4cc2c6564bb969b96182dbdcd644ff14))
 * **measurement:** Update run_info.py ([68f0df2](https://github.com/sandialabs/pyscan/commit/68f0df2e06eab5e2021945fb8b6715b16022fa50))
 * **workflows:** updating complete.yml to ensure the job complete2 does not have race condition, conflict, or other unwanted interaction with the job complete. ([acac485](https://github.com/sandialabs/pyscan/commit/acac485c89cf4e4b3bf3ed46712a0c95e86cca94))
 

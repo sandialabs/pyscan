@@ -7,6 +7,8 @@ from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
 from pyscan.general.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
+import re
+import pprint
 
 '''
 WARNING!
@@ -70,7 +72,7 @@ def validate_blacklist(test_instrument):
 
 def save_initial_state(device):
     saved_settings = []
-    print(device.__dict__.keys())
+    # print(device.__dict__.keys())
     for attribute_name in device.__dict__.keys():
         if "_settings" in attribute_name:
             '''try:
@@ -95,14 +97,15 @@ def restore_initial_state(device, saved_settings):
         val = setting[1]
 
         if _name in device.black_list_for_testing:
-            err_msg = ("WARNING! BLACKLISTED PROPERTY WAS SOMEHOW CHANGED. Was {}, now {}\n".format(val, device[setter])
-                       + "PROCEED WITH CAUTION!")
+            err_msg = f"WARNING! BLACKLISTED PROPERTY WAS SOMEHOW CHANGED. Was {val}, now {device[setter]}\n"
             assert val == device[setter], err_msg
             restored_settings.append((setter, device[setter]))
             continue
-
-        if 'ranges' in device["_{}_settings".format(setter)].keys():
+        elif 'read_only' in device["_{}_settings".format(setter)].keys():
+            continue
+        elif 'ranges' in device["_{}_settings".format(setter)].keys():
             val = device["_{}_settings".format(setter)]['return_type'](val)
+
         try:
             device[setter] = val
         except Exception:
@@ -132,25 +135,28 @@ def reset_device_properties(device):
         if var_name in device.black_list_for_testing:
             blacklisted.append((var_name, device[var_name]))
             continue
-        if ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+        elif 'read_only' in keys:
+            continue
+        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             device[var_name] = device[name]['values'][0]
-        elif 'range' in device[name].keys():
+        elif 'range' in keys:
             device[var_name] = device[name]['range'][0]
-        elif 'ranges' in device[name].keys():
+        elif 'ranges' in keys:
             # write to reset val later
             pass
-        elif 'indexed_values' in device[name].keys():
+        elif 'indexed_values' in keys:
             device[var_name] = device[name]['indexed_values'][0]
-        elif 'dict_values' in device[name].keys():
+        elif 'dict_values' in keys:
             for key in device[name]['dict_values'].keys():
                 device[var_name] = key
                 break
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
-                name, ['values', 'range', 'ranges', 'indexed_values', 'dict_values'])
+                name, ['values', 'range', 'indexed_values', 'dict_values', 'read_only'])
 
     if len(blacklisted) > 0:
-        print("These blacklisted settings and their corresponding values were not reset: ", blacklisted)
+        print("Blacklisted settings that will not be tested or changed are: ")
+        pprint.pprint(blacklisted)
 
 
 # check that the initialized state has the expected attributes
@@ -169,8 +175,8 @@ def check_attribute_values(device, attributes, ev):
 # designed for testing read only properties of any type
 def check_read_only_property(device, key):
     name = device[key]['name']
-    settings = device[name + '_settings']
-    return_type = device
+    settings = device['_' + name + '_settings']
+    return_type = device[key]['return_type']
 
     # I'm not sure that this will work. It might be that only the underscore property can be used to access
     # the property value.
@@ -317,7 +323,7 @@ def check_dict_property(device, key):
 
 
 # implements above checks for all attributes by type
-def check_properties(test_instrument):
+def check_properties(test_instrument, verbose=True):
     # This is a critical step to ensuring safety when testing drivers with actual instruments
     validate_blacklist(test_instrument)
 
@@ -326,13 +332,19 @@ def check_properties(test_instrument):
     instrument_name = test_instrument.__class__.__name__
     # values_idx, range_idx, idx_vals_idx, dict_vals_idx = [], [], [], []
     saved_settings = save_initial_state(test_instrument)
-    print("Initial state for the {} was: {}".format(instrument_name, saved_settings))
+    if verbose:
+        print("Initial state for the {} was: ".format(instrument_name))
+        pprint.pprint(saved_settings)
+        print("\n")
 
     reset_device_properties(test_instrument)
     reset_settings = save_initial_state(test_instrument)
-    print("Reset state for the {} was: {}".format(instrument_name, reset_settings))
+    if verbose:
+        print("Reset state for the {} was: ".format(instrument_name))
+        pprint.pprint(reset_settings)
+        print("\n")
 
-    print("Beginning tests for: ", test_instrument.__class__.__name__)
+    print("\nBeginning tests for: ", test_instrument.__class__.__name__, " version ", test_instrument._version)
 
     settings = []
     total_settings = 0
@@ -373,13 +385,13 @@ def check_properties(test_instrument):
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
                 name, ['values', 'range', 'indexed_values', 'dict_values'])
-
-    restored_settings = restore_initial_state(test_instrument, saved_settings)
+        print(name)
+        restored_settings = restore_initial_state(test_instrument, saved_settings)
 
     diff = set(restored_settings) ^ set(saved_settings)
 
     mid_string = 'properties found and tested out of'
-    print("{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
+    print("\n{} range {} {} total settings found.".format(range_counter, mid_string, total_settings))
     print("{} values {} {} total settings found.".format(values_counter, mid_string, total_settings))
     print("{} indexed values {} {} total settings found.".format(idx_vals_counter, mid_string, total_settings))
     print("{} dict values {} {} total settings found.".format(dict_vals_counter, mid_string, total_settings))
@@ -398,15 +410,20 @@ def check_properties(test_instrument):
     if isinstance(test_instrument, TestInstrumentDriver):
         assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
         print("Drivers test unit seems to be working as expected.")
-    print("Settings restored to: {}".format(restored_settings))
+
+    if verbose:
+        print("\nSettings restored to: ")
+        pprint.pprint(restored_settings)
+
     if (len(diff) > 0):
-        print("Restored settings are different for the following: ", diff)
+        print("\nRestored settings are different for the following: ", diff)
+    print("\n")
 
     assert hasattr(test_instrument, '_version'), "The instrument had no attribute _version"
-    print("The previous instrument version was: ", test_instrument._version)
+    # print("The (previous) instrument version was: ", test_instrument._version)
 
 
-def write_log(device, exception):
+def write_log(device, exception=None, save_multiple_lines=False):
     try:
         driver_file_name = str(type(device)).split("'")[1].split(".")[-2]
     except Exception:
@@ -434,12 +451,14 @@ def write_log(device, exception):
     path = os.path.join(directory, driver_file_name)
 
     if driver_file_name in driver_test_logs_file_names:
-        with open(path, 'r') as test_log:
-            existing_log = test_log.read()
+        if save_multiple_lines:
+            with open(path, 'r') as test_log:
+                existing_log = test_log.read()
 
         with open(path, 'w') as test_log:
             test_log.write(new_line + '\n')
-            test_log.write(existing_log)
+            if save_multiple_lines:
+                test_log.write(existing_log)
 
     else:
         print("No test log file detected for this driver. Creating a new one.")
@@ -472,12 +491,57 @@ def check_attribute_doc_strings(test_instrument):
         try:
             doc_string = test_instrument.get_property_docstring(name)
         except Exception:
-            assert False, "Doc string could not be found for {}".format(name)
+            assert False, "Doc string could not be found or not properly formatted for {}".format(name)
 
         splits = doc_string.split('\n')
         assert name in splits[0], "attribute name not found on first line of doc_string for {}".format(name)
         assert len(splits) > 1, "doc string for {} found as only 1 line".format(name)
         assert [len(splits[1]) > 3], "doc string's second line is not long enough for {}".format(name)
+
+
+def extract_attributes_from_docstring(doc_string):
+    # Assuming attributes are listed with 4 leading spaces and followed by a colon
+    attributes = []
+    in_attributes_section = False
+
+    for line in doc_string.split('\n'):
+        # Check if we've reached the Methods section
+        if 'Methods' in line:
+            break  # Stop processing if we've reached Methods
+
+        # Check for the start of Attributes section
+        if 'Attributes' in line:
+            in_attributes_section = True
+            continue  # Go to the next line to read attributes
+
+        # If we are in the Attributes section, extract attributes
+        if in_attributes_section:
+            if line.strip() == '':
+                continue  # Skip empty lines
+            # Match lines that start with 4 spaces and contain a word followed by a colon
+            match = re.match(r'^\s{4}(\w+)\s*:', line)
+            if match:
+                attributes.append(match.group(1))
+
+    return attributes
+
+
+def extract_methods_from_docstring(doc_string):
+    # Assuming methods are listed under 'Methods' section
+    methods = []
+    in_methods_section = False
+
+    for line in doc_string.split('\n'):
+        if 'Methods' in line:
+            in_methods_section = True
+        elif in_methods_section:
+            if line.strip() == '':
+                break
+            match = re.match(r'\s*(\w+)\s*\(', line)
+            if match:
+                methods.append(match.group(1))
+
+    return methods
 
 
 # parses and checks the instruments doc string for proper formatting
@@ -501,32 +565,40 @@ def check_doc_strings(test_instrument):
         assert line.startswith('    ') or line == '', "Improper indentation of line {}".format(repr(line))
 
     check_attribute_doc_strings(test_instrument)
+
+    # Extract attributes and methods from the docstring
+    attributes = extract_attributes_from_docstring(doc_string)
+    methods = extract_methods_from_docstring(doc_string)
+
+    # Check that each attribute and method in the docstring exists in the test_instrument
+    for attribute in attributes:
+        assert hasattr(test_instrument, attribute), f"Attribute '{attribute}' listed in docstring but not the driver."
+
+    for method in methods:
+        assert hasattr(test_instrument, method), f"Method '{method}' listed in docstring but not the driver."
+
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None):
+def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
+                verbose=True):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
 
         if expected_values is not None:
             check_attribute_values(device, expected_attributes, expected_values)
 
-    try:
-        check_properties(device)
-        exception = None
-    except Exception as e:
-        exception = str(e)
-
-    # Note, based on this execution order
-    # the driver log can pass the driver for functional tests success before ensuring doc string is properly formatted
-    if skip_log is False:
-        write_log(device, exception)
-
-    if exception is not None:
-        assert False, exception
-    else:
-        print("\033[1;32mTests passed, instrument {} looks ready to go.\033[0m".format(device.__class__.__name__))
+    check_properties(device, verbose)
+    print(
+        f"\033[92m Property implementation tests passed, instrument: {device.__class__.__name__} looks ready to go. \033[0m")
 
     check_doc_strings(device)
+    print("\033[92m Docstring tests passed and looking good. \033[0m")
 
-    print("Tests passed, instrument {} should be ready to go.".format(device.__class__.__name__))
+    # Note, based on this execution order
+    # the driver log can pass the driver for functional tests success
+    # before ensuring doc string is properly formatted
+    if skip_log is False:
+        write_log(device)
+
+    print(f"\033[1;32m {device.__class__.__name__} test results logged. \033[0m")

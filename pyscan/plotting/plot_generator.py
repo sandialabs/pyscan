@@ -80,9 +80,9 @@ class PlotGenerator(object):
         '''
 
         if self.x_name is None:
-            self.x_name = first_string(list(self.expt.runinfo.loop0.scan_dict.keys()))
+            self.x_name = first_string(list(self.expt.runinfo.scan0.scan_dict.keys()))
 
-        self.other_x = set_difference(list(self.expt.runinfo.loop0.scan_dict.keys()), self.x_name)
+        self.other_x = set_difference(list(self.expt.runinfo.scan0.scan_dict.keys()), self.x_name)
         self.x = self.expt[self.x_name]
 
     def get_xlabel(self):
@@ -106,8 +106,8 @@ class PlotGenerator(object):
             self.other_y = ''
         else:
             if self.y_name is None:
-                self.y_name = first_string(list(self.expt.runinfo.loop1.scan_dict.keys()))
-            self.other_y = set_difference(list(self.expt.runinfo.loop1.scan_dict.keys()), self.y_name)
+                self.y_name = first_string(list(self.expt.runinfo.scan1.scan_dict.keys()))
+            self.other_y = set_difference(list(self.expt.runinfo.scan1.scan_dict.keys()), self.y_name)
             self.y = self.expt[self.y_name]
 
     def get_ylabel(self):
@@ -153,23 +153,23 @@ class PlotGenerator(object):
         if not self.expt.runinfo.running:
             return '{}, {}'.format(self.data_name, self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 4:
-            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop4.i,
-                                          self.expt.runinfo.loop4.n,
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan4.i,
+                                          self.expt.runinfo.scan4.n,
                                           self.data_name,
                                           self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 3:
-            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop3.i,
-                                          self.expt.runinfo.loop3.n,
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan3.i,
+                                          self.expt.runinfo.scan3.n,
                                           self.data_name,
                                           self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 2:
-            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop2.i,
-                                          self.expt.runinfo.loop2.n,
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan2.i,
+                                          self.expt.runinfo.scan2.n,
                                           self.data_name,
                                           self.expt.runinfo.long_name)
         elif self.expt.runinfo.ndim == 1:
-            return '{}/{}, {}, {}'.format(self.expt.runinfo.loop1.i,
-                                          self.expt.runinfo.loop1.n,
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan1.i,
+                                          self.expt.runinfo.scan1.n,
                                           self.data_name,
                                           self.expt.runinfo.long_name)
 

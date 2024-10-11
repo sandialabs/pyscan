@@ -231,43 +231,55 @@ class RunInfo(ItemAttribute):
 
         return self._has_average_scan
 
-    # These property's are strictly for backwards compatibility with old pyscan naming convention.
+    ####################### LEGACY SECTION ########################
+    # This section is set up to alert users who try to use legacy nomenclature
+    # of the updated naming convention that they must use instead.
     @property
     def loop0(self):
+        legacy_warning()
         return self.scan0
 
     @loop0.setter
     def loop0(self, value):
+        legacy_warning()
         self.scan0 = value
 
     @property
     def loop1(self):
+        legacy_warning()
         return self.scan1
 
     @loop1.setter
     def loop1(self, value):
+        legacy_warning()
         self.scan1 = value
 
     @property
     def loop2(self):
+        legacy_warning()
         return self.scan2
 
     @loop2.setter
     def loop2(self, value):
+        legacy_warning()
         self.scan2 = value
 
     @property
     def loop3(self):
+        legacy_warning()
         return self.scan3
 
     @loop3.setter
     def loop3(self, value):
+        legacy_warning()
         self.scan3 = value
 
     @property
     def loops(self):
-        ''' Returns array of all scans
         '''
+        Returns array of all scans
+        '''
+        legacy_warning()
         return [self.scan0, self.scan1, self.scan2, self.scan3]
 
 
@@ -288,3 +300,10 @@ def drop(array, index):
     '''
 
     return list(array[0:index]) + list(array[index + 1:])
+
+
+def legacy_warning():
+    warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
+                   + "You entered 'loop', use 'scan' instead.")
+    raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
+    assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"

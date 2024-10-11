@@ -16,27 +16,35 @@ class Stanford830(InstrumentDriver):
     Attributes
     ----------
     (Properties)
+    id : read-only
+        Gets the id string of the device.
     phase : float
-        Range: [-180, 180]
-    reference_source : int
-        Indexed_values: ['external', 'internal']. Returns float.
+        Gets/sets the phase of the device. Range: [-180, 180]
+    reference_source : str
+        Get/sets the reference source. Indexed_values: ['external', 'internal'].
     frequency : float
-        Range: [0.001, 102000]
+        Gets/sets/ the frequency. Range: [0.001, 102000]
     reference_slope : int
-        Indexed_values: ['sine zero', 'ttl rising', 'ttl falling']. Returns float.
+        Gets/sets the slope of the frequency refeference.
+        Indexed_values: ['sine zero', 'ttl rising', 'ttl falling'].
     harmonic : int
-        Range: [1, 19999]
+        Gets/sets the demodulation harmonic. Range: [1, 19999]
     amplitude : float
-            Range:  [0.004, 5.0]
-    input_configuration : int
-        Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8']. Returns int.
-    input_ground : int
+        Gets/sets the output amplitude. Range: [0.004, 5.0]
+    input_configuration : str
+        Gets/sets the analog input mode.
+        Indexed_values:  ['A', 'A-B', 'Ie6', 'Ie8'].
+    input_ground : str
+        Get/sets the input ground.
         Indexed_values: ['AC', 'DC']
-    input_coupling : int
+    input_coupling : str
+        Gets/sets the input coupling.
         Indexed_values: ['AC', 'DC']
-    input_line_filter : int
+    input_line_filter : str
+        Gets/sets the line filer of the input.
         Indexed_values: ['none', 'line', '2xline', 'both']
-    sensitivity : int
+    sensitivity : float
+        Gets/sets the sensitivy (max input).
         Indexed_values:  [2e-9, 5e-9, 10e-9, 20e-9, 50e-5,
                             100e-9, 200e-9, 500e-9,
                             1e-6, 2e-6, 5e-6,
@@ -46,32 +54,81 @@ class Stanford830(InstrumentDriver):
                             10e-3, 20e-3, 50e-3,
                             100e-3, 200e-3, 500e-3,
                             1]
-    reserve_mode : int
+    reserve_mode : str
+        Gets/sets the dynamic reserver
         Indexed_values:  ['high', 'normal', 'low']
-    time_constant : int
+    time_constant : float
+        Gets/sets the time constant in seconds
         Indexed_values:  [10e-6, 30e-6, 100e-6, 300e-6,
                             1e-3, 3e-3, 10e-3, 30e-3, 100e-3,
                             300e-3,
                             1, 3, 10, 30, 100, 300, 1000, 3000,
                             10000, 30000]
     filter_slope : int
+        Gets/sets the slope of the filter in dB/oct
         Indexed_values:  [6, 12, 18, 24]
-    synchronous_filter : int
+    synchronous_filter : str
+        Gets/sets the synchronous filter state
         Indexed_values:  ['off', 'on']
-    sample_rate : int
+    display1_output_source : str
+        Gets/sets the displayed source on display 1
+        Indexed values ['x', 'display']
+    display2_output_source : str
+        Gets/sets the displayed source on display 2
+        Indexed values['y', 'display']
+    auxiliary_voltage1 : float
+        Gets/sets the channel 1 auxiliary output voltage
+        range - [-10.5, 10.500]
+    auxiliary_voltage2 : float
+        Gets/sets the channel 2 auxiliary output voltage
+        range - [-10.5, 10.500]
+    auxiliary_voltage3 : float
+        Gets/sets the channel 3 auxiliary output voltage
+        range - [-10.5, 10.500]
+    auxiliary_voltage4 : float
+        Gets/sets the channel 4 auxiliary output voltage
+        range - [-10.5, 10.500]
+    sample_rate : float
+        Get/sets the sample rate in Hz
         Indexed_values:  [0.0625, .125, .250, .5, 1,
                                     2, 4, 8,
                                     16, 32, 64, 128,
                                     256, 512, 'trigger']
-    end_buffer_mode : int
+    end_buffer_mode : str
+        Gets/sets the end mode for th data buffer
         Indexed_values: ['one shot', 'loop']
     trigger_mode : int
+        Gets/sets the trigger mode state
         Indexed_values':  ['off', 'on']
+    buffer_points : read-only
+        Gets the number of points stored in the buffer.
 
     Methods
     -------
+    get_display(display_number)
+    set_display(display_number, source, ratio)
+    get_channel_offset_expand(channel)
+    set_channel_offset_expand(channel, offset, expand)
+    read_aux_input(index)
+    auto_gain()
+    auto_reserve()
+    auto_phase()
+    auto_offset()
+    trigger()
+    start()
+    pause()
+    reset()
+    read(source)
+    read_display(display)
+    snap(*args)
+    read_ascii_buffer()
+    read_binary_buffer()
+    reset_to_default_settings()
+    clear_status_bytes()
+    set_buffer_mode(sample_rate)
+    wait_for_trigger()
     snap_xy()
-        Returns array of current read x and read y values.
+
     '''
 
     def __init__(self, instrument):
@@ -79,9 +136,13 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "1.0.0"
+        self._version = "1.0.3"
 
-        self.black_list_for_testing = ['_input_configuration', "_time_constant", "_amplitude", "_power_on_status_clear"]
+        self.black_list_for_testing = [
+            '_input_configuration',
+            "_time_constant",
+            "_amplitude",
+            "_sensitivity"]
 
         self.initialize_properties()
         self.update_properties()
@@ -89,6 +150,12 @@ class Stanford830(InstrumentDriver):
     def initialize_properties(self):
 
         # Reference and Phase properties
+
+        self.add_device_property({
+            'name': 'id',
+            'query_string': '*IDN?',
+            'read_only': True,
+            'return_type': str})
 
         self.add_device_property({
             'name': 'phase',
@@ -230,31 +297,31 @@ class Stanford830(InstrumentDriver):
             'indexed_values': ['y', 'display'],
             'return_type': int})
 
-        # Auxillary Input/Ouput Properties
+        # auxiliary Input/Ouput Properties
 
         self.add_device_property({
-            'name': 'auxillary_voltage1',
+            'name': 'auxiliary_voltage1',
             'write_string': 'AUXV 1, {}',
             'query_string': 'AUXV? 1',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage2',
+            'name': 'auxiliary_voltage2',
             'write_string': 'AUXV 2, {}',
             'query_string': 'AUXV? 2',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage3',
+            'name': 'auxiliary_voltage3',
             'write_string': 'AUXV 3, {}',
             'query_string': 'AUXV? 3',
             'range': [-10.5, 10.500],
             'return_type': float})
 
         self.add_device_property({
-            'name': 'auxillary_voltage4',
+            'name': 'auxiliary_voltage4',
             'write_string': 'AUXV 4, {}',
             'query_string': 'AUXV? 4',
             'range': [-10.5, 10.500],
@@ -287,27 +354,10 @@ class Stanford830(InstrumentDriver):
             'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
             'return_type': int})
 
-        # Interface Properties
-
         self.add_device_property({
-            'name': 'local_remote_control',
-            'write_string': 'LOCL {}',
-            'query_string': 'LOCL?',
-            'indexed_values': ['local', 'remote', 'local lockout'],
-            'return_type': int})
-
-        self.add_device_property({
-            'name': 'gpib_overrided_state',
-            'write_string': 'OVRM {}',
-            'query_string': 'OVRM?',
-            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
-            'return_type': int})
-
-        self.add_device_property({
-            'name': 'power_on_status_clear',
-            'write_string': '*PSC {}',
-            'query_string': '*PSC?',
-            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
+            'name': 'buffer_points',
+            'query_string': 'SPTS?',
+            'read_only': True,
             'return_type': int})
 
     # Display and Output Methods
@@ -396,7 +446,10 @@ class Stanford830(InstrumentDriver):
         response = self.query('OEXP? {}'.format(channel)).strip('\n')
         response = response.split(',')
 
-        return self._channel1_offset, self._channel1_expand
+        setattr(self, '_channel{}_offset', response[0])
+        setattr(self, '_channel{}_expand', response[1])
+
+        return response
 
     def set_channel_offset_expand(self, channel, offset, expand):
         '''
@@ -425,20 +478,20 @@ class Stanford830(InstrumentDriver):
 
         self.write('OEXP {}, {}, {}'.format(channel, offset, index))
 
-    # Auxillary Input/Ouptut Methods
+    # auxiliary Input/Ouptut Methods
 
     def read_aux_input(self, index):
         '''
-        Reads the voltage input to an auxillary input channel
+        Reads the voltage input to an auxiliary input channel
 
         Parameters
         ----------
         index: int
-            Auxillary input channel number 1, 2, 3, or 4
+            auxiliary input channel number 1, 2, 3, or 4
         '''
 
         indicies = [1, 2, 3, 4]
-        assert index in indicies, 'Auxillary input index must be 1, 2, 3, or 4'
+        assert index in indicies, 'auxiliary input index must be 1, 2, 3, or 4'
 
         return float(self.query('OAUX ? {}'.format(index)))
 
@@ -584,13 +637,13 @@ class Stanford830(InstrumentDriver):
         sources = ['x', 'y', 'r', 'theta', 'aux1', 'aux2', 'aux3',
                    'aux4', 'frequency', 'display1', 'display2']
 
-        assert (len(args) >= 2) and (len(args <= 6)), 'Snap accepts 2 to 6 readable sources'
+        assert (len(args) >= 2) and (len(args) <= 6), 'Snap accepts 2 to 6 readable sources'
 
         for source in args:
             assert source in sources, (
                 'Readable sources include x, y, r, theta, aux1, aux2, aux3, aux4, frequency, display1, display2')
 
-        indicies = [sources.index(arg) + 1 for arg in args]
+        indicies = [str(sources.index(arg) + 1) for arg in args]
         query_string = 'SNAP? ' + ', '.join(indicies)
         responses = self.query(query_string).strip('\n')
 
@@ -678,273 +731,6 @@ class Stanford830(InstrumentDriver):
         Clears all status bytes
         '''
         self.write('*CLS')
-
-    def get_standard_status_event_enable_register(self, bit=None):
-        '''
-        Gets the standard status event enable register byte by single bit or all bits
-
-        Parameters
-        ---------
-        bit: int (None)
-            Bit to query, if None, returns all bit values
-
-        Returns
-        -------
-        int
-        '''
-
-        if bit is None:
-            return self.query('ESE?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('ESE? {}'.format(bit))
-
-    def set_standard_status_event_enable_register(self, value, bit=None):
-        '''
-        Sets the standard event status enable register by single bit or all bits
-
-        Parameters
-        ----------
-        value: int
-            If bit==None, value must be between 0 and 255 and
-            sets all bits
-        bit: int (None)
-            Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit
-        '''
-        if bit is None:
-            assert (
-                value >= 0) and (
-                value <= 255), 'Standard status event byte must be between 0 and 255 when no bit is supplied'
-            self.write('ESE {}'.format(value))
-        else:
-            assert value in [0, 1], 'Standard status event value must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <= 7), 'Standard status event bit must be between 0 and 7'
-            self.write('ESE {}, {}'.format(bit, value))
-
-    def get_standard_event_status_byte(self, bit=None):
-        '''
-        Queries the standard event status byte
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-        if bit is None:
-            return self.query('ESR?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('ESR? {}'.format(bit))
-
-    def get_serial_poll_enable_register(self, bit=None):
-        '''
-        Queries the standard event status byte
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-
-        if bit is None:
-            return self.query('SRE?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('SRE? {}'.format(bit))
-
-    def set_serial_poll_enable_register(self, value, bit=None):
-        '''
-        Sets the serial poll enable register by single bit or all bits
-
-        Parameters
-        ----------
-        value: int
-            If bit==None, value must be between 0 and 255 and
-            sets all bits
-        bit: int (None)
-            Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit
-        '''
-
-        if bit is None:
-            assert (
-                value >= 0) and (
-                value <= 255), 'Serial event poll register value be between 0 and 255 when no bit is supplied'
-            self.write('SRE {}'.format(value))
-        else:
-            assert value in [0, 1], 'Serial event poll register value must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <= 7), 'Serial even poll register bit must be between 0 and 7'
-            self.write('SRE {}, {}'.format(bit, value))
-
-    def get_status_poll_byte(self, bit=None):
-        '''
-        Queries the status poll byte
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-
-        if bit is None:
-            return self.query('STB?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('STB? {}'.format(bit))
-
-    def get_error_status_enable_register(self, bit=None):
-        '''
-        Queries the error status enable register settings
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-
-        if bit is None:
-            return self.query('ERRE?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('ERRE? {}'.format(bit))
-
-    def set_error_status_enable_register(self, value, bit=None):
-        '''
-        Sets the error status enable register by single bit or all bits
-
-        Parameters
-        ----------
-        value: int
-            If bit==None, value must be between 0 and 255 and
-            sets all bits
-        bit: int (None)
-            Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit
-        '''
-
-        if bit is None:
-            assert (
-                value >= 0) and (
-                value <= 255), 'Error status enable register must be between 0 and 255 when no bit is supplied'
-            self.write('ERRE {}'.format(value))
-        else:
-            assert value in [0, 1], 'Error status enable register must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <= 7), 'Error status enable register must be between 0 and 7'
-            self.write('ERRE {}, {}'.format(bit, value))
-
-    def get_error_status_byte(self, bit=None):
-        '''
-        Queries the error status byte
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-        if bit is None:
-            return self.query('ERRS?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('ERRS? {}'.format(bit))
-
-    def get_lia_status_enable_register(self, bit=None):
-        '''
-        Queries the lockin amplifier enable register settings
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-
-        if bit is None:
-            return self.query('LIAE?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('LIAE? {}'.format(bit))
-
-    def set_lia_status_enable_register(self, value, bit=None):
-        '''
-        Sets the lockin status enable register by single bit or all bits
-
-        Parameters
-        ----------
-        value: int
-            If bit==None, value must be between 0 and 255 and
-            sets all bits
-        bit: int (None)
-            Value must be between 0 and 7, and bit must be 0 or 1
-            Sets the value of a single bit
-        '''
-
-        if bit is None:
-            assert (
-                value >= 0) and (
-                value <= 255), 'LIA status enable register must be between 0 and 255 when no bit is supplied'
-            self.write('LIAE {}'.format(value))
-        else:
-            assert value in [0, 1], 'LIA status enable register must be 0 or 1 when a bit index is supplied'
-            assert (bit >= 0) and (bit <= 7), 'LIA status enable register must be between 0 and 7'
-            self.write('LIAE {}, {}'.format(bit, value))
-
-    def get_lia_status_byte(self, bit=None):
-        '''
-        Queries the lockin amplifier byte
-
-        Parameters
-        ----------
-        bit: int (None)
-            If inlcuded, queries only the value at bit
-            otherwise, queries all values
-
-        Returns
-        --------
-        int
-
-        '''
-
-        if bit is None:
-            return self.query('LIAS?')
-        else:
-            assert (bit >= 0) and (bit <= 7), 'Bit index must be 0-7'
-            return self.query('LIAS? {}'.format(bit))
 
     # Custom Multi-Settings Methods
 

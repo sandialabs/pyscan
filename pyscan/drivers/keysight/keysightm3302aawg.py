@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-from pyscan.general import ItemAttribute
-
+import keysightSD1
+from pyscan.general.item_attribute import ItemAttribute
 import sys
 sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
-
-try:
-    import keysightSD1
-except:
-    print('Could not load Keysight SD1')
 
 
 class KeysightM3302AAWG(ItemAttribute):

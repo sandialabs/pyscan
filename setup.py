@@ -50,8 +50,11 @@ setup(
         'matplotlib',
         'jupyter',
         'pytest',
+        'nbmake',
+        'seabreeze',
+        'pylablib',
+        'pyscan-tlk'
     ],
-    extras_require={'oceanoptics': ['seabreeze']},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "License :: MIT",

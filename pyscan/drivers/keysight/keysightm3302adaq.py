@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.general import ItemAttribute
+from pyscan.general.item_attribute import ItemAttribute
 
 import sys
 sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')

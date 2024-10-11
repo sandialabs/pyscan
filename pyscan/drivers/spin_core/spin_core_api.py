@@ -1,18 +1,10 @@
-# -*- coding: utf-8 -*-
 from pyscan.general.item_attribute import ItemAttribute
 import ctypes
+from . import spin_api_wrapper as pb
+
 
 PULSE_PROGRAM = 0
 FREQ_REGS = 1
-
-try:
-    spinapi = ctypes.CDLL("spinapi64")
-except:
-    try:
-        spinapi = ctypes.CDLL("spinapi")
-    except:
-        print("Failed to load spinapi library.")
-        pass
 
 
 def enum(**enums):
@@ -41,47 +33,8 @@ Inst = enum(
     RTI=9
 )
 
-spinapi.pb_get_version.restype = (ctypes.c_char_p)
-spinapi.pb_get_error.restype = (ctypes.c_char_p)
 
-spinapi.pb_count_boards.restype = (ctypes.c_int)
-
-spinapi.pb_init.restype = (ctypes.c_int)
-
-spinapi.pb_select_board.argtype = (ctypes.c_int)
-spinapi.pb_select_board.restype = (ctypes.c_int)
-
-spinapi.pb_set_debug.argtype = (ctypes.c_int)
-spinapi.pb_set_debug.restype = (ctypes.c_int)
-
-spinapi.pb_set_defaults.restype = (ctypes.c_int)
-
-spinapi.pb_core_clock.argtype = (ctypes.c_double)
-spinapi.pb_core_clock.restype = (ctypes.c_int)
-
-spinapi.pb_write_register.argtype = (ctypes.c_int, ctypes.c_int)
-spinapi.pb_write_register.restype = (ctypes.c_int)
-
-spinapi.pb_start_programming.argtype = (ctypes.c_int)
-spinapi.pb_start_programming.restype = (ctypes.c_int)
-
-spinapi.pb_stop_programming.restype = (ctypes.c_int)
-
-spinapi.pb_start.restype = (ctypes.c_int)
-spinapi.pb_stop.restype = (ctypes.c_int)
-spinapi.pb_reset.restype = (ctypes.c_int)
-spinapi.pb_close.restype = (ctypes.c_int)
-
-spinapi.pb_inst_pbonly.argtype =\
-    (ctypes.c_int,  # flags
-     ctypes.c_int,  # inst
-     ctypes.c_int,  # inst_data
-     ctypes.c_double)  # timing value)
-
-spinapi.pb_inst_pbonly.restype = (ctypes.c_int)
-
-
-class PulseBlaster(ItemAttribute):
+class SpinCoreAPI(ItemAttribute):
     '''
     Driver for PulseblasterESRPro Cards
 
@@ -134,7 +87,7 @@ class PulseBlaster(ItemAttribute):
         with some channels always on for total_time, seconds
     '''
 
-    def __init__(self, clock=500, board=0, **kwarg):
+    def __init__(self, clock, board=0, debug=False, **kwarg):
 
         for key, value in kwarg.items():
             self[key] = value
@@ -143,6 +96,7 @@ class PulseBlaster(ItemAttribute):
 
         self.clock = clock
         self.board = board
+        self.debug = debug
 
         self.init_pb()
 
@@ -156,60 +110,60 @@ class PulseBlaster(ItemAttribute):
         self.core_clock(self.clock)
 
     def get_error(self):
-        ret = spinapi.pb_get_error()
+        ret = pb.get_error()
         return str(ctypes.c_char_p(ret).value.decode("utf-8"))
 
     def count_boards(self):
         """Return the number of boards detected in the system."""
-        return spinapi.pb_count_boards()
+        return pb.count_boards()
 
     def init(self):
         """Initialize currently selected board."""
-        return spinapi.pb_init()
+        return pb.init()
 
     def set_debug(self, debug):
-        return spinapi.pb_set_debug(debug)
+        return pb.set_debug(debug)
 
     def select_board(self, board_number):
         """Select a specific board number"""
-        return spinapi.pb_select_board(board_number)
+        return pb.select_board(board_number)
 
     def set_defaults(self):
         """
         Set board defaults. Must be called before using any other board functions.
         """
-        return spinapi.pb_set_defaults()
+        return pb.set_defaults()
 
     def core_clock(self, clock):
-        return spinapi.pb_core_clock(ctypes.c_double(clock))
+        return pb.core_clock(ctypes.c_double(clock))
 
     def write_register(self, address, value):
-        return spinapi.pb_write_register(address, value)
+        return pb.write_register(address, value)
 
     def start_programming(self):
-        return spinapi.pb_start_programming(0)
+        return pb.start_programming(0)
 
     def stop_programming(self):
-        return spinapi.pb_stop_programming()
+        return pb.stop_programming()
 
     def inst(self, *args):
         t = list(args)
         # Argument 13 must be a double
         t[-1] = ctypes.c_double(t[-1])
         args = tuple(t)
-        return spinapi.pb_inst_pbonly(*args)
+        return pb.inst_pbonly(*args)
 
     def start(self):
-        return spinapi.pb_start()
+        return pb.start()
 
     def stop(self):
-        return spinapi.pb_stop()
+        return pb.stop()
 
     def reset(self):
-        return spinapi.pb_reset()
+        return pb.reset()
 
     def close(self):
-        return spinapi.pb_close()
+        return pb.close()
 
     def instruction(self, instruction):
         instruction = instruction.lower()
