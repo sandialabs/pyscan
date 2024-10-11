@@ -42,6 +42,7 @@ class Experiment(AbstractExperiment):
                 self.runinfo['t{}'.format(i)] = np.zeros(self.runinfo.dims)
 
         t0 = (datetime.now()).timestamp()
+
         # Use for scan, but break if self.runinfo.running=False
         for m in self.runinfo.scan3.iterator():
             self.runinfo.scan3.i = m
@@ -81,20 +82,12 @@ class Experiment(AbstractExperiment):
                             self.runinfo.t3[indicies] = (datetime.now()).timestamp()
 
                         if np.all(np.array(self.runinfo.indicies) == 0):
-                            self.runinfo.measured = []
-                            for key, value in data.items():
-                                self.runinfo.measured.append(key)
                             self.preallocate(data)
 
-                        for key, value in data.items():
-                            if is_list_type(self[key]):
-                                self[key][self.runinfo.indicies] = value
-                            else:
-                                self[key] = value
                         if self.runinfo.time:
                             self.runinfo.t4[indicies] = (datetime.now()).timestamp()
 
-                        self.save_point()
+                        self.save_point(data)
 
                         if self.runinfo.time:
                             self.runinfo.t5[indicies] = (datetime.now()).timestamp()
@@ -103,20 +96,32 @@ class Experiment(AbstractExperiment):
                             self.runinfo.complete = 'stopped'
                             break
 
+                        if isinstance(self.runinfo.scan0, ps.ContinuousScan):
+                            self.reallocate()
+
                     # Check if complete, stopped early
                     if self.runinfo.running is False:
                         self.runinfo.complete = 'stopped'
                         break
 
+                    if isinstance(self.runinfo.scan1, ps.ContinuousScan):
+                        self.reallocate()
+
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
+
+                if isinstance(self.runinfo.scan2, ps.ContinuousScan):
+                    self.reallocate()
 
             if self.runinfo.verbose:
                 print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
+
+            if isinstance(self.runinfo.scan3, ps.ContinuousScan):
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False
@@ -148,22 +153,22 @@ class Experiment(AbstractExperiment):
                 return
 
         # Use for scan, but break if self.runinfo.running=False
-        for m in range(self.runinfo.scan3.n):
+        for m in self.runinfo.scan3.iterator():
             self.runinfo.scan3.i = m
             self.runinfo.scan3.iterate(m, self.devices)
             sleep(self.runinfo.scan3.dt)
 
-            for k in range(self.runinfo.scan2.n):
+            for k in self.runinfo.scan2.iterator():
                 self.runinfo.scan2.i = k
                 self.runinfo.scan2.iterate(k, self.devices)
                 sleep(self.runinfo.scan2.dt)
 
-                for j in range(self.runinfo.scan1.n):
+                for j in self.runinfo.scan1.iterator():
                     self.runinfo.scan1.i = j
                     self.runinfo.scan1.iterate(j, self.devices)
                     sleep(self.runinfo.scan1.dt)
 
-                    for i in range(self.runinfo.scan0.n):
+                    for i in self.runinfo.scan0.iterator():
                         self.runinfo.scan0.i = i
                         self.runinfo.scan0.iterate(i, self.devices)
                         sleep(self.runinfo.scan0.dt)
@@ -172,9 +177,6 @@ class Experiment(AbstractExperiment):
 
                         # if on the first row of data, log the data names in self.runinfo.measured
                         if np.all(np.array(self.runinfo.indicies) == 0):
-                            self.runinfo.measured = []
-                            for key, value in data.items():
-                                self.runinfo.measured.append(key)
                             self.preallocate(data)
 
                         self.rolling_average(data)
@@ -183,23 +185,35 @@ class Experiment(AbstractExperiment):
                             self.runinfo.complete = 'stopped'
                             break
 
-                        self.save_point()
+                        self.save_point(data)
 
-                    # self.save_row()
+                        if isinstance(self.runinfo.scan0, ps.ContinuousScan):
+                            self.reallocate()
+
+                    # self.save_row(data)
 
                     # Check if complete, stopped early
                     if self.runinfo.running is False:
                         self.runinfo.complete = 'stopped'
                         break
 
+                    if isinstance(self.runinfo.scan1, ps.ContinuousScan):
+                        self.reallocate()
+
                 if self.runinfo.running is False:
                     self.runinfo.complete = 'stopped'
                     break
+
+                if isinstance(self.runinfo.scan2, ps.ContinuousScan):
+                    self.reallocate()
 
             print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if self.runinfo.running is False:
                 self.runinfo.complete = 'stopped'
                 break
+
+            if isinstance(self.runinfo.scan3, ps.ContinuousScan):
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False

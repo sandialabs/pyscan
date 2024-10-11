@@ -16,7 +16,7 @@ ignore=E266,E722,W503,C901
 ; exclude=
 
 # F401: module imported but unused
-#F403 unable to detect undefined names
+# F403 unable to detect undefined names
 per-file-ignores =
     pyscan/__init__.py:F401,F403
     pyscan/measurement/__init__.py:F401,F403
