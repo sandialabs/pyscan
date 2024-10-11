@@ -13,7 +13,7 @@ exception_dict = {
 property_types = list(exception_dict.keys())
 
 
-class PropertySettings(ItemAttribute):
+class AbstractPropertySettings(ItemAttribute):
 
     def __init__(self, device, settings):
 
@@ -31,6 +31,7 @@ class PropertySettings(ItemAttribute):
         self._name = '_' + self.name
 
         self.validate_settings(settings)
+        self.sub_class_settings_validation(settings)
 
     def set_property(self, obj, new_value):
         '''
@@ -51,9 +52,9 @@ class PropertySettings(ItemAttribute):
             self.device.write(self)
             self.device[self._name] = new_value
         else:
-            raise self.set_exception(new_value)
+            raise self.raise_set_exception(new_value)
 
-    def set_exception(self, new_value):
+    def raise_set_exception(self, new_value):
         raise exception_dict[self.property_type]
 
     def check_range(self, new_value):
@@ -99,15 +100,6 @@ class PropertySettings(ItemAttribute):
         setattr(self.device, self._name, value)
 
         return value
-
-    def format_write_string(self, new_value, *args):
-        print(new_value, *args)
-        if self.property_type in ['range', 'values']:
-            return self.query_string.format(new_value)
-        elif self.property_type == 'indexed_value':
-            return self.query_string.format(self.indexed_values.index(new_value))
-        elif self.property_type == 'dict_values':
-            return self.format_query_string.format(self.dict_values[new_value])
 
     def validate_settings(self, settings):
 
@@ -173,3 +165,6 @@ class PropertySettings(ItemAttribute):
             self.set_valid = self.check_dict_value
             self.set_exception = lambda new_value: DictValueException(
                 self.name, self.dict_values, new_value)
+
+    def sub_class_settings_validation(self, settings):
+        pass

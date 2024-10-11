@@ -61,7 +61,7 @@ class SimpleSCPIDriver(AbstractDriver):
         None
         '''
 
-        string = settings.write_string.format(value)
+        string = settings.format_write_string(value)
 
         self.instrument.write(string)
 

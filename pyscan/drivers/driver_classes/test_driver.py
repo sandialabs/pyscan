@@ -14,7 +14,7 @@ class TestDriver(AbstractDriver):
                 return '0'
             if self._output_state == 'on':
                 return '1'
-            # leave for the sake of your personal sanity, trust us
+            # leave for the sake of your personal sanity
             return str(self._output_state)
 
     def write(self, settings):
