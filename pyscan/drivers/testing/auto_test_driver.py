@@ -590,7 +590,7 @@ def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attribut
 
     check_properties(device, verbose)
     print(
-        f"\033[92m Property implementation tests passed, instrument: {device.__class__.__name__} looks ready to go. \033[0m")
+        f"\033[92m Property implementation tests passed, instrument: {device.__class__.__name__}. \033[0m")
 
     check_doc_strings(device)
     print("\033[92m Docstring tests passed and looking good. \033[0m")

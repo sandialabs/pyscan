@@ -1,4 +1,5 @@
 import json
+from .item_attribute import ItemAttribute
 
 
 class PyscanJSONDecoder(json.JSONDecoder):
