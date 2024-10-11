@@ -1,4 +1,4 @@
-from pysca.general.get_pyscan_version import get_pyscan_version
+from pyscan.general.get_pyscan_version import get_pyscan_version
 
 
 def test_get_version():
