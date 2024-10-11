@@ -1,4 +1,4 @@
-from pyscan.general.item_attribute import ItemAttribute
+from ...general.item_attribute import ItemAttribute
 import ctypes
 from . import spin_api_wrapper as pb
 

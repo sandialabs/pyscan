@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from pyscan.general.same_length import same_length
-from pyscan.general.item_attribute import ItemAttribute
+from ..general.same_length import same_length
+from ..general.item_attribute import ItemAttribute
 
 
 class AbstractScan(ItemAttribute):

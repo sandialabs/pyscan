@@ -1,4 +1,3 @@
-from pyscan.general import ItemAttribute
 import json
 
 

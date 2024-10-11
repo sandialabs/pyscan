@@ -2,7 +2,7 @@
 from time import sleep
 import pyscan as ps
 from pyscan.measurement.abstract_experiment import AbstractExperiment
-from pyscan.general.is_list_type import is_list_type
+from ..general.is_list_type import is_list_type
 import numpy as np
 from datetime import datetime
 
