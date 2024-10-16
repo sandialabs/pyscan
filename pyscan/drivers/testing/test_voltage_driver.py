@@ -3,7 +3,7 @@ from .abstract_driver import AbstractDriver
 
 class TestDriver(AbstractDriver):
 
-    def query(self, settings):
+    def query_property(self, settings):
         string = settings.query_string
         if string == 'VOLT?':
             return str(self._voltage)
@@ -17,7 +17,7 @@ class TestDriver(AbstractDriver):
             # leave for the sake of your personal sanity
             return str(self._output_state)
 
-    def write(self, settings):
+    def write_property(self, settings):
         string = settings.write_string
         if 'VOLT' in string:
             return string.strip('VOLT ')
