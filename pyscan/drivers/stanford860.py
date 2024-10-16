@@ -451,28 +451,6 @@ class Stanford860(InstrumentDriver):
                 'range': [-10.5, 10.5],
                 'return_type': float})
 
-        # Display
-        self.add_device_property({
-            'name': 'display_blanking',
-            'write_string': 'DBLK {}',
-            'query_string': 'DBLK?',
-            'indexed_values': ['off', 'on']})
-
-        self.add_device_property({
-            'name': 'display_layout',
-            'write_string': 'DLAY {}',
-            'query_string': 'DLAY?',
-            'indexed_values': [
-                'trend', 'full_history', 'half_history',
-                'full_fft', 'half_fft', 'big_numerical']})
-
-        for i in range(4):
-            self.add_device_property({
-                'name': f'strip_chart_mode_{i + 1}',
-                'write_string': f'CGRF, {i}, {"{}"}',
-                'query_string': f'CGRF? {i}',
-                'indexed_values': ['off', 'on']})
-
     def auto_phase(self):
         '''
         Automatically sets the phase of the detection
