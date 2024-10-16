@@ -12,7 +12,7 @@ from .bluefors import *
 from .hp import *
 from .keithley import *
 from .kepco import *
-from .oceanoptics import OceanOpticsQEPro
+from .oceanoptics import *
 from .oxford import *
 from .princeton_instruments import *
 from .stanford import *
