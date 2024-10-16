@@ -18,7 +18,7 @@ class Stanford860(InstrumentDriver):
 
     id : read-only
         Gets the id string of the device.
-    
+
     Reference Commands
     timebase_mode : str
         Gets/sets the timebase mode as auto or internal
