@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from pyscan.general import set_difference, first_string
+from ..general.set_difference import set_difference
+from ..general.first_string import first_string
 import numpy as np
 
 

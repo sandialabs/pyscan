@@ -6,10 +6,10 @@ import numpy as np
 import pyscan as ps
 from threading import Thread as thread
 from time import strftime
-from pyscan.general import (ItemAttribute,
-                            is_list_type)
 from pyscan.measurement.scans import PropertyScan, RepeatScan, ContinuousScan
-from pyscan.general.pyscan_json_encoder import PyscanJSONEncoder
+from ..general.pyscan_json_encoder import PyscanJSONEncoder
+from ..general.item_attribute import ItemAttribute
+from ..general.is_list_type import is_list_type
 
 
 class AbstractExperiment(ItemAttribute):

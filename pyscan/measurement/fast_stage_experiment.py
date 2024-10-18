@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 from pyscan.measurement.abstract_experiment import AbstractExperiment
-from pyscan.general.item_attribute import ItemAttribute
+from ..general.item_attribute import ItemAttribute
 import numpy as np
 # import nidaqmx
 
