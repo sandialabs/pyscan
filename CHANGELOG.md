@@ -1,3 +1,12 @@
+## [0.8.4](https://github.com/sandialabs/pyscan/compare/v0.8.3...v0.8.4) (2024-10-18)
+
+
+### Bug Fixes
+
+* **drivers:** fixed driver import exceptions and names ([37f8160](https://github.com/sandialabs/pyscan/commit/37f816059524ce04fcbeeb9da739b3e1e81ab4da))
+
+
+
 ## [0.8.3](https://github.com/sandialabs/pyscan/compare/v0.8.2...v0.8.3) (2024-10-04)
 
 
