@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 from pyscan.measurement.abstract_experiment import AbstractExperiment
-from pyscan.general.is_list_type import is_list_type
+from ..general.is_list_type import is_list_type
 import numpy as np
 
 
@@ -84,7 +84,7 @@ class SparseExperiment(AbstractExperiment):
                                     else:
                                         self[key] = value
 
-                                self.save_point()
+                                self.save_point(data)
 
                         if self.runinfo.running is False:
                             self.runinfo.complete = 'stopped'

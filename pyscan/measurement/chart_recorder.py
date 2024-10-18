@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from time import sleep
-from pyscan.general.stack_or_append import stack_or_append
+from ..general.stack_or_append import stack_or_append
 from pyscan.measurement.abstract_experiment import AbstractExperiment
 
 

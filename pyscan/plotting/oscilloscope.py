@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from time import sleep, time
 from IPython import display
-from pyscan.general import is_list_type, is_numeric_type
+from ..general.is_list_type import is_list_type
+from ..general.is_numeric_type import is_numeric_type
 
 
 def oscilloscope(measure_function, histo_range=100, dt=0.001):

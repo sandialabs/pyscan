@@ -1,4 +1,4 @@
-from pyscan.general.item_attribute import ItemAttribute
+from ...general.item_attribute import ItemAttribute
 
 
 def sense_tqp_to_frequency(SensTqp):
