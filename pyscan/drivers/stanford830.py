@@ -831,7 +831,7 @@ class Stanford830(InstrumentDriver):
     #     wait_dict = {6: 5 * tc, 12: 7 * tc, 18: 9 * tc, 24: 10 * tc}
     #     bw_dict = {6: 1 / (4 * tc), 12: 1 / (8 * tc), 18: 3 / (32 * tc), 24: 5 / (64 * tc)}
 
-    #     available_rates = self.sample_rate_['values'][:-2]
+    #     available_rates = self.sample_rate_['values_list'abs][:-2]
     #     sample_rate = available_rates[
     #         np.bisect_left(available_rates, 1 / wait_dict[slope])]
 

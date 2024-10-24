@@ -114,7 +114,7 @@ class ActonSP2300(InstrumentDriver):
             'name': 'grating',
             'write_string': '{} GRATING',
             'query_string': '?GRATING',
-            'values': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            'values_list': [1, 2, 3, 4, 5, 6, 7, 8, 9],
             'return_type': parse_response(int)})
 
         self.add_device_property({

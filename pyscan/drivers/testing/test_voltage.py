@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from .test_voltage_driver import TestVoltageDriver
+from ..instrument_driver.abstract_driver import AbstractDriver
 
 
-class TestVoltage(TestVoltageDriver):
+class TestVoltage(AbstractDriver):
     '''
     Class that mimics the operation of a simple voltage source.
 
@@ -39,6 +39,25 @@ class TestVoltage(TestVoltageDriver):
         self._version = "1.0.0"
         self.black_list_for_testing = []
 
+    def query_property(self, settings_obj):
+
+        string = settings_obj.query_string
+
+        if string == 'VOLT?':
+            return str(self._voltage)
+        elif string == 'POW?':
+            return str(self._power)
+        elif string == 'OUTP?':
+            if self._output_state == 'off':
+                return '0'
+            if self._output_state == 'on':
+                return '1'
+            return str(self._output_state)
+
+    def write_property(self, settings_obj, new_value):
+
+        return str(new_value)
+
     def initialize_properties(self):
 
         self.add_device_property({
@@ -53,7 +72,7 @@ class TestVoltage(TestVoltageDriver):
             'name': 'power',
             'write_string': 'POW {}',
             'query_string': 'POW?',
-            'values': [1, 10],
+            'values_list': [1, 10],
             'return_type': int
         })
 

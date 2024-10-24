@@ -286,14 +286,14 @@ class Keithley2260B(InstrumentDriver):
             'name': 'transient_trigger_source',
             'write_string': 'TRIG:TRAN:SOUR {}',
             'query_string': 'TRIG:TRAN:SOUR?',
-            'values': ['BUS', 'IMM'],
+            'values_list': ['BUS', 'IMM'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'output_trigger_source',
             'write_string': 'TRIG:OUTP:SOUR {}',
             'query_string': 'TRIG:OUTP:SOUR?',
-            'values': ['BUS', 'IMM'],
+            'values_list': ['BUS', 'IMM'],
             'return_type': str})
 
     def measure_current(self):

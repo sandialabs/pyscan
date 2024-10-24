@@ -61,7 +61,7 @@ class Keithley2400(InstrumentDriver):
         self.source_mode_settings['string_values'] = ['FIX']
 
         self.source_voltage_range_settings = {}
-        self.source_voltage_range_settings['values'] = [0.21, 2.1, 21]
+        self.source_voltage_range_settings['values_list'] = [0.21, 2.1, 21]
 
         self.source_current_range_settings = {}
         self.source_current_range_settings['range'] = [
@@ -75,10 +75,10 @@ class Keithley2400(InstrumentDriver):
         self.sense_settings['string_values'] = ['CURR', 'VOLT']
 
         self.sense_voltage_range_settings = {}
-        self.sense_voltage_range_settings['values'] = []
+        self.sense_voltage_range_settings['values_list'] = []
 
         self.sense_current_range_settings = {}
-        self.sense_current_range_settings['values'] = [1e-6, 1e-5, 1e-4]
+        self.sense_current_range_settings['values_list'] = [1e-6, 1e-5, 1e-4]
 
         self.current_compliance_settings = {}
         self.current_compliance_settings['range'] = [0, 0.105]

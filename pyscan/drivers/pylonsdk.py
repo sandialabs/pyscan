@@ -17,7 +17,7 @@ class PylonSDK(ItemAttribute):
         Returns function that generates the property of the class
         '''
 
-        if 'values' in settings:
+        if 'values_list' in settings:
             set_function = self.set_values_property
         elif 'range' in settings:
             set_function = self.set_range_property
@@ -58,18 +58,18 @@ class PylonSDK(ItemAttribute):
 
     def set_values_property(self, obj, new_value, settings):
         '''
-        Generator function for settings dictionary with 'values' item
-        Check that new_value is in settings['values'], if not, rejects command
+        Generator function for settings dictionary with 'values_list item
+        Check that new_value is in settings['values_list'], if not, rejects command
 
         Args:
             obj - parent class object
             new_value - new_value to be set on instrument
-            settings - dictionarky with ['values'] item
+            settings - dictionarky with ['values_list'] item
 
         returns None
         '''
 
-        values = settings['values']
+        values = settings['values_list']
 
         if new_value in values:
             if not self.debug:

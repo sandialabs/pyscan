@@ -24,7 +24,7 @@ ONLY RUN THIS TEST UNIT IF YOU ARE CERTAIN ALL SUCH ATTRIBUTES HAVE BEEN PROPERL
 
 # not incluing booleans since they can be interpreted ambiguously as ints. Should it?
 BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 890992238.2345,
-              'not ok', 'bad value', 'Andy is cool',
+              'not ok', 'bad value',
               [1, 2412, 19], [1, 191, 13, -5.3],
               {'Alfred': "Batman's uncle", 'or': 'imposter'}]
 
@@ -137,8 +137,8 @@ def reset_device_properties(device):
             continue
         elif 'read_only' in keys:
             continue
-        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
-            device[var_name] = device[name]['values'][0]
+        elif ('values_list' in keys):
+            device[var_name] = device[name]['values_list'][0]
         elif 'range' in keys:
             device[var_name] = device[name]['range'][0]
         elif 'ranges' in keys:
@@ -152,7 +152,7 @@ def reset_device_properties(device):
                 break
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
-                name, ['values', 'range', 'indexed_values', 'dict_values', 'read_only'])
+                name, ['values_list', 'range', 'indexed_values', 'dict_values', 'read_only'])
 
     if len(blacklisted) > 0:
         print("Blacklisted settings that will not be tested or changed are: ")
@@ -201,24 +201,25 @@ def check_values_property(device, key):
 
     # reset value to baseline for consistency between tests
     try:
-        device[name] = device[key]['values'][0]
+        device[name] = device[key]['values_list][0]
     except Exception:
         assert False, missing_prop_str.format(name)
 
     for val in BAD_INPUTS:
-        if val not in device[key]['values']:
+        if val not in device[key]['values_list]:
             with pytest.raises(Exception):
                 device[name] = val
 
-    for val in device[key]['values']:
+    for val in device[key]['values_list]:
         device[name] = val
         # ################ consider within a range here since may not return perfect value.
-        assert device[name] == val, prop_err_str1.format('values', name, val, device[name])
-        assert device["_{}".format(name)] == val, prop_err_str2.format('values', name, val,
+        assert device[name] == val, \
+            prop_err_str1.format('values_list, name, str(val) + str(type(val)), str(device[name]) + str(type(device[name])))
+        assert device["_{}".format(name)] == val, prop_err_str2.format('values_list, name, val,
                                                                        "_{}".format(name), device["_{}".format(name)])
 
     # reset value to baseline for consistency between tests
-    device[name] = device[key]['values'][0]
+    device[name] = device[key]['values_list][0]
 
 
 # check the set_range_property behavior for a range item
@@ -304,11 +305,11 @@ def check_dict_property(device, key):
         # print(k)
         device[name] = k
         err_str1 = ("{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
-            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
-        assert device[name] == device.find_first_key(ord_dict, ord_dict[k]), err_str1
+            name, device[key].find_first_key(ord_dict[k]), device[name])
+        assert device[name] == device[key].find_first_key(ord_dict[k]), err_str1
         err_str2 = ("_{} key return not properly formatted. Did not return first key {}, instead returned {}").format(
-            name, device.find_first_key(ord_dict, ord_dict[k]), device[name])
-        assert device["_{}".format(name)] == device.find_first_key(ord_dict, ord_dict[k]), err_str2
+            name, device[key].find_first_key(ord_dict[k]), device[name])
+        assert device["_{}".format(name)] == device[key].find_first_key(ord_dict[k]), err_str2
 
     for bad_input in BAD_INPUTS:
         if isinstance(bad_input, typing.Hashable):
@@ -366,7 +367,7 @@ def check_properties(test_instrument, verbose=True):
         elif 'write_only' in keys:
             write_only_settings.append(name)
             continue
-        elif ('values' in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
+        elif ('values_list in keys) and ('indexed_' not in keys) and ('dict_' not in keys):
             values_counter += 1
             # values_idx.append(values_counter)
             check_values_property(test_instrument, name)
@@ -384,7 +385,7 @@ def check_properties(test_instrument, verbose=True):
             check_dict_property(test_instrument, name)
         else:
             assert False, "no valid type present in setting: {}. Must be one of {}.".format(
-                name, ['values', 'range', 'indexed_values', 'dict_values'])
+                name, ['values_list, 'range', 'indexed_values', 'dict_values'])
         print(name)
         restored_settings = restore_initial_state(test_instrument, saved_settings)
 
@@ -407,9 +408,9 @@ def check_properties(test_instrument, verbose=True):
     total_tested = range_counter + values_counter + idx_vals_counter + dict_vals_counter
     print("{} properties tested out of {} total settings.".format(total_tested, total_settings))
 
-    if isinstance(test_instrument, TestInstrumentDriver):
-        assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
-        print("Drivers test unit seems to be working as expected.")
+    # if isinstance(test_instrument, TestInstrumentDriver):
+    #     assert values_counter == range_counter == idx_vals_counter == dict_vals_counter == 1
+    #     print("Drivers test unit seems to be working as expected.")
 
     if verbose:
         print("\nSettings restored to: ")

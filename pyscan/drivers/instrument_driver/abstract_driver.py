@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ....general.item_attribute import ItemAttribute
+from ...general.item_attribute import ItemAttribute
 from ..property_settings import (
     RangePropertySettings,
     ValuesPropertySettings,
@@ -71,7 +71,7 @@ class AbstractDriver(ItemAttribute, ABC):
         name = settings_dict['name']
         settings_name = '_' + name + '_settings'
 
-        property_class = self.validate_settings(settings_dict)
+        property_class = self.validate_property_settings(settings_dict)
         self.validate_subclass_settings(settings_dict)
 
         # Make property settings attribute
@@ -80,8 +80,8 @@ class AbstractDriver(ItemAttribute, ABC):
 
         # Make self.name property
         property_definition = property(
-            fget=getattr(self, settings_name).get_instrument_property,
-            fset=lambda obj, new_value: getattr(self, settings_name).set_instrument_property(obj, new_value),
+            fget=lambda obj: self.get_instrument_property(obj, settings_obj),
+            fset=lambda obj, new_value: self.set_instrument_property(obj, settings_obj, new_value),
             doc=self.get_property_docstring(name))
         setattr(self.__class__, name, property_definition)
         setattr(self, settings_obj._name, None)
@@ -104,9 +104,8 @@ class AbstractDriver(ItemAttribute, ABC):
         -------
         value formatted to setting's ['return_type']
         '''
-
-        value = self.query_property(settings_obj).strip("\n")
-        value = self.settings_obj.format_query_return(value)
+        value = self.query_property(settings_obj)
+        value = settings_obj.format_query_return(value)
 
         setattr(self, settings_obj._name, value)
 
@@ -114,8 +113,8 @@ class AbstractDriver(ItemAttribute, ABC):
 
     def set_instrument_property(self, obj, settings_obj, new_value):
         '''
-        Generator function for settings dictionary with 'values' item
-        Check that new_value is in settings['values'], if not, rejects command
+        Generator function for settings dictionary with 'values_list' item
+        Check that new_value is in settings['values_list'], if not, rejects command
 
         Parameters
         ----------
@@ -216,7 +215,7 @@ class AbstractDriver(ItemAttribute, ABC):
         # Check that settings_dict has a property type key(s)
         i = 0
 
-        property_types = ['range', 'values', 'indexed_values', 'dict_values']
+        property_types = ['range', 'values_list', 'indexed_values', 'dict_values']
 
         for prop in property_types:
             if prop in settings_keys:
@@ -238,8 +237,8 @@ class AbstractDriver(ItemAttribute, ABC):
             assert 'return_type' in settings_keys, f'{name} requires a "return_type" setting'
             assert settings_dict['range'][1] > settings_dict['range'][0], f'{name} has bad "range" settings, range[0] < range[1]'
             property_class = RangePropertySettings
-        elif 'values' in settings_keys:
-            assert isinstance(settings_dict['values'], list), f'{name} "values" setting must be a list'
+        elif 'values_list' in settings_keys:
+            assert isinstance(settings_dict['values_list'], list), f'{name} "values" setting must be a list'
             property_class = ValuesPropertySettings
         elif 'indexed_values' in settings_keys:
             assert isinstance(settings_dict['indexed_values'], list), f'{name} "indexed_values" setting must be a list'
@@ -250,7 +249,7 @@ class AbstractDriver(ItemAttribute, ABC):
 
         return property_class
 
-    def sub_class_settings_validation(self, settings_dict):
+    def validate_subclass_settings(self, settings_dict):
         '''
         Abstract method to be overloaded which checks the validity of input settings
         beyond range, values, indexed_values, dict_values, read-only, write-only, etc.

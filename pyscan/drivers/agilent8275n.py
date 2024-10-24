@@ -57,5 +57,5 @@ class Agilent8275N(InstrumentDriver):
             'name': 'output',
             'write_string': ':OUTP:STAT {}',
             'query_string': ':OUTP:STAT?',
-            'values': [0, 1],
+            'values_list': [0, 1],
             'return_type': int})

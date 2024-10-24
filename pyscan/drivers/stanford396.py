@@ -75,7 +75,7 @@ class Stanford396(InstrumentDriver):
             'name': 'output',
             'write_string': 'ENBR {}',
             'query_string': 'ENBR?',
-            'values': [0, 1],
+            'values_list': [0, 1],
             'return_type': float})
 
         # Common settings
@@ -107,29 +107,30 @@ class Stanford396(InstrumentDriver):
             'name': 'modulation',
             'write_string': 'MODL {}',
             'query_string': 'MODL?',
-            'values': [0, 1],
+            'values_list': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'input_coupling',
             'write_string': 'COUP {}',
             'query_string': 'COUP?',
-            'values': [0, 1],
+            'values_list': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'modulation_type',
             'write_string': 'TYPE {}',
             'query_string': 'TYPE?',
-            'values': ['am', 'fm', 'phim', 'sweep', 'pulse',
-                       'blank', 'qam', 'cpm', 'vbs'],
+            'values_list': [
+                'am', 'fm', 'phim', 'sweep', 'pulse',
+                'blank', 'qam', 'cpm', 'vbs'],
             'return_type': int})
 
         self.add_device_property({
             'name': 'modulation_function',
             'write_string': 'SFNC {}',
             'query_string': 'SFNC?',
-            'values': ['sin', 'ramp', 'triangle', 'external', 'waveform'],
+            'values_list': ['sin', 'ramp', 'triangle', 'external', 'waveform'],
             'return_type': int})
 
         self.add_device_property({
@@ -150,7 +151,7 @@ class Stanford396(InstrumentDriver):
             'name': 'sweep_modulation_function',
             'write_string': 'SFNC {}',
             'query_string': 'SFNC?',
-            'values': [0, 1, 2, 5, 11],
+            'values_list': [0, 1, 2, 5, 11],
             'return_type': int})
 
         self.add_device_property({
