@@ -41,14 +41,14 @@ class BKPrecision9130B(InstrumentDriver):
             'name': 'channel',
             'write_string': 'INST CH{}',
             'query_string': 'INST?',
-            'values_list': [1, 2, 3],
+            'values': [1, 2, 3],
             'return_type': str})
 
         self.add_device_property({
             'name': 'output',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({

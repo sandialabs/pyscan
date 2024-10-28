@@ -106,42 +106,42 @@ class Stanford400(InstrumentDriver):
             'name': 'counting_mode',
             'write_string': 'CM {}',
             'query_string': 'CM',
-            'values_list': [0, 1, 2, 3],
+            'values': [0, 1, 2, 3],
             'return_type': int})
 
         self.add_device_property({
             'name': 'counter_input_A',
             'write_string': 'CI 0, {}',
             'query_string': 'CI 0',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'counter_input_B',
             'write_string': 'CI 1, {}',
             'query_string': 'CI 1',
-            'values_list': [1, 2],
+            'values': [1, 2],
             'return_type': int})
 
         self.add_device_property({
             'name': 'counter_input_T',
             'write_string': 'CI 2, {}',
             'query_string': 'CI 2',
-            'values_list': [0, 1, 2, 3],
+            'values': [0, 1, 2, 3],
             'return_type': int})
 
         self.add_device_property({
             'name': 'n_periods',
             'write_string': 'NP {}',
             'query_string': 'NP',
-            'values_list': list(range(2001)),
+            'values': list(range(2001)),
             'return_type': int})
 
         self.add_device_property({
             'name': 'end_scan_mode',
             'write_string': 'NE {}',
             'query_string': 'NE',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
@@ -269,7 +269,7 @@ class Stanford400(InstrumentDriver):
             'name': 'gate_mode_A',
             'write_string': 'GM 0, {}',
             'query_string': 'GM 0',
-            'values_list': [0, 1, 2],
+            'values': [0, 1, 2],
             'return_type': int})
 
         self.add_device_property({
@@ -290,7 +290,7 @@ class Stanford400(InstrumentDriver):
             'name': 'gate_mode_B',
             'write_string': 'GM 1, {}',
             'query_string': 'GM 1',
-            'values_list': [0, 1, 2],
+            'values': [0, 1, 2],
             'return_type': int})
 
         self.add_device_property({

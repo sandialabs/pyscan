@@ -26,7 +26,7 @@ class ZurichDriver(ItemAttribute):
 
     def add_device_property(self, settings):
 
-        if 'values_list' in settings:
+        if 'values' in settings:
             set_function = self.set_values_property
         elif 'range' in settings:
             set_function = self.set_range_property
@@ -62,7 +62,7 @@ class ZurichDriver(ItemAttribute):
         return value
 
     def set_values_property(self, obj, new_value, settings):
-        values = settings['values_list']
+        values = settings['values']
 
         if new_value in values:
             if not self.debug:
@@ -167,21 +167,21 @@ class ZurichHF2(ZurichDriver):
             'name': 'output',
             'write_string': '/DEV{}/SIGOUTS/{}/ON '.format(self.dev, self.channel),
             'query_string': '/DEV{}/SIGOUTS/{}/ON'.format(self.dev, self.channel),
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'add',
             'write_string': '/DEV{}/SIGOUTS/{}/ADD'.format(self.dev, self.channel),
             'query_string': '/DEV{}/SIGOUTS/{}/ADD'.format(self.dev, self.channel),
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'range',
             'write_string': '/DEV{}/SIGOUTS/{}/RANGE'.format(self.dev, self.channel),
             'query_string': '/DEV{}/SIGOUTS/{}/RANGE'.format(self.dev, self.channel),
-            'values_list': [0.01, 0.1, 1, 10],
+            'values': [0.01, 0.1, 1, 10],
             'return_type': float})
 
         self.add_device_property({
@@ -199,7 +199,7 @@ class ZurichHF2(ZurichDriver):
                 self.dev, self.channel, self.wf),
             'query_string': '/DEV{}/SIGOUTS/{}/ENABLES/{}'.format(
                 self.dev, self.channel, self.wf),
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
@@ -208,14 +208,14 @@ class ZurichHF2(ZurichDriver):
                 self.dev, self.channel, self.wf),
             'query_string': '/DEV{}/SIGOUTS/{}/WAVEFORMS/{}'.format(
                 self.dev, self.channel, self.wf),
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'range',
             'write_string': '/DEV{}/SIGOUTS/{}/OFFSET'.format(self.dev, self.channel),
             'query_string': '/DEV{}/SIGOUTS/{}/OFFSET'.format(self.dev, self.channel),
-            'values_list': [0.01, 0.1, 1, 10],
+            'values': [0.01, 0.1, 1, 10],
             'return_type': float})
 
         # Oscillator
@@ -263,14 +263,14 @@ class ZurichHF2(ZurichDriver):
             'name': 'adc',
             'write_string': '/DEV{}/DEMODS/{}/ADCSELECT'.format(self.dev, self.channel),
             'query_string': '/DEV{}/DEMODS/{}/ADCSELECT'.format(self.dev, self.channel),
-            'values_list': [0, 1, 2, 3, 4, 5],
+            'values': [0, 1, 2, 3, 4, 5],
             'return_type': int})
 
         self.add_device_property({
             'name': 'filter_order',
             'write_string': '/DEV{}/DEMODS/{}/ORDER'.format(self.dev, self.channel),
             'query_string': '/DEV{}/DEMODS/{}/ORDER'.format(self.dev, self.channel),
-            'values_list': [6, 12, 18, 24, 30, 36, 42, 48],
+            'values': [6, 12, 18, 24, 30, 36, 42, 48],
             'return_type': int})
 
         self.add_device_property({
@@ -305,14 +305,14 @@ class ZurichHF2(ZurichDriver):
             'name': 'oscillator',
             'write_string': '/DEV{}/DEMODS/{}/OSCSELECT'.format(self.dev, self.channel),
             'query_string': '/DEV{}/DEMODS/{}/OSCSELECT'.format(self.dev, self.channel),
-            'values_list': [0, 1, 2, 3, 4, 5, 6, 7],
+            'values': [0, 1, 2, 3, 4, 5, 6, 7],
             'return_type': int})
 
         self.add_device_property({
             'name': 'sinc_filter',
             'write_string': '/DEV{}/DEMODS/{}/SINC'.format(self.dev, self.channel),
             'query_string': '/DEV{}/DEMODS/{}/SINC'.format(self.dev, self.channel),
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
     def get_sample(self):
@@ -434,21 +434,21 @@ class ZurichHF2Trigger(ZurichDriver):
             'name': 'trigger_type',
             'write_string': '/dataAcquisitionModule/triggertype',
             'query_string': '/dataAcquisitionModule/triggertype',
-            'values_list': [0, 1, 2, 3, 4],
+            'values': [0, 1, 2, 3, 4],
             'return_type': int})
 
         self.add_device_property({
             'name': 'trigger_type',
             'write_string': '/dataAcquisitionModule/triggertype',
             'query_string': '/dataAcquisitionModule/triggertype',
-            'values_list': [0, 1, 2, 3, 4],
+            'values': [0, 1, 2, 3, 4],
             'return_type': int})
 
         self.add_device_property({
             'name': 'trigger_edge',
             'write_string': '/dataAcquisitionModule/triggeredge',
             'query_string': '/dataAcquisitionModule/triggeredge',
-            'values_list': [0, 1, 2, 3, 4],
+            'values': [0, 1, 2, 3, 4],
             'return_type': int})
 
         self.add_device_property({
@@ -462,7 +462,7 @@ class ZurichHF2Trigger(ZurichDriver):
             'name': 'trigger_hysteresis',
             'write_string': '/dataAcquisitionModule/triggerhysteresis',
             'query_string': '/dataAcquisitionModule/triggerhysteresis',
-            'values_list': [-1, 1],
+            'values': [-1, 1],
             'return_type': float})
 
         self.add_device_property({
@@ -497,7 +497,7 @@ class ZurichHF2Trigger(ZurichDriver):
             'name': 'grid_mode',
             'write_string': '/dataAcquisitionModule/grid/mode',
             'query_string': '/dataAcquisitionModule/grid/mode',
-            'values_list': [0, 1, 2, 3, 4],
+            'values': [0, 1, 2, 3, 4],
             'return_type': int})
 
         self.add_device_property({

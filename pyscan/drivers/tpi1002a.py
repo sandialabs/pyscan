@@ -137,7 +137,7 @@ class TPI1002A(InstrumentDriver):
 
     @check_errors  # unfortunately TPI tends to send back the "ok" code, then the error (when we don't read it).
     def set_values_property(self, obj, new_value, settings):
-        values = settings['values_list']
+        values = settings['values']
         if new_value not in values:
             print('Value error: %s must be one of %s' % (settings['name'], ', '.join(str(values))))
             return
@@ -169,7 +169,7 @@ class TPI1002A(InstrumentDriver):
             'return_bytes': 1,
             'return_type': lambda x: {'00': False, '01': True}[x.hex()],
             'ok_bytes': 0,
-            'values_list': [0, 1]})
+            'values': [0, 1]})
 
         self.add_device_property({
             'name': 'output',
@@ -178,7 +178,7 @@ class TPI1002A(InstrumentDriver):
             'return_bytes': 1,
             'return_type': lambda x: {'00': False, '01': True}[x.hex()],
             'ok_bytes': 0,
-            'values_list': [0, 1]})
+            'values': [0, 1]})
 
         self.add_device_property({
             'name': 'model_number',

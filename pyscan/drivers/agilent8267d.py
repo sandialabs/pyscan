@@ -51,7 +51,7 @@ class AgilentE8267D(InstrumentDriver):
             'name': 'frequency_mode',
             'write_string': ':SOUR:FREQ:MODE {}',
             'query_string': ':SOUR:FREQ:MODE?',
-            'values_list': ['CW', 'LIST'],
+            'values': ['CW', 'LIST'],
             'return_type': str})
 
         self.add_device_property({
@@ -66,12 +66,12 @@ class AgilentE8267D(InstrumentDriver):
             'name': 'output',
             'write_string': ':OUTP:STAT {}',
             'query_string': ':OUTP:STAT?',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})
 
         self.add_device_property({
             'name': 'modulation',
             'write_string': ':OUTP:MOD:STAT {}',
             'query_string': ':OUTP:MOD:STAT?',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': int})

@@ -117,21 +117,21 @@ class Agilent33500(InstrumentDriver):
             'name': 'voltage_autorange_chan1',
             'write_string': 'SOUR1:VOLT:RANG:AUTO {}',
             'query_string': 'SOUR1:VOLT:RANG:AUTO?',
-            'values_list': [0, 'off', 1, 'on'],
+            'values': [0, 'off', 1, 'on'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'voltage_autorange_chan2',
             'write_string': 'SOUR2:VOLT:RANG:AUTO {}',
             'query_string': 'SOUR2:VOLT:RANG:AUTO?',
-            'values_list': [0, 'off', 1, 'on'],
+            'values': [0, 'off', 1, 'on'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'function_chan1',
             'write_string': 'SOUR1:FUNC {}',
             'query_string': 'SOUR1:FUNC?',
-            'values_list': [
+            'values': [
                 "SIN",
                 "SQU",
                 "TRI",
@@ -147,7 +147,7 @@ class Agilent33500(InstrumentDriver):
             'name': 'function_chan2',
             'write_string': 'SOUR2:FUNC {}',
             'query_string': 'SOUR2:FUNC?',
-            'values_list': [
+            'values': [
                 "SIN",
                 "SQU",
                 "TRI",
@@ -163,28 +163,28 @@ class Agilent33500(InstrumentDriver):
             'name': 'arb_advance_mode_chan1',
             'write_string': 'SOUR1:FUNC:ARB:ADV {}',
             'query_string': 'SOUR1:FUNC:ARB:ADV?',
-            'values_list': ["TRIG", "SRAT"],
+            'values': ["TRIG", "SRAT"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'arb_advance_mode_chan2',
             'write_string': 'SOUR2:FUNC:ARB:ADV {}',
             'query_string': 'SOUR2:FUNC:ARB:ADV?',
-            'values_list': ["TRIG", "SRAT"],
+            'values': ["TRIG", "SRAT"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'arb_filter_chan1',
             'write_string': 'SOUR1:FUNC:ARB:FILT {}',
             'query_string': 'SOUR1:FUNC:ARB:FILT?',
-            'values_list': ["NORM", "STEP", "OFF"],
+            'values': ["NORM", "STEP", "OFF"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'arb_filter_chan2',
             'write_string': 'SOUR2:FUNC:ARB:FILT {}',
             'query_string': 'SOUR2:FUNC:ARB:FILT?',
-            'values_list': ["NORM", "STEP", "OFF"],
+            'values': ["NORM", "STEP", "OFF"],
             'return_type': str})
 
         self.add_device_property({
@@ -205,14 +205,14 @@ class Agilent33500(InstrumentDriver):
             'name': 'burst_mode_chan1',
             'write_string': 'SOUR1:BURS:MODE {}',
             'query_string': 'SOUR1:BURS:MODE?',
-            'values_list': ['TRIG', 'GAT'],
+            'values': ['TRIG', 'GAT'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'burst_mode_chan2',
             'write_string': 'SOUR2:BURS:MODE {}',
             'query_string': 'SOUR2:BURS:MODE?',
-            'values_list': ['TRIG', 'GAT'],
+            'values': ['TRIG', 'GAT'],
             'return_type': str})
 
         self.add_device_property({
@@ -233,56 +233,56 @@ class Agilent33500(InstrumentDriver):
             'name': 'burst_state_chan1',
             'write_string': 'SOUR1:BURS:STAT {}',
             'query_string': 'SOUR1:BURS:STAT?',
-            'values_list': [0, 'Off', 1, 'ON'],
+            'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'burst_state_chan2',
             'write_string': 'SOUR2:BURS:STAT {}',
             'query_string': 'SOUR2:BURS:STAT?',
-            'values_list': [0, 'Off', 1, 'ON'],
+            'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'output_chan1',
             'write_string': 'OUTP1 {}',
             'query_string': 'OUTP1?',
-            'values_list': [0, 'Off', 1, 'ON'],
+            'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'output_chan2',
             'write_string': 'OUTP2 {}',
             'query_string': 'OUTP2?',
-            'values_list': [0, 'Off', 1, 'ON'],
+            'values': [0, 'Off', 1, 'ON'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'output_load_chan1',
             'write_string': 'OUTP1:LOAD {}',
             'query_string': 'OUTP1:LOAD?',
-            'values_list': [50, 'INF'],
+            'values': [50, 'INF'],
             'return_type': float})
 
         self.add_device_property({
             'name': 'output_load_chan2',
             'write_string': 'OUTP2:LOAD {}',
             'query_string': 'OUTP2:LOAD?',
-            'values_list': [50, 'INF'],
+            'values': [50, 'INF'],
             'return_type': float})
 
         self.add_device_property({
             'name': 'trigger_source_chan1',
             'write_string': 'TRIG1:SOUR {}',
             'query_string': 'TRIG1:SOUR?',
-            'values_list': ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.add_device_property({
             'name': 'trigger_source_chan2',
             'write_string': 'TRIG2:SOUR {}',
             'query_string': 'TRIG2:SOUR?',
-            'values_list': ["IMM", "EXT", "TIM", "BUS"],
+            'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
 
         self.update_properties()

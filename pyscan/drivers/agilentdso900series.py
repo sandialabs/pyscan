@@ -83,7 +83,7 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'sample_rate',
             'write_string': ':ACQ:SRAT {}',
             'query_string': 'ACQ:SRAT?',
-            'values_list': [
+            'values': [
                 1e2, 2e2, 2.5e2, 4e2, 5e2,
                 1e3, 2e3, 2.5e3, 4e3, 5e3,
                 1e4, 2e4, 2.5e4, 4e4, 5e4,
@@ -98,14 +98,14 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'trigger_sweep',
             'write_string': ':TRIG:SWE {}',
             'query_string': ':TRIG:SWE?',
-            'values_list': ['AUTO', 'TRIG', 'SING'],
+            'values': ['AUTO', 'TRIG', 'SING'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'trigger_mode',
             'write_string': ':TRIG:MODE {}',
             'query_string': ':TRIG:MODE?',
-            'values_list': ['EDGE', 'GLIT', 'PATT', 'STAT', 'DEL',
+            'values': ['EDGE', 'GLIT', 'PATT', 'STAT', 'DEL',
                        'TIM', 'TV', 'COMM', 'RUNT', 'SEQ', 'SHOL',
                        'TRAN', 'WIND', 'PWID', 'ADV', 'EDGE', 'SBUS1',
                        'SBUS2', 'SBUS3', 'SBUS3'],
@@ -115,7 +115,7 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'trigger_source',
             'write_string': ':TRIG:EDGE:SOUR {}',
             'query_string': ':TRIG:EDGE:SOUR?',
-            'values_list': ['CHAN1', 'CHAN2', 'CHAN3', 'CHAN4', 'E'],
+            'values': ['CHAN1', 'CHAN2', 'CHAN3', 'CHAN4', 'E'],
             'return_type': str})
 
         self.add_device_property({
@@ -129,7 +129,7 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'time_reference',
             'write_string': ':TIM:REF {}',
             'query_string': ':TIM:REF?',
-            'values_list': ['LEFT', 'RIGHT', 'CENT'],
+            'values': ['LEFT', 'RIGHT', 'CENT'],
             'return_type': str})
 
         self.add_device_property({
@@ -143,14 +143,14 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'acquire_type',
             'write_string': 'ACQ:TYPE {}',
             'query_string': 'ACQ:TYPE?',
-            'values_list': ['NORM', 'AVER', 'HRES', 'PEAK'],
+            'values': ['NORM', 'AVER', 'HRES', 'PEAK'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'acquire_mode',
             'write_string': 'ACQ:MODE {}',
             'query_string': 'ACQ:MODE?',
-            'values_list': ['ETIM', 'RTIM', 'PDET', 'HRES', 'SEGM',
+            'values': ['ETIM', 'RTIM', 'PDET', 'HRES', 'SEGM',
                        'SEGP', 'SEGH'],
             'return_type': str})
 
@@ -187,7 +187,7 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'all_segment_download',
             'write_string': ':WAV:SEGM:ALL {}',
             'query_string': ':WAV:SEGM:ALL?',
-            'values_list': [0, 1],
+            'values': [0, 1],
             'return_type': float})
 
         self.add_device_property({
@@ -229,14 +229,14 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'waveform_format',
             'write_string': ':WAV:FORM {}',
             'query_string': ':WAV:FORM?',
-            'values_list': ['BYTE', 'WORD', 'ASCII'],
+            'values': ['BYTE', 'WORD', 'ASCII'],
             'return_type': str})
 
         self.add_device_property({
             'name': 'waveform_source',
             'write_string': ':WAV:SOUR CHAN{}',
             'query_string': ':WAV:SOUR?',
-            'values_list': ['1', '2', '3', '4', 'MATH'],
+            'values': ['1', '2', '3', '4', 'MATH'],
             'return_type': str})
 
     def single(self):
