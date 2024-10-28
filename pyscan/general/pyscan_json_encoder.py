@@ -2,6 +2,7 @@ import json
 import numpy as np
 from ..general.item_attribute import ItemAttribute
 from ..drivers.instrument_driver import InstrumentDriver
+from ..drivers.property_settings.abstract_property_settings import AbstractPropertySettings
 from pyvisa.resources import (
     # FirewireInstrument,
     GPIBInstrument,
@@ -46,7 +47,7 @@ class PyscanJSONEncoder(json.JSONEncoder):
 
         if type(obj) is type:
             return obj.__name__
-        elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
+        elif isinstance(obj, (InstrumentDriver, ItemAttribute, AbstractPropertySettings)):
             return obj.__dict__
         elif isinstance(obj, (range, tuple)):
             return list(obj)

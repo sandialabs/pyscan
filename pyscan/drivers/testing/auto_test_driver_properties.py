@@ -182,8 +182,12 @@ def validate_blacklist(device, property_names):
         "Driver needs black_list_for_testing attribute, assign empty list of no blacklisted properties requied"
 
     for black_listed_property in device.black_list_for_testing:
+        print(black_listed_property)
         if black_listed_property in property_names:
             property_names.remove(black_listed_property)
+        else:
+            raise AttributeError(
+                'black_list_for_testing property {} not found in driver properties'.format(black_listed_property))
 
     return property_names
 

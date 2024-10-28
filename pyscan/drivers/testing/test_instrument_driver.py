@@ -45,7 +45,7 @@ class TestInstrumentDriver(AbstractDriver):
         self._version = "0.1.0"
 
         # self.update_properties()
-        self.black_list_for_testing = ['_str_value']
+        self.black_list_for_testing = ['str_value']
 
     def query_property(self, settings_obj):
 
@@ -169,7 +169,7 @@ class BadInstrumentDriver(AbstractDriver):
         self._version = "0.1.0"
 
         self.update_properties()
-        self.black_list_for_testing = ['_nonexistent_property_name']
+        self.black_list_for_testing = ['nonexistent_property_name']
 
     def query_property(self, settings_obj):
         string = settings_obj.query_string
