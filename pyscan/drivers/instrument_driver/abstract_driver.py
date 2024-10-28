@@ -3,7 +3,9 @@ from ..property_settings import (
     RangePropertySettings,
     ValuesPropertySettings,
     IndexedPropertySettings,
-    DictPropertySettings)
+    DictPropertySettings,
+    ReadOnlyPropertySetting)
+from ..property_settings.read_only_property_settings import ReadOnlyException
 import numpy as np
 import re
 
@@ -128,9 +130,13 @@ class AbstractDriver(ItemAttribute):
         None
         '''
 
-        settings_obj.validate_set_value(new_value)
-        self.write_property(settings_obj, new_value)
-        setattr(self, settings_obj._name, new_value)
+        if not settings_obj.read_only:
+            settings_obj.validate_set_value(new_value)
+            self.write_property(settings_obj, new_value)
+            setattr(self, settings_obj._name, new_value)
+        else:
+            print(settings_obj, new_value)
+            raise ReadOnlyException(settings_obj.name)
 
     def update_properties(self):
         properties = self.get_pyscan_properties()
@@ -227,9 +233,16 @@ class AbstractDriver(ItemAttribute):
             valid = np.sum([other in settings_keys for other in other_required_key])
             assert valid, \
                 f'{name} Invalid settings dictionary, if read_only, you must also have "return_type" or "indexed_values"'
+            assert valid <= 1, \
+                f'{name} Invalid settings dictionary, if read_only, you must also have only "return_type" or "indexed_values"'
 
         # Check that the type value is correct
-        if 'range' in settings_keys:
+        if 'indexed_values' in settings_keys:
+            assert isinstance(settings_dict['indexed_values'], list), f'{name} "indexed_values" setting must be a list'
+            property_class = IndexedPropertySettings
+        elif 'read_only' in settings_keys:
+            property_class = ReadOnlyPropertySetting
+        elif 'range' in settings_keys:
             assert len(settings_dict['range']) == 2, f'{name} "range" setting must be a list of lenght 2'
             assert isinstance(settings_dict['range'], list), f'{name} "range" property setting must be a list'
             assert 'return_type' in settings_keys, f'{name} requires a "return_type" setting'
@@ -238,9 +251,6 @@ class AbstractDriver(ItemAttribute):
         elif 'values' in settings_keys:
             assert isinstance(settings_dict['values'], list), f'{name} "values" setting must be a list'
             property_class = ValuesPropertySettings
-        elif 'indexed_values' in settings_keys:
-            assert isinstance(settings_dict['indexed_values'], list), f'{name} "indexed_values" setting must be a list'
-            property_class = IndexedPropertySettings
         elif 'dict_values' in settings_keys:
             assert isinstance(settings_dict['dict_values'], dict), f'{name} "dict_values" setting must be a dict'
             property_class = DictPropertySettings

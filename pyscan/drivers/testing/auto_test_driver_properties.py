@@ -6,8 +6,11 @@ from .test_properties import (
     test_dict_values_property,
     test_read_only_property)
 from ..property_settings import (
-    ValuesPropertySettings, RangePropertySettings, IndexedPropertySettings,
-    DictPropertySettings)
+    ValuesPropertySettings,
+    RangePropertySettings,
+    IndexedPropertySettings,
+    DictPropertySettings,
+    ReadOnlyPropertySetting)
 from .check_initial_state import check_initial_state
 import os
 from datetime import datetime
@@ -93,7 +96,7 @@ def test_properties(device, detailed_dependence, verbose=False):
     property_names = validate_blacklist(device, property_names)
 
     values_counter, range_counter, indexed_values_counter, dict_values_counter = 0, 0, 0, 0
-
+    read_only_counter = 0
     instrument_name = device.__class__.__name__
 
     if verbose:
@@ -110,9 +113,10 @@ def test_properties(device, detailed_dependence, verbose=False):
         if property_name in device['black_list_for_testing']:
             continue
 
-        if hasattr(settings, 'read_only'):
+        if settings.read_only:
             test_read_only_property(device, property_name)
-
+            read_only_counter += 1
+            continue
         if hasattr(settings, 'write_only'):
             continue
 
@@ -128,18 +132,23 @@ def test_properties(device, detailed_dependence, verbose=False):
         elif isinstance(settings, DictPropertySettings):
             dict_values_counter += 1
             test_dict_values_property(device, property_name, detailed_dependence, initial_state)
+        elif isinstance(settings, ReadOnlyPropertySetting):
+            read_only_counter += 1
+            test_read_only_property(device, property_name)
         else:
             raise KeyError("No valid type present in setting: {}. Must be one of {}.".format(
-                property_name, ['values', 'range', 'indexed_values', 'dict_values']))
-
-        device[property_name] = initial_state[property_name]
+                property_name, ['values', 'range', 'indexed_values', 'dict_values', 'read_only']))
+        if not settings.read_only:
+            device[property_name] = initial_state[property_name]
 
         print(property_name)
 
         check_initial_state(device, property_name, initial_state)
 
     for key, value in initial_state.items():
-        device[key] = value
+        settings = getattr(device, f'_{key}_settings')
+        if not settings.read_only:
+            device[key] = value
 
     n_properties = len(property_names)
 

@@ -1,4 +1,5 @@
 from .abstract_property_settings import AbstractPropertySettings
+from .read_only_property_settings import ReadOnlyException
 
 
 class IndexedValueException(Exception):
@@ -20,12 +21,16 @@ class IndexedPropertySettings(AbstractPropertySettings):
         self.types = []
         self.value_strings = []
 
+        self.read_only = hasattr(self, 'read_only')
+
         for val in self.indexed_values:
             self.types.append(type(val))
             self.value_strings.append(str(val))
 
     def validate_set_value(self, new_value):
-        if new_value in self.indexed_values:
+        if self.read_only:
+            raise ReadOnlyException(self.name)
+        elif new_value in self.indexed_values:
             return True
         else:
             raise IndexedValueException(self.name, self.value_strings, self.types, new_value)

@@ -13,6 +13,8 @@ class TestInstrumentDriver(AbstractDriver):
     Attributes
     ----------
     (Properties)
+    id : str
+        The instrument id, read-only
     float_value : float
         for testing float values property
     str_value : str
@@ -36,6 +38,7 @@ class TestInstrumentDriver(AbstractDriver):
 
         self.instrument = 'instrument#123'
         self.debug = debug
+        self._id = 'instrument#123'
         self._float_value = 2.0
         self._str_value = '2'
         self._bool_value = False
@@ -64,7 +67,9 @@ class TestInstrumentDriver(AbstractDriver):
             for key, val in settings_obj.dict_values.items():
                 if str(key) == str(self._dict_value):
                     break
-            val
+        elif string == '*IDN?':
+            val = self._id
+
         return val
 
     def write_property(self, settings_obj, new_value):
@@ -86,6 +91,13 @@ class TestInstrumentDriver(AbstractDriver):
             return string.strip('DICT_VALUES ')
 
     def initialize_properties(self):
+
+        self.add_device_property({
+            'name': 'id',
+            'query_string': '*IDN?',
+            'read_only': True,
+            'return_type': str
+        })
 
         self.add_device_property({
             'name': 'float_value',

@@ -14,7 +14,10 @@ class RangeException(Exception):
 class RangePropertySettings(AbstractPropertySettings):
 
     def __init__(self, settings_dict):
+
         super().__init__(settings_dict)
+
+        self.read_only = False
 
     def validate_set_value(self, new_value):
         if self.range[0] <= new_value <= self.range[1]:

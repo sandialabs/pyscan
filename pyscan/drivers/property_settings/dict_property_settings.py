@@ -24,6 +24,8 @@ class DictPropertySettings(AbstractPropertySettings):
         self.key_type_dict = {}
         self.str_values_dict = {}
 
+        self.read_only = False
+
         for key, value in self.dict_values.items():
             self.key_type_dict[key] = type(key)
             self.str_values_dict[key] = str(value)

@@ -21,6 +21,8 @@ class ValuesPropertySettings(AbstractPropertySettings):
         self.types = []
         self.value_strings = []
 
+        self.read_only = False
+
         for val in self.values:
             self.types.append(type(val))
             self.value_strings.append(str(val))
