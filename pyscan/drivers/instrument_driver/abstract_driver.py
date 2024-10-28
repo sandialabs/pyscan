@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from ...general.item_attribute import ItemAttribute
 from ..property_settings import (
     RangePropertySettings,
     ValuesPropertySettings,
@@ -8,7 +8,7 @@ import numpy as np
 import re
 
 
-class AbstractDriver(object):
+class AbstractDriver(ItemAttribute):
     '''
     Abstract driver class which creates class attributes based on a
     settings dictionary

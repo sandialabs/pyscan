@@ -1,7 +1,6 @@
-from ...general.item_attribute import ItemAttribute
 
 
-class AbstractPropertySettings(ItemAttribute):
+class AbstractPropertySettings(object):
 
     def __init__(self, settings_dict):
 

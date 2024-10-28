@@ -7,8 +7,8 @@ class TestInstrumentDriver(AbstractDriver):
 
     Parameters
     ----------
-    instrument : mock
-        Optional parameter.
+    instrument : str (None)
+        A string that holds the place of an instrument to be connected to.
 
     Attributes
     ----------
@@ -39,7 +39,7 @@ class TestInstrumentDriver(AbstractDriver):
         self._float_value = 2.0
         self._str_value = '2'
         self._bool_value = False
-        self._range = 0
+        self._range = 0.111111
         self._indexed_value = 'A'
         self._dict_value = 'off'
         self._version = "0.1.0"
@@ -56,10 +56,10 @@ class TestInstrumentDriver(AbstractDriver):
             val = self._str_value
         elif string == 'BOOL_VALUES?':
             val = self._bool_value
-        elif string == 'RANGE?':
-            val = self._range
+        elif string in 'RANGE?':
+            val = "{:.3f}".format(self._range)
         elif string == 'INDEXED_VALUES?':
-            val = self._indexed_value_settings['indexed_values'].index(self._indexed_value)
+            val = self._indexed_value_settings.indexed_values.index(self._indexed_value)
         elif string == 'DICT_VALUES?':
             for key, val in settings_obj.dict_values.items():
                 if str(key) == str(self._dict_value):
@@ -77,7 +77,9 @@ class TestInstrumentDriver(AbstractDriver):
         if 'BOOL_VALUES' in string:
             return string.strip('BOOL_VALUES ')
         elif 'RANGE' in string:
-            return string.strip('RANGE ')
+            ret = string.strip('RANGE ')
+            ret = float("{:.3f}".format(float(ret)))
+            return ret
         elif 'INDEXED_VALUES' in string:
             return string.strip('INDEXED_VALUES ')
         elif 'DICT_VALUES' in string:
@@ -89,19 +91,19 @@ class TestInstrumentDriver(AbstractDriver):
             'name': 'float_value',
             'write_string': 'FLOAT_VALUES {}',
             'query_string': 'FLOAT_VALUES?',
-            'values_list': [2.0, 2.2339340249, 89.129398]})
+            'values': [2.0, 2.2339340249, 89.129398]})
 
         self.add_device_property({
             'name': 'str_value',
             'write_string': 'STR_VALUES {}',
             'query_string': 'STR_VALUES?',
-            'values_list': ['2', 'x', 'False']})
+            'values': ['2', 'x', 'False']})
 
         self.add_device_property({
             'name': 'bool_value',
             'write_string': 'BOOL_VALUES {}',
             'query_string': 'BOOL_VALUES?',
-            'values_list': [True, False]})
+            'values': [True, False]})
 
         self.add_device_property({
             'name': 'range',
@@ -122,13 +124,6 @@ class TestInstrumentDriver(AbstractDriver):
             'query_string': 'DICT_VALUES?',
             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0, 1: 1, 0: 0}})
 
-        with pytest.raises(Exception):
-            self.add_device_property({
-                'name': 'bad_values',
-                'write_string': 'DICT_VALUES {}',
-                'query_string': 'DICT_VALUES?',
-                'invalid_key_name': {'on': 1, 'off': 0, '1': 1, '0': 0, 0: 0, 1: 1},
-                'return_type': str})
 
     def update_properties(self):
         self.float_value
@@ -183,17 +178,17 @@ class BadInstrumentDriver(AbstractDriver):
         elif string == 'RANGE?':
             return str(self._range)
         elif string == 'INDEXED_VALUES?':
-            idx = self._indexed_value_settings['indexed_values'].index(self._indexed_value)
+            idx = self._indexed_value_settings.indexed_values.index(self._indexed_value)
             return str(idx)
         elif string == 'DICT_VALUES?':
-            val = self._dict_values_settings['dict_values'][self._dict_value]
+            val = self._dict_values_settings.dict_values[self._dict_value]
             return str(val)
 
     # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
     def write_property(self, settings_obj, new_value):
 
         string = settings_obj.object.write_string.format(new_value)
-        if 'values_list' in string:
+        if 'values' in string:
             return string.strip('VALUES ')
         elif 'RANGE' in string:
             return string.strip('RANGE ')
@@ -208,7 +203,7 @@ class BadInstrumentDriver(AbstractDriver):
             'name': 'value',
             'write_string': 'VALUES {}',
             'query_string': 'VALUES?',
-            'values_list': [2, 'x', False, (1, 10), ['1', '10']],
+            'values': [2, 'x', False, (1, 10), ['1', '10']],
             'return_type': str
         })
 

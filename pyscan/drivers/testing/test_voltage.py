@@ -48,11 +48,7 @@ class TestVoltage(AbstractDriver):
         elif string == 'POW?':
             return str(self._power)
         elif string == 'OUTP?':
-            if self._output_state == 'off':
-                return '0'
-            if self._output_state == 'on':
-                return '1'
-            return str(self._output_state)
+            return self._output_state_settings.indexed_values.index(self._output_state)
 
     def write_property(self, settings_obj, new_value):
 
@@ -64,7 +60,7 @@ class TestVoltage(AbstractDriver):
             'name': 'voltage',
             'write_string': 'VOLT {}',
             'query_string': 'VOLT?',
-            'range': [0, 10],
+            'range': [0.0, 10.0],
             'return_type': float
         })
 
@@ -72,14 +68,10 @@ class TestVoltage(AbstractDriver):
             'name': 'power',
             'write_string': 'POW {}',
             'query_string': 'POW?',
-            'values_list': [1, 10],
-            'return_type': int
-        })
+            'values': [1, 10]})
 
         self.add_device_property({
             'name': 'output_state',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
-            'return_type': str
-        })
+            'indexed_values': ['off', 'on']})
