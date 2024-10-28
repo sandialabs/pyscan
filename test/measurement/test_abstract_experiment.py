@@ -13,6 +13,7 @@ from io import StringIO
 import sys
 import shutil
 import re
+import os
 
 
 # for testing default trigger function with empty function
@@ -38,16 +39,6 @@ def measure_up_to_3D(expt):
     d.x3 = [[random.random() for i in range(2)] for j in range(2)]
 
     return d
-
-
-# for checking 3d shaped arrays filled with nans
-def check_3D_array(array):
-    for k in array:
-        for j in k:
-            for i in j:
-                assert isinstance(i, np.float64)
-                # again, is this supposed to always be nan after running above save functions?
-                assert np.isnan(i)
 
 
 def test_abstract_experiment():
@@ -165,36 +156,34 @@ def test_abstract_experiment():
 
         # now loading the experiment to check the information was saved properly
         temp = ps.load_experiment(file_name)
+        os.remove(file_name + '.hdf5')
         # print("temp dict is: ", temp.__dict__.keys())
 
         # test that preallocate and saves functioned as expected based on loaded experiment
         if allocate == 'preallocate':
             if list(data.__dict__.keys()) == ['x']:
                 assert temp.x.shape == (2, 5, 5)
-                check_3D_array(temp.x)
+                assert data.x in temp.x
             elif list(data.__dict__.keys()) == ['x1', 'x2', 'x3']:
                 assert temp.x1.shape == (2, 5, 5)
-                check_3D_array(temp.x1)
+                assert data.x1 in temp.x1
 
                 assert temp.x2.shape == (2, 5, 5, 2)
-                for f in temp.x2:
-                    check_3D_array(f)
+                assert data.x2 in temp.x2
 
                 assert temp.x3.shape == (2, 5, 5, 2, 2)
-                for z in temp.x3:
-                    for f in z:
-                        check_3D_array(f)
+                assert data.x3 in temp.x3
         else:
             if list(data.__dict__.keys()) == ['x']:
                 assert temp.x.shape == (2, 5, 5)
-                check_3D_array(temp.x)
+                assert data.x in temp.x
             elif list(data.__dict__.keys()) == ['x1', 'x2', 'x3']:
                 assert temp.x1.shape == (2, 5, 5)
-                check_3D_array(temp.x1)
+                assert data.x1 in temp.x1
                 assert temp.x2.shape == (2, 5, 5)
-                check_3D_array(temp.x2)
+                assert data.x2 in temp.x2
                 assert temp.x3.shape == (2, 5, 5)
-                check_3D_array(temp.x3)
+                assert data.x3 in temp.x3
 
         assert len(temp.__dict__.keys()) == 5 + len(expt.runinfo.measured)
 

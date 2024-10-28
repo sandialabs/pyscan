@@ -1,5 +1,8 @@
 import os
 
+# Objects
+from .instrument_driver import InstrumentDriver
+
 # Instrument Drivers
 from .agilent33500 import Agilent33500
 from .agilent34410 import Agilent34410
@@ -28,8 +31,27 @@ from .yokogawags200 import YokogawaGS200
 from .actonsp2300 import ActonSP2300
 
 # Brand collections
+from .agilent import *
+from .american_magnetics import *
+from .attocube import *
+from .bkprecision import *
+from .bluefors import *
+from .hp import *
+from .keithley import *
+from .kepco import *
+from .oceanoptics import *
+from .oxford import *
+from .princeton_instruments import *
+from .stanford import *
+from .swabian import *
+from .tpi import *
+from .yokogawa import *
+from .zurich_instruments import *
+
+# Brand collections with special dependencies
 from .heliotis import *
 from .keysight import *
+from .picoquant import *
 from .thorlabs import *
 from .spin_core import *
 

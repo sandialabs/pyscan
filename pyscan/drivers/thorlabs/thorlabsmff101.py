@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.item_attribute import ItemAttribute
+from ...general.item_attribute import ItemAttribute
 from thorlabs_kinesis import filter_flipper as ff
 from ctypes import c_char_p, c_ushort, c_ulong
 from time import sleep

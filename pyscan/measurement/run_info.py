@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from pyscan.general.item_attribute import ItemAttribute
-from pyscan.general.get_pyscan_version import get_pyscan_version
+from ..general.item_attribute import ItemAttribute
+from ..general.get_pyscan_version import get_pyscan_version
 from .scans import PropertyScan, AverageScan
+import pyscan as ps
 
 
 class RunInfo(ItemAttribute):
@@ -62,6 +63,9 @@ class RunInfo(ItemAttribute):
         self.initial_pause = 0.1
         self.average_d = -1
 
+        # Assumed not a continuous expt. If there is a continuous scan this will be set to true in self.check()
+        self.continuous = False
+
         self.verbose = False
         self._pyscan_version = get_pyscan_version()
 
@@ -102,6 +106,32 @@ class RunInfo(ItemAttribute):
                     (f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index}).\n"
                      + "Scans must be populated in sequential order.")
 
+        # find the scan set to continuous scan (if any) and determine the index
+        for i, scan in enumerate(self.scans):
+            if isinstance(scan, ps.ContinuousScan):
+                self.continuous = True
+                self.continuous_scan_index = i
+
+        # If there is a ContinuousScan, ensure it is the highest level scan
+        if self.continuous:
+            for i in range(self.continuous_scan_index + 1, len(self.scans)):
+                assert isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0, \
+                    f"ContinuousScan found at scan{self.continuous_scan_index} but is not the highest level scan."
+
+    def stop_continuous(self, plus_one=False):
+        stop = False
+        if self.continuous:
+            continuous_scan = self.scans[self.continuous_scan_index]
+            if hasattr(continuous_scan, 'n_max'):
+                if plus_one is False:
+                    if continuous_scan.n_max <= continuous_scan.i:
+                        stop = True
+                elif plus_one is True:
+                    if continuous_scan.n_max <= continuous_scan.i + 1:
+                        stop = True
+
+        return stop
+
     @property
     def scans(self):
         ''' Returns array of all scans
@@ -117,6 +147,10 @@ class RunInfo(ItemAttribute):
                 self.scan2.n,
                 self.scan3.n)
         dims = [n for n in dims if n != 1]
+        if self.continuous:
+            if len(dims) - 1 == self.continuous_scan_index:
+                dims = dims[:-1]
+            dims.append(1)
         self._dims = tuple(dims)
         return self._dims
 
@@ -132,7 +166,7 @@ class RunInfo(ItemAttribute):
     def ndim(self):
         ''' Returns number of non 1 sized scans
         '''
-        self._ndim = len(self.dims)  # why is this stored as a property? It is never used
+        self._ndim = len(self.dims)
         return self._ndim
 
     @property
@@ -152,6 +186,8 @@ class RunInfo(ItemAttribute):
                           self.scan2.i,
                           self.scan3.i)
         self._indicies = self._indicies[:self.ndim]
+        if self.continuous:
+            self._indicies = self._indicies[:-1]
         return tuple(self._indicies)
 
     @property
