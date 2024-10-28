@@ -3,7 +3,7 @@ from pyscan.drivers.property_settings.values_property_settings import ValuesProp
 
 @pytest.fixture
 def settings():
-    return ValuesPropertySettings({'name': 'test', 'values_list': [1, 2, 3, 'a', 'b', 'c']})
+    return ValuesPropertySettings({'name': 'test', 'values': [1, 2, 3, 'a', 'b', 'c']})
 
 
 def test_validate_set_value_valid(settings):

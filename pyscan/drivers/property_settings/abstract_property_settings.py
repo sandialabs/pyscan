@@ -1,17 +1,15 @@
 from ...general.item_attribute import ItemAttribute
-from abc import ABC
 
 
-class AbstractPropertySettings(ItemAttribute, ABC):
+class AbstractPropertySettings(ItemAttribute):
 
-    def __init__(self, device, settings_dict):
+    def __init__(self, settings_dict):
 
-        self.device = device
-
+        self.name = settings_dict['name']
         self._name = '_' + self.name
 
-        for key, value in settings_dict:
-            self.key = value
+        for key, value in settings_dict.items():
+            setattr(self, key, value)
 
     def validate_set_value(self, new_value):
         '''

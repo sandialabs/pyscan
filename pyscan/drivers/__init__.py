@@ -1,8 +1,5 @@
 import os
 
-# Objects
-from .instrument_driver import InstrumentDriver
-
 # Instrument Drivers
 from .agilent33500 import Agilent33500
 from .agilent34410 import Agilent34410

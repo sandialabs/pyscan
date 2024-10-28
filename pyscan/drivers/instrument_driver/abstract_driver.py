@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from ...general.item_attribute import ItemAttribute
 from ..property_settings import (
     RangePropertySettings,
     ValuesPropertySettings,
@@ -7,10 +6,9 @@ from ..property_settings import (
     DictPropertySettings)
 import numpy as np
 import re
-from abc import ABC
 
 
-class AbstractDriver(ItemAttribute, ABC):
+class AbstractDriver(object):
     '''
     Abstract driver class which creates class attributes based on a
     settings dictionary
@@ -113,8 +111,8 @@ class AbstractDriver(ItemAttribute, ABC):
 
     def set_instrument_property(self, obj, settings_obj, new_value):
         '''
-        Generator function for settings dictionary with 'values_list' item
-        Check that new_value is in settings['values_list'], if not, rejects command
+        Generator function for settings dictionary with 'values' item
+        Check that new_value is in settings['values'], if not, rejects command
 
         Parameters
         ----------
@@ -215,7 +213,7 @@ class AbstractDriver(ItemAttribute, ABC):
         # Check that settings_dict has a property type key(s)
         i = 0
 
-        property_types = ['range', 'values_list', 'indexed_values', 'dict_values']
+        property_types = ['range', 'values', 'indexed_values', 'dict_values']
 
         for prop in property_types:
             if prop in settings_keys:
@@ -237,8 +235,8 @@ class AbstractDriver(ItemAttribute, ABC):
             assert 'return_type' in settings_keys, f'{name} requires a "return_type" setting'
             assert settings_dict['range'][1] > settings_dict['range'][0], f'{name} has bad "range" settings, range[0] < range[1]'
             property_class = RangePropertySettings
-        elif 'values_list' in settings_keys:
-            assert isinstance(settings_dict['values_list'], list), f'{name} "values" setting must be a list'
+        elif 'values' in settings_keys:
+            assert isinstance(settings_dict['values'], list), f'{name} "values" setting must be a list'
             property_class = ValuesPropertySettings
         elif 'indexed_values' in settings_keys:
             assert isinstance(settings_dict['indexed_values'], list), f'{name} "indexed_values" setting must be a list'

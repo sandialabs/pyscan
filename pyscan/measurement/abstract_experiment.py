@@ -211,7 +211,8 @@ class AbstractExperiment(ItemAttribute):
                     f[key][self.runinfo.indicies, ...] = self[key][self.runinfo.indicies, ...]
 
     def save_row(self):
-        '''Saves full scan0 of data at once. Does not return anything.
+        '''
+        Saves full scan0 of data at once. Does not return anything.
         '''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
@@ -229,8 +230,8 @@ class AbstractExperiment(ItemAttribute):
                     f[key][:, self.runinfo.line_indicies, ...] = self[key][self.runinfo.line_indicies, ...]
 
     def save_metadata(self):
-        '''Formats and saves metadata from self.runinfo and self.devices. Does not return anything.
-
+        '''
+        Formats and saves metadata from self.runinfo and self.devices. Does not return anything.
         '''
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.long_name)
         save_name = str(save_path.absolute())

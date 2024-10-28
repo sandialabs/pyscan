@@ -1,4 +1,4 @@
-from itemattribute import ItemAttribute
+from .abstract_property_settings import AbstractPropertySettings
 
 
 class RangeException(Exception):
@@ -11,10 +11,10 @@ class RangeException(Exception):
         super().__init__(msg)
 
 
-class RangePropertySettings(ItemAttribute):
+class RangePropertySettings(AbstractPropertySettings):
 
-    def __init__(self, device, settings_dict):
-        super().__init__(device, settings_dict)
+    def __init__(self, settings_dict):
+        super().__init__(settings_dict)
 
     def validate_set_value(self, new_value):
         if self.range[0] <= new_value <= self.range[1]:

@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from pyscan.general.item_attribute import ItemAttribute
+from ..general.item_attribute import ItemAttribute
 from ..drivers.instrument_driver import InstrumentDriver
 from pyvisa.resources import (
     # FirewireInstrument,
@@ -47,49 +47,34 @@ class PyscanJSONEncoder(json.JSONEncoder):
         if type(obj) is type:
             return obj.__name__
         elif isinstance(obj, (InstrumentDriver, ItemAttribute)):
-            if debug is True:
-                print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
             return obj.__dict__
         elif isinstance(obj, (range, tuple)):
-            if debug is True:
-                print(f"obj {obj} was instance of {type(obj)}.")
             return list(obj)
         # Handle numpy integers
         elif isinstance(obj, np.integer):
-            if debug is True:
-                print(f"Object {obj} is a numpy integer, converting to int.")
             return int(obj)
         # Handle numpy floating values
         elif isinstance(obj, np.floating):
-            if debug is True:
-                print(f"Object {obj} is a numpy floating value, converting to float.")
             return float(obj)
         # Handle numpy arrays
         elif isinstance(obj, np.ndarray):
-            if debug is True:
-                print(f"Object {obj} is a numpy array, converting to list.")
             return obj.tolist()
         elif callable(obj):
-            if debug is True:
-                print(f"obj {obj} is a function, returning source code.")
-            return inspect.getsource(obj)  # Talk with Andy about this and perhaps implementing in load_expt?
-        elif isinstance(obj, (WindowsPath, Path)):  # This covers both WindowsPath and PosixPath
-            if debug is True:
-                print(f"obj {obj} is a Path or WindowsPath, returning string of the path.")
+            return inspect.getsource(obj)
+        elif isinstance(obj, (WindowsPath, Path)):
             return str(obj)
         elif type(obj) is type(iter(range(1))):
             return list(obj)
         elif isinstance(
             obj,
-            (
-                # FirewireInstrument,
-                GPIBInstrument,
-                # PXIInstrument,
-                SerialInstrument,
-                TCPIPInstrument,
-                USBInstrument,
-                # VXIInstrument,
-            ),
+            (# FirewireInstrument,
+             GPIBInstrument,
+             # PXIInstrument,
+             SerialInstrument,
+             TCPIPInstrument,
+             USBInstrument,
+             # VXIInstrument)
+            )
         ):
             if debug is True:
                 print(f"obj {obj} is a pyvisa instrument, returning resource name.")
