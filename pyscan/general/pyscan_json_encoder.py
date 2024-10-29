@@ -67,14 +67,14 @@ class PyscanJSONEncoder(json.JSONEncoder):
         elif type(obj) is type(iter(range(1))):
             return list(obj)
         elif isinstance(
-            obj,
-            (# FirewireInstrument,
-             GPIBInstrument,
-             # PXIInstrument,
-             SerialInstrument,
-             TCPIPInstrument,
-             USBInstrument,
-             # VXIInstrument)
+            obj, (
+                GPIBInstrument,
+                # FirewireInstrument,
+                # PXIInstrument,
+                SerialInstrument,
+                TCPIPInstrument,
+                USBInstrument,
+                # VXIInstrument,
             )
         ):
             if debug is True:

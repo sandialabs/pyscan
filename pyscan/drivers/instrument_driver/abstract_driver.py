@@ -227,15 +227,18 @@ class AbstractDriver(ItemAttribute):
                 i += 1
 
         if 'read_only' not in settings_keys:
-            assert (i <= 1) and (i > 0), \
-                f'{name} invalid settings, must have a single type indicator "values", "indexed_values", "range", or "dict_values"'
+            assert (i <= 1) and (i > 0), (
+                f'{name} invalid settings, must have a single type indicator "values",'
+                + 'indexed_values", "range", or "dict_values"')
         else:
             other_required_key = ['return_type', 'indexed_values']
             valid = np.sum([other in settings_keys for other in other_required_key])
-            assert valid, \
-                f'{name} Invalid settings dictionary, if read_only, you must also have "return_type" or "indexed_values"'
-            assert valid <= 1, \
-                f'{name} Invalid settings dictionary, if read_only, you must also have only "return_type" or "indexed_values"'
+            assert valid, (
+                f'{name} Invalid settings dictionary, if read_only,'
+                + ' you must also have "return_type" or "indexed_values"')
+            assert valid <= 1, (
+                f'{name} Invalid settings dictionary, if read_only,'
+                + 'you must also have only "return_type" or "indexed_values"')
 
         # Check that the type value is correct
         if 'indexed_values' in settings_keys:
@@ -247,7 +250,8 @@ class AbstractDriver(ItemAttribute):
             assert len(settings_dict['range']) == 2, f'{name} "range" setting must be a list of lenght 2'
             assert isinstance(settings_dict['range'], list), f'{name} "range" property setting must be a list'
             assert 'return_type' in settings_keys, f'{name} requires a "return_type" setting'
-            assert settings_dict['range'][1] > settings_dict['range'][0], f'{name} has bad "range" settings, range[0] < range[1]'
+            assert settings_dict['range'][1] > settings_dict['range'][0], (
+                f'{name} has bad "range" settings, range[0] < range[1]')
             property_class = RangePropertySettings
         elif 'values' in settings_keys:
             assert isinstance(settings_dict['values'], list), f'{name} "values" setting must be a list'

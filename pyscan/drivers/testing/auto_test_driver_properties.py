@@ -159,7 +159,7 @@ def test_properties(device, detailed_dependence, verbose=False):
     print("{} dict values {} {} total settings found.".format(dict_values_counter, mid_string, n_properties))
 
     print(
-        "{} blacklisted settings not testing (likely due to interdependencies not suitable for automated testing)".format(
+        "{} blacklisted settings not testing".format(
             len(device.black_list_for_testing)))
 
     total_tested = range_counter + values_counter + indexed_values_counter + dict_values_counter

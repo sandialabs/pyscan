@@ -1,6 +1,5 @@
 # test the set_values_property behavior
 import pytest
-from math import floor, ceil
 import typing
 from pyscan.general.d_range import drange
 from .check_initial_state import check_initial_state
@@ -164,7 +163,7 @@ def test_indexed_property(device, property_name, detailed_dependence, initial_st
 
     for i, value in enumerate(settings.indexed_values):
         device[property_name] = value
-        
+
         assert device[property_name] == value, prop_err_str1.format(
             'indexed', property_name, value, device[property_name])
         assert device["_{}".format(property_name)] == value, prop_err_str2.format(

@@ -136,7 +136,6 @@ class TestInstrumentDriver(AbstractDriver):
             'query_string': 'DICT_VALUES?',
             'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0, 1: 1, 0: 0}})
 
-
     def update_properties(self):
         self.float_value
         self.str_value
