@@ -433,7 +433,7 @@ class InstrumentDriver(ItemAttribute):
 
         doc = self.__doc__.split('\n')
 
-        r = re.compile(".*{} :".format(prop_name))
+        r = re.compile("    {} :".format(prop_name))
         match = list(filter(r.match, doc))
 
         assert len(match) > 0, "No matches for {} documentation".format(prop_name)
