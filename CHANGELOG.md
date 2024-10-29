@@ -1,3 +1,12 @@
+## [0.8.5](https://github.com/sandialabs/pyscan/compare/v0.8.4...v0.8.5) (2024-10-29)
+
+
+### Bug Fixes
+
+* **driver:** fixed the stanford 860 auto test end removed some unneeded properties ([35bc923](https://github.com/sandialabs/pyscan/commit/35bc923bee85bb3104d3234bccb9b1d5ed0a5bff))
+
+
+
 ## [0.8.4](https://github.com/sandialabs/pyscan/compare/v0.8.3...v0.8.4) (2024-10-18)
 
 
