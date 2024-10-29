@@ -43,7 +43,6 @@ class DictPropertySettings(AbstractPropertySettings):
     def format_query_return(self, ret):
 
         key = self.find_first_key(ret)
-
         key_type = self.key_type_dict[key]
 
         return key_type(key)

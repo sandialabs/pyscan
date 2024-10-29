@@ -80,7 +80,7 @@ class InstrumentDriver(AbstractDriver):
 
         value = self.instrument.query(settings_obj.query_string)
 
-        return self.format_query_return(self, value)
+        return value
 
     def write(self, string):
         '''
@@ -114,11 +114,7 @@ class InstrumentDriver(AbstractDriver):
         None
         '''
 
-        value = settings_obj.format_write_value(new_value)
-
-        self.instrument.write(settings_obj.write_string.format(value))
-
-        setattr(self, settings_obj._name, new_value)
+        self.instrument.write(settings_obj.write_string.format(new_value))
 
     def read(self):
         '''

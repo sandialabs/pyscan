@@ -132,7 +132,8 @@ class AbstractDriver(ItemAttribute):
 
         if not settings_obj.read_only:
             settings_obj.validate_set_value(new_value)
-            self.write_property(settings_obj, new_value)
+            value = settings_obj.format_write_value(new_value)
+            self.write_property(settings_obj, value)
             setattr(self, settings_obj._name, new_value)
         else:
             print(settings_obj, new_value)
@@ -143,7 +144,7 @@ class AbstractDriver(ItemAttribute):
 
         for prop in properties:
             settings = self['_{}_settings'.format(prop)]
-            if 'write_only' not in settings:
+            if not hasattr(settings, 'write_only'):
                 self[prop]
 
     def get_pyscan_properties(self):

@@ -136,13 +136,13 @@ class Stanford830(InstrumentDriver):
         super().__init__(instrument)
 
         self.debug = False
-        self._version = "1.0.3"
+        self._version = "1.0.4"
 
         self.black_list_for_testing = [
-            '_input_configuration',
-            "_time_constant",
-            "_amplitude",
-            "_sensitivity"]
+            'input_configuration',
+            "time_constant",
+            "amplitude",
+            "sensitivity"]
 
         self.initialize_properties()
         self.update_properties()
@@ -168,8 +168,7 @@ class Stanford830(InstrumentDriver):
             'name': 'reference_source',
             'write_string': 'FMOD {}',
             'query_string': 'FMOD?',
-            'indexed_values': ['external', 'internal'],
-            'return_type': int})
+            'indexed_values': ['external', 'internal']})
 
         self.add_device_property({
             'name': 'frequency',
@@ -278,8 +277,7 @@ class Stanford830(InstrumentDriver):
             'name': 'synchronous_filter',
             'write_string': 'SYNC {}',
             'query_string': 'SYNC?',
-            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
-            'return_type': int})
+            'indexed_values': ['off', 'on']})
 
         # Display and Output Properties:
 
@@ -351,8 +349,7 @@ class Stanford830(InstrumentDriver):
             'name': 'trigger_mode',
             'write_string': 'TSTR {}',
             'query_string': 'TSTR?',
-            'dict_values': {'off': 0, 'on': 1, '0': 0, '1': 1, 0: 0, 1: 1},
-            'return_type': int})
+            'indexed_values': ['off', 'on']})
 
         self.add_device_property({
             'name': 'buffer_points',

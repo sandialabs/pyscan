@@ -128,7 +128,8 @@ def test_range_property(device, property_name, detailed_dependence, initial_stat
 
     step = abs(settings.range[1] - settings.range[0]) / 9
 
-    for value in drange(int(settings.range[0]), step, int(settings.range[1])):
+    for value in drange(settings.range[0], step, settings.range[1]):
+
         device[property_name] = value
 
         new_value = device[property_name]
