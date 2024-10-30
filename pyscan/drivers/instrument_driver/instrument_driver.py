@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from .abstract_driver import AbstractDriver
-from ..new_instrument import new_instrument
+from .new_instrument import new_instrument
 
 
 class InstrumentDriver(AbstractDriver):
