@@ -5,12 +5,12 @@ from .test_properties import (
     test_indexed_property,
     test_dict_values_property,
     test_read_only_property)
-from ..property_settings import (
-    ValuesPropertySettings,
-    RangePropertySettings,
-    IndexedPropertySettings,
+from ..instrument_driver.properties import (
     DictPropertySettings,
-    ReadOnlyPropertySetting)
+    IndexedPropertySettings,
+    RangePropertySettings,
+    ReadOnlyPropertySetting,
+    ValuesPropertySettings)
 from .check_initial_state import check_initial_state
 import os
 from datetime import datetime

@@ -1,11 +1,10 @@
 from ...general.item_attribute import ItemAttribute
-from ..property_settings import (
-    RangePropertySettings,
-    ValuesPropertySettings,
-    IndexedPropertySettings,
-    DictPropertySettings,
-    ReadOnlyPropertySetting)
-from ..property_settings.read_only_property_settings import ReadOnlyException
+from .properties import (
+    DictProperty, DictPropertySettings,
+    IndexedProperty, IndexedPropertySettings,
+    RangeProperty, RangePropertySettings,
+    ReadOnlyProperty, ReadOnlyPropertySetting,
+    ValuesProperty, ValuesPropertySettings)
 import numpy as np
 import re
 
@@ -71,73 +70,20 @@ class AbstractDriver(ItemAttribute):
         name = settings_dict['name']
         settings_name = '_' + name + '_settings'
 
-        property_class = self.validate_property_settings(settings_dict)
+        property_class, settings_class = self.validate_property_settings(settings_dict)
         self.validate_subclass_settings(settings_dict)
 
         # Make property settings attribute
-        settings_obj = property_class(settings_dict)
+        settings_obj = settings_class(settings_dict)
         setattr(self, settings_name, settings_obj)
 
         # Make self.name property
-        property_definition = property(
-            fget=lambda obj: self.get_instrument_property(obj, settings_obj),
-            fset=lambda obj, new_value: self.set_instrument_property(obj, settings_obj, new_value),
-            doc=self.get_property_docstring(name))
-        setattr(self.__class__, name, property_definition)
+        setattr(self.__class__, name, property_class())
+        vars(self.__class__)[name].name = name
+        vars(self.__class__)[name]._name = f'_{name}'
+        vars(self.__class__)[name].settings_name = f'_{name}_settings'
+        vars(self.__class__)[name].__doc__ = self.get_property_docstring(name)
         setattr(self, settings_obj._name, None)
-
-    def get_instrument_property(self, obj, settings_obj, debug=False):
-        '''
-        Generator function for a query function of the instrument
-        that sends the query string and formats the return based on
-        settings['return_type']
-
-        Parameters
-        obj :
-            parent object
-        settings : dict
-            settings dictionary
-        debug : bool
-            returns query string instead of querying instrument
-
-        Returns
-        -------
-        value formatted to setting's ['return_type']
-        '''
-        value = self.query_property(settings_obj)
-        value = settings_obj.format_query_return(value)
-
-        setattr(self, settings_obj._name, value)
-
-        return value
-
-    def set_instrument_property(self, obj, settings_obj, new_value):
-        '''
-        Generator function for settings dictionary with 'values' item
-        Check that new_value is in settings['values'], if not, rejects command
-
-        Parameters
-        ----------
-        obj :
-            parent class object
-        settings : PropetySettings subclass
-            RangeSettings, ValuesSettings, IndexedValuesSettings, or DictValuesSettings
-        new_value :
-            new_value to be formatted and sent to instrument
-
-        Returns
-        -------
-        None
-        '''
-
-        if not settings_obj.read_only:
-            settings_obj.validate_set_value(new_value)
-            value = settings_obj.format_write_value(new_value)
-            self.write_property(settings_obj, value)
-            setattr(self, settings_obj._name, new_value)
-        else:
-            print(settings_obj, new_value)
-            raise ReadOnlyException(settings_obj.name)
 
     def update_properties(self):
         properties = self.get_pyscan_properties()
@@ -243,24 +189,24 @@ class AbstractDriver(ItemAttribute):
         # Check that the type value is correct
         if 'indexed_values' in settings_keys:
             assert isinstance(settings_dict['indexed_values'], list), f'{name} "indexed_values" setting must be a list'
-            property_class = IndexedPropertySettings
+            property_class, settings_class = IndexedProperty, IndexedPropertySettings
         elif 'read_only' in settings_keys:
-            property_class = ReadOnlyPropertySetting
+            property_class, settings_class = ReadOnlyProperty, ReadOnlyPropertySetting
         elif 'range' in settings_keys:
             assert len(settings_dict['range']) == 2, f'{name} "range" setting must be a list of lenght 2'
             assert isinstance(settings_dict['range'], list), f'{name} "range" property setting must be a list'
             assert 'return_type' in settings_keys, f'{name} requires a "return_type" setting'
             assert settings_dict['range'][1] > settings_dict['range'][0], (
                 f'{name} has bad "range" settings, range[0] < range[1]')
-            property_class = RangePropertySettings
+            property_class, settings_class = RangeProperty, RangePropertySettings
         elif 'values' in settings_keys:
             assert isinstance(settings_dict['values'], list), f'{name} "values" setting must be a list'
-            property_class = ValuesPropertySettings
+            property_class, settings_class = ValuesProperty, ValuesPropertySettings
         elif 'dict_values' in settings_keys:
             assert isinstance(settings_dict['dict_values'], dict), f'{name} "dict_values" setting must be a dict'
-            property_class = DictPropertySettings
+            property_class, settings_class = DictProperty, DictPropertySettings
 
-        return property_class
+        return property_class, settings_class
 
     def validate_subclass_settings(self, settings_dict):
         '''
