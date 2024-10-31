@@ -4,6 +4,8 @@ import typing
 from pyscan.general.d_range import drange
 from .check_initial_state import check_initial_state
 
+__test__ = False
+
 
 missing_prop_str = "device did not have {} property, test it's in drivers initialize_properties or update_properties."
 BAD_INPUTS = [-19812938238312948, -1.11123444859, 3.2222111234, 985767665954, 890992238.2345,
