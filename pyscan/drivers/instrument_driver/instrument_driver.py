@@ -129,19 +129,19 @@ class InstrumentDriver(AbstractDriver):
 
         return self.instrument.read()
 
-    def validate_subclass_settings(self, settings_dict):
+    def validate_subclass_settings(self, settings_obj):
         '''
         For ScPIPropertySettings, ensures that write_string, query_string, read_only, and write_only
         are configured properly
 
         Parameters
         ----------
-        settings_dict : dict
+        settings_obj : instance of subclass of AbstractPropertySetttings
             Dictionary of settings that generate a pyscan device property object
 
         '''
 
-        settings_keys = list(settings_dict.keys())
+        settings_keys = list(settings_obj.keys())
 
         if 'read_only' in settings_keys:
             assert 'write_string' not in settings_keys, \
@@ -158,3 +158,5 @@ class InstrumentDriver(AbstractDriver):
                 f'{self.name} is missing a "query_string" key'
             assert 'write_string' in settings_keys, \
                 f'{self.name} is missing a "write_string" key'
+
+        return settings_obj
