@@ -4,7 +4,7 @@ import sys
 name = 'seabreeze'
 
 try:
-    import seabreeze    
+    import seabreeze
     from .oceanopticsqepro import OceanOpticsQEPro
 except ModuleNotFoundError:
     from .oceanoptics_exceptions import SeabreezeMissingException as OceanOpticsQEPro
