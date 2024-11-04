@@ -3,7 +3,8 @@ import sys
 # For illustrative purposes.
 name = 'seabreeze'
 
-if name in sys.modules:
+try:
+    import seabreeze
     from .oceanopticsqepro import OceanOpticsQEPro
-else:
+except ModuleNotFoundError:
     from .oceanoptics_exceptions import SeabreezeMissingException as OceanOpticsQEPro

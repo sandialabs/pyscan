@@ -1,8 +1,8 @@
 import sys
 
 name = 'pylablib'
-
-if name in sys.modules:
+try:
+    import pylablib
     from .attocubeANC350 import AttocubeANC350
-else:
+except ModuleNotFoundError:
     from .attocube_exceptions import PylabLibMissingException as AttocubeANC350
