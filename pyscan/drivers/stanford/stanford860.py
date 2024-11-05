@@ -200,8 +200,7 @@ class Stanford860(InstrumentDriver):
             'name': 'timebase_state',
             'query_string': 'TBSTAT?',
             'indexed_values': ['internal', 'external'],
-            'read_only': True,
-            'return_type': str})
+            'read_only': True})
 
         self.add_device_property({
             'name': 'phase',
