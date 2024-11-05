@@ -35,8 +35,10 @@ def test_read_only_property(device, property_name):
     initial_state : dict
         key, value pairs of property names and their initial values
     '''
-
-    assert device[property_name], 'Could not read property {}'.format(property_name)
+    try:
+        device[property_name]
+    except Exception:
+        raise Exception(f'Could not read, read-only property {property_name}')
 
 
 def test_values_property(device, property_name, detailed_dependence, initial_state):

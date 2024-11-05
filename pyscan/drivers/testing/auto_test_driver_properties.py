@@ -44,7 +44,9 @@ prop_err_str2 = ("set {} property {} to {} but _{} returned {}."
                  + "test for interdependence and consider blacklisting.")
 
 
-def auto_test_driver_properties(device, detailed_dependence=False, skip_log=False, verbose=True):
+def auto_test_driver_properties(
+        device, detailed_dependence=False,
+        initial_state_ignore_list=[], skip_log=False, verbose=True):
     '''
     Automatically tests driver properties and documnetation
 
@@ -54,13 +56,15 @@ def auto_test_driver_properties(device, detailed_dependence=False, skip_log=Fals
         Instance of a driver subclassed from AbstractDriver
     detailed_dependenced : bool, optional
         Tests the interdependence between properties and reports the results, by default False
+    initial_state_ignore_list : list[str]
+        List of strings of properties to ignore for checking changes
     skip_log : bool, optional
         Skip the logging of the test results, by default False
     verbose : bool, optional
         Print the results of the tests, by default True
     '''
 
-    test_properties(device, detailed_dependence, verbose)
+    test_properties(device, detailed_dependence, initial_state_ignore_list, verbose)
 
     print(
         f"\033[92m Property implementation tests passed, instrument: {device.__class__.__name__}. \033[0m")
@@ -74,7 +78,7 @@ def auto_test_driver_properties(device, detailed_dependence=False, skip_log=Fals
     print(f"\033[1;32m {device.__class__.__name__} test results logged. \033[0m")
 
 
-def test_properties(device, detailed_dependence, verbose=False):
+def test_properties(device, detailed_dependence, initial_state_ignore_list, verbose=False):
     '''
     Automatically finds all of the PropertySettings properties of device and tests that they work
 
@@ -143,7 +147,7 @@ def test_properties(device, detailed_dependence, verbose=False):
 
         print(property_name)
 
-        check_initial_state(device, property_name, initial_state)
+        check_initial_state(device, property_name, initial_state, initial_state_ignore_list)
 
     for key, value in initial_state.items():
         settings = getattr(device, f'_{key}_settings')

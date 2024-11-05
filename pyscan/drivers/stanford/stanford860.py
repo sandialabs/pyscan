@@ -168,12 +168,12 @@ class Stanford860(InstrumentDriver):
         self._version = "0.2.0"
 
         self.black_list_for_testing = [
-            '_amplitude',
-            '_voltage_offset',
-            '_auxiliary_output_voltage_1',
-            '_auxiliary_output_voltage_2',
-            '_auxiliary_output_voltage_3',
-            '_auxiliary_output_voltage_4']
+            'amplitude',
+            'voltage_offset',
+            'auxiliary_output_voltage_1',
+            'auxiliary_output_voltage_2',
+            'auxiliary_output_voltage_3',
+            'auxiliary_output_voltage_4']
 
         self.initialize_properties()
         self.update_properties()
@@ -266,7 +266,7 @@ class Stanford860(InstrumentDriver):
             'name': 'amplitude',
             'write_string': 'SLVL {}',
             'query_string': 'SLVL?',
-            'range': [1e-9, 2],
+            'range': [0, 2],
             'return_type': float})
 
         self.add_device_property({

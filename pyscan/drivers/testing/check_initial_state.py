@@ -1,4 +1,7 @@
-def check_initial_state(device, property_name, initial_state):
+from ..instrument_driver.properties.read_only_exception import ReadOnlyException
+
+
+def check_initial_state(device, property_name, initial_state, initial_state_ignore_list):
     '''
     Check if the properties have changed from their intial state after a property has been tested
 
@@ -14,8 +17,14 @@ def check_initial_state(device, property_name, initial_state):
 
     for key, value in initial_state.items():
 
+        if key in initial_state_ignore_list:
+            continue
+
         new_value = device[key]
 
         if new_value != value:
             print(f'Warning, changing {property_name} changed {key} from {value} to {new_value}')
-            device[key] = value
+            try:
+                device[key] = value
+            except ReadOnlyException:
+                pass
