@@ -2,7 +2,8 @@ import sys
 
 name = 'libHeLIC'
 
-if name in sys.modules:
+try:
+    import libHeLIC
     from .helioscamera import HeliosCamera
-else:
+except ModuleNotFoundError:
     from .helios_exceptions import HeliosImportException as HeliosCamera
