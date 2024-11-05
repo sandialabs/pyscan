@@ -35,7 +35,7 @@ class AbstractDriver(ItemAttribute):
     get_property_docstring(prop_name)
     '''
 
-    def __init__(self):
+    def __init__(self, instrument, debug=False):
         pass
 
     def query_property(self, settings):
@@ -71,7 +71,7 @@ class AbstractDriver(ItemAttribute):
         settings_name = '_' + name + '_settings'
 
         property_class, settings_class = self.validate_property_settings(settings_dict)
-        settings_class = self.validate_subclass_settings(settings_class)
+        self.validate_subclass_settings(settings_dict)
 
         # Make property settings attribute
         settings_obj = settings_class(settings_dict)
@@ -126,22 +126,12 @@ class AbstractDriver(ItemAttribute):
 
         doc = self.__doc__.split('\n')
 
-        r = "    {} :".format(prop_name)
+        r = re.compile(".*{} :".format(prop_name))
+        match = list(filter(r.match, doc))
 
-        def find_match(str):
-            if r in str:
-                return True
-            else:
-                return False
-
-        match = list(filter(find_match, doc))
-
-        assert not len(match) > 1, "Too many matches for {} documentation".format(prop_name)
-
-        if len(match) == 0:
-            match = ''
-        else:
-            match = match[0]
+        assert len(match) > 0, "No matches for {} documentation".format(prop_name)
+        assert len(match) == 1, "Too many matches for {} documentation".format(prop_name)
+        match = match[0]
 
         for i, string in enumerate(doc):
             if string == match:
@@ -218,10 +208,10 @@ class AbstractDriver(ItemAttribute):
 
         return property_class, settings_class
 
-    def validate_subclass_settings(self, settings_obj):
+    def validate_subclass_settings(self, settings_dict):
         '''
         Abstract method to be overloaded which checks the validity of input settings
         beyond range, values, indexed_values, dict_values, read-only, write-only, etc.
         '''
 
-        return settings_obj
+        pass
