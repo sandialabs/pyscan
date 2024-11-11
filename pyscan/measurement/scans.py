@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import numpy as np
 from time import sleep
 from itemattribute import ItemAttribute

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from itemattribute import ItemAttribute
 import sys
 sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')

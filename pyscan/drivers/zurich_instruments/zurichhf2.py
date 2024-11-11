@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import zhinst.ziPython as ziPython
 from itemattribute import ItemAttribute
 import numpy as np

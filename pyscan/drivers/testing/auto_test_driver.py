@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import pytest
 import math
 from collections import OrderedDict

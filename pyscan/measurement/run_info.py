@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from itemattribute import ItemAttribute
 from .get_pyscan_version import get_pyscan_version
 from .scans import PropertyScan, AverageScan

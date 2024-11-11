@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import numpy as np
 from itemattribute import ItemAttribute
 from thorlabs_kinesis import benchtop_stepper_motor as bsm

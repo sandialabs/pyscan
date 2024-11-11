@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from time import sleep
 from .abstract_experiment import AbstractExperiment
 from ..general.is_list_type import is_list_type

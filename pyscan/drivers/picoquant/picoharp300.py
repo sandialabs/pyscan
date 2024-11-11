@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import ctypes
 from ctypes import byref
 from itemattribute import ItemAttribute

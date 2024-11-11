@@ -1,6 +1,6 @@
 from .new_instrument import new_instrument
 
-from item import ItemAttribute
+from itemattribute import ItemAttribute
 from collections import OrderedDict
 import numpy as np
 import re
