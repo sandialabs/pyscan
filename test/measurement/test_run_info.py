@@ -1,107 +1,112 @@
-'''
-Pytest functions to test the Runinfo class
-'''
-
 import pyscan as ps
 import pytest
 
 
-#  ######## need to add tests for runinfo's different @property definitions.
-def test_init_from_noparams():
-    """
-    Testing init from no paramaters in RunInfo
+@pytest.mark.parametrize("key,value", [
+    ("measured", []),
+    ("measure_function", None),
+    ("initial_pause", 0.1),
+    ("_pyscan_version", ps.get_pyscan_version()),
+    ("scans", []),
+    ("dims", ()),
+    ("average_dims", ()),
+    ("dims", ()),
+    ('ndim', 0),
+    ('n_average_dim', 0),
+    ('indicies', ()),
+    ('average_indicies', ()),
+    ('average_index', -1),
+    ('has_average_scan', False)])
+def test_runinfo_init_attributes_and_properties(key, value):
+    runinfo = ps.RunInfo()
+    if (value is None) or (value is False):
+        assert runinfo[key] is value, f"Initialized RunInfo {key} is not {value}"
+    else:
+        assert runinfo[key] == value, f"Initialized RunInfo {key} is not {value}"
 
-    Returns
-    -------
-    None
 
-    """
+@pytest.mark.parametrize("key,value,t", [
+    ("measured", [], list),
+    ("measure_function", None, None),
+    ("initial_pause", 0.1, float),
+    ("_pyscan_version", ps.get_pyscan_version(), str),
+    ("scan0", '_', ps.PropertyScan),
+    ("scans", '_', list),
+    ("dims", (2,), tuple),
+    ("average_dims", (), tuple),
+    ("dims", (2,), tuple),
+    ("ndim", 1, int),
+    ("n_average_dim", 0, int),
+    ("indicies", (0,), tuple),
+    ("average_indicies", (), tuple),
+    ("average_index", -1, int),
+    ("has_average_scan", False, bool)])
+def test_runinfo_1D_attributes_and_properties(key, value, t):
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, prop='voltage')
 
-    init_runinfo = ps.RunInfo()
+    if value == '_':
+        pass
+    elif (value is None) or (value is False):
+        assert runinfo[key] is value, f"RunInfo 1D {key} is not {value}"
+    else:
+        assert runinfo[key] == value, f"RunInfo 1D {key} is not {value}"
 
-    # for checking that scans have expected attributes
-    def check_scans_have_attribute(scans, attribute_name):
-        counter = 0
-        for scan in scans:
-            err_string = "runinfo scan" + str(counter) + " (Property Scan) " + attribute_name + " not intialized"
-            assert hasattr(scan, attribute_name), err_string
-            counter += 1
+    if t is None:
+        pass
+    else:
+        assert isinstance(runinfo[key], t), f"RunInfo 1D {key} is not of type {t}"
 
-    # for checking that runinfo attributes are as expected
-    def check_attribute(runinfo, attribute, attribute_name, expected):
-        err_string1 = "runinfo " + attribute_name + " not initialized"
-        assert hasattr(runinfo, attribute_name), err_string1
-        err_string2 = "runinfo " + attribute_name + " not " + str(expected) + " when intialized"
-        assert (attribute is expected or attribute == expected), err_string2
 
-    # check that runinfo scans are initialized correctly
-    def check_runinfo_scans():
-        # check that scans 0 - 4 initialized
-        for i in range(4):
-            assert hasattr(init_runinfo, 'scan' + str(i)), "runinfo scan" + str(i) + " not initialized"
+def test_bad_scan_order():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, prop='voltage')
+    runinfo.scan2 = ps.PropertyScan({'v2': ps.drange(0, 0.1, 0.1)}, prop='voltage')
 
-        # check that scans 0 - 4 initialized
-        for scan in init_runinfo.scans:
-            assert isinstance(scan, ps.PropertyScan), "runinfo scans not initialized as Property Scan"
+    with pytest.raises(AssertionError):
+        runinfo.check()
 
-        # check that scan attributes are initialized
-        check_scans_have_attribute(init_runinfo.scans, 'scan_dict')
-        check_scans_have_attribute(init_runinfo.scans, 'prop')
-        check_scans_have_attribute(init_runinfo.scans, 'dt')
-        check_scans_have_attribute(init_runinfo.scans, 'i')
 
-        # check that each scans attributes are initialized correctly
-        counter = 0
-        for scan in init_runinfo.scans:
-            # check that scan_dict initialized as empty {}
-            err_string = "runinfo scan" + str(counter) + " (Property Scan) scan_dict not empty when intialized"
-            assert scan.scan_dict == {}, err_string
+def test_repeat_property_scan():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 1)}, prop='voltage')
+    runinfo.scan1 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 1)}, prop='voltage')
 
-            # check that prop initialized as None
-            err_string = "runinfo scan" + str(counter) + " (Property Scan) prop not None when intialized"
-            assert scan.prop is None, err_string
+    with pytest.raises(AssertionError):
+        runinfo.check()
 
-            # check that dt initialized as 0
-            assert scan.dt == 0, "runinfo scan" + str(counter) + " (Property Scan) dt not 0 when intialized"
 
-            # check that i initialized as 0
-            assert scan.i == 0, "runinfo scan" + str(counter) + " (Property Scan) i not 0 when intialized"
+def test_multi_repeat():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.RepeatScan(1)
+    runinfo.scan1 = ps.RepeatScan(1)
 
-            counter += 1
+    with pytest.raises(AssertionError):
+        runinfo.check()
 
-    check_runinfo_scans()
 
-    # check that runinfo attributes are initialized correctly
-    def check_runinfo_attributes():
-        # check that static initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.static, attribute_name='static', expected={})
+def test_multi_average():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.AverageScan(2)
+    runinfo.scan1 = ps.AverageScan(2)
 
-        # check that measured initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measured, attribute_name='measured', expected=[])
+    with pytest.raises(AssertionError):
+        runinfo.check()
 
-        # check that measure_function initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.measure_function,
-                        attribute_name='measure_function', expected=None)
 
-        # check that trigger_function initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.trigger_function,
-                        attribute_name='trigger_function', expected=None)
+def test_multi_continuous_scan():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.ContinuousScan(2)
+    runinfo.scan1 = ps.ContinuousScan(2)
 
-        # check that initial_pause initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.initial_pause,
-                        attribute_name='initial_pause', expected=0.1)
+    with pytest.raises(AssertionError):
+        runinfo.check()
 
-        # check that average_d initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.average_d, attribute_name='average_d', expected=-1)
 
-        # check that verbose initialized correctly
-        check_attribute(runinfo=init_runinfo, attribute=init_runinfo.verbose, attribute_name='verbose', expected=False)
+def test_low_continuous_scan():
+    runinfo = ps.RunInfo()
+    runinfo.scan0 = ps.ContinuousScan(2)
+    runinfo.scan1 = ps.RepeatScan(2)
 
-    check_runinfo_attributes()
-
-    init_runinfo.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    init_runinfo.scan1 = ps.PropertyScan({'v2': ps.drange(0, 0.1, 0.1)}, 'voltage')
-    init_runinfo.check()
-    with pytest.raises(Exception):
-        init_runinfo.scan3 = ps.PropertyScan({'v3': ps.drange(0, 0.1, 0.1)}, 'voltage')
-        init_runinfo.check()
+    with pytest.raises(AssertionError):
+        runinfo.check()

@@ -122,7 +122,7 @@ def set_up_experiment(num_devices, measure_function, data_dir, verbose, n_averag
 # for checking that the meta path is initialized properly
 def check_meta_path(expt):
     expt.save_metadata()
-    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.long_name)
+    meta_path = expt.runinfo.data_path / '{}.hdf5'.format(expt.runinfo.file_name)
     assert meta_path.exists(), "meta_path not initialized"
     assert meta_path.is_file(), "meta_path is not a file"
 
@@ -246,7 +246,7 @@ def test_average_experiment():
             check_multi_data_results(expt, num_devices)
 
         # saves file name of the saved experiment data and deletes the experiment
-        file_name = expt.runinfo.long_name
+        file_name = expt.runinfo.file_name
         del expt
 
         # basic check to load the experiment we just ran

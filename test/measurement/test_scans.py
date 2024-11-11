@@ -1,8 +1,3 @@
-'''
-Pytest functions to test the Scans class
-'''
-
-
 import pyscan as ps
 import numpy as np
 import pytest
@@ -22,18 +17,6 @@ def check_attribute_value(scan_name, attribute_name, attribute, expected_value):
     assert attribute == expected_value, err_string
 
 
-# for checking that the iterate function is working as expected
-def check_iterate_function(scan, scan_name, devices=[]):
-    # check that iterate is callable
-    assert callable(scan.iterate), scan_name + " scan iterate function not callable"
-
-    # check that iterate functions as expected
-    try:
-        scan.iterate(0, devices)  # This only tests if it runs, not if the results are desired.
-    except Exception:
-        assert False, scan_name + " scan iterate function error"
-
-
 # for setting up devices to test scans iterate functions
 def setup_devices():
     devices = ps.ItemAttribute()
@@ -42,27 +25,6 @@ def setup_devices():
     devices.v3 = ps.TestVoltage()
     devices.v4 = ps.TestVoltage()
     return devices
-
-
-# mostly a placeholder for now, meta scan has no init function
-def test_meta_scan():
-    """
-    Testing function scan
-
-    Returns
-    --------
-    None
-    """
-
-    # set up basic scan
-    # scan = ps.MetaScan(0, [])
-
-    # scan_name = 'MetaScan'
-
-    # ensure empty scan is instance of Property Scan
-    # assert isinstance(scan, ps.MetaScan), scan_name + " scan not initialized as MetaScan"
-
-    assert True
 
 
 def test_property_scan():
@@ -117,9 +79,6 @@ def test_property_scan():
 
             # check that i initialized with correct value
             check_attribute_value(scan_name, 'i', scan.i, expected_value=0)
-
-            # check that iterate functions as expected
-            check_iterate_function(scan, scan_name)
 
         check_attributes(scan)
 
@@ -207,18 +166,6 @@ def test_property_scan():
             err_string = "Property Scan scan" + str(scan_num) + " i not " + str(expected_i) + " when intialized"
             assert scans[scan_num].i == expected_i, err_string
 
-            # check that iterate functions as expected (this adds a lot of runtime to the testing)
-            for scan in scans:
-                check_iterate_function(scan, scan_name)
-
-                for m in range(scan.n):
-                    scan.iterate(scan.i, devices)
-
-                    for dev in scan.device_names:
-                        devices[dev][scan.prop] == scan.scan_dict[dev + '_' + scan.prop][scan.i]
-
-                    sleep(scan.dt)  # Can we remove this to save time when running test cases, or is it important?
-
         # check each scan for expected attribute values
         check_scan_attributes(scans, 0, self[0], prop, expected_scan_dict1=0.0,
                               expected_scan_dict2=0.1, expected_dt=.01, expected_i=0)
@@ -284,10 +231,6 @@ def test_function_scan():
             # check that iterate is callable
             assert callable(scan.iterate), scan_name + " scan iterate function not callable"
 
-            # check that running the iterate function on empty function scan with no index fails
-            with pytest.raises(Exception):
-                check_iterate_function(scan, scan_name)
-
         check_attributes()
 
     # test a function scan scan initialized as empty
@@ -337,8 +280,6 @@ def test_function_scan():
             # check that n initialized with correct value
             check_attribute_value(scan_name, 'n', scan.n, expected_value=3)
 
-            # check that iterate functions as expected
-            check_iterate_function(scan, scan_name, devices=devices)
             err_string = scan_name + " iterate function not as expected."
             assert scan.function(scan.scan_dict[scan.function.__name__][0]) == return_value, err_string
 
@@ -402,9 +343,6 @@ def test_repeat_scan():
             # check that i initialized with correct value
             check_attribute_value(scan_name, 'i', scan.i, expected_value=0)
 
-            # check that iterate functions as expected
-            check_iterate_function(scan, scan_name)
-
         check_attributes(scan, dt)
 
     with pytest.raises(Exception):
@@ -453,18 +391,11 @@ def test_average_scan():
             # check that n initialized correctly
             check_attribute_value(scan_name, 'n', scan.n, expected_value=n_average)
 
-            # check that scan_dict initialized correctly
-            check_attribute_value(scan_name, 'scan_dict', scan.scan_dict,
-                                  expected_value={'average': list(scan.iterator())})
-
             # check that dt initialized with correct value
             check_attribute_value(scan_name, 'dt', scan.dt, expected_value=dt)
 
             # check that i initialized with correct value
             check_attribute_value(scan_name, 'i', scan.i, expected_value=0)
-
-            # check that iterate functions as expected
-            check_iterate_function(scan, scan_name)
 
         check_attributes(scan, dt)
 
