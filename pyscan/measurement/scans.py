@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from time import sleep
+from itemattribute import ItemAttribute
 from ..general.same_length import same_length
-from ..general.item_attribute import ItemAttribute
 
 
 class AbstractScan(ItemAttribute):

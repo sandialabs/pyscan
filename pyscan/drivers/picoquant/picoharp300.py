@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import ctypes
 from ctypes import byref
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 from time import sleep
 from pathlib import Path
 from time import strftime
