@@ -1,4 +1,4 @@
-from itemattribute 
+from itemattribute import ItemAttribute
 from ..exceptions.external_package_excpetion import ExternalPackageException
 
 
