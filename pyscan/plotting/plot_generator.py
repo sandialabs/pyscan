@@ -152,27 +152,27 @@ class PlotGenerator(object):
         '''
 
         if not self.expt.runinfo.running:
-            return '{}, {}'.format(self.data_name, self.expt.runinfo.long_name)
+            return '{}, {}'.format(self.data_name, self.expt.runinfo.file_name)
         elif self.expt.runinfo.ndim == 4:
-            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan4.i,
-                                          self.expt.runinfo.scan4.n,
-                                          self.data_name,
-                                          self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim == 3:
             return '{}/{}, {}, {}'.format(self.expt.runinfo.scan3.i,
                                           self.expt.runinfo.scan3.n,
                                           self.data_name,
-                                          self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim == 2:
+                                          self.expt.runinfo.file_name)
+        elif self.expt.runinfo.ndim == 3:
             return '{}/{}, {}, {}'.format(self.expt.runinfo.scan2.i,
                                           self.expt.runinfo.scan2.n,
                                           self.data_name,
-                                          self.expt.runinfo.long_name)
-        elif self.expt.runinfo.ndim == 1:
+                                          self.expt.runinfo.file_name)
+        elif self.expt.runinfo.ndim == 2:
             return '{}/{}, {}, {}'.format(self.expt.runinfo.scan1.i,
                                           self.expt.runinfo.scan1.n,
                                           self.data_name,
-                                          self.expt.runinfo.long_name)
+                                          self.expt.runinfo.file_name)
+        elif self.expt.runinfo.ndim == 1:
+            return '{}/{}, {}, {}'.format(self.expt.runinfo.scan0.i,
+                                          self.expt.runinfo.scan0.n,
+                                          self.data_name,
+                                          self.expt.runinfo.file_name)
 
     def get_xrange(self):
         '''
