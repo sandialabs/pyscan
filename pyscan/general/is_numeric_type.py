@@ -13,4 +13,7 @@ def is_numeric_type(obj):
         `True` if `obj` is an `int` or `float`.
 
     '''
-    return issubclass(type(obj), (int, float))
+    if isinstance(obj, bool):
+        return 0
+    else:
+        return issubclass(type(obj), (int, float))
