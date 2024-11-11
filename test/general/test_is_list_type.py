@@ -1,19 +1,20 @@
 import pyscan as ps
 import numpy as np
+import pytest
 
 
-def test_is_list_type():
+@pytest.mark.parametrize("input", [
+    (1, 2, 3),
+    [1, 2, 3],
+    np.array([1, 2, 3])])
+def test_is_list_type(input):
+    assert ps.is_list_type(input)
 
-    list1 = (1, 2, 3)
-    list2 = [1, 2, 3]
-    list3 = np.array([1, 2, 3])
 
-    notlist1 = 'string'
-    notlist2 = 2
-
-    assert ps.is_list_type(list1)
-    assert ps.is_list_type(list2)
-    assert ps.is_list_type(list3)
-
-    assert not ps.is_list_type(notlist1)
-    assert not ps.is_list_type(notlist2)
+@pytest.mark.parametrize("input", [
+    'string',
+    2,
+    {'a': 1},
+    True])
+def test_is_list_type_error(input):
+    assert not ps.is_list_type(input)

@@ -2,16 +2,18 @@ import pyscan as ps
 import pytest
 
 
-def test_first_string():
+@pytest.mark.parametrize("input,output", [
+    (('a', 'b'), 'a'),
+    ('a', 'a')])
+def test_first_string(input, output):
+    assert ps.first_string(input) == output, f"First string of {input} incorrection output {output}"
 
-    str1 = 'a'
-    str2 = 'b'
-    str_array = [str1, str2]
 
-    assert ps.first_string(str1) == 'a'
-    assert ps.first_string(str_array) == 'a'
-    assert ps.first_string(str_array[::-1]) == 'b'
-
+@pytest.mark.parametrize("input", [
+    0,
+    True,
+    [0, 1],
+    [0, 'b']])
+def test_first_string_error(input):
     with pytest.raises(TypeError):
-        ps.first_string(0)
-        ps.first_string([0, 1])
+        ps.first_string(input)

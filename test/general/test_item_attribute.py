@@ -1,24 +1,45 @@
 import pyscan as ps
+import pytest
 
 
-def test_ItemAttribute():
-
+@pytest.fixture
+def ia():
     ia = ps.ItemAttribute()
-
     ia.test_prop1 = 3
     ia.test_prop2 = 'str'
+    return ia
 
+
+def test_itemattribute_property_call(ia):
     assert ia.test_prop1 == 3
-    assert ia['test_prop1'] == 3
     assert ia.test_prop2 == 'str'
-    assert ia['test_prop2'] == 'str'
 
-    assert list(ia.keys()) == (['test_prop1', 'test_prop2'])
-    assert list(ia.values()) == [3, 'str']
-    assert list(ia.items()) == [('test_prop1', 3), ('test_prop2', 'str')]
 
-    assert hasattr(ia, 'test_prop1')
-    assert hasattr(ia, 'test_prop2')
+@pytest.mark.parametrize("key,value", [
+    ('test_prop1', 3),
+    ('test_prop2', 'str')])
+def test_itemattribute_dict_call(ia, key, value):
+    assert ia[key] == value
 
-    del ia.test_prop1
-    assert not hasattr(ia, 'test_prop1')
+
+@pytest.mark.parametrize("func,value", [
+    ('keys', ['test_prop1', 'test_prop2']),
+    ('values', [3, 'str']),
+    ('items', [('test_prop1', 3), ('test_prop2', 'str')])])
+def test_itemattribute_dictionary_functions(ia, func, value):
+    assert list(getattr(ia, func)()) == value
+
+
+@pytest.mark.parametrize("key", [
+    'test_prop1',
+    'test_prop2'])
+def test_itemattribute_del(ia, key):
+    del ia[key]
+    assert not hasattr(ia, key)
+
+
+@pytest.mark.parametrize("key", [
+    'test_prop1',
+    'test_prop2'])
+def test_itemattribute_contains(ia, key):
+    assert key in ia
