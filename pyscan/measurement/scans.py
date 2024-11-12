@@ -7,7 +7,7 @@ from ..general.same_length import same_length
 
 class AbstractScan(ItemAttribute):
     '''
-    Meta class for different scan types. Inherits from `.ItemAttribute`.
+    Abstract class for different scan types. Inherits from `.ItemAttribute`.
     '''
 
     def iterate(self, index, devices):
@@ -46,15 +46,15 @@ class PropertyScan(AbstractScan):
         '''
         self.prop = prop
         self.scan_dict = {}
-        self.input_dict = input_dict
         for device, array in input_dict.items():
             self.scan_dict['{}_{}'.format(device, prop)] = array
 
         self.device_names = list(input_dict.keys())
 
         self.dt = dt
-        self.check_same_length()
         self.i = 0
+
+        self.check_same_length()
 
     def iterate(self, expt, i, d):
         '''
@@ -64,6 +64,7 @@ class PropertyScan(AbstractScan):
         :param devices: ItemAttribute instance of experimental devices
         :type devices: ItemAttribute
         '''
+
         self.i = i
 
         if d == 0:
@@ -83,7 +84,7 @@ class PropertyScan(AbstractScan):
             if same_length(list(self.scan_dict.values())):
                 self.n = len(list(self.scan_dict.values())[0])  # self.n is the length of the input_dict arrays.
             else:
-                assert 0, 'Values are not of the same length'
+                raise Exception('PropertyScan Values are not of the same length')
         else:
             self.n = 1  # n=1 is required to allow the run() function to proceed atleast once.
 

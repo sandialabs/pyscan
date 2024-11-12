@@ -291,4 +291,3 @@ def drop(array, index):
     '''
 
     return list(array[0:index]) + list(array[index + 1:])
-
