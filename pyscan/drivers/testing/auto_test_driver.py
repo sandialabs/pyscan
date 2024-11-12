@@ -4,7 +4,7 @@ import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
-from ...general.get_pyscan_version import get_pyscan_version
+from ...measurement.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
 import re
