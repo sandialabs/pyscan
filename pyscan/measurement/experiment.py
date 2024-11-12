@@ -35,8 +35,6 @@ class Experiment(AbstractExperiment):
         '''
         super().__init__(runinfo, devices, data_dir)
 
-        self.runinfo.time = time
-
     def run(self):
         '''
         Runs the experiment while locking the console
