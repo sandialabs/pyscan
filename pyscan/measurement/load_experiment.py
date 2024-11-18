@@ -3,8 +3,8 @@ import h5py
 import pickle
 import json
 from pathlib import Path
-from ..general.item_attribute import ItemAttribute
-from ..general.pyscan_json_decoder import PyscanJSONDecoder
+from itemattribute import ItemAttribute
+from ..measurement.pyscan_json_decoder import PyscanJSONDecoder
 
 
 def load_experiment(file_name):

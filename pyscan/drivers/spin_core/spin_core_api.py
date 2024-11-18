@@ -1,4 +1,4 @@
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 import ctypes
 from . import spin_api_wrapper as pb
 

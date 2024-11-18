@@ -3,8 +3,7 @@ from PrincetonInstruments.LightField.AddIns import Pulse
 from PrincetonInstruments.LightField.AddIns import ExperimentSettings
 from PrincetonInstruments.LightField.AddIns import CameraSettings
 from PrincetonInstruments.LightField.Automation import Automation
-from ...general.item_attribute import ItemAttribute
-
+from itemattribute import ItemAttribute
 import clr
 import sys
 import os
