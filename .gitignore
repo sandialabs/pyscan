@@ -120,3 +120,4 @@ backup
 .backup
 *.backup
 test.ipynb
+.vscode

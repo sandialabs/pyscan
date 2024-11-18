@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from pyscan.drivers import InstrumentDriver
+from ..instrument_driver.abstract_driver import AbstractDriver
 
 
-class TestVoltage(InstrumentDriver):
+class TestVoltage(AbstractDriver):
     '''
     Class that mimics the operation of a simple voltage source.
 
@@ -24,7 +24,7 @@ class TestVoltage(InstrumentDriver):
         Get/set a mock output state, with dict values 'on', 1, 'off', or 0
     '''
 
-    # tells pytest this is not a test case. Was necessary only on lab computer for some reason.
+    # tells pytest this is not a test case.
     __test__ = False
 
     def __init__(self, debug=False, instrument=None, *arg, **kwarg):
@@ -36,30 +36,23 @@ class TestVoltage(InstrumentDriver):
         self._voltage = 0
         self._power = 1
         self._output_state = 'off'
-        self._version = "0.1.0"
+        self._version = "1.0.0"
         self.black_list_for_testing = []
 
-    def query(self, string):
+    def query_property(self, settings_obj):
+
+        string = settings_obj.query_string
+
         if string == 'VOLT?':
             return str(self._voltage)
         elif string == 'POW?':
             return str(self._power)
         elif string == 'OUTP?':
-            if self._output_state == 'off':
-                return '0'
-            if self._output_state == 'on':
-                return '1'
-            # leave for the sake of your personal sanity, trust us
-            return str(self._output_state)
+            return self._output_state_settings.indexed_values.index(self._output_state)
 
-    # we are not currently testing for this in test voltage... doesn't seem particularly useful to do so
-    def write(self, string):
-        if 'VOLT' in string:
-            return string.strip('VOLT ')
-        elif 'POW' in string:
-            return string.strip('POW ')
-        elif 'OUTP' in string:
-            return string.strip('OUTP ')
+    def write_property(self, settings_obj, new_value):
+
+        return str(new_value)
 
     def initialize_properties(self):
 
@@ -67,7 +60,7 @@ class TestVoltage(InstrumentDriver):
             'name': 'voltage',
             'write_string': 'VOLT {}',
             'query_string': 'VOLT?',
-            'range': [0, 10],
+            'range': [0.0, 10.0],
             'return_type': float
         })
 
@@ -75,18 +68,10 @@ class TestVoltage(InstrumentDriver):
             'name': 'power',
             'write_string': 'POW {}',
             'query_string': 'POW?',
-            'values': [1, 10],
-            'return_type': int
-        })
+            'values': [1, 10]})
 
         self.add_device_property({
             'name': 'output_state',
             'write_string': 'OUTP {}',
             'query_string': 'OUTP?',
-            'dict_values': {'on': 1, 'off': 0, '1': 1, '0': 0},
-            'return_type': str
-        })
-
-    @property
-    def version(self):
-        return self._version
+            'indexed_values': ['off', 'on']})

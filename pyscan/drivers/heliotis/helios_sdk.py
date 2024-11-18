@@ -69,7 +69,7 @@ class HeliosSDK(ItemAttribute):
 
     def set_values_property(self, obj, new_value, settings):
         '''
-        Generator function for settings dictionary with 'values' item
+        Generator function for settings dictionary with 'values item
         Check that new_value is in settings['values'], if not, rejects command
 
         Args:
