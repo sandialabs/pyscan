@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def runinfo():
     runinfo = ps.RunInfo()
     runinfo.measure_function = measure_up_to_3D
@@ -13,7 +13,7 @@ def runinfo():
     return runinfo
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def devices():
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()

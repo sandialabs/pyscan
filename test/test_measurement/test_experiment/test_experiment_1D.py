@@ -14,7 +14,7 @@ def runinfo():
     return runinfo
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def devices():
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()

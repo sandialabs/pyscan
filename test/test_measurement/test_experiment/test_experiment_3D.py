@@ -5,7 +5,7 @@ from pathlib import PosixPath
 from typing import Callable
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def runinfo():
     runinfo = ps.RunInfo()
     runinfo.measure_function = measure_up_to_3D
@@ -14,7 +14,7 @@ def runinfo():
     runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0, 0.1, 0.3)}, 'voltage', dt=0)
     return runinfo
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def devices():
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()

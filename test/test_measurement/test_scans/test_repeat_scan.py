@@ -3,14 +3,14 @@ import numpy as np
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def runinfo():
     runinfo = ps.RunInfo()
     runinfo.measure_function = measure_up_to_3D
     return runinfo
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def devices():
     devices = ps.ItemAttribute()
     devices.v1 = ps.TestVoltage()
@@ -30,49 +30,45 @@ def measure_up_to_3D(expt):
     return d
 
 
-## Test FunctionScan
-def do_nothing(value):
-    pass
-
-
+## Test RepeatScan
 @pytest.fixture
-def function_scan():
-    return ps.FunctionScan(do_nothing, np.array([0, 1]))
+def repeat_scan():
+    return ps.RepeatScan(2)
 
 
 @pytest.mark.parametrize('key,value', [
-    ('scan_dict', {'do_nothing': np.array([0, 1])}),
-    ('function', do_nothing),
+    ('scan_dict', {'repeat': np.array([0, 1])}),
+    ('device_names', ['repeat']),
     ('dt', 0),
     ('i', 0),
     ('n', 2)
 ])
-def test_function_scan_init(function_scan, key, value):
+def test_repeat_scan_init(repeat_scan, key, value):
     if key == 'scan_dict':
         for key1, value1 in value.items():
-            assert np.all(function_scan.scan_dict[key1] == value[key1]), f"Function scan attribute {key} != {value}"
+            assert np.all(repeat_scan.scan_dict[key1] == value[key1]), f"Property scan attribute {key} != {value}"
     else:
-        assert function_scan[key] == value, f"Function scan attribute {key} != {value}"
+        assert repeat_scan[key] == value, f"Property scan attribute {key} != {value}"
 
 
-def test_function_scan_iterate_m1(runinfo, devices, function_scan):
-    runinfo.scan0 = function_scan
+def test_repeat_scan_iterate_m1(runinfo, devices, repeat_scan):
+    runinfo.scan0 = repeat_scan
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 0, -1)
     assert expt.runinfo.scan0.i == 0
 
 
-def test_function_scan_no_iterate(runinfo, devices, function_scan):
-    runinfo.scan0 = function_scan
+def test_repeat_scan_no_iterate(runinfo, devices, repeat_scan):
+    runinfo.scan0 = repeat_scan
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 0, 0)
     assert expt.runinfo.scan0.i == 0
 
 
-def test_function_scan_iterate_one(runinfo, devices, function_scan):
-    runinfo.scan0 = function_scan
+def test_repeat_scan_iterate_one(runinfo, devices, repeat_scan):
+    runinfo.scan0 = repeat_scan
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 1, 1)
