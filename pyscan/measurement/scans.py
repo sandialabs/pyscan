@@ -3,6 +3,7 @@ import numpy as np
 from time import sleep
 from itemattribute import ItemAttribute
 from ..general.same_length import same_length
+from ..general.infinite_iterator import infinite_iterator
 
 
 class AbstractScan(ItemAttribute):
@@ -88,6 +89,12 @@ class PropertyScan(AbstractScan):
         else:
             self.n = 1  # n=1 is required to allow the run() function to proceed atleast once.
 
+    def iterator(self):
+        '''
+        The following iterates over n
+        '''
+        return range(self.n)
+
 
 class FunctionScan(AbstractScan):
     '''
@@ -141,6 +148,12 @@ class FunctionScan(AbstractScan):
     def check_same_length(self):
         pass
 
+    def iterator(self):
+        '''
+        The following iterates over n
+        '''
+        return range(self.n)
+
 
 class RepeatScan(AbstractScan):
     '''Class for repeating inner loops.
@@ -187,6 +200,12 @@ class RepeatScan(AbstractScan):
         '''
         return 1
 
+    def iterator(self):
+        '''
+        The following iterates over n
+        '''
+        return range(self.n)
+
 
 class ContinuousScan(AbstractScan):
     '''
@@ -201,44 +220,42 @@ class ContinuousScan(AbstractScan):
         Maximum number of iterations to run. If not specified, the scan will run indefinitely.
     '''
 
-    def __init__(self, dt=0, n_max=None):
+    def __init__(self, n_max=None, dt=0):
         self.scan_dict = {}
-        self.scan_dict['continuous'] = []
+        self.scan_dict['iteration'] = np.ndarray((0))
 
-        self.device_names = ['continuous']
+        self.device_names = ['iteration']
         self.dt = dt
 
-        self.run_count = 0
-        # essentially run_count
-        self.n = 1
-        # current experiment number index
         self.i = 0
-        if n_max is not None:
-            self.n_max = n_max
+        self.n = 1
 
-    def iterate(self, index, devices):
-        self.run_count += 1
+        assert n_max is None or n_max > 0, "n_max must be > 0 or None"
 
-        if hasattr(self, "stop_at"):
-            if not self.n_max <= self.i:
-                self.scan_dict['continuous'].append(self.i)
-        else:
-            self.scan_dict['continuous'].append(self.i)
+        self.n_max = n_max
+
+    def iterate(self, expt, i, d):
+
+        self.i = i
+        self.n = i + 1
+
+        if d == 0:
+            return 0
+
+        self.scan_dict['iteration'] = np.append(self.scan_dict['iteration'], i)
+        expt.iteration = self.scan_dict['iteration']
+
+        sleep(self.dt)
 
     def iterator(self):
         '''
-        The following iterator increments continuous scan i and n by one each time continuously.
+        The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
         '''
-        def incrementing_n():
-            while True:
-                yield self.i
-                self.i += 1
-                self.n += 1
 
-        iterator = iter(incrementing_n())
-
-        # returns an infinite iterator, overwriting Abstract scans default iterator
-        return iterator
+        if self.n_max is not None:
+            return range(self.n_max)
+        else:
+            return infinite_iterator()
 
 
 class AverageScan(AbstractScan):
@@ -282,3 +299,9 @@ class AverageScan(AbstractScan):
         Not used
         '''
         return 1
+
+    def iterator(self):
+        '''
+        The following iterates over n
+        '''
+        return range(self.n)

@@ -41,6 +41,7 @@ class AbstractExperiment(ItemAttribute):
     # Data methods
     preallocate(data)
     reallocate(data)
+    rolling_average(data)
     save_point(data)
 
     # Running experiment methods
@@ -227,7 +228,7 @@ class AbstractExperiment(ItemAttribute):
             with h5py.File(save_name, 'a') as f:
                 for s in self.runinfo.scans:
                     for key, values in s.scan_dict.items():
-                        if key == 'continuous':
+                        if key == 'iteration':
                             del f[key]
                             f.create_dataset(key, shape=[1, ], maxshape=(None,), chunks=(1,),
                                              fillvalue=np.nan, dtype='float64')
@@ -238,7 +239,7 @@ class AbstractExperiment(ItemAttribute):
         with h5py.File(save_name, 'a') as f:
             for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
-                    if key == 'continuous':
+                    if key == 'iteration':
                         f[key].resize((len(s.scan_dict[key]),))
                         self[key] = values
                         f[key][values[-1]] = values[-1]
@@ -255,6 +256,39 @@ class AbstractExperiment(ItemAttribute):
                     self[key][self.runinfo.indicies] = value
             else:
                 self[key][run_count] = value
+
+    def rolling_average(self, data):
+        '''
+        Does a rolling average of newly measured data
+
+        Parameters
+        ----------
+        data :
+            ItemAttribute instance of newly measured data point
+        '''
+        for key, value in data.items():
+
+            # two cases: 1. self[key] is a list 2. self[key] is not a list
+            if is_list_type(self[key]):
+                if is_list_type(value):
+                    value = np.array(value).astype(float)
+
+                if self.runinfo.average_index == 0:
+                    self[key][self.runinfo.average_indicies] = value
+                else:
+                    self[key][self.runinfo.average_indicies] *= (
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
+                    self[key][self.runinfo.average_indicies] += (
+                        value / (self.runinfo.average_index + 1))
+            else:
+                if self.runinfo.average_index == 0:
+                    self[key] = value
+
+                else:
+                    self[key] *= (
+                        self.runinfo.average_index / (self.runinfo.average_index + 1))
+                    self[key] += (
+                        value / (self.runinfo.average_index + 1))
 
     def save_point(self, data):
         '''
@@ -315,11 +349,6 @@ class AbstractExperiment(ItemAttribute):
 
         self.runinfo.running = False
         self.runinfo.complete = 'stopped'
-
-        # account for redundant run in the case of a continuous expt
-        if self.runinfo.continuous:
-            self.runinfo.scans[self.runinfo.continuous_scan_index].i -= 1
-            self.runinfo.scans[self.runinfo.continuous_scan_index].n -= 1
 
         print('Stopping Experiment')
 

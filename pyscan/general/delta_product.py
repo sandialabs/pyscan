@@ -2,7 +2,7 @@ from itertools import product
 import numpy as np
 
 
-def delta_product(length_list):
+def delta_product(iterator_list):
     '''
     Generator that yields indicies for arbitrarially long enlcosed for loops and
         a delta for each index relative to the previous indicies
@@ -23,14 +23,16 @@ def delta_product(length_list):
         1 if it has incremented
     '''
 
-    assert np.all([isinstance(length, int) for length in length_list]), \
-        "All length_list in delta_product must be integers"
+    for iterable in iterator_list:
+        assert hasattr(iterable, '__iter__'), 'iterator_list contain iterable functions'
 
-    length_list = length_list[::-1]
-    last = np.zeros(len(length_list))
-    for indicies in product(*[range(length) for length in length_list]):
-        if indicies == tuple([0 for i in range(len(length_list))]):
-            yield indicies, tuple([-1 for length in length_list])
+    iterator_list = iterator_list[::-1]
+
+    last = np.zeros(len(iterator_list))
+
+    for indicies in product(*iterator_list):
+        if indicies == tuple([0 for i in range(len(iterator_list))]):
+            yield indicies, tuple([-1 for length in iterator_list])
         else:
             delta = np.array(indicies) - last
             delta[np.where(delta < 0)] = -1

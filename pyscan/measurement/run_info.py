@@ -1,7 +1,7 @@
 
 from itemattribute import ItemAttribute
 from .get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan, ContinuousScan
+from .scans import PropertyScan, AverageScan, RepeatScan, ContinuousScan
 import pyscan as ps
 import re
 import numpy as np
@@ -142,26 +142,20 @@ class RunInfo(ItemAttribute):
 
     def check_continuous_scan(self):
         # find the scan set to continuous scan (if any) and determine the index
-        self.continuous = False
         n_continuous_scans = 0
-
         for i, scan in enumerate(self.scans):
             if isinstance(scan, ps.ContinuousScan):
-                self.continuous = True
-                self.continuous_scan_index = i
                 n_continuous_scans += 1
 
-        assert n_continuous_scans <= 1, "More than one continuous scan detected. This is not allowed."
+        assert n_continuous_scans <= 1, "More than one continuous scan detected. Only one continuous scan is allowed."
 
         # If there is a ContinuousScan, ensure it is the highest level scan
-        if self.continuous:
-            for i in range(self.continuous_scan_index + 1, len(self.scans)):
-                assert isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0, \
-                    f"ContinuousScan found at scan{self.continuous_scan_index} but is not the highest level scan."
+        if self.has_continuous_scan:
+            assert self.continuous_index == (self.ndim - 1), 'Error, continuous scan must be the last scan'
 
     def stop_continuous(self, plus_one=False):
         stop = False
-        if self.continuous:
+        if self.has_continuous_scan:
             continuous_scan = self.scans[self.continuous_scan_index]
             if hasattr(continuous_scan, 'n_max'):
                 if plus_one is False:
@@ -240,7 +234,7 @@ class RunInfo(ItemAttribute):
                 if isinstance(scan, AverageScan):
                     return i
                 i += 1
-            self._average_index = self.indicies[self.average_d]
+            self._average_index = self.indicies[self.average_dims]
             return self._average_index
         else:
             return -1
@@ -301,8 +295,16 @@ class RunInfo(ItemAttribute):
         '''
         Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
         '''
-        if self.has_average_scan:
-            self._continuous_index = self.indicies[self.average_index]
-            return self._continuous_index
+        if self.has_continuous_scan:
+            i = 0
+            for i in range(self.ndim):
+                if isinstance(self.scans[i], ContinuousScan):
+                    return i
+                self._continuous_index = i
         else:
-            return -1
+            self._continuous_index = -1
+        return self._continuous_index
+
+    @property
+    def iterators(self):
+        return [scan.iterator() for scan in self.scans]

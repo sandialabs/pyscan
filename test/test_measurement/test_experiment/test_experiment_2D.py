@@ -58,7 +58,7 @@ def test_runinfo_contents_post_measure_2D(runinfo, devices):
     for key, value in [
         ('measured', ['x1', 'x2', 'x3']),
         ('initial_pause', 0.1),
-        ('continuous', False),
+        ('_has_continuous_scan', False),
         ('has_average_scan', False),
         ('running', False),
         ('_dims', (2, 3)),
