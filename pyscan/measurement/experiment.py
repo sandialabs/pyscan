@@ -36,28 +36,15 @@ class Experiment(AbstractExperiment):
         super().__init__(runinfo, devices, data_dir)
 
     def run(self):
-        '''
-        Runs the experiment while locking the console
-        '''
 
         self.check_runinfo()
 
-        self.save_metadata()
+        self.save_metadata('runinfo')
+        self.save_metadata('devices')
 
         sleep(self.runinfo.initial_pause)
 
         self.runinfo.running = True
-
-        if self.runinfo.average_d == -1:
-            self.generic_experiment()
-
-        elif self.runinfo.averge_d >= 0:
-            self.average_experiment()
-
-        else:
-            assert False, "self.average_d not setup correctly by check_runinfo method"
-
-    def generic_experiment(self):
 
         for indicies, deltas in delta_product(self.runinfo.dims):
             for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
@@ -67,6 +54,10 @@ class Experiment(AbstractExperiment):
 
             if np.all(np.array(indicies) == 0):
                 self.preallocate(data)
+            elif self.runinfo.continuous:
+                self.reallocate(data)
+            elif self.runinfo.has_average_scan:
+                self.rolling_average(data)
 
             self.save_point(data)
 
@@ -80,34 +71,34 @@ class Experiment(AbstractExperiment):
         if 'end_function' in list(self.runinfo.keys()):
             self.runinfo.end_function(self)
 
-    def average_experiment(self):
+    # def average_experiment(self):
 
-        # Use for scan, but break if self.runinfo.running=False
-        for indicies, deltas in delta_product(self.runinfo.dims):
-            for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
-                scan.iterate(self, i, d)
+    #     for indicies, deltas in delta_product(self.runinfo.dims):
+    #         for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
+    #             scan.iterate(self, i, d)
 
-                data = self.runinfo.measure_function(self)
+    #             data = self.runinfo.measure_function(self)
 
-                if np.all(indicies == 0):
-                    self.preallocate(data)
+    #             if np.all(indicies == 0):
+    #                 self.preallocate(data)
 
-                self.rolling_average(data)
+    #             self.rolling_average(data)
 
-                self.save_point(data)
+    #             self.save_point(data)
 
-                if self.runinfo.running is False:
-                    self.runinfo.complete = 'stopped'
-                    break
+    #             if self.runinfo.running is False:
+    #                 self.runinfo.complete = 'stopped'
+    #                 break
 
-        self.runinfo.complete = True
-        self.runinfo.running = False
+    #     self.runinfo.complete = True
+    #     self.runinfo.running = False
 
-        if 'end_function' in list(self.runinfo.keys()):
-            self.runinfo.end_function(self)
+    #     if 'end_function' in list(self.runinfo.keys()):
+    #         self.runinfo.end_function(self)
 
     def rolling_average(self, data):
-        '''Does a rolling average of newly measured data
+        '''
+        Does a rolling average of newly measured data
 
         Parameters
         ----------
@@ -137,16 +128,3 @@ class Experiment(AbstractExperiment):
                         self.runinfo.average_index / (self.runinfo.average_index + 1))
                     self[key] += (
                         value / (self.runinfo.average_index + 1))
-
-
-# legacy naming convention
-class Sweep(Experiment):
-    '''
-    Present for backwards compatibility. Renamed to `ps.Experiment`.
-    '''
-
-    def __init__(self, runinfo, devices, data_dir=None, verbose=False, time=False):
-        warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
-                       + "You entered Sweep, use Experiment instead.")
-        raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
-        assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"
