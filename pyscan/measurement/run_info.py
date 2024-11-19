@@ -1,7 +1,7 @@
 
 from itemattribute import ItemAttribute
 from .get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan
+from .scans import PropertyScan, AverageScan, ContinuousScan
 import pyscan as ps
 import re
 import numpy as np
@@ -72,7 +72,7 @@ class RunInfo(ItemAttribute):
         '''
         Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
 
-        Automatically sets `self.average_d` to the correct scan index (i.e., the scan which contains an
+        Automatically sets `self.average_index` to the correct scan index (i.e., the scan which contains an
         instance of `.AverageScan`) to average over.
         '''
 
@@ -113,7 +113,7 @@ class RunInfo(ItemAttribute):
 
     def check_average_scan(self):
         '''
-        Checks to see if there is an average scan present and sets `self.average_d` to the correct index.
+        Checks to see if there is an average scan present and sets `self.average_index` to the correct index.
         '''
 
         # find the scan set to average scan (if any) and determine the index
@@ -121,13 +121,8 @@ class RunInfo(ItemAttribute):
         num_av_scans = 0
         for scan in self.scans:
             if isinstance(scan, AverageScan):
-                self.average_d = index
                 num_av_scans += 1
             index += 1
-
-        # if no average scans found set average_d to -1
-        if num_av_scans == 0:
-            self.average_d = -1
 
         # throw an error if more than one average scan is found
         if num_av_scans > 1:
@@ -178,6 +173,7 @@ class RunInfo(ItemAttribute):
 
         return stop
 
+    # Regular properties
     @property
     def scans(self):
         '''
@@ -200,15 +196,12 @@ class RunInfo(ItemAttribute):
         return self._dims
 
     @property
-    def average_dims(self):
+    def indicies(self):
         '''
-        Returns tuple containing the length of each scan, excluding scans of size 1 and the averaged scan
+        Returns tuple of the current scan iteration indicies,
         '''
-        if hasattr(self, 'average_d'):
-            self._average_dims = tuple(drop(self.dims, self.average_d))
-            return self._average_dims
-        else:
-            return ()
+        self._indicies = [scan.i for scan in self.scans]
+        return tuple(self._indicies)
 
     @property
     def ndim(self):
@@ -218,6 +211,7 @@ class RunInfo(ItemAttribute):
         self._ndim = len(self.dims)
         return self._ndim
 
+    # Properties modified due to the presence of an average scan
     @property
     def has_average_scan(self):
         '''
@@ -236,19 +230,32 @@ class RunInfo(ItemAttribute):
         return self._has_average_scan
 
     @property
-    def n_average_dim(self):
-        ''' Returns number of scans that are neither size-1 nor average scans
+    def average_index(self):
         '''
-        self._n_average_dim = len(self.average_dims)
-        return self._n_average_dim
+        Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
+        '''
+        if self.has_average_scan:
+            i = 0
+            for scan in self.scans:
+                if isinstance(scan, AverageScan):
+                    return i
+                i += 1
+            self._average_index = self.indicies[self.average_d]
+            return self._average_index
+        else:
+            return -1
 
     @property
-    def indicies(self):
+    def average_dims(self):
         '''
-        Returns tuple of the current scan iteration indicies,
+        Returns tuple containing the length of each scan, excluding scans of size 1 and the averaged scan
         '''
-        self._indicies = [scan.i for scan in self.scans]
-        return tuple(self._indicies)
+        if self.average_index != -1:
+            self._average_dims = list(self.dims)
+            self._average_dims.pop(self.average_index)
+            return tuple(self._average_dims)
+        else:
+            return ()
 
     @property
     def average_indicies(self):
@@ -257,37 +264,45 @@ class RunInfo(ItemAttribute):
         Used by `.AverageExperiment`.
         '''
         if self.has_average_scan:
-            self._average_indicies = drop(self.indicies, self.average_d)
+            self._average_indicies = list(self.indicies)
+            self._average_indicies.pop(self.average_index)
             return tuple(self._average_indicies)
         else:
             return ()
 
     @property
-    def average_index(self):
+    def n_average_dim(self):
+        '''
+        Returns number of scans that are neither size-1 nor average scans
+        '''
+        self._n_average_dim = len(self.average_dims)
+        return self._n_average_dim
+
+    # Properties based on the presence of a continuous scan
+    @property
+    def has_continuous_scan(self):
+        '''
+        Returns a boolean of whether or not an continuous scan is present.
+        '''
+        num_av_scans = 0
+        for scan in self.scans:
+            if isinstance(scan, ContinuousScan):
+                num_av_scans += 1
+
+        if num_av_scans > 0:
+            self._has_continuous_scan = True
+        else:
+            self._has_continuous_scan = False
+
+        return self._has_continuous_scan
+
+    @property
+    def continuous_index(self):
         '''
         Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
         '''
         if self.has_average_scan:
-            self._average_index = self.indicies[self.average_d]
-            return self._average_index
+            self._continuous_index = self.indicies[self.average_index]
+            return self._continuous_index
         else:
             return -1
-
-
-def drop(array, index):
-    '''
-    Drops an object at `index` in `array`
-
-    Parameters
-    ----------
-    array : list or numpy.array
-        Array for object to be dropped
-    index : int
-        Index of object to be dropped
-
-    Returns
-    list
-        The array minus the dropped value
-    '''
-
-    return list(array[0:index]) + list(array[index + 1:])
