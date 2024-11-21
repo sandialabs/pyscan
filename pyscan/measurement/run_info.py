@@ -1,7 +1,7 @@
 
 from itemattribute import ItemAttribute
 from .get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan, RepeatScan, ContinuousScan
+from .scans import PropertyScan, AverageScan, ContinuousScan
 import pyscan as ps
 import re
 import numpy as np
@@ -14,7 +14,7 @@ class RunInfo(ItemAttribute):
     Attributes
     ----------
     scan<#>: ps.PropertyScan, ps.RepeatScan, ps.FunctionScan, ps.FunctionScan
-        Instance of ps.AbstractScan to a scan object representing one independent experimental variable. 
+        Instance of ps.AbstractScan to a scan object representing one independent experimental variable.
         The scan property or function will be scanned during the experiment, with scan0 being the innermost scan loop.
     measured : list
         List that contains the names of collected data, defined by the `measure_function` return.

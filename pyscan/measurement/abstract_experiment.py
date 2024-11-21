@@ -88,7 +88,8 @@ class AbstractExperiment(ItemAttribute):
                 for dev in scan.device_names:
                     prop = scan.prop
                     assert hasattr(self.devices[dev], prop), 'Device {} does not have property {}'.format(dev, prop)
-                    assert f'{dev}_{prop}' not in scanned_properties, 'Property {} is duplicated in the scans'.format(f'{dev}_{prop}')
+                    assert f'{dev}_{prop}' not in scanned_properties, \
+                        'Property {} is duplicated in the scans'.format(f'{dev}_{prop}')
                     scanned_properties.append(f'{dev}_{prop}')
 
         base_name = strftime("%Y%m%dT%H%M%S")
