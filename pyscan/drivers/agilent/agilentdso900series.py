@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import numpy as np
 from math import ceil
 from ..instrument_driver import InstrumentDriver

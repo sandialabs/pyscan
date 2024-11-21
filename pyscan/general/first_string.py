@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import numpy as np
 from six import string_types
 
@@ -26,4 +26,6 @@ def first_string(obj):
         if isinstance(value, string_types):
             return value
         else:
-            raise TypeError
+            raise TypeError("First string must be a string or array of strings")
+    else:
+        raise TypeError("First string must be a string or array of strings")

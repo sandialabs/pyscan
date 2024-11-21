@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from ..instrument_driver import InstrumentDriver
 from time import sleep
 import serial

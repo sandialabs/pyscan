@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pyvisa as visa
 import pyscan as ps
 
