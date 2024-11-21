@@ -75,8 +75,6 @@ class PyscanJSONEncoder(json.JSONEncoder):
                 # VXIInstrument,
             ),
         ):
-            if debug is True:
-                print(f"obj {obj} is a pyvisa instrument, returning resource name.")
             return obj.resource_name
         else:
-            return super().default(obj)
+            return "could not serialize object"
