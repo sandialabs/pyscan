@@ -31,6 +31,14 @@ def runinfo():
     return runinfo
 
 
+@pytest.fixture()
+def c_runinfo():
+    runinfo = ps.RunInfo()
+    runinfo.measure_function = measure_up_to_3D
+    runinfo.scan0 = ps.ContinuousScan(10)
+    return runinfo
+
+
 @pytest.mark.parametrize("data_dir", [None, './test'])
 def test_setup_data_directory(runinfo, devices, data_dir):
     expt = ps.Experiment(runinfo, devices, data_dir=data_dir)
@@ -55,26 +63,6 @@ def test_save_runinfo_metadata(runinfo, devices):
         runinfo = f.attrs['runinfo']
 
     runinfo = json.loads(runinfo)
-
-    # expected = {
-    #     'measured': [],
-    #     'measure_function': 'def measure_up_to_3D(expt):\n    d = ps.ItemAttribute()\n\n    d.x1 = expt.runinfo.scan0.i\n    d.x2 = [d.x1 for _ in range(2)]\n    d.x3 = [[expt.runinfo.scan0.i, expt.runinfo.scan0.i] for _ in range(2)]\n\n    return d\n',
-    #     'initial_pause': 0.1,
-    #     '_pyscan_version': ps.get_pyscan_version(),
-    #     'scan0': {
-    #         'prop': 'voltage',
-    #         'scan_dict': {'v1_voltage': [0.0, 0.1]},
-    #         'device_names': ['v1'],
-    #         'dt': 0,
-    #         'i': 0,
-    #         'n': 2},
-    #     'data_path': 'backup',
-    #     'file_name':  expt.runinfo.file_name,
-    #     'average_d': -1,
-    #     'continuous': False}
-
-    # for key in runinfo.keys():
-    #     assert runinfo[key] == expected[key]
 
 
 def test_save_devices_metadata(runinfo, devices):
@@ -194,3 +182,172 @@ def test_save_point(runinfo, devices):
         assert x3.shape == (2, 2, 2)
         assert np.allclose(x3[0], np.zeros((2, 2)))
         assert np.all(np.isnan(x3[1]))
+
+
+def test_save_point(runinfo, devices):
+    expt = ps.Experiment(runinfo, devices)
+    expt.check_runinfo()
+    data = expt.runinfo.measure_function(expt)
+    expt.preallocate(data)
+    expt.save_point(data)
+
+    assert expt.x1.shape == (2,)
+    assert np.isclose(expt.x1[0], 0.0)
+    assert np.isnan(expt.x1[1])
+
+    assert expt.x2.shape == (2, 2)
+    assert np.allclose(expt.x2[0], [0, 0])
+    assert np.all(np.isnan(expt.x2[1]))
+
+    assert expt.x3.shape == (2, 2, 2)
+    assert np.allclose(expt.x3[0], np.zeros((2, 2)))
+    assert np.all(np.isnan(expt.x3[1]))
+
+    with h5py.File('./backup/{}'.format(expt.runinfo.file_name + '.hdf5'), 'r') as f:
+        scan = f['v1_voltage']
+        assert scan.shape == (2,)
+        assert np.allclose(scan, np.array([0.0, 0.1]))
+
+        x1 = f['x1']
+        assert x1.shape == (2,)
+        assert np.isclose(x1[0], [0.0])
+        print(np.array(x1))
+        assert np.all(np.isnan(x1[1]))
+
+        x2 = f['x2']
+        assert x2.shape == (2, 2)
+        assert np.allclose(x2[0], [0, 0])
+        assert np.all(np.isnan(x2[1]))
+
+        x3 = f['x3']
+        assert x3.shape == (2, 2, 2)
+        assert np.allclose(x3[0], np.zeros((2, 2)))
+        assert np.all(np.isnan(x3[1]))
+
+
+def test_continuous_preallocate(c_runinfo, devices):
+    runinfo = c_runinfo
+
+    expt = ps.Experiment(runinfo, devices)
+    expt.check_runinfo()
+    data = expt.runinfo.measure_function(expt)
+    expt.runinfo.scans[-1].iterate(expt, 0, -1)
+    expt.preallocate(data)
+
+    assert expt.iteration.shape == (1,)
+    assert np.allclose(expt.iteration, [0.0])
+
+    assert expt.x1.shape == (1,)
+    assert np.isnan(expt.x1[0])
+
+    assert expt.x2.shape == (1, 2)
+    assert np.all(np.isnan(expt.x2))
+
+    assert expt.x3.shape == (1, 2, 2)
+    assert np.all(np.isnan(expt.x3))
+
+    with h5py.File('./backup/{}'.format(expt.runinfo.file_name + '.hdf5'), 'r') as f:
+        scan = f['iteration']
+        assert scan.shape == (1,)
+        assert np.allclose(scan, 0.0)
+
+        x1 = f['x1']
+        assert x1.shape == (1,)
+        assert np.all(np.isnan(x1))
+
+        x2 = f['x2']
+        assert x2.shape == (1, 2)
+        assert np.all(np.isnan(x2))
+
+        x3 = f['x3']
+        assert x3.shape == (1, 2, 2)
+        assert np.all(np.isnan(x3))
+
+
+def test_continuous_save_point(c_runinfo, devices):
+    runinfo = c_runinfo
+
+    expt = ps.Experiment(runinfo, devices)
+    expt.check_runinfo()
+    data = expt.runinfo.measure_function(expt)
+    expt.runinfo.scans[-1].iterate(expt, 0, -1)
+    expt.preallocate(data)
+    data = expt.runinfo.measure_function(expt)
+    expt.save_point(data)
+
+    assert expt.iteration.shape == (1,)
+    assert np.allclose(expt.iteration, [0.0])
+
+    assert expt.x1.shape == (1,)
+    assert np.allclose(expt.x1, 0.0)
+
+    assert expt.x2.shape == (1, 2)
+    assert np.allclose(expt.x2, 0.0)
+
+    assert expt.x3.shape == (1, 2, 2)
+    assert np.allclose(expt.x3, 0.0)
+
+    with h5py.File('./backup/{}'.format(expt.runinfo.file_name + '.hdf5'), 'r') as f:
+        scan = f['iteration']
+        assert scan.shape == (1,)
+        assert np.allclose(scan, 0.0)
+
+        x1 = f['x1']
+        assert x1.shape == (1,)
+        assert np.allclose(x1, 0.0)
+
+        x2 = f['x2']
+        assert x2.shape == (1, 2)
+        assert np.allclose(x2, 0.0)
+
+        x3 = f['x3']
+        assert x3.shape == (1, 2, 2)
+        assert np.allclose(x3, 0.0)
+
+
+def test_continuous_reallocate(c_runinfo, devices):
+    runinfo = c_runinfo
+
+    expt = ps.Experiment(runinfo, devices)
+    expt.check_runinfo()
+
+    data = expt.runinfo.measure_function(expt)
+    expt.runinfo.scans[-1].iterate(expt, 0, -1)
+    expt.preallocate(data)
+    expt.save_point(data)
+
+    expt.runinfo.scans[-1].iterate(expt, 1, 1)
+    data = expt.runinfo.measure_function(expt)
+    expt.reallocate(data)
+    expt.save_point(data)
+
+    assert expt.iteration.shape == (2,)
+    assert np.allclose(expt.iteration, [0, 1])
+
+    assert expt.x1.shape == (2,)
+    assert np.allclose(expt.x1, [0, 1])
+
+    assert expt.x2.shape == (2, 2)
+    assert np.allclose(expt.x2, [[0, 0], [1, 1]])
+
+    assert expt.x3.shape == (2, 2, 2)
+    assert np.allclose(expt.x3[0], [[0, 0], [0, 0]])
+    assert np.allclose(expt.x3[1], [[1, 1], [1, 1]])
+
+    with h5py.File('./backup/{}'.format(expt.runinfo.file_name + '.hdf5'), 'r') as f:
+        scan = f['iteration']
+        assert scan.shape == (2,)
+        assert np.allclose(scan, [0, 1])
+
+        x1 = f['x1']
+        assert x1.shape == (2,)
+        assert np.allclose(x1, [0, 1])
+
+        x2 = f['x2']
+        assert x2.shape == (2, 2)
+        assert np.allclose(x2, [[0, 0], [1, 1]])
+
+        x3 = f['x3']
+        assert x3.shape == (2, 2, 2)
+        assert np.allclose(x3[0], [[0, 0], [0, 0]])
+        assert np.allclose(x3[1], [[1, 1], [1, 1]])

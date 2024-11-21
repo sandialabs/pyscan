@@ -2,7 +2,6 @@ import h5py
 import json
 from pathlib import Path
 import numpy as np
-import pyscan as ps
 from threading import Thread as thread
 from time import strftime
 from pyscan.measurement.scans import PropertyScan
@@ -130,7 +129,12 @@ class AbstractExperiment(ItemAttribute):
             for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
                     self[key] = values
-                    f[key] = values
+                    if key == 'iteration':
+                        print(values.shape)
+                        f.create_dataset(key, shape=values.shape, maxshape=(None,), chunks=(100, ),)
+                    else:
+                        f.create_dataset(key, shape=values.shape, maxshape=values.shape, chunks=values.shape,)
+                    f[key][:] = values
 
         # Get dimensions based off of averaging or not
         if self.runinfo.average_index == -1:
@@ -185,6 +189,12 @@ class AbstractExperiment(ItemAttribute):
         new_slices = {}
 
         with h5py.File(save_name, 'a') as f:
+            # Resize the continuous iterations array
+            continuous_n = self.runinfo.scans[-1].n
+            f['iteration'].resize((continuous_n,))
+            self['iteration'] = self.runinfo.scans[-1].scan_dict['iteration']
+            f['iteration'][-1] = self.runinfo.scans[-1].scan_dict['iteration'][-1]
+
             for name in self.runinfo.measured:
                 dataset = f[name]
                 current_shape = dataset.shape
@@ -214,48 +224,6 @@ class AbstractExperiment(ItemAttribute):
                                     [(0, new_dim - original_dim) for original_dim,
                                     new_dim in zip(current_shape, new_shape)],
                                     mode='constant', constant_values=np.nan)
-
-    def save_continuous_scan_dict(self, save_name, debug=False):
-        '''
-        Increments continuous scan_dict to match run count for continuous experiments.
-        Saves this change to file.
-        '''
-        for scan in self.runinfo.scans:
-            if isinstance(scan, ps.ContinuousScan):
-                run_count = scan.n
-
-        if run_count == 1:
-            with h5py.File(save_name, 'a') as f:
-                for s in self.runinfo.scans:
-                    for key, values in s.scan_dict.items():
-                        if key == 'iteration':
-                            del f[key]
-                            f.create_dataset(key, shape=[1, ], maxshape=(None,), chunks=(1,),
-                                             fillvalue=np.nan, dtype='float64')
-                            if debug is True:
-                                print("new dataset created")
-                            self[key] = values
-                            f[key][...] = values
-        with h5py.File(save_name, 'a') as f:
-            for s in self.runinfo.scans:
-                for key, values in s.scan_dict.items():
-                    if key == 'iteration':
-                        f[key].resize((len(s.scan_dict[key]),))
-                        self[key] = values
-                        f[key][values[-1]] = values[-1]
-
-    def assign_continuous_values(self, data, save_name, run_count, continuous_indicies, debug=False):
-        if all(index == 0 for index in self.runinfo.indicies):
-            self.save_continuous_scan_dict(save_name, debug)
-
-        for key, value in data.items():
-            if is_list_type(self[key][0]):
-                if run_count > 0:
-                    self[key][continuous_indicies] = value
-                else:
-                    self[key][self.runinfo.indicies] = value
-            else:
-                self[key][run_count] = value
 
     def rolling_average(self, data):
         '''
@@ -324,7 +292,6 @@ class AbstractExperiment(ItemAttribute):
         ----------
         metadata_name : str
             Name of the metadata to be saved, ex. "runinfo", "devices"
-
         '''
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.file_name)
         save_name = str(save_path.absolute())
