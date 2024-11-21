@@ -66,7 +66,7 @@ def plot2D(expt, **kwarg):
     pg = PlotGenerator(expt, d=2, **kwarg)
 
     # this ensures that continuous expts are plotted correctly when an n_max parameter is implemented.
-    if expt.runinfo.continuous is True and expt.runinfo.running is False:
+    if expt.runinfo.has_continuous_scan is True and expt.runinfo.running is False:
         n_max = expt.runinfo.scans[expt.runinfo.continuous_index].n_max
         if len(pg.y) - 1 == n_max:
             # give a time buffer to make sure the most recent state of the expt is registered.
