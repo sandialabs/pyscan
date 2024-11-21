@@ -277,7 +277,7 @@ class AverageScan(AbstractScan):
 
         self.scan_dict = {}
         self.n = n_average
-        self.scan_dict['average'] = list(range(n_average))
+        self.scan_dict['average'] = np.array(list(range(n_average)))
         self.device_names = ['average']
         self.i = 0
         self.dt = dt
