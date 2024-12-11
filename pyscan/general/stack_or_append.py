@@ -1,33 +1,48 @@
 
 import numpy as np
+from .is_list_type import is_list_type
 
 
 def stack_or_append(array, value):
     '''
-    Appends a new `value` to an `array`
-    depending on the shape of the `array`.
+    Appends a new `value` to an `array`depending on the shape of the `array`.
 
-    :param array: Array-like object you want to append `value` to.
-    :type array: array-like object
-    :param value: Value to append to `array`.
-    :type value: array or object
-    :returns: np.ndarray
+    If array is empty, returns value
+    If array is the same size as the value, stacks the value
+    If the array is larger than the value, concatenates the value
+
+    Parameters
+    ----------
+    array : array like object
+    value : int, float, or list like object
+
+    Returns
+    -------
+    np.ndarray
     '''
 
-    value = np.array([value])
+    if not is_list_type(value):
+        value = np.array([value])
+    if isinstance(value, list):
+        value = np.array(value)
+
     array = np.array(array)
 
-    if value.ndim == 1:
-        if len(array) == 0:  # empty array
-            array = value
-        else:  # 1d array
-            array = np.append(array, value)
-    else:  # 2d array or higher
-        if len(array) == 0:
-            array = value
-        elif array.shape[0] == 1:
-            array = np.append(array, value, axis=0).T  # unexpected behaviour?
+    assert is_list_type(array)
+    if len(array) != 0:
+        assert array.ndim >= value.ndim, 'Value has more dimensions than array'
+
+    if not list(array):  # initial point and array is empty
+        return value
+    elif array.shape == value.shape:  # first point/array to be appended
+        if (array.ndim == 1) & (len(array) == 1):
+            return np.append(array, value)
         else:
-            array = np.concatenate((array, value.T), axis=-1)  # unexpected behaviour?
+            return np.stack((array, value))
+    else:  # nth point/array to be appended
+        if array.ndim == 1:
+            return np.append(array, value)
+        else:
+            return np.concatenate([array, np.reshape(value, (1, *value.shape))], axis=0)
 
     return array
