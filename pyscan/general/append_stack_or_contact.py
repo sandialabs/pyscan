@@ -3,7 +3,7 @@ import numpy as np
 from .is_list_type import is_list_type
 
 
-def stack_or_append(array, value):
+def append_stack_or_contact(array, value):
     '''
     Appends a new `value` to an `array`depending on the shape of the `array`.
 
@@ -34,11 +34,13 @@ def stack_or_append(array, value):
 
     if not list(array):  # initial point and array is empty
         return value
-    elif array.shape == value.shape:  # first point/array to be appended
+    elif (array.shape == value.shape):  # first point/array to be appended
         if (array.ndim == 1) & (len(array) == 1):
             return np.append(array, value)
+        elif value.shape[0] == 1:
+            return np.concatenate([array, value], axis=0)
         else:
-            return np.stack((array, value))
+            return np.stack([array, value], axis=0)
     else:  # nth point/array to be appended
         if array.ndim == 1:
             return np.append(array, value)

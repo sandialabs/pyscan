@@ -3,7 +3,6 @@ import numpy as np
 from time import sleep
 from itemattribute import ItemAttribute
 from ..general.same_length import same_length
-from ..general.infinite_iterator import infinite_iterator
 
 
 class AbstractScan(ItemAttribute):
@@ -221,6 +220,10 @@ class ContinuousScan(AbstractScan):
     '''
 
     def __init__(self, n_max=None, dt=0):
+
+        assert n_max is None or isinstance(n_max, int), "n_max must be an int or None"
+        assert n_max > 0, "n_max must be > 0 or None"
+
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
 
@@ -229,8 +232,6 @@ class ContinuousScan(AbstractScan):
 
         self.i = 0
         self.n = 1
-
-        assert n_max is None or n_max > 0, "n_max must be > 0 or None"
 
         self.n_max = n_max
 
@@ -247,15 +248,17 @@ class ContinuousScan(AbstractScan):
 
         sleep(self.dt)
 
+        if self.n == self.n_max:
+            expt.stop()
+
     def iterator(self):
         '''
         The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
         '''
-
-        if self.n_max is not None:
-            return range(self.n_max)
+        if self.n_max is None:
+            return range(1)
         else:
-            return infinite_iterator()
+            return range(self.n_max)
 
 
 class AverageScan(AbstractScan):

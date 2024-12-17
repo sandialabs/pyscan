@@ -44,7 +44,7 @@ class Experiment(AbstractExperiment):
 
         self.runinfo.running = True
 
-        for indicies, deltas in delta_product(self.runinfo.iterators):
+        for indicies, deltas in delta_product(self.runinfo.iterators, self.runinfo.has_continuous_scan):
             for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
                 scan.iterate(self, i, d)
 
@@ -52,7 +52,7 @@ class Experiment(AbstractExperiment):
 
             if np.all(np.array(indicies) == 0):
                 self.preallocate(data)
-            elif self.runinfo.has_continuous_scan:
+            elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
                 self.reallocate(data)
             elif self.runinfo.has_average_scan:
                 self.rolling_average(data)

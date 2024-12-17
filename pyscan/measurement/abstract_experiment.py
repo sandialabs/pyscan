@@ -8,6 +8,7 @@ from pyscan.measurement.scans import PropertyScan
 from .pyscan_json_encoder import PyscanJSONEncoder
 from itemattribute import ItemAttribute
 from ..general.is_list_type import is_list_type
+from ..general.append_stack_or_contact import append_stack_or_contact
 
 
 class AbstractExperiment(ItemAttribute):
@@ -131,7 +132,6 @@ class AbstractExperiment(ItemAttribute):
                 for key, values in s.scan_dict.items():
                     self[key] = values
                     if key == 'iteration':
-                        print(values.shape)
                         f.create_dataset(key, shape=values.shape, maxshape=(None,), chunks=(100, ),)
                     else:
                         f.create_dataset(key, shape=values.shape, maxshape=values.shape, chunks=values.shape,)
@@ -187,44 +187,20 @@ class AbstractExperiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.file_name)
         save_name = str(save_path.absolute())
 
-        new_slices = {}
-
         with h5py.File(save_name, 'a') as f:
-            # Resize the continuous iterations array
             continuous_n = self.runinfo.scans[-1].n
             f['iteration'].resize((continuous_n,))
             self['iteration'] = self.runinfo.scans[-1].scan_dict['iteration']
             f['iteration'][-1] = self.runinfo.scans[-1].scan_dict['iteration'][-1]
 
             for name in self.runinfo.measured:
-                dataset = f[name]
-                current_shape = dataset.shape
-                new_shape = list(current_shape)
-
-                if len(current_shape) == 1:
-                    new_shape[0] += 1
-                    dataset.resize(tuple(new_shape))
-                    # fill the new part with nans
-                    dataset[current_shape[0]:] = np.nan
-                elif len(current_shape) > 1:
-                    dim_index = len(self.runinfo.dims) - 1
-                    new_shape[dim_index] += 1
-                    dataset.resize(tuple(new_shape))
-                    slices = tuple(slice(
-                        original_dim, new_dim) for original_dim,
-                        new_dim in zip(current_shape, new_shape))
-                    mask = np.zeros(new_shape, dtype=bool)
-                    mask[slices] = True
-                    dataset[mask] = np.nan
-
-                    new_slices[name] = tuple(slice(
-                        current_dim, new_dim) for current_dim,
-                        new_dim in zip(current_shape, new_shape))
-
-                self[name] = np.pad(self[name],
-                                    [(0, new_dim - original_dim) for original_dim,
-                                    new_dim in zip(current_shape, new_shape)],
-                                    mode='constant', constant_values=np.nan)
+                if is_list_type(data[name]):
+                    f[name].resize(tuple((*self.runinfo.dims, *np.array(data[name]).shape)))
+                    f[name][-1] = np.zeros(self[name].shape) * np.nan
+                    self[name] = append_stack_or_contact(self[name], np.zeros(self[name].shape) * np.nan)
+                else:
+                    f[name].resize(self.runinfo.dims)
+                    self[name] = np.append(self[name], np.nan)
 
     def rolling_average(self, data):
         '''
@@ -274,6 +250,7 @@ class AbstractExperiment(ItemAttribute):
 
         for key, value in data.items():
             if is_list_type(self[key]):
+                print(key)
                 self[key][indicies] = value
             else:
                 self[key] = value
