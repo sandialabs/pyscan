@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from ..general.item_attribute import ItemAttribute
-from ..general.get_pyscan_version import get_pyscan_version
+from itemattribute import ItemAttribute
+from .get_pyscan_version import get_pyscan_version
 from .scans import PropertyScan, AverageScan
 import pyscan as ps
 
