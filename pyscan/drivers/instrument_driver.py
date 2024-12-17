@@ -455,7 +455,7 @@ class InstrumentDriver(ItemAttribute):
 
         doc_string = doc[i][4::]
 
-        for j in range(len(doc_string)):
+        for j in range(len(doc)):
             try:
                 doc[i + 1 + j]
             except:
