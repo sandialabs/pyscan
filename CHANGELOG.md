@@ -1,3 +1,13 @@
+## [0.8.6](https://github.com/sandialabs/pyscan/compare/v0.8.5...v0.8.6) (2024-12-17)
+
+
+### Bug Fixes
+
+* **driver:** doc string if not found returns blank.  If multiple, takes first ([f723504](https://github.com/sandialabs/pyscan/commit/f723504bc09b1b912a0d4b281a4bb905eecf7264))
+* **drivers:** fixed doc string detection exit ([80aefe5](https://github.com/sandialabs/pyscan/commit/80aefe5de6e6907fb68634e7246e4a3b302e4841))
+
+
+
 ## [0.8.5](https://github.com/sandialabs/pyscan/compare/v0.8.4...v0.8.5) (2024-10-29)
 
 
