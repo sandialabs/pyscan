@@ -1,4 +1,4 @@
-from ...general.get_pyscan_version import get_pyscan_version
+from pyscan.measurement.get_pyscan_version import get_pyscan_version
 from .test_properties import (
     test_values_property,
     test_range_property,

@@ -1,4 +1,4 @@
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 from .properties import (
     DictProperty, DictPropertySettings,
     IndexedProperty, IndexedPropertySettings,

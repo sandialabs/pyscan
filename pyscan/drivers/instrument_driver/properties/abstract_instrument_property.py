@@ -1,4 +1,4 @@
-from ....general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 from .read_only_exception import ReadOnlyException
 
 
