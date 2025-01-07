@@ -83,14 +83,15 @@ class AgilentDSO900Series(InstrumentDriver):
             'name': 'sample_rate',
             'write_string': ':ACQ:SRAT {}',
             'query_string': 'ACQ:SRAT?',
-            'values': [1e2, 2e2, 2.5e2, 4e2, 5e2,
-                       1e3, 2e3, 2.5e3, 4e3, 5e3,
-                       1e4, 2e4, 2.5e4, 4e4, 5e4,
-                       1e5, 2e5, 2.5e5, 4e5, 5e5,
-                       1e6, 2e6, 2.5e6, 4e6, 5e6,
-                       1e7, 2e7, 2.5e7, 4e7, 5e7,
-                       1e8, 2e8, 2.5e8, 4e8, 4e9,
-                       1e9, 2e9, 2.5e9],
+            'values': [
+                1e2, 2e2, 2.5e2, 4e2, 5e2,
+                1e3, 2e3, 2.5e3, 4e3, 5e3,
+                1e4, 2e4, 2.5e4, 4e4, 5e4,
+                1e5, 2e5, 2.5e5, 4e5, 5e5,
+                1e6, 2e6, 2.5e6, 4e6, 5e6,
+                1e7, 2e7, 2.5e7, 4e7, 5e7,
+                1e8, 2e8, 2.5e8, 4e8, 4e9,
+                1e9, 2e9, 2.5e9],
             'return_type': float})
 
         self.add_device_property({

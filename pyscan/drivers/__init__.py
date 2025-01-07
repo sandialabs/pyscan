@@ -1,7 +1,7 @@
 import os
 
 # Objects
-from .instrument_driver import InstrumentDriver
+from .instrument_driver import InstrumentDriver, new_instrument
 
 # Brand collections
 from .agilent import *
@@ -27,10 +27,6 @@ from .keysight import *
 from .picoquant import *
 from .thorlabs import *
 from .spin_core import *
-
-
-# Methods
-from .new_instrument import new_instrument
 
 # Test Devices
 from .testing.test_voltage import TestVoltage

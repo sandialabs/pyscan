@@ -121,8 +121,9 @@ class Stanford396(InstrumentDriver):
             'name': 'modulation_type',
             'write_string': 'TYPE {}',
             'query_string': 'TYPE?',
-            'values': ['am', 'fm', 'phim', 'sweep', 'pulse',
-                       'blank', 'qam', 'cpm', 'vbs'],
+            'values': [
+                'am', 'fm', 'phim', 'sweep', 'pulse',
+                'blank', 'qam', 'cpm', 'vbs'],
             'return_type': int})
 
         self.add_device_property({

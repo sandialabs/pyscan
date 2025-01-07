@@ -1,9 +1,8 @@
 from .thorlabsitc4001 import ThorLabsITC4001
-import importlib.util
-import sys
+
 
 try:
-    import pyscan_tlk
+    import thorlabs_kinesis
     from .thorlabsbpc303 import ThorlabsBPC303
     from .thorlabsbsc203 import ThorlabsBSC203
     from .thorlabsmff101 import ThorlabsMFF101

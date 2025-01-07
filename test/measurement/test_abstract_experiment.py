@@ -50,7 +50,7 @@ def test_abstract_experiment():
     None
     """
 
-    def test_ms_diff_inputs(data_dir=None, measure_function=measure_point, allocate='preallocate'):
+    def test_expt_diff_inputs(data_dir=None, measure_function=measure_point, allocate='preallocate'):
         devices = ps.ItemAttribute()
         devices.v1 = ps.TestVoltage()
         devices.v2 = ps.TestVoltage()
@@ -68,89 +68,89 @@ def test_abstract_experiment():
 
         runinfo.measure_function = measure_function
 
-        ms = AbstractExperiment(runinfo, devices, data_dir)
+        expt = AbstractExperiment(runinfo, devices, data_dir)
 
         # testing meta sweep's init
-        assert hasattr(ms, 'runinfo'), "Meta Sweep runinfo not set up"
-        assert ms.runinfo == runinfo, "Meta Sweep runinfo not set up properly"
+        assert hasattr(expt, 'runinfo'), "Meta Sweep runinfo not set up"
+        assert expt.runinfo == runinfo, "Meta Sweep runinfo not set up properly"
 
-        assert hasattr(ms, 'devices'), "Meta Sweep devices not set up"
-        assert ms.devices == devices, "Meta Sweep devices not set up properly"
+        assert hasattr(expt, 'devices'), "Meta Sweep devices not set up"
+        assert expt.devices == devices, "Meta Sweep devices not set up properly"
 
-        assert hasattr(ms.runinfo, 'data_path'), "Meta Sweep data path not set up"
+        assert hasattr(expt.runinfo, 'data_path'), "Meta Sweep data path not set up"
 
         # testing meta sweep's setup data dir method
-        assert callable(ms.setup_data_dir)
-        ms.setup_data_dir(data_dir)
+        assert callable(expt.setup_data_dir)
+        expt.setup_data_dir(data_dir)
         if data_dir is None:
-            assert ms.runinfo.data_path == Path('./backup'), "Meta Sweep data path not set up properly"
+            assert expt.runinfo.data_path == Path('./backup'), "Meta Sweep data path not set up properly"
         else:
-            assert ms.runinfo.data_path == Path(Path(data_dir)), "Meta Sweep data path not set up properly"
-        assert ms.runinfo.data_path.is_dir()
+            assert expt.runinfo.data_path == Path(Path(data_dir)), "Meta Sweep data path not set up properly"
+        assert expt.runinfo.data_path.is_dir()
 
         # testing meta sweep's check runinfo method
-        assert callable(ms.check_runinfo)
-        ms.check_runinfo()
-        assert ms.check_runinfo() == 1
+        assert callable(expt.check_runinfo)
+        expt.check_runinfo()
+        assert expt.check_runinfo() == 1
 
-        assert hasattr(ms.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
-        assert isinstance(ms.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
-        # check that the long name is formatted with values for YYYYMMDDTHHMMSS, and optionally a - followed by digits.
-        assert re.match(r'^\d{8}T\d{6}(-\d+)?$', ms.runinfo.long_name), "runinfo long_name is not properly formatted"
+        assert hasattr(expt.runinfo, 'long_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
+        assert isinstance(expt.runinfo.long_name, str), "Meta Sweep runinfo long name is not initialized as a string"
+        # check that the long name is formatted with values for YYYYMMDDTHHMexptS, and optionally a - followed by digits.
+        assert re.match(r'^\d{8}T\d{6}(-\d+)?$', expt.runinfo.long_name), "runinfo long_name is not properly formatted"
 
-        assert hasattr(ms.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
-        assert isinstance(ms.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
-        assert ms.runinfo.short_name == ms.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
+        assert hasattr(expt.runinfo, 'short_name'), "Meta Sweep runinfo long name is not initialized by check_runinfo()"
+        assert isinstance(expt.runinfo.short_name, str), "Meta Sweep runinfo short name is not initialized as a string"
+        assert expt.runinfo.short_name == expt.runinfo.long_name[8:], "Meta Sweep short name is not the correct value"
 
         # setting file name for loading later
         if data_dir is None:
-            file_name = './backup/' + ms.runinfo.long_name
+            file_name = './backup/' + expt.runinfo.long_name
         else:
-            file_name = data_dir + '/' + ms.runinfo.long_name
+            file_name = data_dir + '/' + expt.runinfo.long_name
 
         # ############### testing meta sweeps preallocate method here? Or will we be changing to dynamic allocation?
-        data = ms.runinfo.measure_function(ms)
-        if np.all(np.array(ms.runinfo.indicies) == 0):
+        data = expt.runinfo.measure_function(expt)
+        if np.all(np.array(expt.runinfo.indicies) == 0):
             if allocate == 'preallocate':
-                ms.preallocate(data)
+                expt.preallocate(data)
             elif allocate == 'preallocate_line':
-                ms.preallocate_line(data)
+                expt.preallocate_line(data)
             else:
                 assert False, "allocate input variable for test not acceptable"
 
         # testing meta sweep's check runinfo method with bad scan inputs
         bad_runinfo = ps.RunInfo()
         bad_runinfo.scan0 = ps.PropertyScan({'v8': ps.drange(0, 0.1, 0.1)}, 'voltage')
-        bad_ms = AbstractExperiment(bad_runinfo, devices, data_dir)
+        bad_expt = AbstractExperiment(bad_runinfo, devices, data_dir)
 
         with pytest.raises(Exception):
-            bad_ms.check_runinfo(), "Metasweep's check runinfo did not ensure validation of devices and properties"
+            bad_expt.check_runinfo(), "Metasweep's check runinfo did not ensure validation of devices and properties"
 
         # testing meta sweep's check runinfo method with more than 1 repeat scan
         bad_runinfo2 = ps.RunInfo()
         bad_runinfo2.scan0 = ps.PropertyScan({'v1': ps.drange(0, 0.1, 0.1)}, 'voltage')
         bad_runinfo2.scan1 = ps.RepeatScan(3)
         bad_runinfo2.scan2 = ps.RepeatScan(3)
-        bad_ms2 = AbstractExperiment(bad_runinfo, devices, data_dir)
+        bad_expt2 = AbstractExperiment(bad_runinfo, devices, data_dir)
 
         with pytest.raises(Exception):
-            bad_ms2.check_runinfo(), "Metasweep's check runinfo did not flag runinfo with more than one repeat scan"
+            bad_expt2.check_runinfo(), "Metasweep's check runinfo did not flag runinfo with more than one repeat scan"
 
         # testing meta sweep's get time method *placeholder*
-        assert callable(ms.get_time)
+        assert callable(expt.get_time)
 
         # ############# The following saves don't seem to be saving any data to the file, not sure why...
         # testing meta sweep's save point method
-        assert callable(ms.save_point)
-        ms.save_point(data)
+        assert callable(expt.save_point)
+        expt.save_point(data)
 
         # testing meta sweep's save row method
-        assert callable(ms.save_row)
-        ms.save_row()
+        assert callable(expt.save_row)
+        expt.save_row()
 
         # testing meta sweep's save meta data method
-        assert callable(ms.save_metadata)
-        ms.save_metadata()
+        assert callable(expt.save_metadata)
+        expt.save_metadata()
 
         # now loading the experiment to check the information was saved properly
         temp = ps.load_experiment(file_name)
@@ -183,7 +183,7 @@ def test_abstract_experiment():
                 assert temp.x3.shape == (2, 5, 5)
                 assert data.x3 in temp.x3
 
-        assert len(temp.__dict__.keys()) == 5 + len(ms.runinfo.measured)
+        assert len(temp.__dict__.keys()) == 5 + len(expt.runinfo.measured)
 
         # check that the meta data was saved and loaded with expected attributes
         assert hasattr(temp, 'runinfo'), "runinfo was not saved/could not be loaded from meta data to temp"
@@ -225,59 +225,59 @@ def test_abstract_experiment():
         assert list(temp.devices.__dict__.keys()) == ['v1', 'v2', 'v3'], "save meta data issue saving runinfo.devices"
 
         # testing meta sweep's start thread method
-        assert callable(ms.start_thread), "meta sweep's start thread method not callable"
-        assert not hasattr(ms.runinfo, 'running'), "meta sweep runinfo has running attribute before expected"
-        ms.start_thread()
+        assert callable(expt.start_thread), "meta sweep's start thread method not callable"
+        assert not hasattr(expt.runinfo, 'running'), "meta sweep runinfo has running attribute before expected"
+        expt.start_thread()
 
         # try to affirm thread is running/ran here... threading only showed 1 thread running before and after
-        assert hasattr(ms.runinfo, 'running'), "meta sweep runinfo does not have running attribute after start thread"
-        assert ms.runinfo.running is True, "meta sweep's start thread method did not set runinfo running to true"
+        assert hasattr(expt.runinfo, 'running'), "meta sweep runinfo does not have running attribute after start thread"
+        assert expt.runinfo.running is True, "meta sweep's start thread method did not set runinfo running to true"
 
         # testing meta sweep's stop method
-        assert callable(ms.stop), "meta sweep's stop method not callable"
-        assert not hasattr(ms.runinfo, 'complete'), "meta sweep runinfo has complete attribute before expected"
+        assert callable(expt.stop), "meta sweep's stop method not callable"
+        assert not hasattr(expt.runinfo, 'complete'), "meta sweep runinfo has complete attribute before expected"
         buffer = StringIO()
         sys.stdout = buffer
-        ms.stop()
-        assert hasattr(ms.runinfo, 'complete'), "meta sweep runinfo does not have complete attribute after stop()"
-        assert ms.runinfo.running is False, "meta sweep's start thread method did not set runinfo running to false"
-        assert ms.runinfo.complete == 'stopped', "meta sweep's stop method did not set runinfo complete to stopped"
+        expt.stop()
+        assert hasattr(expt.runinfo, 'complete'), "meta sweep runinfo does not have complete attribute after stop()"
+        assert expt.runinfo.running is False, "meta sweep's start thread method did not set runinfo running to false"
+        assert expt.runinfo.complete == 'stopped', "meta sweep's stop method did not set runinfo complete to stopped"
         print_output = buffer.getvalue()
         sys.stdout = sys.__stdout__
         assert print_output.strip() == 'Stopping Experiment', "meta sweep's stop method does not print confirmation"
 
         # test meta sweep's run method *placeholder*
-        assert callable(ms.run), "meta sweep's run method not callable"
+        assert callable(expt.run), "meta sweep's run method not callable"
 
         # test meta sweep's setup runinfo method *placeholder*
-        assert callable(ms.setup_runinfo), "meta sweep's setup runinfo method not callable"
+        assert callable(expt.setup_runinfo), "meta sweep's setup runinfo method not callable"
 
         # test meta sweep's setup instruments method *placeholder*
-        assert callable(ms.setup_instruments), "meta sweep's setup instruments method not callable"
+        assert callable(expt.setup_instruments), "meta sweep's setup instruments method not callable"
 
         # test meta sweep's default trigger method
-        assert callable(ms.default_trigger_function), "meta sweep's default trigger method not callable"
+        assert callable(expt.default_trigger_function), "meta sweep's default trigger method not callable"
         with pytest.raises(Exception):
-            ms.default_trigger_function()
+            expt.default_trigger_function()
 
-        ms.devices.trigger = ps.ItemAttribute()
-        ms.devices.trigger.trigger = empty_function
-        ms.default_trigger_function()
+        expt.devices.trigger = ps.ItemAttribute()
+        expt.devices.trigger.trigger = empty_function
+        expt.default_trigger_function()
 
         if data_dir is None:
             shutil.rmtree('./backup')
         else:
             shutil.rmtree(data_dir)
 
-    test_ms_diff_inputs()
-    test_ms_diff_inputs(data_dir='./backeep')
+    test_expt_diff_inputs()
+    test_expt_diff_inputs(data_dir='./backeep')
     with pytest.raises(Exception):
         # experiments that use preallocate_line such as fast galvo and fast stage behave differenty
         # in a way where without refactoring this will not/should not pass.
-        test_ms_diff_inputs(data_dir='./backup', allocate='preallocate_line')
-    test_ms_diff_inputs(data_dir=None, measure_function=measure_up_to_3D)
-    test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
+        test_expt_diff_inputs(data_dir='./backup', allocate='preallocate_line')
+    test_expt_diff_inputs(data_dir=None, measure_function=measure_up_to_3D)
+    test_expt_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D)
     with pytest.raises(Exception):
         # This should not work with preallocate_line as is,
         # because it doesn't factor data dimension into it's preallocation
-        test_ms_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D, allocate='preallocate_line')
+        test_expt_diff_inputs(data_dir='./backup', measure_function=measure_up_to_3D, allocate='preallocate_line')
