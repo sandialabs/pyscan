@@ -7,10 +7,10 @@ Advanced Usage
    advanced/writing_a_driver
    advanced/nested_experiments
 
-Demo Notebooks
-==============
+.. Demo Notebooks
+.. ==============
 
-.. toctree::
-   :maxdepth: 2
+.. .. toctree::
+..    :maxdepth: 2
 
-   advanced/advanced_notebooks
+..    advanced/advanced_notebooks

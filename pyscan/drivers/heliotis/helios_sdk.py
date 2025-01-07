@@ -1,4 +1,4 @@
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 
 
 def sense_tqp_to_frequency(SensTqp):

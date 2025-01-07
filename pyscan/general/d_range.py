@@ -46,4 +46,6 @@ def drange(start, delta, stop):
         values = [start + sign * delta * i for i in range(n + 1)]
         values += [stop]
 
+        values = np.array(values)
+
     return values
