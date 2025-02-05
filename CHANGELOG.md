@@ -1,3 +1,12 @@
+## [0.8.7](https://github.com/sandialabs/pyscan/compare/v0.8.6...v0.8.7) (2025-02-05)
+
+
+### Bug Fixes
+
+* **keysite driver:** Added new exception for keysite SD1 loading, rem… ([#244](https://github.com/sandialabs/pyscan/issues/244)) ([ee281ae](https://github.com/sandialabs/pyscan/commit/ee281ae7cb2e773072d03131da585c8f8bef5ebd))
+
+
+
 ## [0.8.6](https://github.com/sandialabs/pyscan/compare/v0.8.5...v0.8.6) (2024-12-17)
 
 
