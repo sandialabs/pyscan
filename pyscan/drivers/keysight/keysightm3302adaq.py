@@ -7,7 +7,8 @@ sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
 try:
     import keysightSD1
 except:
-    print('Could not load Keysight SD1')
+    # print('Could not load Keysight SD1')
+    pass
 
 
 class KeysightM3302ADAQ(ItemAttribute):
