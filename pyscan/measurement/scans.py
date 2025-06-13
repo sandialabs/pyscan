@@ -267,3 +267,41 @@ class AverageScan(AbstractScan):
         Not used
         '''
         return 1
+
+class OptimizeScan(AbstractScan):
+    """
+    Class
+
+    Parameters
+    ----------
+    initialization_dict : dect{string:val}
+        key:value pairs of device name strings and initialization values at which to begin the optimization routine
+    prop : str
+        String that indicates the property of the device(s) to be changed
+    f_optimizer: function
+        Function that takes the result of the experiment and determines which prop values to use next
+    """
+
+    def __init__(self, initialization_dict, prop, f_optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max):
+        self.init_dict = initialization_dict
+        self.device_names = list(initialization_dict.keys())
+        self.prop = prop
+        self.f_opt = f_optimizer
+        self.opt_in = optimizer_inputs # TODO: can take these from experiment directly without triggering remeasurment or need to take ._prop from devices to get last val?
+        self.opt_hparam = optimizer_hyperparameters
+        self.i_max = iteration_max # TODO: need to signal to exp to stop iterating?
+    
+    def iterate(self, experiment):
+        for dev in self.device_names:
+            try:
+                if self.i == 0: # TODO: refactor to minimize if evaluations for efficiency?
+                    experiment.devices[dev][self.prop] = self.init_dict[dev]
+                else:
+                    experiment.devices[dev][self.prop] = self.f_opt(*[experiment.__dict__[measurement] for measurement in self.opt_in], **self.opt_hparam)
+            except Exception:
+                continue
+    
+    def iterator(self):
+        """
+        """
+        return iter(range(self.i_max))
