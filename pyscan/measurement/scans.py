@@ -282,26 +282,42 @@ class OptimizeScan(AbstractScan):
         Function that takes the result of the experiment and determines which prop values to use next
     """
 
-    def __init__(self, initialization_dict, prop, f_optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max):
+    def __init__(self, initialization_dict, prop, f_optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max, dt=0):
         self.init_dict = initialization_dict
+        self.scan_dict = {} # TODO: modify experiment for runtime-determined iter count?
+        for device in initialization_dict:
+            self.scan_dict['{}_{}'.format(device, prop)] = np.empty(iteration_max)
         self.device_names = list(initialization_dict.keys())
         self.prop = prop
         self.f_opt = f_optimizer
         self.opt_in = optimizer_inputs # TODO: can take these from experiment directly without triggering remeasurment or need to take ._prop from devices to get last val?
         self.opt_hparam = optimizer_hyperparameters
-        self.i_max = iteration_max # TODO: need to signal to exp to stop iterating?
+        self.n = iteration_max # TODO: need to signal to exp to stop iterating? need to modify experiment for runtime-determined iter count?
+        self.dt = dt
+        self.i = 0 # TODO: why need this and index argument in iterate()
     
-    def iterate(self, experiment):
+    def iterate(self, index, experiment):
         for dev in self.device_names:
             try:
-                if self.i == 0: # TODO: refactor to minimize if evaluations for efficiency?
+                if index == 0: # TODO: refactor to minimize if branch evaluations for efficiency?
                     experiment.devices[dev][self.prop] = self.init_dict[dev]
+                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev] # TODO: update scan_dict real-time because not precomputed?
                 else:
-                    experiment.devices[dev][self.prop] = self.f_opt(*[experiment.__dict__[measurement] for measurement in self.opt_in], **self.opt_hparam)
+                    opt_res = self.f_opt(
+                        *[experiment.__dict__[measurement][index - 1] for measurement in self.opt_in],
+                        **self.opt_hparam)
+                    experiment.devices[dev][self.prop] = opt_res
+                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res # TODO: update scan_dict real-time because not precomputed?
             except Exception:
                 continue
-    
+
     def iterator(self):
         """
         """
-        return iter(range(self.i_max))
+        return iter(range(self.n))
+    
+    def check_same_length(self):
+        '''
+        Not used
+        '''
+        return 1

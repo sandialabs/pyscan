@@ -252,6 +252,44 @@ class Experiment(AbstractExperiment):
                         self.runinfo.average_index / (self.runinfo.average_index + 1))
                     self[key] += (
                         value / (self.runinfo.average_index + 1))
+    
+    def optimize_experiment(self):
+        # TODO: add timing code? Timing code in generic_experiment() but not in average_experiment()?
+
+        for i in self.runinfo.scan0.iterator():
+
+            self.runinfo.scan0.i = i
+            indices = self.runinfo.indicies
+
+            self.runinfo.scan0.iterate(i, self)
+
+            sleep(self.runinfo.scan0.dt)
+
+            data = self.runinfo.measure_function(self)
+
+            if np.all(np.array(self.runinfo.indicies) == 0):
+                self.preallocate(data)
+            
+            self.save_point(data)
+
+            if self.runinfo.running is False: # TODO: use this to allow optimizer to terminate early?
+                self.runinfo.complete = 'stopped'
+                break
+
+            # if isinstance(self.runinfo.scan0, ps.ContinuousScan):
+            #     self.reallocate()
+
+            # if self.runinfo.verbose:
+            #     print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
+            # if self.runinfo.running is False:
+            #     self.runinfo.complete = 'stopped'
+            #     break
+
+        self.runinfo.complete = True
+        self.runinfo.running = False
+
+        if 'end_function' in list(self.runinfo.keys()):
+            self.runinfo.end_function(self)
 
     def run(self):
         '''Runs the experiment while locking the console
@@ -269,11 +307,14 @@ class Experiment(AbstractExperiment):
 
         self.runinfo.running = True
 
-        if self.runinfo.average_d == -1:
+        if self.runinfo.average_d == -1 and self.runinfo.optimize_d == -1:
             self.generic_experiment()
 
         elif 0 <= self.runinfo.average_d < 4:
             self.average_experiment()
+        
+        elif 0 <= self.runinfo.optimize_d < 4:
+            self.optimize_experiment()
 
         else:
             assert False, "self.average_d not setup correctly by check_runinfo method"
