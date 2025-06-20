@@ -2,6 +2,8 @@ import json
 import numpy as np
 from .item_attribute import ItemAttribute
 from ..drivers.instrument_driver import InstrumentDriver
+from ..optimizers.scan_optimizers import AbstractOptimizer
+
 from pyvisa.resources import (
     # FirewireInstrument,
     GPIBInstrument,
@@ -50,6 +52,10 @@ class PyscanJSONEncoder(json.JSONEncoder):
             if debug is True:
                 print(f"obj {obj} was instance of InstrumentDriver and or ItemAttribute.")
             return obj.__dict__
+        elif isinstance(obj, AbstractOptimizer):
+            if debug is True:
+                print(f"obj {obj} was instance of AbstractOptimizer")
+            return obj.__dict__ # TODO: implement json encoding function for AbstractOptimizer
         elif isinstance(obj, (range, tuple)):
             if debug is True:
                 print(f"obj {obj} was instance of {type(obj)}.")

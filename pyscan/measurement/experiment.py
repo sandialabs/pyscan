@@ -271,8 +271,7 @@ class Experiment(AbstractExperiment):
                 self.preallocate(data)
             
             self.save_point(data)
-
-            if self.runinfo.running is False: # TODO: use this to allow optimizer to terminate early?
+            if self.runinfo.running == False: # TODO: change all <is False> to <== False> to compare value instead of instance
                 self.runinfo.complete = 'stopped'
                 break
 

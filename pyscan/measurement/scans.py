@@ -2,6 +2,7 @@
 import numpy as np
 from ..general.same_length import same_length
 from ..general.item_attribute import ItemAttribute
+from ..optimizers.scan_optimizers import ScanOptimizer, ScanRunOptimizer, ScanExitOptimizer
 
 
 class AbstractScan(ItemAttribute):
@@ -50,7 +51,7 @@ class PropertyScan(AbstractScan):
         '''
         Constructor method
         '''
-        self.prop = prop
+        self.prop = prop # TODO: property not vector, same for each device?
         self.scan_dict = {}
         self.input_dict = input_dict
         for device, array in input_dict.items():
@@ -282,34 +283,48 @@ class OptimizeScan(AbstractScan):
         Function that takes the result of the experiment and determines which prop values to use next
     """
 
-    def __init__(self, initialization_dict, prop, f_optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max, dt=0):
+    def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max, dt=0):
         self.init_dict = initialization_dict
         self.scan_dict = {} # TODO: modify experiment for runtime-determined iter count?
         for device in initialization_dict:
-            self.scan_dict['{}_{}'.format(device, prop)] = np.empty(iteration_max)
+            self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
         self.device_names = list(initialization_dict.keys())
         self.prop = prop
-        self.f_opt = f_optimizer
+        self.opt = optimizer
         self.opt_in = optimizer_inputs # TODO: can take these from experiment directly without triggering remeasurment or need to take ._prop from devices to get last val?
-        self.opt_hparam = optimizer_hyperparameters
+        self.opt_hparam = {k: v for k, v in optimizer_hyperparameters.items()}
         self.n = iteration_max # TODO: need to signal to exp to stop iterating? need to modify experiment for runtime-determined iter count?
         self.dt = dt
         self.i = 0 # TODO: why need this and index argument in iterate()
     
     def iterate(self, index, experiment):
-        for dev in self.device_names:
-            try:
-                if index == 0: # TODO: refactor to minimize if branch evaluations for efficiency?
+        if index == 0:
+            for dev in self.device_names:
+                try:
                     experiment.devices[dev][self.prop] = self.init_dict[dev]
                     self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev] # TODO: update scan_dict real-time because not precomputed?
-                else:
-                    opt_res = self.f_opt(
-                        *[experiment.__dict__[measurement][index - 1] for measurement in self.opt_in],
-                        **self.opt_hparam)
-                    experiment.devices[dev][self.prop] = opt_res
-                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res # TODO: update scan_dict real-time because not precomputed?
-            except Exception:
-                continue
+                except Exception:
+                    continue
+        else:
+            # TODO: pass optimizer index?
+            # other vars?
+            # pass optimizer data from experiment instead of measure function?
+            # pass optimizer runinfo? anything else?
+            # make optimizer object so can set what passed to function?
+            args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
+            kwargs = self.opt_hparam
+            if isinstance(self.opt, ScanRunOptimizer):
+                opt_res = self.opt.run_optimizer(args, kwargs, experiment.runinfo)
+            elif isinstance(self.opt, ScanOptimizer):
+                opt_res = self.opt.run_optimizer(args, kwargs)
+            if isinstance(self.opt, ScanExitOptimizer):
+                experiment.runinfo.running = self.opt.running
+            for i, dev in enumerate(self.device_names):
+                try:
+                    experiment.devices[dev][self.prop] = opt_res[i]
+                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res[i] # TODO: update scan_dict real-time because not precomputed?
+                except Exception:
+                    continue
 
     def iterator(self):
         """
