@@ -1,41 +1,37 @@
-class AbstractOptimizer():
+class AbstractBaseScanOptimizer():
 
-    def run_optimizer():
+    def step_optimizer():
+        pass
+
+    def to_json():
         pass
 
 
-class ScanOptimizer(AbstractOptimizer):
+class AbstractScanOptimizer(AbstractBaseScanOptimizer):
 
-    def __init__(self, optimization_function):
-        self.opt_f = optimization_function
+    def to_json(self):
+        return self.__dict__
+
+
+class AbstractRuninfoScanOptimizer(AbstractScanOptimizer):
+
+    def __init__(self, runinfo):
+        super().__init__()
+        self.runinfo = runinfo
     
-    def run_optimizer(self, args, kwargs):
-        return self.opt_f(*args, **kwargs)
+    def to_json(self):
+        return {k: v for k, v in self.__dict__.items() if k != 'runinfo'}
 
 
-class ScanRunOptimizer(ScanOptimizer):
+class AbstractExitScanOptimizer(AbstractScanOptimizer):
 
-    def run_optimizer(self, args, kwargs, runinfo):
-        kwargs_runinfo = {k: v for k, v in kwargs.items()}
-        kwargs_runinfo['runinfo'] = runinfo
-        return super().run_optimizer(args, kwargs_runinfo)
-
-
-class ScanExitOptimizer(ScanOptimizer):
-
-    def __init__(self, optimization_function):
-        super().__init__(optimization_function)
+    def __init__(self):
+        super().__init__()
         self.running = True
 
-    def run_optimizer(self, args, kwargs):
-        opt_res, keep_running = super().run_optimizer(args, kwargs)
-        self.running = keep_running
-        return opt_res
 
+class AbstractRuninfoExitScanOptimizer(AbstractRuninfoScanOptimizer, AbstractExitScanOptimizer):
 
-class ScanExitRunOptimizer(ScanExitOptimizer, ScanRunOptimizer):
-
-    def run_optimizer(self, args, kwargs, runinfo):
-        opt_res, keep_running = ScanRunOptimizer.run_optimizer(self, args, kwargs, runinfo)
-        self.running = keep_running
-        return opt_res
+    def __init__(self, runinfo):
+        super().__init__(runinfo)
+    

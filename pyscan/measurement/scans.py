@@ -2,7 +2,7 @@
 import numpy as np
 from ..general.same_length import same_length
 from ..general.item_attribute import ItemAttribute
-from ..optimizers.scan_optimizers import ScanOptimizer, ScanRunOptimizer, ScanExitOptimizer
+from ..optimizers.scan_optimizers import AbstractExitScanOptimizer
 
 
 class AbstractScan(ItemAttribute):
@@ -283,7 +283,7 @@ class OptimizeScan(AbstractScan):
         Function that takes the result of the experiment and determines which prop values to use next
     """
 
-    def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, optimizer_hyperparameters, iteration_max, dt=0):
+    def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, iteration_max, dt=0):
         self.init_dict = initialization_dict
         self.scan_dict = {} # TODO: modify experiment for runtime-determined iter count?
         for device in initialization_dict:
@@ -292,7 +292,6 @@ class OptimizeScan(AbstractScan):
         self.prop = prop
         self.opt = optimizer
         self.opt_in = optimizer_inputs # TODO: can take these from experiment directly without triggering remeasurment or need to take ._prop from devices to get last val?
-        self.opt_hparam = {k: v for k, v in optimizer_hyperparameters.items()}
         self.n = iteration_max # TODO: need to signal to exp to stop iterating? need to modify experiment for runtime-determined iter count?
         self.dt = dt
         self.i = 0 # TODO: why need this and index argument in iterate()
@@ -312,12 +311,8 @@ class OptimizeScan(AbstractScan):
             # pass optimizer runinfo? anything else?
             # make optimizer object so can set what passed to function?
             args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
-            kwargs = self.opt_hparam
-            if isinstance(self.opt, ScanRunOptimizer):
-                opt_res = self.opt.run_optimizer(args, kwargs, experiment.runinfo)
-            elif isinstance(self.opt, ScanOptimizer):
-                opt_res = self.opt.run_optimizer(args, kwargs)
-            if isinstance(self.opt, ScanExitOptimizer):
+            opt_res = self.opt.step_optimizer(*args)
+            if isinstance(self.opt, AbstractExitScanOptimizer):
                 experiment.runinfo.running = self.opt.running
             for i, dev in enumerate(self.device_names):
                 try:
