@@ -91,7 +91,7 @@ class RunInfo(ItemAttribute):
         # throw an error if more than one average scan is found
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
-        
+
         # find the scan set to optimize scan (if any) and determine the index
         index = 0
         num_opt_scans = 0

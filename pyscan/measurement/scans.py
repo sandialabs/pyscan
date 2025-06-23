@@ -51,7 +51,7 @@ class PropertyScan(AbstractScan):
         '''
         Constructor method
         '''
-        self.prop = prop # TODO: property not vector, same for each device?
+        self.prop = prop  # TODO: property not vector, same for each device?
         self.scan_dict = {}
         self.input_dict = input_dict
         for device, array in input_dict.items():
@@ -269,6 +269,7 @@ class AverageScan(AbstractScan):
         '''
         return 1
 
+
 class OptimizeScan(AbstractScan):
     """
     Class
@@ -285,23 +286,28 @@ class OptimizeScan(AbstractScan):
 
     def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, iteration_max, dt=0):
         self.init_dict = initialization_dict
-        self.scan_dict = {} # TODO: modify experiment for runtime-determined iter count?
+        self.scan_dict = {}  # TODO: modify experiment for runtime-determined iter count?
         for device in initialization_dict:
             self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
         self.device_names = list(initialization_dict.keys())
         self.prop = prop
         self.opt = optimizer
-        self.opt_in = optimizer_inputs # TODO: can take these from experiment directly without triggering remeasurment or need to take ._prop from devices to get last val?
-        self.n = iteration_max # TODO: need to signal to exp to stop iterating? need to modify experiment for runtime-determined iter count?
+        self.opt_in = optimizer_inputs
+        # TODO: can take these from experiment directly without triggering
+        # remeasurment or need to take ._prop from devices to get last val?
+        self.n = iteration_max
+        # TODO: need to signal to exp to stop iterating?
+        # need to modify experiment for runtime-determined iter count?
         self.dt = dt
-        self.i = 0 # TODO: why need this and index argument in iterate()
-    
+        self.i = 0  # TODO: why need this and index argument in iterate()
+
     def iterate(self, index, experiment):
         if index == 0:
             for dev in self.device_names:
                 try:
                     experiment.devices[dev][self.prop] = self.init_dict[dev]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev] # TODO: update scan_dict real-time because not precomputed?
+                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev]
+                    # TODO: update scan_dict real-time because not precomputed?
                 except Exception:
                     continue
         else:
@@ -317,7 +323,8 @@ class OptimizeScan(AbstractScan):
             for i, dev in enumerate(self.device_names):
                 try:
                     experiment.devices[dev][self.prop] = opt_res[i]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res[i] # TODO: update scan_dict real-time because not precomputed?
+                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res[i]
+                    # TODO: update scan_dict real-time because not precomputed?
                 except Exception:
                     continue
 
@@ -325,7 +332,7 @@ class OptimizeScan(AbstractScan):
         """
         """
         return iter(range(self.n))
-    
+
     def check_same_length(self):
         '''
         Not used

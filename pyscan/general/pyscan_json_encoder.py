@@ -55,7 +55,7 @@ class PyscanJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, AbstractBaseScanOptimizer):
             if debug is True:
                 print(f"obj {obj} was instance of AbstractBaseScanOptimizer")
-            return obj.to_json() # TODO: implement json encoding function for AbstractBaseScanOptimizer
+            return obj.to_json()  # TODO: implement json encoding function for AbstractBaseScanOptimizer
         elif isinstance(obj, (range, tuple)):
             if debug is True:
                 print(f"obj {obj} was instance of {type(obj)}.")

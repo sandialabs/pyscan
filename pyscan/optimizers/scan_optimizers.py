@@ -18,7 +18,7 @@ class AbstractRuninfoScanOptimizer(AbstractScanOptimizer):
     def __init__(self, runinfo):
         super().__init__()
         self.runinfo = runinfo
-    
+
     def to_json(self):
         return {k: v for k, v in self.__dict__.items() if k != 'runinfo'}
 
@@ -34,4 +34,3 @@ class AbstractRuninfoExitScanOptimizer(AbstractRuninfoScanOptimizer, AbstractExi
 
     def __init__(self, runinfo):
         super().__init__(runinfo)
-    
