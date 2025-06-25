@@ -286,7 +286,7 @@ class OptimizeScan(AbstractScan):
 
     def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, iteration_max, dt=0):
         self.init_dict = initialization_dict
-        self.scan_dict = {}  # TODO: modify experiment for runtime-determined iter count?
+        self.scan_dict = {}  # TODO: modify for runtime-determined iter count?
         for device in initialization_dict:
             self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
         self.device_names = list(initialization_dict.keys())
@@ -296,8 +296,8 @@ class OptimizeScan(AbstractScan):
         # TODO: can take these from experiment directly without triggering
         # remeasurment or need to take ._prop from devices to get last val?
         self.n = iteration_max
-        # TODO: need to signal to exp to stop iterating?
-        # need to modify experiment for runtime-determined iter count?
+        # TODO: need to modify Experiment.optimize_experiment() for runtime-determined iter count?
+        # metadata saving in AbstractExperiment
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
 
@@ -311,11 +311,6 @@ class OptimizeScan(AbstractScan):
                 except Exception:
                     continue
         else:
-            # TODO: pass optimizer index?
-            # other vars?
-            # pass optimizer data from experiment instead of measure function?
-            # pass optimizer runinfo? anything else?
-            # make optimizer object so can set what passed to function?
             args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
             opt_res = self.opt.step_optimizer(*args)
             if isinstance(self.opt, AbstractExitScanOptimizer):
@@ -329,8 +324,6 @@ class OptimizeScan(AbstractScan):
                     continue
 
     def iterator(self):
-        """
-        """
         return iter(range(self.n))
 
     def check_same_length(self):

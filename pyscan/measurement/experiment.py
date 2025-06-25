@@ -252,16 +252,15 @@ class Experiment(AbstractExperiment):
                         self.runinfo.average_index / (self.runinfo.average_index + 1))
                     self[key] += (
                         value / (self.runinfo.average_index + 1))
-    
+
     def optimize_experiment(self):
         # TODO: add timing code? Timing code in generic_experiment() but not in average_experiment()?
 
         for i in self.runinfo.scan0.iterator():
 
-            self.runinfo.scan0.i = i
-            indices = self.runinfo.indicies
+            self.runinfo.scan0.i = i  # TODO: why need field i and index argument in iterate()
 
-            self.runinfo.scan0.iterate(i, self)
+            self.runinfo.scan0.iterate(i, self)  # TODO: why need field i and index argument in iterate()
 
             sleep(self.runinfo.scan0.dt)
 
@@ -269,11 +268,13 @@ class Experiment(AbstractExperiment):
 
             if np.all(np.array(self.runinfo.indicies) == 0):
                 self.preallocate(data)
-            
+
             self.save_point(data)
-            if self.runinfo.running == False: # TODO: change all <is False> to <== False> to compare value instead of instance
+            if not self.runinfo.running:  # TODO: change all <is False> to <if not> to compare value instead of instance
                 self.runinfo.complete = 'stopped'
                 break
+
+            # TODO: need these blocks?
 
             # if isinstance(self.runinfo.scan0, ps.ContinuousScan):
             #     self.reallocate()
@@ -311,7 +312,7 @@ class Experiment(AbstractExperiment):
 
         elif 0 <= self.runinfo.average_d < 4:
             self.average_experiment()
-        
+
         elif 0 <= self.runinfo.optimize_d < 4:
             self.optimize_experiment()
 
