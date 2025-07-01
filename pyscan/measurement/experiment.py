@@ -320,6 +320,66 @@ class Experiment(AbstractExperiment):
             assert False, "self.average_d not setup correctly by check_runinfo method"
 
 
+class OptimizeFunctionalExperiment(AbstractExperiment):
+
+    def __init__(self, runinfo, devices, control_function, sample_function_outputs, prop,
+                 data_dir=None, verbose=False, time=False):
+        super().__init__(runinfo, devices, data_dir)
+        self.runinfo.time = time
+        self.control_f = control_function
+        self.sample_f_outputs = sample_function_outputs
+        self.prop = prop
+
+    def sample_function(self, args):
+        """
+        optimize_experiment(), inside for loop
+        """
+
+        self.runinfo.scan0.iterate(self, args)
+
+        sleep(self.runinfo.scan0.dt)
+
+        data = self.runinfo.measure_function(self)
+
+        if np.all(np.array(self.runinfo.indicies) == 0):
+            self.preallocate(data)
+
+        self.save_point(data)
+        if not self.runinfo.running:  # TODO: change all <is False> to <if not> to compare value instead of instance
+            self.runinfo.complete = 'stopped'
+            # break
+
+        self.runinfo.complete = True
+        self.runinfo.running = False
+
+        if 'end_function' in list(self.runinfo.keys()):
+            self.runinfo.end_function(self)
+
+        sample = np.array([self.__dict__[output][self.runinfo.scan0.i] for output in self.sample_f_outputs])
+
+        self.runinfo.scan0.i += 1  # TODO: where to increment i? need index as well?
+
+        return sample
+
+    def run(self):
+
+        self.check_runinfo()
+
+        self.setup_instruments()
+        # save instrument settings
+        self.save_metadata()
+
+        sleep(self.runinfo.initial_pause)
+
+        self.get_time()
+
+        self.runinfo.running = True
+
+        self.control_f(self.sample_function)
+
+        # TODO: check for other experiment runs
+
+
 # legacy naming convention
 class Sweep(Experiment):
     '''

@@ -331,3 +331,50 @@ class OptimizeScan(AbstractScan):
         Not used
         '''
         return 1
+
+
+class OptimizeFunctionalScan(AbstractScan):
+    """
+    Class
+
+    Parameters
+    ----------
+    initialization_dict : dect{string:val}
+        key:value pairs of device name strings and initialization values at which to begin the optimization routine
+    prop : str
+        String that indicates the property of the device(s) to be changed
+    f_optimizer: function
+        Function that takes the result of the experiment and determines which prop values to use next
+    """
+
+    def __init__(self, input_device_names, prop, iteration_max, dt=0):
+        self.scan_dict = {}  # TODO: modify for runtime-determined iter count?
+        self.input_device_names = input_device_names
+        for device in input_device_names:
+            self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
+        self.prop = prop
+        # TODO: can take these from experiment directly without triggering
+        # remeasurment or need to take ._prop from devices to get last val?
+        self.n = iteration_max
+        # TODO: need to modify Experiment.optimize_experiment() for runtime-determined iter count?
+        # metadata saving in AbstractExperiment
+        self.dt = dt
+        self.i = 0  # TODO: why need this and index argument in iterate()
+
+    def iterate(self, experiment, sample_function_args):
+        for i, a in enumerate(sample_function_args):
+            if a is not None:  # TODO: evaluate not compare? a != None?
+                try:
+                    experiment.devices[self.input_device_names[i]][self.prop] = a
+                    self.scan_dict['{}_{}'.format(self.input_device_names[i], self.prop)][self.i] = a
+                except Exception:
+                    continue
+
+    def iterator(self):
+        return iter(range(self.n))
+
+    def check_same_length(self):
+        '''
+        Not used
+        '''
+        return 1
