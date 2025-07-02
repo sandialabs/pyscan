@@ -363,7 +363,7 @@ class OptimizeFunctionalScan(AbstractScan):
 
     def iterate(self, experiment, sample_function_args):
         for i, a in enumerate(sample_function_args):
-            if a is not None:  # TODO: evaluate not compare? a != None?
+            if a is not None:  # TODO: use np.nan instead of None?
                 try:
                     experiment.devices[self.input_device_names[i]][self.prop] = a
                     self.scan_dict['{}_{}'.format(self.input_device_names[i], self.prop)][self.i] = a
