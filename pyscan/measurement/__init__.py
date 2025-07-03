@@ -10,8 +10,7 @@ from .sparse_experiment import SparseSweep, SparseExperiment
 from .fast_stage_experiment import FastStageSweep, FastStageExperiment
 from .fast_galvo_experiment import FastGalvoSweep, FastGalvoExperiment
 
-from .scans import PropertyScan, RepeatScan, ContinuousScan, FunctionScan, AverageScan, OptimizeScan, \
-    OptimizeFunctionalScan
+from .scans import PropertyScan, RepeatScan, ContinuousScan, FunctionScan, AverageScan, OptimizeFunctionalScan
 
 # Other objects
 from .run_info import RunInfo
