@@ -294,7 +294,7 @@ class OptimizeFunctionalExperiment(AbstractExperiment):
         optimize_experiment(), inside for loop
         """
 
-        self.runinfo.scan0.iterate(self, args)
+        self.runinfo.scan0.iterate(self, args)  # TODO: scan0 must be OptimizeFunctionalScan
 
         sleep(self.runinfo.scan0.dt)
 
