@@ -308,12 +308,6 @@ class OptimizeFunctionalExperiment(AbstractExperiment):
             self.runinfo.complete = 'stopped'
             # break
 
-        self.runinfo.complete = True
-        self.runinfo.running = False
-
-        if 'end_function' in list(self.runinfo.keys()):
-            self.runinfo.end_function(self)
-
         sample = np.array([self.__dict__[output][self.runinfo.scan0.i] for output in self.sample_f_outputs])
 
         self.runinfo.scan0.i += 1  # TODO: where to increment i? need index as well?
@@ -337,6 +331,12 @@ class OptimizeFunctionalExperiment(AbstractExperiment):
         self.control_f(self.sample_function)
 
         # TODO: check for other experiment runs
+
+        self.runinfo.complete = True
+        self.runinfo.running = False
+
+        if 'end_function' in list(self.runinfo.keys()):
+            self.runinfo.end_function(self)
 
 
 # legacy naming convention
