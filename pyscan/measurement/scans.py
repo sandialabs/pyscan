@@ -305,7 +305,7 @@ class AbstractOptimizeScan(AbstractScan):
         """
         pass
 
-    def iterate(self, index, experiment):
+    def iterate(self, index, experiment):  # TODO: make experiment field?
         if index == 0:
             for dev in self.device_names:
                 try:
