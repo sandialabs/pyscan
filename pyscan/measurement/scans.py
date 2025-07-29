@@ -2,7 +2,6 @@
 import numpy as np
 from ..general.same_length import same_length
 from ..general.item_attribute import ItemAttribute
-from ..optimizers.scan_optimizers import AbstractExitScanOptimizer
 
 
 class AbstractScan(ItemAttribute):
@@ -270,7 +269,7 @@ class AverageScan(AbstractScan):
         return 1
 
 
-class OptimizeScan(AbstractScan):
+class AbstractOptimizeScan(AbstractScan):
     """
     Class
 
@@ -280,19 +279,18 @@ class OptimizeScan(AbstractScan):
         key:value pairs of device name strings and initialization values at which to begin the optimization routine
     prop : str
         String that indicates the property of the device(s) to be changed
-    f_optimizer: function
-        Function that takes the result of the experiment and determines which prop values to use next
     """
 
-    def __init__(self, initialization_dict, prop, optimizer, optimizer_inputs, iteration_max, dt=0):
+    def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
+                 iteration_max=100, dt=0):
         self.init_dict = initialization_dict
         self.scan_dict = {}  # TODO: modify for runtime-determined iter count?
         for device in initialization_dict:
             self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
         self.device_names = list(initialization_dict.keys())
-        self.prop = prop
-        self.opt = optimizer
+        self.prop = prop  # TODO: make prop multidimensional: different property for each device
         self.opt_in = optimizer_inputs
+        self.sample_f_out = sample_function_output
         # TODO: can take these from experiment directly without triggering
         # remeasurment or need to take ._prop from devices to get last val?
         self.n = iteration_max
@@ -300,6 +298,12 @@ class OptimizeScan(AbstractScan):
         # metadata saving in AbstractExperiment
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
+
+    def step_optimizer(args, index, experiment):
+        """
+        Can stop early by setting experiment.info.running = False
+        """
+        pass
 
     def iterate(self, index, experiment):
         if index == 0:
@@ -311,10 +315,8 @@ class OptimizeScan(AbstractScan):
                 except Exception:
                     continue
         else:
-            args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
-            opt_res = self.opt.step_optimizer(*args)
-            if isinstance(self.opt, AbstractExitScanOptimizer):
-                experiment.runinfo.running = self.opt.running
+            # args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
+            opt_res = self.step_optimizer(index, experiment)
             for i, dev in enumerate(self.device_names):
                 try:
                     experiment.devices[dev][self.prop] = opt_res[i]
