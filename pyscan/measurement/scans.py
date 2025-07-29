@@ -275,7 +275,7 @@ class AbstractOptimizeScan(AbstractScan):
 
     Parameters
     ----------
-    initialization_dict : dect{string:val}
+    initialization_dict : dict{string:val}
         key:value pairs of device name strings and initialization values at which to begin the optimization routine
     prop : str
         String that indicates the property of the device(s) to be changed
@@ -299,7 +299,7 @@ class AbstractOptimizeScan(AbstractScan):
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
 
-    def step_optimizer(args, index, experiment):
+    def step_optimizer(self, index, experiment):
         """
         Can stop early by setting experiment.info.running = False
         """
@@ -315,7 +315,6 @@ class AbstractOptimizeScan(AbstractScan):
                 except Exception:
                     continue
         else:
-            # args = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
             opt_res = self.step_optimizer(index, experiment)
             for i, dev in enumerate(self.device_names):
                 try:
