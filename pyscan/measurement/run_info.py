@@ -92,14 +92,19 @@ class RunInfo(ItemAttribute):
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
 
-        # find the scan set to optimize scan (if any) and determine the index # TODO: limit number of optimize scans?
+        # find the scans set to optimize scan (if any) and determine their indicies
+        # TODO: allow multiple optimize scans?
         index = 0
-        num_opt_scans = 0
+        num_op_scans = 0
         for scan in self.scans:
             if isinstance(scan, AbstractOptimizeScan):
                 self.optimize_d = index
-                num_opt_scans += 1
+                num_op_scans += 1
             index += 1
+
+        # if no optimize scans found set optimize_scan_index to -1
+        if num_op_scans == 0:
+            self.optimize_d = -1
 
         # make sure there are no empty scans inbetween used scans.
         used_scan_found = False

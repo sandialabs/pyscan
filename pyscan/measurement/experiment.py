@@ -255,35 +255,77 @@ class Experiment(AbstractExperiment):
 
     def optimize_experiment(self):
         # TODO: add timing code? Timing code in generic_experiment() but not in average_experiment()?
+        # TODO: Allows PropertyScan and OptimizeScan. Allow any others? ContinuousScan?
 
-        for i in self.runinfo.scan0.iterator():
+        for m in self.runinfo.scan3.iterator():
+            self.runinfo.scan3.running = True
+            self.runinfo.scan3.i = m
+            if isinstance(self.runinfo.scan3, ps.AbstractOptimizeScan):
+                self.runinfo.scan3.iterate(m, self)
+            else:
+                self.runinfo.scan3.iterate(m, self.devices)
+            sleep(self.runinfo.scan3.dt)
 
-            self.runinfo.scan0.i = i  # TODO: why need field i and index argument in iterate()
+            for k in self.runinfo.scan2.iterator():
+                self.runinfo.scan2.running = True
+                self.runinfo.scan2.i = k
+                if isinstance(self.runinfo.scan2, ps.AbstractOptimizeScan):
+                    self.runinfo.scan2.iterate(k, self)
+                else:
+                    self.runinfo.scan2.iterate(k, self.devices)
+                sleep(self.runinfo.scan2.dt)
 
-            self.runinfo.scan0.iterate(i, self)  # TODO: why need field i and index argument in iterate()
+                for j in self.runinfo.scan1.iterator():
+                    self.runinfo.scan1.running = True
+                    self.runinfo.scan1.i = j
+                    if isinstance(self.runinfo.scan1, ps.AbstractOptimizeScan):
+                        self.runinfo.scan1.iterate(j, self)
+                    else:
+                        self.runinfo.scan1.iterate(j, self.devices)
+                    sleep(self.runinfo.scan1.dt)
 
-            sleep(self.runinfo.scan0.dt)
+                    for i in self.runinfo.scan0.iterator():
+                        self.runinfo.scan0.running = True
+                        self.runinfo.scan0.i = i  # TODO: why need field i and index argument in iterate()
+                        if isinstance(self.runinfo.scan0, ps.AbstractOptimizeScan):
+                            self.runinfo.scan0.iterate(i, self)
+                        else:
+                            self.runinfo.scan0.iterate(i, self.devices)
+                        sleep(self.runinfo.scan0.dt)
 
-            data = self.runinfo.measure_function(self)
+                        data = self.runinfo.measure_function(self)
 
-            if np.all(np.array(self.runinfo.indicies) == 0):
-                self.preallocate(data)
+                        if np.all(np.array(self.runinfo.indicies) == 0):
+                            self.preallocate(data)
 
-            self.save_point(data)
-            if not self.runinfo.running:  # TODO: change all <is False> to <if not> to compare value instead of instance
+                        self.save_point(data)
+
+                        # TODO: change all <is False> to <if not> to compare value instead of instance
+                        if not self.runinfo.running:
+                            self.runinfo.complete = 'stopped'
+                            break
+                        elif not self.runinfo.scan0.running:
+                            break
+
+                    if not self.runinfo.running:
+                        self.runinfo.complete = 'stopped'
+                        break
+                    elif not self.runinfo.scan1.running:
+                        break
+
+                if not self.runinfo.running:
+                    self.runinfo.complete = 'stopped'
+                    break
+                elif not self.runinfo.scan2.running:
+                    break
+
+            if self.runinfo.verbose:
+                print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
+            if not self.runinfo.scan3.running:
+                self.runinfo.running = False
+            if not self.runinfo.running:
                 self.runinfo.complete = 'stopped'
                 break
-
-            # TODO: need these blocks?
-
-            # if isinstance(self.runinfo.scan0, ps.ContinuousScan):
-            #     self.reallocate()
-
-            # if self.runinfo.verbose:
-            #     print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
-            # if self.runinfo.running is False:
-            #     self.runinfo.complete = 'stopped'
-            #     break
 
         self.runinfo.complete = True
         self.runinfo.running = False
@@ -317,7 +359,7 @@ class Experiment(AbstractExperiment):
             self.optimize_experiment()
 
         else:
-            assert False, "self.average_d not setup correctly by check_runinfo method"
+            assert False, "self.average_d or self.optimize_d not setup correctly by check_runinfo method"
 
 
 # legacy naming convention

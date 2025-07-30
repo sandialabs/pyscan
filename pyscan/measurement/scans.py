@@ -298,18 +298,19 @@ class AbstractOptimizeScan(AbstractScan):
         # metadata saving in AbstractExperiment
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
+        self.running = True
 
     def step_optimizer(self, index, experiment):
         """
-        Can stop early by setting experiment.info.running = False
+        Can stop optimizer early by setting experiment.info.scan_running = False
         """
         pass
 
-    def iterate(self, index, experiment):  # TODO: make experiment field?
+    def iterate(self, index, experiment):  # TODO: make experiment field? use index from scan loop?
         if index == 0:
             for dev in self.device_names:
                 try:
-                    experiment.devices[dev][self.prop] = self.init_dict[dev]
+                    experiment.devices[dev][self.prop] = self.init_dict[dev]  # TODO: update this each iter
                     self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev]
                     # TODO: update scan_dict real-time because not precomputed?
                 except Exception:
