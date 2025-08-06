@@ -284,9 +284,9 @@ class AbstractOptimizeScan(AbstractScan):
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
                  iteration_max=100, dt=0):
         self.init_dict = initialization_dict
-        self.scan_dict = {}  # TODO: modify for runtime-determined iter count?
+        self.scan_dict = {}
         for device in initialization_dict:
-            self.scan_dict['{}_{}'.format(device, prop)] = np.zeros(iteration_max)
+            self.scan_dict['{}_{}'.format(device, prop)] = []
         self.device_names = list(initialization_dict.keys())
         self.prop = prop  # TODO: make prop multidimensional: different property for each device
         self.opt_in = optimizer_inputs
@@ -294,8 +294,6 @@ class AbstractOptimizeScan(AbstractScan):
         # TODO: can take these from experiment directly without triggering
         # remeasurment or need to take ._prop from devices to get last val?
         self.n = iteration_max
-        # TODO: need to modify Experiment.optimize_experiment() for runtime-determined iter count?
-        # metadata saving in AbstractExperiment
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
         self.running = True
@@ -310,9 +308,8 @@ class AbstractOptimizeScan(AbstractScan):
         if index == 0:
             for dev in self.device_names:
                 try:
-                    experiment.devices[dev][self.prop] = self.init_dict[dev]  # TODO: update this each iter
-                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = self.init_dict[dev]
-                    # TODO: update scan_dict real-time because not precomputed?
+                    experiment.devices[dev][self.prop] = self.init_dict[dev]
+                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
                 except Exception:
                     continue
         else:
@@ -320,8 +317,7 @@ class AbstractOptimizeScan(AbstractScan):
             for i, dev in enumerate(self.device_names):
                 try:
                     experiment.devices[dev][self.prop] = opt_res[i]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)][index] = opt_res[i]
-                    # TODO: update scan_dict real-time because not precomputed?
+                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
                 except Exception:
                     continue
 

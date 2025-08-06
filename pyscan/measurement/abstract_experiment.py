@@ -69,9 +69,15 @@ class AbstractExperiment(ItemAttribute):
         '''
 
         skip = False
+
         if self.runinfo.continuous:
             continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
             if continuous_scan.i > 0:
+                skip = True
+
+        if self.runinfo.optimize_d != -1:
+            optimize_scan = self.runinfo.scans[self.runinfo.optimize_d]
+            if optimize_scan.i > 0:
                 skip = True
 
         if not skip:
