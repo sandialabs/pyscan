@@ -307,11 +307,17 @@ class Experiment(AbstractExperiment):
                         elif not self.runinfo.scan0.running:
                             break
 
+                        if isinstance(self.runinfo.scan0, ps.AbstractOptimizeScan):
+                            self.reallocate()
+
                     if not self.runinfo.running:
                         self.runinfo.complete = 'stopped'
                         break
                     elif not self.runinfo.scan1.running:
                         break
+
+                    if isinstance(self.runinfo.scan1, ps.AbstractOptimizeScan):
+                        self.reallocate()
 
                 if not self.runinfo.running:
                     self.runinfo.complete = 'stopped'
@@ -319,13 +325,20 @@ class Experiment(AbstractExperiment):
                 elif not self.runinfo.scan2.running:
                     break
 
+                if isinstance(self.runinfo.scan2, ps.AbstractOptimizeScan):
+                    self.reallocate()
+
             if self.runinfo.verbose:
                 print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
             if not self.runinfo.scan3.running:
+                # TODO: set complete to 'stopped' if break outermost scan?
                 self.runinfo.running = False
             if not self.runinfo.running:
                 self.runinfo.complete = 'stopped'
                 break
+
+            if isinstance(self.runinfo.scan3, ps.AbstractOptimizeScan):
+                self.reallocate()
 
         self.runinfo.complete = True
         self.runinfo.running = False

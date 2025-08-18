@@ -291,9 +291,8 @@ class AbstractOptimizeScan(AbstractScan):
         self.prop = prop  # TODO: make prop multidimensional: different property for each device
         self.opt_in = optimizer_inputs
         self.sample_f_out = sample_function_output
-        # TODO: can take these from experiment directly without triggering
-        # remeasurment or need to take ._prop from devices to get last val?
-        self.n = iteration_max
+        self.n = 1
+        self.iter_max = iteration_max
         self.dt = dt
         self.i = 0  # TODO: why need this and index argument in iterate()
         self.running = True
@@ -309,6 +308,7 @@ class AbstractOptimizeScan(AbstractScan):
             for dev in self.device_names:
                 try:
                     experiment.devices[dev][self.prop] = self.init_dict[dev]
+                    # TODO: first element of dev_prop is not np.float64
                     self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
                 except Exception:
                     continue
@@ -322,10 +322,14 @@ class AbstractOptimizeScan(AbstractScan):
                     continue
 
     def iterator(self):
-        return iter(range(self.n))
+        '''
+        The following iterator increments optimize scan i and n by one each time up to iter_max.
+        '''
+        def incrementing_n():
+            for _ in range(self.iter_max):
+                yield self.i
+                self.i += 1
+                self.n += 1
 
-    def check_same_length(self):
-        '''
-        Not used
-        '''
-        return 1
+        iterator = iter(incrementing_n())
+        return iterator

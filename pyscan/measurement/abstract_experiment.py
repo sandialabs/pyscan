@@ -142,7 +142,8 @@ class AbstractExperiment(ItemAttribute):
                     else:
                         if debug is True:
                             print(f"with measured name {name} preallocate4")
-                        self[name] = np.nan
+                        # changed from scalar to len 1 arr for start len 1 compat with len/shape in optimizer
+                        self[name] = np.array([np.nan])
                         f.create_dataset(name, shape=[1, ], maxshape=(None,), chunks=(1,),
                                          fillvalue=np.nan, dtype='float64')
 
