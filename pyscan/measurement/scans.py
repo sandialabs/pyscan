@@ -288,8 +288,10 @@ class AbstractOptimizeScan(AbstractScan):
         for device in initialization_dict:
             self.scan_dict['{}_{}'.format(device, prop)] = []
         self.device_names = list(initialization_dict.keys())
-        self.prop = prop  # TODO: make prop multidimensional: different property for each device
+        # TODO: make prop multidimensional: different property for each device
+        self.prop = prop
         self.opt_in = optimizer_inputs
+        # TODO: make output multidimensional: allow optimization over multiple outputs?
         self.sample_f_out = sample_function_output
         self.n = 1
         self.iter_max = iteration_max
