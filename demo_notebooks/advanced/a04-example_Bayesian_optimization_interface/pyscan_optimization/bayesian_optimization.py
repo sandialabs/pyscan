@@ -143,7 +143,7 @@ def acquisition(
 		next_index_improve = np.argmax(np.asarray(probability_of_improvement))
 		# stop threshold
 		if max_probability_improvement <= pi_threshold:
-			return None
+			return next_index_improve, False
 	
 	elif (acquisition_type == "EI"):
 		expected_improvement = (
@@ -156,12 +156,12 @@ def acquisition(
 		next_index_improve = np.argmax(np.asarray(expected_improvement))
 		# stop threshold
 		if max_expected_improvement <= ei_threshold:
-			return None
+			return next_index_improve, False
 		
 		print(f"max_expected_improvement: {max_expected_improvement}")
 		print(f"next_index_improve: {next_index_improve}")
 
-	return next_index_improve
+	return next_index_improve, True
 
 
 def run_optimization(
@@ -217,7 +217,7 @@ def run_optimization(
 	y_train_array = y_train.numpy()
 
 	# acquire next data points to train on
-	next_input_index = acquisition(
+	next_input_index, running = acquisition(
 		mean=mean,
 		stdev=stdev,
 		target_max=y_train_array.max(),
@@ -226,12 +226,9 @@ def run_optimization(
 		pi_threshold=pi_threshold,
 	)
 
-	if next_input_index is not None:
-		next_domain_values = domain_tensor[next_input_index]
-		print(f"next_domain_values: {next_domain_values}")
-		return next_domain_values
-	else:
-		return None
+	next_domain_values = domain_tensor[next_input_index]
+	print(f"next_domain_values: {next_domain_values}")
+	return next_domain_values, running
 
 	# *** pass either the domain index / domain values to your function that can gather more data
 
@@ -411,7 +408,7 @@ def bayes_opt_main(
 	# )
 	
 	# next_data_point, mean, sigma | None
-	improvement_data = run_optimization(
+	improvement_data, running = run_optimization(
 		model=model,
 		X_train=X_data_tensor,
 		y_train=y_data_tensor,
@@ -426,5 +423,5 @@ def bayes_opt_main(
 	# else:
 	# 	return improvement_data
 
-	return improvement_data
+	return improvement_data, running
 	
