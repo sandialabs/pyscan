@@ -131,9 +131,6 @@ def acquisition(
 	"""
 	OFFSET_ZERO: float = 1E-9
 
-	print(f"mean unique: {np.unique(mean, return_counts=True)}")
-	print(f"stdev unique: {np.unique(stdev, return_counts=True)}")
-
 	difference = mean - target_max
 	score = difference / (stdev + OFFSET_ZERO)
 
@@ -150,7 +147,6 @@ def acquisition(
 			difference * Normal(0, 1).cdf(score) + 
 			stdev * Normal(0, 1).log_prob(score).exp()
 		)
-		print(f"expected_improvemnt unique: {np.unique(expected_improvement, return_counts=True)}")
 		expected_improvement[stdev <= 0.0] = 0.0 # filter negatives
 		max_expected_improvement = np.max(np.asarray(expected_improvement))
 		next_index_improve = np.argmax(np.asarray(expected_improvement))
@@ -158,9 +154,6 @@ def acquisition(
 		if max_expected_improvement <= ei_threshold:
 			return next_index_improve, False
 		
-		print(f"max_expected_improvement: {max_expected_improvement}")
-		print(f"next_index_improve: {next_index_improve}")
-
 	return next_index_improve, True
 
 
@@ -227,7 +220,6 @@ def run_optimization(
 	)
 
 	next_domain_values = domain_tensor[next_input_index]
-	print(f"next_domain_values: {next_domain_values}")
 	return next_domain_values, running
 
 	# *** pass either the domain index / domain values to your function that can gather more data
@@ -337,10 +329,7 @@ def bayes_opt_main(
 	# initialize: bool=True,
 	debug: bool= False,
 ):
-	
-	print(f"X_init: {X_init}")
-	print(f"y_init: {y_init}")
-	
+
 	data_tensor_array, _ = create_domain_tensor(domain_info_list)
 
 	# if learning_rate is not None:
