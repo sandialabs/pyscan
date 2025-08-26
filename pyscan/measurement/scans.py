@@ -309,17 +309,17 @@ class AbstractOptimizeScan(AbstractScan):
         if index == 0:
             for dev in self.device_names:
                 # try:
-                    experiment.devices[dev][self.prop] = self.init_dict[dev]
-                    # TODO: first element of dev_prop is not np.float64
-                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
+                experiment.devices[dev][self.prop] = self.init_dict[dev]
+                # TODO: first element of dev_prop is not np.float64
+                self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
                 # except Exception:
                 #     continue   # TODO: why ignore exception? just for propertyscan?
         else:
             opt_res = self.step_optimizer(index, experiment)
             for i, dev in enumerate(self.device_names):
                 # try:
-                    experiment.devices[dev][self.prop] = opt_res[i]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
+                experiment.devices[dev][self.prop] = opt_res[i]
+                self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
                 # except Exception:
                 #     continue  # TODO: why ignore exception? just for propertyscan?
 
