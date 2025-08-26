@@ -282,7 +282,7 @@ class AbstractOptimizeScan(AbstractScan):
     """
 
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
-                 iteration_max=100, dt=0):
+                 iteration_max=100, dt=0.):
         self.init_dict = initialization_dict
         self.scan_dict = {}
         for device in initialization_dict:
@@ -317,11 +317,12 @@ class AbstractOptimizeScan(AbstractScan):
         else:
             opt_res = self.step_optimizer(index, experiment)
             for i, dev in enumerate(self.device_names):
-                try:
-                    experiment.devices[dev][self.prop] = opt_res[i]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
-                except Exception:
-                    continue
+                # try:
+                    if opt_res is not None:
+                        experiment.devices[dev][self.prop] = opt_res[i]
+                        self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
+                # except Exception:
+                #     continue  # TODO: why ignore exception? just for propertyscan?
 
     def iterator(self):
         '''

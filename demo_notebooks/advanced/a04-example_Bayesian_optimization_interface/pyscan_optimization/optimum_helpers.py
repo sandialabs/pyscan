@@ -56,7 +56,7 @@ D = TypeVar("D", torch.xpu, torch.cuda)
 
 def device_check(
     device: torch.DeviceObjType,
-    gpu_package: Optional[Type[D]]
+    gpu_package: Optional[Type[D]]=None
 ):
     print(f"PyTorch version: {torch.__version__}")
 

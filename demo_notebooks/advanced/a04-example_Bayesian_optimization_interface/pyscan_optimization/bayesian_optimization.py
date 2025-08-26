@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-import h5py
+# import h5py
 import torch
 from torch.distributions import Normal
 from torch.optim import LBFGS, Adam
@@ -14,20 +14,20 @@ from gpytorch.mlls import ExactMarginalLogLikelihood
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.distributions import MultivariateNormal
 
-from optimum_helpers import *
+from .optimum_helpers import *
 
 
 # === Initial Conditions and File Path information ===
-DATA_FILEPATH: str = "catalyst_activity_data.hdf5"
-DATASET_NAME: str = "catalyst_activity_data"
+# DATA_FILEPATH: str = "paraboloid_example.hdf5"
+# DATASET_NAME: str = "paraboloid_example_data"
 
-MAX_TRAINING_ITER: int = 30
-LOSS_THRESHOLD: float = 1e-6 # determines an early stop in training if a plateau is hit early to minimize computational waste
+# MAX_TRAINING_ITER: int = 1
+# LOSS_THRESHOLD: float = 1e-6 # determines an early stop in training if a plateau is hit early to minimize computational waste
 
 
 # ***** would need to implement these in collect_initial_data()
-NUM_INITIAL_SEARCH_RUNS: int = 10
-INITIAL_RUN_STRATEGY: str = "grid" # random or grid
+# NUM_INITIAL_SEARCH_RUNS: int = 10
+# INITIAL_RUN_STRATEGY: str = "grid" # random or grid
 
 
 
@@ -38,7 +38,7 @@ class GPModel(gpytorch.models.ExactGP):
 		train_y: torch.Tensor,
 		mean_module: gpytorch.means=ConstantMean(),
 		covar_module: gpytorch.kernels=ScaleKernel(RBFKernel()),
-		likelihood: gpytorch.likelihoods=GaussianLikelihood,
+		likelihood: gpytorch.likelihoods=GaussianLikelihood(),
 	):
 		super(GPModel, self).__init__(
 			train_x,
@@ -59,7 +59,7 @@ def train_GP(
 	y_train: torch.Tensor,
 	max_epoch: int,
 	min_loss_threshold: float,
-	optimizer: torch.optim, # assume to be already fitted with the model parameters
+	optimizer: torch.optim.Optimizer, # assume to be already fitted with the model parameters
 	percent_cpu_usage: float= 0.75,
 	debug: bool=False,
 ) -> None:
@@ -131,6 +131,9 @@ def acquisition(
 	"""
 	OFFSET_ZERO: float = 1E-9
 
+	print(f"mean unique: {np.unique(mean, return_counts=True)}")
+	print(f"stdev unique: {np.unique(stdev, return_counts=True)}")
+
 	difference = mean - target_max
 	score = difference / (stdev + OFFSET_ZERO)
 
@@ -147,12 +150,16 @@ def acquisition(
 			difference * Normal(0, 1).cdf(score) + 
 			stdev * Normal(0, 1).log_prob(score).exp()
 		)
+		print(f"expected_improvemnt unique: {np.unique(expected_improvement, return_counts=True)}")
 		expected_improvement[stdev <= 0.0] = 0.0 # filter negatives
 		max_expected_improvement = np.max(np.asarray(expected_improvement))
 		next_index_improve = np.argmax(np.asarray(expected_improvement))
 		# stop threshold
 		if max_expected_improvement <= ei_threshold:
 			return None
+		
+		print(f"max_expected_improvement: {max_expected_improvement}")
+		print(f"next_index_improve: {next_index_improve}")
 
 	return next_index_improve
 
@@ -162,14 +169,17 @@ def run_optimization(
 	X_train: torch.Tensor,
 	y_train: torch.Tensor,
 	domain_tensor: torch.Tensor,
-	max_data_acquisitions: int=30,
+	# save_filepath: str,
+	# dataset_name: str,
+	optimizer: torch.optim.Optimizer,
+	# max_data_acquisitions: int=30,
 	max_epoch: int=30,
 	acquisition_type: str="EI",
 	ei_threshold: float= 1e-3,
 	pi_threshold: float= 1e-2,
 	min_loss_threshold: float=1e-6,
-	save_filepath: str=DATA_FILEPATH,
-	dataset_name: str=DATASET_NAME,
+	# save_filepath: str=DATA_FILEPATH,
+	# dataset_name: str=DATASET_NAME,
 	percent_cpu_usage: float=0.75,
 	debug: bool=False,
 ) -> None:
@@ -182,54 +192,62 @@ def run_optimization(
 		"debug": debug,
 	}
 	
-	for i in np.arange(max_data_acquisitions):
+	# TODO: retain model info for online learning like between for loop iter
+
+	# for i in np.arange(max_data_acquisitions):
 		
-		# train Gaussian process model on collected data set
-		train_GP(
-			model=model,
-			X_train=X_train,
-			y_train=y_train,
-			**gp_info_dict
-		)
-		
-		# gather statistics on the set search domain
-		with torch.no_grad():
-			predictions = model.likelihood(model(domain_tensor))
-			mean = predictions.mean
-			stdev = predictions.stddev
-		
-		y_train_array = y_train.numpy()
+	# train Gaussian process model on collected data set
+	train_GP(
+		model=model,
+		X_train=X_train,
+		y_train=y_train,
+		max_epoch=max_epoch,
+		min_loss_threshold=min_loss_threshold,
+		percent_cpu_usage=percent_cpu_usage,
+		optimizer=optimizer,
+		debug=debug
+	)
+	
+	# gather statistics on the set search domain
+	with torch.no_grad():
+		predictions = model.likelihood(model(domain_tensor))
+		mean = predictions.mean
+		stdev = predictions.stddev
+	
+	y_train_array = y_train.numpy()
 
-		# acquire next data points to train on
-		next_input_index = acquisition(
-			mean=mean,
-			stdev=stdev,
-			target_max=y_train_array.max(),
-			acquisition_type=acquisition_type,
-			ei_threshold=ei_threshold,
-			pi_threshold=pi_threshold,
-		)
+	# acquire next data points to train on
+	next_input_index = acquisition(
+		mean=mean,
+		stdev=stdev,
+		target_max=y_train_array.max(),
+		acquisition_type=acquisition_type,
+		ei_threshold=ei_threshold,
+		pi_threshold=pi_threshold,
+	)
 
-		next_domain_values = domain_tensor[*next_input_index]
+	if next_input_index is not None:
+		next_domain_values = domain_tensor[next_input_index]
+		print(f"next_domain_values: {next_domain_values}")
+		return next_domain_values
+	else:
+		return None
+
+	# *** pass either the domain index / domain values to your function that can gather more data
+
+	# call run_experiment on next_domain_values
+
+	# add next_domain_values to x_data
+
+	# add result of run_experiment to y_data
 
 
-		# *** pass either the domain index / domain values to your function that can gather more data
-
-		# call run_experiment on next_domain_values
-
-		# add next_domain_values to x_data
-
-		# add result of run_experiment to y_data
+	# *** logic for saving data as it runs, as well as saving the GP model weights?
 
 
-		# *** logic for saving data as it runs, as well as saving the GP model weights?
-
-
-		# if improvement threshold is met
-		if next_input_index is None:
-			break
-
-	return None
+	# if improvement threshold is met
+	# if next_input_index is None:
+	# 	break
 		
 
 def create_domain_tensor(
@@ -271,26 +289,26 @@ def create_domain_tensor(
 
 
 
-def collect_initial_data(
-	file_path: str,
-    data_set_name: str,
-    data_tensor_array: torch.Tensor,
-	num_search_runs: int = NUM_INITIAL_SEARCH_RUNS,
-	run_strategy: str =INITIAL_RUN_STRATEGY,
-) -> None:
+# def collect_initial_data(
+# 	file_path: str,
+#     data_set_name: str,
+#     data_tensor_array: torch.Tensor,
+# 	num_search_runs: int = NUM_INITIAL_SEARCH_RUNS,
+# 	run_strategy: str =INITIAL_RUN_STRATEGY,
+# ) -> None:
 
 
-	# need to implement function ***
+# 	# need to implement function ***
 	
 
-	# collect data points on the provided/created data_tensor_array
-	# run_experiment()
+# 	# collect data points on the provided/created data_tensor_array
+# 	# run_experiment()
 
-	# needs to generate the following initial data set
-	X_data: np.ndarray = []
-	y_data: np.ndarray = []
+# 	# needs to generate the following initial data set
+# 	X_data: np.ndarray = []
+# 	y_data: np.ndarray = []
 
-	return X_data, y_data
+# 	return X_data, y_data
 
 
 def run_experiment():
@@ -305,26 +323,31 @@ def run_experiment():
 
 def bayes_opt_main(
 	domain_info_list: list[tuple[float]], # (min, max, step_size) for each variable
-	max_data_acquisitions: int,
-	learning_rate: Optional[float]=None,
+	# max_data_acquisitions: int,
+	X_init,
+	y_init,
+	# save_filepath: str,
+	# dataset_name: str,
 	optimizer_class: Type[T_Optim]=LBFGS,
+	# learning_rate: Optional[float]=None,
 	optimizer_kwargs: dict={"line_search_fn": "strong_wolfe", "lr": 1e-3},
-	max_num_epochs: int=MAX_TRAINING_ITER,
-	min_loss_threshold: float=LOSS_THRESHOLD,
+	max_num_epochs: int=30,
+	min_loss_threshold: float=1e-6,
 	acquisition_type: str="EI",
 	ei_threshold: float= 1e-3,
 	pi_threshold: float= 1e-2,
 	percent_cpu_usage: float=0.75,
-	save_filepath: str=DATA_FILEPATH,
-	dataset_name: str=DATASET_NAME,
-	initialize: bool=True,
+	# initialize: bool=True,
 	debug: bool= False,
 ):
 	
-	data_tensor_array = create_domain_tensor(domain_info_list)
+	print(f"X_init: {X_init}")
+	print(f"y_init: {y_init}")
+	
+	data_tensor_array, _ = create_domain_tensor(domain_info_list)
 
-	if learning_rate is not None:
-		optimizer_kwargs["lr"] = learning_rate
+	# if learning_rate is not None:
+	# 	optimizer_kwargs["lr"] = learning_rate
 
 	gp_info_dict = {
 		"max_epoch": max_num_epochs,
@@ -335,39 +358,44 @@ def bayes_opt_main(
 
 	optimization_info_dict = {
 		"domain_tensor": data_tensor_array,
-		"max_data_aqcuisitions": max_data_acquisitions,
+		# "max_data_aqcuisitions": max_data_acquisitions,
 		"acquisition_type": acquisition_type,
 		"ei_threshold": ei_threshold,
 		"pi_threshold": pi_threshold,
-		"save_filepath": save_filepath,
-		"dataset_name": dataset_name,
+		# "save_filepath": save_filepath,
+		# "dataset_name": dataset_name,
 	}
 
-	# Create a fresh data set
-	if initialize is True:
+	# # Create a fresh data set
+	# if initialize is True:
 
-		# need to implement this function ***
-		X_train, y_train = collect_initial_data(
-			DATA_FILEPATH,
-			DATASET_NAME,
-			data_tensor_array,
-		)
-	# Load existing data set
-	else:
+	# 	# need to implement this function ***
+	# 	X_train, y_train = collect_initial_data(
+	# 		DATA_FILEPATH,
+	# 		DATASET_NAME,
+	# 		data_tensor_array,
+	# 	)
+	# # Load existing data set
+	# else:
 		
-		# *** implement data loading logic/function
-		input_data = []
-		output_data = []
+	# 	# *** implement data loading logic/function
+	# 	input_data = []
+	# 	output_data = []
 		
 		
-		X_data_tensor = torch.tensor(input_data)
-		y_data_tensor = torch.tensor(output_data)
+	# 	X_data_tensor = torch.tensor(input_data)
+	# 	y_data_tensor = torch.tensor(output_data)
+
+	X_data_tensor = torch.tensor(X_init)
+	y_data_tensor = torch.tensor(y_init)
 
 
 	# create Gaussian process model and perform initial training
 	# *** depending on information on noise from instruments, the likelihood can be further tuned with noise parameters
-	likelihood = GaussianLikelihood()
-	model = GPModel(X_data_tensor, y_data_tensor, likelihood)
+	# likelihood = GaussianLikelihood()
+	model = GPModel(X_data_tensor, y_data_tensor,
+				#  likelihood
+				 )
 	optimizer_fit = make_optimizer(
 		optim_class=optimizer_class, 
 		params=model.parameters(), 
@@ -375,26 +403,28 @@ def bayes_opt_main(
 	)
 	gp_info_dict["optimizer"] = optimizer_fit
 	
-	train_GP(
-		model=model,
-		X_train=X_train,
-		y_train=y_train,
-		**gp_info_dict,
-	)
+	# train_GP(
+	# 	model=model,
+	# 	X_train=X_data_tensor,
+	# 	y_train=y_data_tensor,
+	# 	**gp_info_dict,
+	# )
 	
 	# next_data_point, mean, sigma | None
 	improvement_data = run_optimization(
 		model=model,
 		X_train=X_data_tensor,
 		y_train=y_data_tensor,
-		**gp_info_dict
+		**gp_info_dict,
 		**optimization_info_dict
 	)
 
 	# deconstruct if able
-	if improvement_data is not None:
-		next_data_point, mean, sigma = improvement_data
-		return next_data_point, mean.numpy(), sigma.numpy()
-	else:
-		return improvement_data
+	# if improvement_data is not None:
+	# 	next_data_point, mean, sigma = improvement_data
+	# 	return next_data_point, mean.numpy(), sigma.numpy()
+	# else:
+	# 	return improvement_data
+
+	return improvement_data
 	
