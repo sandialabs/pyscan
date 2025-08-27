@@ -282,7 +282,7 @@ class AbstractOptimizeScan(AbstractScan):
     """
 
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
-                 iteration_max=100, dt=0):
+                 iteration_max=100, dt=0.):
         self.init_dict = initialization_dict
         self.scan_dict = {}
         for device in initialization_dict:
@@ -308,20 +308,20 @@ class AbstractOptimizeScan(AbstractScan):
     def iterate(self, index, experiment):  # TODO: make experiment field? use index from scan loop?
         if index == 0:
             for dev in self.device_names:
-                try:
-                    experiment.devices[dev][self.prop] = self.init_dict[dev]
-                    # TODO: first element of dev_prop is not np.float64
-                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
-                except Exception:
-                    continue
+                # try:
+                experiment.devices[dev][self.prop] = self.init_dict[dev]
+                # TODO: first element of dev_prop is not np.float64
+                self.scan_dict['{}_{}'.format(dev, self.prop)].append(self.init_dict[dev])
+                # except Exception:
+                #     continue   # TODO: why ignore exception? just for propertyscan?
         else:
             opt_res = self.step_optimizer(index, experiment)
             for i, dev in enumerate(self.device_names):
-                try:
-                    experiment.devices[dev][self.prop] = opt_res[i]
-                    self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
-                except Exception:
-                    continue
+                # try:
+                experiment.devices[dev][self.prop] = opt_res[i]
+                self.scan_dict['{}_{}'.format(dev, self.prop)].append(opt_res[i])
+                # except Exception:
+                #     continue  # TODO: why ignore exception? just for propertyscan?
 
     def iterator(self):
         '''
