@@ -14,7 +14,7 @@ from gpytorch.mlls import ExactMarginalLogLikelihood
 from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.distributions import MultivariateNormal
 
-from .optimum_helpers import assign_pytorch_device, T_Optim, make_optimizer
+from .gp_bayes_opt_helpers import assign_pytorch_device, T_Optim, make_optimizer
 
 
 # === Initial Conditions and File Path information ===

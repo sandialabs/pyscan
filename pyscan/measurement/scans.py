@@ -270,19 +270,31 @@ class AverageScan(AbstractScan):
 
 
 class AbstractOptimizeScan(AbstractScan):
-    """
-    Class
+    '''
+    Abstract class providing polymorphic interface for optimization routines to determine next measurement.
+    Implementation overrides `__init__` to store variables between measurement optimizations and `step_optimizer` to
+    call optimizer and return optimal next measurement.
 
     Parameters
     ----------
-    initialization_dict : dict{string:val}
-        key:value pairs of device name strings and initialization values at which to begin the optimization routine
+    initialization_dict : dict{string:float}
+        key:value pairs of device name strings and initialization values at which to begin the optimization routine.
     prop : str
-        String that indicates the property of the device(s) to be changed
-    """
+        String that indicates the property of the device(s) to be changed.
+    optimizer_inputs : iterable object of str
+        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
+        Inputs for the optimizer to optimize over.
+    sample_function_output : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by Experiment classes, defaults to 0.
+    n_max : int, optional
+        Maximum number of iterations to run.
+    '''
 
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
-                 iteration_max=100, dt=0.):
+                 dt=0., n_max=100):
         self.init_dict = initialization_dict
         self.scan_dict = {}
         for device in initialization_dict:
@@ -293,19 +305,43 @@ class AbstractOptimizeScan(AbstractScan):
         self.opt_in = optimizer_inputs
         # TODO: make output multidimensional: allow optimization over multiple outputs?
         self.sample_f_out = sample_function_output
-        self.n = 1
-        self.iter_max = iteration_max
         self.dt = dt
+        self.n = 1
+        self.n_max = n_max
         self.i = 0  # TODO: why need this and index argument in iterate()
         self.running = True
 
     def step_optimizer(self, index, experiment):
-        """
-        Can stop optimizer early by setting experiment.info.scan_running = False
-        """
+        '''
+        Abstract method to be implemented by AbstractOptimizeScan implementations.
+        Can stop optimize scan early by setting `self.running = False`.
+
+        Parameters
+        ----------
+        index : int
+            The index of the data array.
+        experiment : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+
+        Returns
+        -------
+        ndarray
+            Array with element containing next input value for each device.
+        '''
         pass
 
     def iterate(self, index, experiment):  # TODO: make experiment field? use index from scan loop?
+        '''
+        Changes `prop` of the listed `devices` to the initial value at step 0 or optimizer recommendation at later
+        steps. These new device values are also appended to `scan_dict`.
+
+        Parameters
+        ----------
+        index : int
+            The index of the data array.
+        experiment : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+        '''
         if index == 0:
             for dev in self.device_names:
                 # try:
@@ -325,10 +361,16 @@ class AbstractOptimizeScan(AbstractScan):
 
     def iterator(self):
         '''
-        The following iterator increments optimize scan i and n by one each time up to iter_max.
+        Returns an iterator for the scan over its `n` range.
+        The following iterator increments `i` and `n` by one each time up to `n_max`.
+
+        Returns
+        -------
+        Generator
+            Yield `i` and increment`i` and `n` for each scan iteration.
         '''
         def incrementing_n():
-            for _ in range(self.iter_max):
+            for _ in range(self.n_max):
                 yield self.i
                 self.i += 1
                 self.n += 1
