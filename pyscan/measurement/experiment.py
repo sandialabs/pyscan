@@ -253,6 +253,99 @@ class Experiment(AbstractExperiment):
                     self[key] += (
                         value / (self.runinfo.average_index + 1))
 
+    def optimize_experiment(self):
+        # TODO: add timing code? Timing code in generic_experiment() but not in average_experiment()?
+        # TODO: Allows PropertyScan and OptimizeScan. Allow any others? ContinuousScan?
+
+        for m in self.runinfo.scan3.iterator():
+            self.runinfo.scan3.running = True
+            self.runinfo.scan3.i = m
+            if isinstance(self.runinfo.scan3, ps.AbstractOptimizeScan):
+                self.runinfo.scan3.iterate(m, self)
+            else:
+                self.runinfo.scan3.iterate(m, self.devices)
+            sleep(self.runinfo.scan3.dt)
+
+            for k in self.runinfo.scan2.iterator():
+                self.runinfo.scan2.running = True
+                self.runinfo.scan2.i = k
+                if isinstance(self.runinfo.scan2, ps.AbstractOptimizeScan):
+                    self.runinfo.scan2.iterate(k, self)
+                else:
+                    self.runinfo.scan2.iterate(k, self.devices)
+                sleep(self.runinfo.scan2.dt)
+
+                for j in self.runinfo.scan1.iterator():
+                    self.runinfo.scan1.running = True
+                    self.runinfo.scan1.i = j
+                    if isinstance(self.runinfo.scan1, ps.AbstractOptimizeScan):
+                        self.runinfo.scan1.iterate(j, self)
+                    else:
+                        self.runinfo.scan1.iterate(j, self.devices)
+                    sleep(self.runinfo.scan1.dt)
+
+                    for i in self.runinfo.scan0.iterator():
+                        self.runinfo.scan0.running = True
+                        self.runinfo.scan0.i = i  # TODO: why need field i and index argument in iterate()
+                        if isinstance(self.runinfo.scan0, ps.AbstractOptimizeScan):
+                            self.runinfo.scan0.iterate(i, self)
+                        else:
+                            self.runinfo.scan0.iterate(i, self.devices)
+                        sleep(self.runinfo.scan0.dt)
+
+                        data = self.runinfo.measure_function(self)
+
+                        if np.all(np.array(self.runinfo.indicies) == 0):
+                            self.preallocate(data)
+
+                        self.save_point(data)
+
+                        # TODO: change all <is False> to <if not> to compare value instead of instance
+                        if not self.runinfo.running:
+                            self.runinfo.complete = 'stopped'
+                            break
+                        elif not self.runinfo.scan0.running:
+                            break
+
+                        if isinstance(self.runinfo.scan0, ps.AbstractOptimizeScan):
+                            self.reallocate()
+
+                    if not self.runinfo.running:
+                        self.runinfo.complete = 'stopped'
+                        break
+                    elif not self.runinfo.scan1.running:
+                        break
+
+                    if isinstance(self.runinfo.scan1, ps.AbstractOptimizeScan):
+                        self.reallocate()
+
+                if not self.runinfo.running:
+                    self.runinfo.complete = 'stopped'
+                    break
+                elif not self.runinfo.scan2.running:
+                    break
+
+                if isinstance(self.runinfo.scan2, ps.AbstractOptimizeScan):
+                    self.reallocate()
+
+            if self.runinfo.verbose:
+                print('Scan {}/{} Complete'.format(m + 1, self.runinfo.scan3.n))
+            if not self.runinfo.scan3.running:
+                # TODO: set complete to 'stopped' if break outermost scan?
+                self.runinfo.running = False
+            if not self.runinfo.running:
+                self.runinfo.complete = 'stopped'
+                break
+
+            if isinstance(self.runinfo.scan3, ps.AbstractOptimizeScan):
+                self.reallocate()
+
+        self.runinfo.complete = True
+        self.runinfo.running = False
+
+        if 'end_function' in list(self.runinfo.keys()):
+            self.runinfo.end_function(self)
+
     def run(self):
         '''Runs the experiment while locking the console
         '''
@@ -269,14 +362,17 @@ class Experiment(AbstractExperiment):
 
         self.runinfo.running = True
 
-        if self.runinfo.average_d == -1:
+        if self.runinfo.average_d == -1 and self.runinfo.optimize_d == -1:
             self.generic_experiment()
 
         elif 0 <= self.runinfo.average_d < 4:
             self.average_experiment()
 
+        elif 0 <= self.runinfo.optimize_d < 4:
+            self.optimize_experiment()
+
         else:
-            assert False, "self.average_d not setup correctly by check_runinfo method"
+            assert False, "self.average_d or self.optimize_d not setup correctly by check_runinfo method"
 
 
 # legacy naming convention
