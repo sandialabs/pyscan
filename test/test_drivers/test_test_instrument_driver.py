@@ -1,7 +1,3 @@
-<<<<<<< HEAD:test/drivers/test_test_instrument_driver.py
-=======
-
->>>>>>> infinite_scans:test/test_drivers/test_test_instrument_driver.py
 import pytest
 import math
 import string
