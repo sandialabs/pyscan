@@ -3,8 +3,6 @@ import numpy as np
 import pytest
 
 
-
-
 @pytest.fixture()
 def runinfo():
     runinfo = ps.RunInfo()

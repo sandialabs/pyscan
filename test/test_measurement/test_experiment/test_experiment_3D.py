@@ -14,6 +14,7 @@ def runinfo():
     runinfo.scan2 = ps.PropertyScan({'v3': ps.drange(0, 0.1, 0.3)}, 'voltage', dt=0)
     return runinfo
 
+
 @pytest.fixture()
 def devices():
     devices = ps.ItemAttribute()

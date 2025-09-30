@@ -184,47 +184,6 @@ def test_save_point(runinfo, devices):
         assert np.all(np.isnan(x3[1]))
 
 
-def test_save_point(runinfo, devices):
-    expt = ps.Experiment(runinfo, devices)
-    expt.check_runinfo()
-    data = expt.runinfo.measure_function(expt)
-    expt.preallocate(data)
-    expt.save_point(data)
-
-    assert expt.x1.shape == (2,)
-    assert np.isclose(expt.x1[0], 0.0)
-    assert np.isnan(expt.x1[1])
-
-    assert expt.x2.shape == (2, 2)
-    assert np.allclose(expt.x2[0], [0, 0])
-    assert np.all(np.isnan(expt.x2[1]))
-
-    assert expt.x3.shape == (2, 2, 2)
-    assert np.allclose(expt.x3[0], np.zeros((2, 2)))
-    assert np.all(np.isnan(expt.x3[1]))
-
-    with h5py.File('./backup/{}'.format(expt.runinfo.file_name + '.hdf5'), 'r') as f:
-        scan = f['v1_voltage']
-        assert scan.shape == (2,)
-        assert np.allclose(scan, np.array([0.0, 0.1]))
-
-        x1 = f['x1']
-        assert x1.shape == (2,)
-        assert np.isclose(x1[0], [0.0])
-        print(np.array(x1))
-        assert np.all(np.isnan(x1[1]))
-
-        x2 = f['x2']
-        assert x2.shape == (2, 2)
-        assert np.allclose(x2[0], [0, 0])
-        assert np.all(np.isnan(x2[1]))
-
-        x3 = f['x3']
-        assert x3.shape == (2, 2, 2)
-        assert np.allclose(x3[0], np.zeros((2, 2)))
-        assert np.all(np.isnan(x3[1]))
-
-
 def test_continuous_preallocate(c_runinfo, devices):
     runinfo = c_runinfo
 
