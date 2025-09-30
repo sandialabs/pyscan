@@ -1,21 +1,19 @@
 import pyscan as ps
 import numpy as np
+import pytest
 
 
-def test_is_numeric_type():
+@pytest.mark.parametrize("input", [2, 2.1, np.float64(2)])
+def test_is_numeric_type(input):
+    assert ps.is_numeric_type(input)
 
-    num1 = 2
-    num2 = 2.1
 
-    notnum1 = 'string'
-    notnum2 = (1, 2, 3)
-    notnum3 = [1, 2, 3]
-    notnum4 = np.array([1, 2, 3])
-
-    assert ps.is_numeric_type(num1)
-    assert ps.is_numeric_type(num2)
-
-    assert not ps.is_numeric_type(notnum1)
-    assert not ps.is_numeric_type(notnum2)
-    assert not ps.is_numeric_type(notnum3)
-    assert not ps.is_numeric_type(notnum4)
+@pytest.mark.parametrize("input", [
+    'string',
+    (1, 2, 3),
+    [1, 2, 3],
+    np.array([1, 2, 3]),
+    {'a': 1},
+    True])
+def test_is_not_numeric_type(input):
+    assert not ps.is_numeric_type(input), f"{input} was wrongly identified as numeric type"
