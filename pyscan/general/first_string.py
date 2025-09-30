@@ -22,7 +22,6 @@ def first_string(obj):
         if isinstance(value, string_types):
             return value
         else:
-            raise TypeError
             raise TypeError("First string must be a string or array of strings")
     else:
         raise TypeError("First string must be a string or array of strings")

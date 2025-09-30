@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import zhinst.ziPython as ziPython
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 import numpy as np
 
 

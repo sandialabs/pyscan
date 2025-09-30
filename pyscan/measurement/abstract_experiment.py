@@ -7,8 +7,8 @@ import pyscan as ps
 from threading import Thread as thread
 from time import strftime
 from pyscan.measurement.scans import PropertyScan, RepeatScan, ContinuousScan
-from ..general.pyscan_json_encoder import PyscanJSONEncoder
-from ..general.item_attribute import ItemAttribute
+from ..measurement.pyscan_json_encoder import PyscanJSONEncoder
+from itemattribute import ItemAttribute
 from ..general.is_list_type import is_list_type
 
 
