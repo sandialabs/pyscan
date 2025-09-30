@@ -1,8 +1,18 @@
+## [0.8.8](https://github.com/sandialabs/pyscan/compare/v0.8.7...v0.8.8) (2025-09-30)
+
+
+### Bug Fixes
+
+* remove attocube import due to windows errors, added to .gitignore ([9baeba7](https://github.com/sandialabs/pyscan/commit/9baeba729ad64fd2133e3c26dc3d602c8d029e74))
+
+
+
 ## [0.8.7](https://github.com/sandialabs/pyscan/compare/v0.8.6...v0.8.7) (2025-02-05)
 
 
 ### Bug Fixes
 
+* **keysite driver:** Added new exception for keysite SD1 loading, rem… ([#244](https://github.com/sandialabs/pyscan/issues/244)) ([b56008c](https://github.com/sandialabs/pyscan/commit/b56008c3fbf86b56dc8c6151753ddd5b1126001b))
 * **keysite driver:** Added new exception for keysite SD1 loading, rem… ([#244](https://github.com/sandialabs/pyscan/issues/244)) ([ee281ae](https://github.com/sandialabs/pyscan/commit/ee281ae7cb2e773072d03131da585c8f8bef5ebd))
 
 
