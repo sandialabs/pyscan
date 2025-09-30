@@ -57,7 +57,6 @@ class PyscanJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
         elif callable(obj):
-            print(obj)
             return inspect.getsource(obj)
         elif isinstance(obj, (WindowsPath, Path)):
             return str(obj)

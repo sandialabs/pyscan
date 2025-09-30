@@ -196,11 +196,12 @@ class AbstractExperiment(ItemAttribute):
             for name in self.runinfo.measured:
                 if is_list_type(data[name]):
                     f[name].resize(tuple((*self.runinfo.dims, *np.array(data[name]).shape)))
-                    f[name][-1] = np.zeros(self[name].shape) * np.nan
-                    self[name] = append_stack_or_contact(self[name], np.zeros(self[name].shape) * np.nan)
+                    f[name][-1] = data[name]
+                    self[name] = append_stack_or_contact(self[name], data[name])
                 else:
                     f[name].resize(self.runinfo.dims)
-                    self[name] = np.append(self[name], np.nan)
+                    f[name][-1] = data[name]
+                    self[name] = append_stack_or_contact(self[name], data[name])
 
     def rolling_average(self, data):
         '''
@@ -250,7 +251,6 @@ class AbstractExperiment(ItemAttribute):
 
         for key, value in data.items():
             if is_list_type(self[key]):
-                print(key)
                 self[key][indicies] = value
             else:
                 self[key] = value

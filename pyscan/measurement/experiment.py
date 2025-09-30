@@ -53,14 +53,11 @@ class Experiment(AbstractExperiment):
                 self.preallocate(data)
             elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
                 self.reallocate(data)
+                continue  # saving is handled here
             elif self.runinfo.has_average_scan:
                 self.rolling_average(data)
 
             self.save_point(data)
-
-            if self.runinfo.running is False:
-                self.runinfo.complete = 'stopped'
-                break
 
         self.runinfo.complete = True
         self.runinfo.running = False
