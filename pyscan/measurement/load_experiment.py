@@ -3,7 +3,7 @@ import pickle
 import json
 from pathlib import Path
 from itemattribute import ItemAttribute
-from ..measurement.pyscan_json_decoder import PyscanJSONDecoder
+from .pyscan_json_decoder import PyscanJSONDecoder
 
 
 def load_experiment(file_name):

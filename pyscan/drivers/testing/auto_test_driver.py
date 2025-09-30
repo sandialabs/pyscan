@@ -579,7 +579,7 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
+def test_driver(device=TestInstrumentDriver(), skip_log=True, expected_attributes=None, expected_values=None,
                 verbose=True):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)
