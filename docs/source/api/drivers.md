@@ -12,87 +12,63 @@
 
 ## Instruments
 ```{eval-rst}
-.. automodule:: pyscan.drivers.actonsp2300
+.. automodule:: pyscan.drivers.agilent
 	:members:
 
-.. automodule:: pyscan.drivers.agilent33500
+.. automodule:: pyscan.drivers.american_magnetics
 	:members:
 
-.. automodule:: pyscan.drivers.agilent34410
+.. automodule:: pyscan.drivers.attocube
 	:members:
 
-.. automodule:: pyscan.drivers.agilent8267d
+.. automodule:: pyscan.drivers.bkprecision
 	:members:
 
-.. automodule:: pyscan.drivers.agilent8275n
+.. automodule:: pyscan.drivers.bluefors
 	:members:
 
-.. automodule:: pyscan.drivers.agilentdso900series
+.. automodule:: pyscan.drivers.heliotis
 	:members:
 
-.. automodule:: pyscan.drivers.americanmagnetics430
+.. automodule:: pyscan.drivers.hp
 	:members:
 
-.. automodule:: pyscan.drivers.bkprecision9130b
+.. automodule:: pyscan.drivers.keithley
 	:members:
 
-.. automodule:: pyscan.drivers.blueforslog
+.. automodule:: pyscan.drivers.kepco
 	:members:
 
-.. automodule:: pyscan.drivers.hp34401a
+.. automodule:: pyscan.drivers.keysight
 	:members:
 
-.. automodule:: pyscan.drivers.keithley2260b
+.. automodule:: pyscan.drivers.oceanoptics
 	:members:
 
-.. automodule:: pyscan.drivers.keithley2400
+.. automodule:: pyscan.drivers.oxford
 	:members:
 
-.. automodule:: pyscan.drivers.kepcoBOP
+.. automodule:: pyscan.drivers.picoquant
 	:members:
 
-.. automodule:: pyscan.drivers.keysight53230a
+.. automodule:: pyscan.drivers.princeton_instruments
 	:members:
 
-.. automodule:: pyscan.drivers.keysightm3302aawg
+.. automodule:: pyscan.drivers.spin_core
 	:members:
 
-.. automodule:: pyscan.drivers.keysightm3302adaq
+.. automodule:: pyscan.drivers.swabian
 	:members:
 
-.. automodule:: pyscan.drivers.oxfordigh
+.. automodule:: pyscan.drivers.thorlabs
 	:members:
 
-.. automodule:: pyscan.drivers.oxfordips120
+.. automodule:: pyscan.drivers.tpi
 	:members:
 
-.. automodule:: pyscan.drivers.pylonsdk
+.. automodule:: pyscan.drivers.yokogawa
 	:members:
 
-.. automodule:: pyscan.drivers.stanford396
-	:members:
-
-.. automodule:: pyscan.drivers.stanford400
-	:members:
-
-.. automodule:: pyscan.drivers.stanford470
-	:members:
-
-.. automodule:: pyscan.drivers.stanford620
-	:members:
-
-.. automodule:: pyscan.drivers.stanford830
-	:members:
-
-.. automodule:: pyscan.drivers.stanford860
-	:members:
-
-.. automodule:: pyscan.drivers.stanford928
-	:members:
-
-.. automodule:: pyscan.drivers.tpi1002a
-	:members:
-
-.. automodule:: pyscan.drivers.yokogawags200
+.. automodule:: pyscan.drivers.zurich_instruments
 	:members:
 ```
