@@ -35,10 +35,5 @@ per-file-ignores =
     
     ./test/test_measurement/test_abstract_experiment.py:F841
     ./test/test_measurement/test_experiment/*.py:E129,E128
-    ; ./test/test_measurement/test_experiment/test_experiment_1D.py:E129
-    ; ./test/test_measurement/test_experiment/test_experiment_2D.py:E129,E128
-    ; ./test/test_measurement/test_experiment/test_experiment_3D.py:E129
-    ; ./test/test_measurement/test_experiment/test_function_scan_experiment.py:E129
-    ; ./test/test_measurement/test_experiment/test_repeat_scan_experiment.py
-# 127 characters is a more agreeable max line length for modern displays
+
 max-line-length=127
