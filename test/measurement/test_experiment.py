@@ -301,7 +301,7 @@ def test_0D_multi_data():
         assert expt.repeat[0] == 0.0, "experiment repeat[0] is not 0.0"
 
         # check the data results are as expected
-        check_data_results(expt.x1, id=1, dtype=float, shape=[1], loaded=loaded)
+        check_data_results(expt.x1, id=1, shape=[1], loaded=loaded)
 
         check_data_results(expt.x2, id=2, shape=[2], loaded=loaded)
 

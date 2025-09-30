@@ -161,9 +161,10 @@ def check_data_results(x, id='', dtype=np.ndarray, shape=[2], loaded=False, num_
 
 
 # for checking that the multi data results are as expected
-def check_multi_data_results(expt, num_devices, shape1=[2], shape2=[2, 2], shape3=[2, 2, 2], shape4=[2, 2, 2, 2]):
+def check_multi_data_results(expt, num_devices,
+                             shape0=[1], shape1=[2], shape2=[2, 2], shape3=[2, 2, 2], shape4=[2, 2, 2, 2]):
     if num_devices == 0:
-        check_data_results(expt.x1, id=1, dtype=float, shape=shape1)
+        check_data_results(expt.x1, id=1, shape=shape0)
         check_data_results(expt.x2, id=2, shape=shape1)
         for i in expt.x3:
             assert isinstance(i, np.ndarray), "experiment x3 measurement is not a numpy array of numpy arrays"
