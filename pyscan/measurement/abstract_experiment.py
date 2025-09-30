@@ -69,9 +69,15 @@ class AbstractExperiment(ItemAttribute):
         '''
 
         skip = False
+
         if self.runinfo.continuous:
             continuous_scan = self.runinfo.scans[self.runinfo.continuous_scan_index]
             if continuous_scan.i > 0:
+                skip = True
+
+        if self.runinfo.optimize_d != -1:
+            optimize_scan = self.runinfo.scans[self.runinfo.optimize_d]
+            if optimize_scan.i > 0:
                 skip = True
 
         if not skip:
@@ -136,7 +142,8 @@ class AbstractExperiment(ItemAttribute):
                     else:
                         if debug is True:
                             print(f"with measured name {name} preallocate4")
-                        self[name] = np.nan
+                        # changed from scalar to len 1 arr for start len 1 compat with len/shape in optimizer
+                        self[name] = np.array([np.nan])
                         f.create_dataset(name, shape=[1, ], maxshape=(None,), chunks=(1,),
                                          fillvalue=np.nan, dtype='float64')
 

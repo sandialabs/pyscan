@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..general.item_attribute import ItemAttribute
 from ..general.get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan
+from .scans import PropertyScan, AverageScan, AbstractOptimizeScan
 import pyscan as ps
 
 
@@ -91,6 +91,23 @@ class RunInfo(ItemAttribute):
         # throw an error if more than one average scan is found
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
+
+        # find the scans set to optimize scan (if any) and determine their indicies
+        index = 0
+        num_op_scans = 0
+        for scan in self.scans:
+            if isinstance(scan, AbstractOptimizeScan):
+                self.optimize_d = index
+                num_op_scans += 1
+            index += 1
+
+        # if no optimize scans found set optimize_scan_index to -1
+        if num_op_scans == 0:
+            self.optimize_d = -1
+
+        # throw an error if more than one average scan is found
+        if num_op_scans > 1:
+            assert False, "More than one optimize scan is not allowed"
 
         # make sure there are no empty scans inbetween used scans.
         used_scan_found = False
