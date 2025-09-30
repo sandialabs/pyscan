@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from time import sleep
 import pyscan as ps
 from pyscan.measurement.abstract_experiment import AbstractExperiment

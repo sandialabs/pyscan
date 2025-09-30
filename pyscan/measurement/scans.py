@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 from ..general.same_length import same_length
 from itemattribute import ItemAttribute

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import h5py
 import pickle
 import json

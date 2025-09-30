@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from itemattribute import ItemAttribute
 from .new_instrument import new_instrument
 from collections import OrderedDict

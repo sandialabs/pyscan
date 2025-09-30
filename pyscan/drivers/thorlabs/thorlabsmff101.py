@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from itemattribute import ItemAttribute
 from thorlabs_kinesis import filter_flipper as ff
 from ctypes import c_char_p, c_ushort, c_ulong

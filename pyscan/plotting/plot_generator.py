@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ..general.set_difference import set_difference
 from ..general.first_string import first_string
 import numpy as np

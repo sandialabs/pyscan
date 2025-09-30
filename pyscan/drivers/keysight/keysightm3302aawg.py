@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import keysightSD1
 from itemattribute import ItemAttribute
 import sys

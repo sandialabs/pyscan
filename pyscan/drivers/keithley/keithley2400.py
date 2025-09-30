@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from pyscan.drivers.instrument_driver import InstrumentDriver
 import numpy as np
 from time import sleep
