@@ -1,7 +1,6 @@
 # Functions
 from .load_experiment import load_experiment
 from .get_pyscan_version import get_pyscan_version
-from .get_pyscan_version import get_pyscan_version
 
 # Scans/Experiments
 from .experiment import Experiment
