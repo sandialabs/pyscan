@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 import keysightSD1
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 import sys
 sys.path.append(r'c:\Program Files (x86)\Keysight\SD1\Libraries\Python')
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from pyscan.drivers import InstrumentDriver
 
 
@@ -67,7 +66,7 @@ class TestVoltage(InstrumentDriver):
             'name': 'voltage',
             'write_string': 'VOLT {}',
             'query_string': 'VOLT?',
-            'range': [0, 10],
+            'range': [-10, 10],
             'return_type': float
         })
 

@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 
 
 class PylonSDK(ItemAttribute):

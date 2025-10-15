@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .stanford900 import Stanford900
 from math import floor
 

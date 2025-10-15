@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 def set_difference(list1, list2):
     '''
     Fuction that returns a list containing unique items in `list1` which are not in `list2`.

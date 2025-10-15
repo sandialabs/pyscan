@@ -53,7 +53,8 @@ setup(
         'nbmake',
         'seabreeze',
         'pylablib',
-        'pyscan-tlk'
+        'pyscan-tlk',
+        'itemattribute'
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

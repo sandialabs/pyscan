@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ..instrument_driver import InstrumentDriver
 import struct
 import numpy as np

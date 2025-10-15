@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from ...general.item_attribute import ItemAttribute
+from itemattribute import ItemAttribute
 from thorlabs_kinesis import benchtop_piezo as bp
 from ctypes import c_char_p, c_ushort, c_ulong, c_short
 from time import sleep

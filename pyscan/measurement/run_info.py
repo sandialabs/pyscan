@@ -1,126 +1,160 @@
-# -*- coding: utf-8 -*-
-from ..general.item_attribute import ItemAttribute
-from ..general.get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan
+from itemattribute import ItemAttribute
+from .get_pyscan_version import get_pyscan_version
+from .scans import PropertyScan, AverageScan, ContinuousScan
 import pyscan as ps
+import re
+import numpy as np
 
 
 class RunInfo(ItemAttribute):
     '''
-    Object that contains information of how to run the experiment. Inherits from :class:`.ItemAttribute`.
-    This is generally used as an input parameter to Experiment classes.
-
-    You must set the desired number of scans to a type of Scan before setting RunInfo as a parameter
-    in a Experiment class.
-    Set the scans in order from `scan0` to `scan3` - for example, if you are experimenting over 2 variables,
-    set `scan0` and `scan1`. Do not set `scan0` and `scan2`.
+    Object that contains information of how to run the experiment.
 
     Attributes
     ----------
-    scan0, scan1, scan2, scan3 : :class:`.PropertyScan`, :class:`.AverageScan`, :class:`.RepeatScan`
-     or :class:`.FunctionScan`
-        Set each scan to a scan object representing one independent experimental variable. The scan property or
-        function will be scanned during the experiment, with scan0 being the innermost scan.
-        Defaults to :class:`PropertyScan({}, prop=None)<.PropertyScan>`,
-        which indicates that the scan will not be used.
-    measured :
-        Array that contains the names of collected data, defined by the `measure_function` return object.
+    scan<#>: ps.PropertyScan, ps.RepeatScan, ps.FunctionScan, ps.FunctionScan
+        Instance of ps.AbstractScan to a scan object representing one independent experimental variable.
+        The scan property or function will be scanned during the experiment, with scan0 being the innermost scan loop.
+    measured : list
+        List that contains the names of collected data, defined by the `measure_function` return.
     measure_function : func
         User-defined function that controls how to measure data.
-        It should accept a :class:`.Experiment` object as its only parameter,
-        and returns an :class:`.ItemAttribute` object containing the measured data. The names of the measured data,
+        It should accept a ps.Experiment object as its only parameter,
+        and returns an ItemAttribute object containing the measured data. The names of the measured data,
         each being an attribute of the return object, will appear as keys of the experiment after it is run.
-    trigger_function : func
-        User-defined function that controls triggering of instruments
     initial_pause : float
         Pause before first setting instruments in seconds, defaults to 0.1.
-    average_d : int
-        scan index used by an Experiment with one of its scans being :class:`.AverageScan`.
-        It is used to track which scan to average over, defaults to -1.
-        Automatically is set to the correct index by :meth:`.RunInfo.check` method, which is automatically
-        called by Experiment objects `run()` methods.
-    verbose : bool
-        Flag to print status information, defaults to `False`.
-    version : str
+    _pyscan_version : str
         Current version of pyscan to be saved as metadata.
 
+    (Properties)
+    scans : list
+        Returns list of all scans in sequential order.
+    dims : tuple
+        Returns tuple containing the length of each scan, by increasing scan number
+    average_dims : tuple
+        Returns a tuple containing the lenght of each scan, excluding the average scan
+    ndim : int
+        Returns number of scans
+    has_average_scan : bool
+        True if an average scan is present, False otherwise
+    indicies : tuple
+        Returns tuple of the current scan iteration indicies
+    average_indicies : tuple
+        Returns tuple of the current scan iteration indicies, excludingb averaged scan
+    average_index : int
+        Returns the index of the scan to be averaged, -1 if no average scan is present
+
+    Methods
+    -------
+    check()
+    check_sequential_scans()
+    check_property_scan()
+    check_repeat_scan()
+    check_average_scan()
+    check_continuous_scan()
     '''
 
     def __init__(self):
-        """ Constructor method
         """
-        self.scan0 = PropertyScan({}, prop=None)
-        self.scan1 = PropertyScan({}, prop=None)
-        self.scan2 = PropertyScan({}, prop=None)
-        self.scan3 = PropertyScan({}, prop=None)
+        Constructor method
+        """
 
-        self.static = {}
         self.measured = []
-
         self.measure_function = None
-        self.trigger_function = None
 
         self.initial_pause = 0.1
-        self.average_d = -1
 
-        # Assumed not a continuous expt. If there is a continuous scan this will be set to true in self.check()
-        self.continuous = False
-
-        self.verbose = False
         self._pyscan_version = get_pyscan_version()
 
     def check(self):
-        '''Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
+        '''
+        Checks to see if runinfo is properly formatted. Called by Experiment object's `run()` methods.
 
-        Automatically sets `self.average_d` to the correct scan index (i.e., the scan which contains an
+        Automatically sets `self.average_index` to the correct scan index (i.e., the scan which contains an
         instance of `.AverageScan`) to average over.
         '''
+
+        self.check_sequential_scans()
+
+        self.check_property_scans()
+
+        self.check_repeat_scan()
+
+        self.check_average_scan()
+
+        self.check_continuous_scan()
+
+    def check_sequential_scans(self):
+
+        scan_indicies = []
+        for key in self.__dict__.keys():
+            if 'scan' in key:
+                if len(re.findall(r'\d+', key)) > 0:
+                    scan_indicies.append(int(re.findall(r'\d+', key)[0]))
+
+        scan_indicies.sort()
+        delta_indices = [scan_indicies[i] - scan_indicies[i - 1] for i in range(1, len(scan_indicies))]
+        assert np.all(np.array(delta_indices) == 1), 'Scan indicies are not sequential'
+
+    def check_property_scans(self):
+        '''
+        Checks to see if there are any errors with PropertyScans
+        '''
+
+        scanned_properties = []
+        for scan in self.scans:
+            if isinstance(scan, PropertyScan):
+                for dev in scan.device_names:
+                    assert f'{dev}_{scan.prop}' not in scanned_properties, \
+                        'Property {} is duplicated in the scans'.format(f'{dev}_{scan.prop}')
+                    scanned_properties.append(f'{dev}_{scan.prop}')
+
+    def check_average_scan(self):
+        '''
+        Checks to see if there is an average scan present and sets `self.average_index` to the correct index.
+        '''
+
         # find the scan set to average scan (if any) and determine the index
         index = 0
         num_av_scans = 0
         for scan in self.scans:
             if isinstance(scan, AverageScan):
-                self.average_d = index
                 num_av_scans += 1
             index += 1
-
-        # if no average scans found set average_d to -1
-        if num_av_scans == 0:
-            self.average_d = -1
 
         # throw an error if more than one average scan is found
         if num_av_scans > 1:
             assert False, "More than one average scan is not allowed"
 
-        # make sure there are no empty scans inbetween used scans.
-        used_scan_found = False
-        scans = self.scans
-        for i in range(len(scans)):
-            count_down = len(scans) - i - 1
-            if used_scan_found is False:
-                if not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0):
-                    used_scan_found = True
-                    used_scan_index = count_down
-            else:
-                assert not (isinstance(scans[count_down], PropertyScan) and len(scans[count_down].input_dict) == 0), \
-                    (f"Found empty PropertyScan (scan{count_down}) below used scan (scan{used_scan_index}).\n"
-                     + "Scans must be populated in sequential order.")
+    def check_repeat_scan(self):
+        '''
+        Checks to see if there a repeat scan present and if there are more the one repeat scans
+        '''
 
+        repeat_count = 0
+        for scan in self.scans:
+            if isinstance(scan, ps.RepeatScan):
+                repeat_count += 1
+
+        assert repeat_count <= 1, "More than one repeat scan is not allowed"
+
+    def check_continuous_scan(self):
         # find the scan set to continuous scan (if any) and determine the index
+        n_continuous_scans = 0
         for i, scan in enumerate(self.scans):
             if isinstance(scan, ps.ContinuousScan):
-                self.continuous = True
-                self.continuous_scan_index = i
+                n_continuous_scans += 1
+
+        assert n_continuous_scans <= 1, "More than one continuous scan detected. Only one continuous scan is allowed."
 
         # If there is a ContinuousScan, ensure it is the highest level scan
-        if self.continuous:
-            for i in range(self.continuous_scan_index + 1, len(self.scans)):
-                assert isinstance(self.scans[i], PropertyScan) and len(self.scans[i].input_dict) == 0, \
-                    f"ContinuousScan found at scan{self.continuous_scan_index} but is not the highest level scan."
+        if self.has_continuous_scan:
+            assert self.continuous_index == (self.ndim - 1), 'Error, continuous scan must be the last scan'
 
     def stop_continuous(self, plus_one=False):
         stop = False
-        if self.continuous:
+        if self.has_continuous_scan:
             continuous_scan = self.scans[self.continuous_scan_index]
             if hasattr(continuous_scan, 'n_max'):
                 if plus_one is False:
@@ -132,92 +166,49 @@ class RunInfo(ItemAttribute):
 
         return stop
 
+    # Regular properties
     @property
     def scans(self):
-        ''' Returns array of all scans
         '''
-        return [self.scan0, self.scan1, self.scan2, self.scan3]
+        Returns array of all scans
+        '''
+        i = 0
+        scans = []
+        while hasattr(self, f'scan{i}'):
+            scans.append(getattr(self, f'scan{i}'))
+            i += 1
+        return scans
 
     @property
     def dims(self):
-        ''' Returns tuple containing the length of each scan, in order from scan0 to scan3, and excludes scans of size 1
         '''
-        dims = (self.scan0.n,
-                self.scan1.n,
-                self.scan2.n,
-                self.scan3.n)
-        dims = [n for n in dims if n != 1]
-        if self.continuous:
-            if len(dims) - 1 == self.continuous_scan_index:
-                dims = dims[:-1]
-            dims.append(1)
+        Returns tuple containing the length of each scan, in order from scan0 to scan3, and excludes scans of size 1
+        '''
+        dims = [scan.n for scan in self.scans]
         self._dims = tuple(dims)
         return self._dims
-
-    @property
-    def average_dims(self):
-        ''' Returns tuple containing the length of each scan, excluding scans of size 1 and the averaged scan
-        '''
-        self._average_dims = tuple(drop(self.dims, self.average_d))
-
-        return self._average_dims
-
-    @property
-    def ndim(self):
-        ''' Returns number of non 1 sized scans
-        '''
-        self._ndim = len(self.dims)
-        return self._ndim
-
-    @property
-    def n_average_dim(self):
-        ''' Returns number of scans that are neither size-1 nor average scans
-        '''
-        self._n_average_dim = len(self.average_dims)
-        return self._n_average_dim
 
     @property
     def indicies(self):
         '''
         Returns tuple of the current scan iteration indicies,
         '''
-        self._indicies = (self.scan0.i,
-                          self.scan1.i,
-                          self.scan2.i,
-                          self.scan3.i)
-        self._indicies = self._indicies[:self.ndim]
-        if self.continuous:
-            self._indicies = self._indicies[:-1]
+        self._indicies = [scan.i for scan in self.scans]
         return tuple(self._indicies)
 
     @property
-    def line_indicies(self):
-        self._line_indicies = (
-            self.scan1.i,
-            self.scan2.i,
-            self.scan3.i)
-        self._line_indicies = self._line_indicies[:self.ndim]
-        return tuple(self._line_indicies)
-
-    @property
-    def average_indicies(self):
-        ''' Returns tuple of the current scan iteration indicies,
-        excluding scans of size 1 and averaged scan. These are the active
-        scans not to be averaged. Used by `.AverageExperiment`.
+    def ndim(self):
         '''
-        self._average_indicies = drop(self.indicies, self.average_d)
-        return tuple(self._average_indicies)
-
-    @property
-    def average_index(self):
-        ''' Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
+        Returns number of scans
         '''
-        self._average_index = self.indicies[self.average_d]
-        return self._average_index
+        self._ndim = len(self.dims)
+        return self._ndim
 
+    # Properties modified due to the presence of an average scan
     @property
     def has_average_scan(self):
-        ''' Returns a boolean of whether or not an average scan is present.
+        '''
+        Returns a boolean of whether or not an average scan is present.
         '''
         num_av_scans = 0
         for scan in self.scans:
@@ -231,79 +222,88 @@ class RunInfo(ItemAttribute):
 
         return self._has_average_scan
 
-    ####################### LEGACY SECTION ########################
-    # This section is set up to alert users who try to use legacy nomenclature
-    # of the updated naming convention that they must use instead.
     @property
-    def loop0(self):
-        legacy_warning()
-        return self.scan0
-
-    @loop0.setter
-    def loop0(self, value):
-        legacy_warning()
-        self.scan0 = value
-
-    @property
-    def loop1(self):
-        legacy_warning()
-        return self.scan1
-
-    @loop1.setter
-    def loop1(self, value):
-        legacy_warning()
-        self.scan1 = value
-
-    @property
-    def loop2(self):
-        legacy_warning()
-        return self.scan2
-
-    @loop2.setter
-    def loop2(self, value):
-        legacy_warning()
-        self.scan2 = value
-
-    @property
-    def loop3(self):
-        legacy_warning()
-        return self.scan3
-
-    @loop3.setter
-    def loop3(self, value):
-        legacy_warning()
-        self.scan3 = value
-
-    @property
-    def loops(self):
+    def average_index(self):
         '''
-        Returns array of all scans
+        Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
         '''
-        legacy_warning()
-        return [self.scan0, self.scan1, self.scan2, self.scan3]
+        if self.has_average_scan:
+            i = 0
+            for scan in self.scans:
+                if isinstance(scan, AverageScan):
+                    return i
+                i += 1
+            self._average_index = self.indicies[self.average_dims]
+            return self._average_index
+        else:
+            return -1
 
+    @property
+    def average_dims(self):
+        '''
+        Returns tuple containing the length of each scan, excluding scans of size 1 and the averaged scan
+        '''
+        if self.average_index != -1:
+            self._average_dims = list(self.dims)
+            self._average_dims.pop(self.average_index)
+            return tuple(self._average_dims)
+        else:
+            return ()
 
-def drop(array, index):
-    '''
-    Drops an object at `index` in `array`
+    @property
+    def average_indicies(self):
+        '''
+        Returns tuple of the current scan iteration indicies, excluding scans of size 1 and averaged scan.
+        Used by `.AverageExperiment`.
+        '''
+        if self.has_average_scan:
+            self._average_indicies = list(self.indicies)
+            self._average_indicies.pop(self.average_index)
+            return tuple(self._average_indicies)
+        else:
+            return ()
 
-    Parameters
-    ----------
-    array : list or numpy.array
-        Array for object to be dropped
-    index : int
-        Index of object to be dropped
+    @property
+    def n_average_dim(self):
+        '''
+        Returns number of scans that are neither size-1 nor average scans
+        '''
+        self._n_average_dim = len(self.average_dims)
+        return self._n_average_dim
 
-    Returns
-    list
-        The array minus the dropped value
-    '''
+    # Properties based on the presence of a continuous scan
+    @property
+    def has_continuous_scan(self):
+        '''
+        Returns a boolean of whether or not an continuous scan is present.
+        '''
+        num_av_scans = 0
+        for scan in self.scans:
+            if isinstance(scan, ContinuousScan):
+                num_av_scans += 1
 
-    return list(array[0:index]) + list(array[index + 1:])
+        if num_av_scans > 0:
+            self._has_continuous_scan = True
+        else:
+            self._has_continuous_scan = False
 
+        return self._has_continuous_scan
 
-def legacy_warning():
-    warning_msg = ("Use of legacy nomenclature detected but no longer supported.\n"
-                   + "You entered 'loop', use 'scan' instead.")
-    raise DeprecationWarning(f"\033[93m*** WARNING! ***: {warning_msg} \033[0m")
-    assert False, f"\033[93m*** WARNING! ***: {warning_msg} \033[0m"
+    @property
+    def continuous_index(self):
+        '''
+        Returns the index of the scan to be averaged. Used by `pyscan.AverageExperiment`.
+        '''
+        if self.has_continuous_scan:
+            i = 0
+            for i in range(self.ndim):
+                if isinstance(self.scans[i], ContinuousScan):
+                    return i
+                self._continuous_index = i
+        else:
+            self._continuous_index = -1
+        return self._continuous_index
+
+    @property
+    def iterators(self):
+        return [scan.iterator() for scan in self.scans]

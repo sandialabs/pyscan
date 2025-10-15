@@ -4,26 +4,36 @@
 # Loaded by flake8 by default
 
 [flake8]
-# DO NOT check for the following errors:
 
+exclude=
+    .github
+    .venv
+    backup
+    docs
+    demo_notebooks
+    driver_test_notbooks
+    user_experiments
+
+# DO NOT check for the following errors:
 # E266: too many leading '#' for block comment
 # E722: do not use bare except, specify exception instead
 # W503: Line breaks should occur after the binary operator
 # to keep all variable names aligned. (we're doing the opposite)
 # C901 too complex, change this later
-ignore=E266,E722,W503,C901
-
-; exclude=
+ignore=E266,E722,W503,C901,F129
 
 # F401: module imported but unused
 # F403 unable to detect undefined names
 per-file-ignores =
+    */__init__.py:F401,F403
+
     pyscan/__init__.py:F401,F403
     pyscan/measurement/__init__.py:F401,F403
     pyscan/general/__init__.py:F401,F403
     pyscan/drivers/__init__.py:F401,F403
     pyscan/plotting/__init__.py:F401,F403
-    */__init__.py:F401,F403
+    
+    ./test/test_measurement/test_abstract_experiment.py:F841
+    ./test/test_measurement/test_experiment/*.py:E129,E128
 
-# 120 characters is a more agreeable max line length for modern displays
-max-line-length=120
+max-line-length=127

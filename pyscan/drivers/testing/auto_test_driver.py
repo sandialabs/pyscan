@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import pytest
 import math
 from collections import OrderedDict
 import typing
 from pyscan.drivers.testing.test_instrument_driver import TestInstrumentDriver
-from ...general.get_pyscan_version import get_pyscan_version
+from ...measurement.get_pyscan_version import get_pyscan_version
 import os
 from datetime import datetime
 import re
@@ -580,7 +579,7 @@ def check_doc_strings(test_instrument):
     # write formatting test cases here.
 
 
-def test_driver(device=TestInstrumentDriver(), skip_log=False, expected_attributes=None, expected_values=None,
+def test_driver(device=TestInstrumentDriver(), skip_log=True, expected_attributes=None, expected_values=None,
                 verbose=True):
     if expected_attributes is not None:
         check_has_attributes(device, expected_attributes)

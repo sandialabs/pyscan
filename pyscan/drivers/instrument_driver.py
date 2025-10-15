@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-from ..general.item_attribute import ItemAttribute
 from .new_instrument import new_instrument
+from itemattribute import ItemAttribute
 from collections import OrderedDict
 import numpy as np
 import re
