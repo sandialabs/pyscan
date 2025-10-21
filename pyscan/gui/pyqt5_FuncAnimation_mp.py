@@ -50,13 +50,17 @@ class ApplicationWindow(QMainWindow):
 
     def __init__(self):
 
-        # GUI Window
+        # Set Window
         super().__init__()
         self.setGeometry(300, 300, 400, 400)
         self.setWindowTitle("Pyscan GUI")
+
+        # Set frame
         self.frame = QFrame(self)
         self.frame.setStyleSheet("QWidget { background-color: #eeeeec; }")
+        self.setCentralWidget(self.frame)
 
+        # Build menu bar
         menu_bar = self.menuBar()
         file_menu = menu_bar.addMenu("&File")
         file_menu.addAction("&new")
@@ -70,10 +74,10 @@ class ApplicationWindow(QMainWindow):
         help_menu = menu_bar.addMenu("&Help")
         help_menu.addAction("&help placeholder")
 
+        # Set layout
         self.layout = QGridLayout()
         self.layout.setColumnStretch(1, 4)
-        self.frame.setLayout(self.layout)
-        self.setCentralWidget(self.frame)
+        self.frame.setLayout(self.layout)        
 
         # Scan button
         self.scan_push = QPushButton()
@@ -84,19 +88,21 @@ class ApplicationWindow(QMainWindow):
         self.file_tree.setHeaderLabel("Project Explorer")
         compute_project_structure_tree(self.file_tree)
 
+        # Shared data for scan
         manager = Manager()
-
         self._x = manager.list()
         self._y = manager.list()
 
         # Matplotlib Figure
         self.fig_canvas = ApplicationFigureCanvas(self._x, self._y)
 
+        # Build grid layout
         self.layout.addWidget(self.scan_push, 0, 0, 1, 1)
         self.layout.addWidget(self.fig_canvas, 1, 1, 2, 1)
         self.layout.addWidget(NavigationToolbar2QT(self.fig_canvas, self), 0, 1, 1, 1)
         self.layout.addWidget(self.file_tree, 0, 2, 3, 1)
 
+        # Launch GUI
         self.show()
 
     def scan_callback(self):
@@ -111,21 +117,26 @@ class ApplicationFigureCanvas(FigureCanvasQTAgg):
 
     def __init__(self, x, y):
 
+        # Set canvas
         super().__init__(Figure(figsize=(5, 5), dpi=100))
 
+        # Set plot
         self._ax = self.figure.subplots()
         self._ax.set_xlim(0, 10)
         self._ax.set_ylim(0, 10)
 
+        # Build and display background
         xmg, ymg = np.mgrid[0:10:.01, 0:10:.01]
         zmg = np.array(voltage_response(np.ravel(xmg), np.ravel(ymg)))
         zmg = zmg.reshape(xmg.shape)
         self._ax.pcolormesh(xmg, ymg, zmg, cmap='gist_heat')
 
+        # Set animation update vars
         self._x = x
         self._y = y
         self._scatter = self._ax.scatter(self._x, self._y)
 
+        # Animate real-time updates
         self._ani = FuncAnimation(fig=self.figure,
                                   func=partial(self._update_canvas, scatter=self._scatter, x=self._x, y=self._y),
                                   frames=None, init_func=self._init_canvas, blit=True, save_count=100, interval=1e3)
