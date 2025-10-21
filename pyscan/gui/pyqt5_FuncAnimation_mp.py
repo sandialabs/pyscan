@@ -77,7 +77,7 @@ class ApplicationWindow(QMainWindow):
         # Set layout
         self.layout = QGridLayout()
         self.layout.setColumnStretch(1, 4)
-        self.frame.setLayout(self.layout)        
+        self.frame.setLayout(self.layout)
 
         # Scan button
         self.scan_push = QPushButton()
