@@ -92,6 +92,10 @@ class Experiment(ItemAttribute):
 
             self.save_point(data)
 
+            # early terminate here
+            if not self.runinfo.running:
+                break
+
         self.runinfo.complete = True
         self.runinfo.running = False
 
