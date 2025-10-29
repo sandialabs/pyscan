@@ -43,7 +43,7 @@ class PropertyScan(AbstractScan):
         '''
         Constructor method
         '''
-        self.prop = prop
+        self.prop = prop  # TODO: property not vector, same for each device?
         self.scan_dict = {}
         for device, array in input_dict.items():
             self.scan_dict['{}_{}'.format(device, prop)] = array
@@ -307,3 +307,119 @@ class AverageScan(AbstractScan):
         The following iterates over n
         '''
         return range(self.n)
+
+
+class AbstractOptimizeScan(AbstractScan):
+    '''
+    Abstract class providing polymorphic interface for optimization routines to determine next measurement.
+    Implementation overrides `__init__` to store variables between measurement optimizations and `step_optimizer` to
+    call optimizer and return optimal next measurement.
+
+    Parameters
+    ----------
+    initialization_dict : dict{string:float}
+        key:value pairs of device name strings and initialization values at which to begin the optimization routine.
+    prop : str
+        String that indicates the property of the device(s) to be changed.
+    optimizer_inputs : iterable object of str
+        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
+        Inputs for the optimizer to optimize over.
+    sample_function_output : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by Experiment classes, defaults to 0.
+    n_max : int, optional
+        Maximum number of iterations to run.
+    '''
+
+    def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
+                 dt=0., n_max=100):
+
+        self.init_dict = initialization_dict
+
+        self.scan_dict = {}
+        self.scan_dict['iteration'] = np.ndarray((0))
+
+        # TODO: add iteration as a device name?
+        self.device_names = list(initialization_dict.keys())
+
+        # TODO: make prop multidimensional: different property for each device
+        self.prop = prop
+
+        self.opt_in = optimizer_inputs
+
+        # TODO: make output multidimensional: allow optimization over multiple outputs?
+        self.sample_f_out = sample_function_output
+
+        self.dt = dt
+
+        self.i = 0  # TODO: why need this and index argument in iterate()
+        self.n = 0
+        self.n_max = n_max  # TODO: should n_max default be None like ContinuousScan?
+
+        self.running = True
+
+    def step_optimizer(self, i, experiment):
+        '''
+        Abstract method to be implemented by AbstractOptimizeScan implementations.
+
+        Parameters
+        ----------
+        i : int
+            The index of the data array.
+        experiment : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+
+        Returns
+        -------
+        ndarray
+            Array with element containing next input value for each device.
+        '''
+        pass
+
+    def iterate(self, expt, i, d):
+        '''
+        Changes `prop` of the listed `devices` to the initial value at step 0 or optimizer recommendation at later
+        steps. These new device values are also appended to `scan_dict`.
+
+        Parameters
+        ----------
+        i : int
+            The index of the data array.
+        expt : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+        d : int
+            Delta change to be applied to index of data array.
+        '''
+        self.i = i
+        self.n = i + 1
+
+        # TODO: is this needed?
+        if d == 0:
+            return 0
+
+        self.scan_dict['iteration'] = np.append(self.scan_dict['iteration'], i)
+        expt.iteration = self.scan_dict['iteration']  # TODO: is this used?
+
+        if i == 0:
+            for dev in self.device_names:
+                # TODO: must be int or float, not np.array
+                expt.devices[dev][self.prop] = self.init_dict[dev]
+        else:
+            opt_res = self.step_optimizer(i, expt)
+            for dev_idx, dev in enumerate(self.device_names):
+                expt.devices[dev][self.prop] = opt_res[dev_idx]
+            if not self.running:
+                expt.stop()
+
+        sleep(self.dt)
+
+    def iterator(self):
+        '''
+        The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
+        '''
+        if self.n_max is None:
+            return range(1)
+        else:
+            return range(self.n_max)

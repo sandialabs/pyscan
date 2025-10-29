@@ -84,13 +84,20 @@ class Experiment(ItemAttribute):
 
             if np.all(np.array(indicies) == 0):
                 self.preallocate(data)
-            elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
+            elif (self.runinfo.has_resizing_data) and (deltas[-1] == 1):
                 self.reallocate(data)
+                # early terminate here
+                if not self.runinfo.running:
+                    break
                 continue  # saving is handled here
             elif self.runinfo.has_average_scan:
                 self.rolling_average(data)
 
             self.save_point(data)
+
+            # early terminate here
+            if not self.runinfo.running:
+                break
 
         self.runinfo.complete = True
         self.runinfo.running = False
@@ -169,6 +176,7 @@ class Experiment(ItemAttribute):
         with h5py.File(save_name, 'a') as f:
             for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
+                    values = np.array(values)  # TODO: values.shape requires np.array
                     self[key] = values
                     if key == 'iteration':
                         f.create_dataset(key, shape=values.shape, maxshape=(None,), chunks=(100, ),)
@@ -210,13 +218,15 @@ class Experiment(ItemAttribute):
                                      fillvalue=np.nan, dtype='float64')
                 # data is a single point, but there are no scan dimensions other than average
                 else:
-                    self[name] = np.nan
+                    # changed from scalar to len 1 arr for start len 1 compat with len/shape in optimizer
+                    self[name] = np.array([np.nan], dtype='float64')
                     f.create_dataset(name, shape=[1, ], maxshape=(None,), chunks=(1,),
                                      fillvalue=np.nan, dtype='float64')
 
     def reallocate(self, data):
         '''
-        Reallocates memory for continuous experiments save files and measurement attribute arrays.
+        Reallocates memory for resizing (continuous or optimize) experiments
+        save files and measurement attribute arrays.
 
         Parameters
         ----------
