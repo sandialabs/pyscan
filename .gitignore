@@ -121,4 +121,5 @@ backup
 *.backup
 test.ipynb
 
+# VS Code
 .vscode
