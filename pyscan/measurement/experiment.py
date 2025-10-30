@@ -218,8 +218,7 @@ class Experiment(ItemAttribute):
                                      fillvalue=np.nan, dtype='float64')
                 # data is a single point, but there are no scan dimensions other than average
                 else:
-                    # changed from scalar to len 1 arr for start len 1 compat with len/shape in optimizer
-                    self[name] = np.array([np.nan], dtype='float64')
+                    self[name] = np.nan
                     f.create_dataset(name, shape=[1, ], maxshape=(None,), chunks=(1,),
                                      fillvalue=np.nan, dtype='float64')
 
