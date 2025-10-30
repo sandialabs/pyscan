@@ -86,11 +86,18 @@ class Experiment(ItemAttribute):
                 self.preallocate(data)
             elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
                 self.reallocate(data)
+                # early terminate here
+                if not self.runinfo.running:
+                    break
                 continue  # saving is handled here
             elif self.runinfo.has_average_scan:
                 self.rolling_average(data)
 
             self.save_point(data)
+
+            # early terminate here
+            if not self.runinfo.running:
+                break
 
         self.runinfo.complete = True
         self.runinfo.running = False
