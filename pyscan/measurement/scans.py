@@ -355,7 +355,7 @@ class AbstractOptimizeScan(AbstractScan):
         self.dt = dt
 
         self.i = 0  # TODO: why need this and index argument in iterate()
-        self.n = 0
+        self.n = 1  # TODO: starts at 1 like in continuous_scan? start at zero when starting empty?
         self.n_max = n_max  # TODO: should n_max default be None like ContinuousScan?
 
         self.running = True
