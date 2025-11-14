@@ -7,3 +7,4 @@ from .is_numeric_type import is_numeric_type
 from .same_length import same_length
 from .set_difference import set_difference
 from .append_stack_or_contact import append_stack_or_contact
+from .random_matrix import random_matrix
