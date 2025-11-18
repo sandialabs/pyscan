@@ -84,7 +84,7 @@ class Experiment(ItemAttribute):
 
             if np.all(np.array(indicies) == 0):
                 self.preallocate(data)
-            elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
+            elif (self.runinfo.has_resizing_data) and (deltas[-1] == 1):
                 self.reallocate(data)
                 # early terminate here
                 if not self.runinfo.running:
@@ -176,6 +176,7 @@ class Experiment(ItemAttribute):
         with h5py.File(save_name, 'a') as f:
             for s in self.runinfo.scans:
                 for key, values in s.scan_dict.items():
+                    values = np.array(values)  # TODO: values.shape requires np.array
                     self[key] = values
                     if key == 'iteration':
                         f.create_dataset(key, shape=values.shape, maxshape=(None,), chunks=(100, ),)
@@ -223,7 +224,8 @@ class Experiment(ItemAttribute):
 
     def reallocate(self, data):
         '''
-        Reallocates memory for continuous experiments save files and measurement attribute arrays.
+        Reallocates memory for resizing (continuous or optimize) experiments
+        save files and measurement attribute arrays.
 
         Parameters
         ----------

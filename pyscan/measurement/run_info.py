@@ -1,6 +1,6 @@
 from itemattribute import ItemAttribute
 from .get_pyscan_version import get_pyscan_version
-from .scans import PropertyScan, AverageScan, ContinuousScan
+from .scans import PropertyScan, AverageScan, ContinuousScan, AbstractOptimizeScan
 import pyscan as ps
 import re
 import numpy as np
@@ -53,6 +53,7 @@ class RunInfo(ItemAttribute):
     check_repeat_scan()
     check_average_scan()
     check_continuous_scan()
+    check_optimize_scan()
     '''
 
     def __init__(self):
@@ -84,6 +85,8 @@ class RunInfo(ItemAttribute):
         self.check_average_scan()
 
         self.check_continuous_scan()
+
+        self.check_optimize_scan()
 
     def check_sequential_scans(self):
 
@@ -165,6 +168,20 @@ class RunInfo(ItemAttribute):
                         stop = True
 
         return stop
+
+    def check_optimize_scan(self):
+        # find the scans set to optimize scan (if any) and determine the index
+        n_optimize_scans = 0
+        for scan in self.scans:
+            if isinstance(scan, AbstractOptimizeScan):
+                n_optimize_scans += 1
+
+        # throw an error if more than one optimize scan is found
+        assert n_optimize_scans <= 1, "More than one optimize scan detected. Only one optimize scan is allowed."
+
+        # if there is a optimize scan, ensure it is the highest level scan
+        if self.has_optimize_scan:
+            assert self.optimize_index == (self.ndim - 1), 'Error, optimize scan must be the last scan'
 
     # Regular properties
     @property
@@ -304,6 +321,45 @@ class RunInfo(ItemAttribute):
             self._continuous_index = -1
         return self._continuous_index
 
+    # Properties based on the presence of an optimize scan
+    @property
+    def has_optimize_scan(self):
+        '''
+        Returns a boolean of whether or not an optimize scan is present.
+        '''
+        num_op_scans = 0
+        for scan in self.scans:
+            if isinstance(scan, AbstractOptimizeScan):
+                num_op_scans += 1
+
+        if num_op_scans > 0:
+            self._has_optimize_scan = True
+        else:
+            self._has_optimize_scan = False
+
+        return self._has_optimize_scan
+
+    @property
+    def optimize_index(self):
+        '''
+        Returns the index of the optimize scan.
+        '''
+        if self.has_optimize_scan:
+            i = 0
+            for i in range(self.ndim):
+                if isinstance(self.scans[i], AbstractOptimizeScan):
+                    return i
+                self._optimize_index = i
+        else:
+            self._optimize_index = -1
+        return self._optimize_index
+
+    # for reallocate in Experiment.run()
+    @property
+    def has_resizing_data(self):
+        return self.has_continuous_scan or self.has_optimize_scan
+
+    # collect scan iterators for Experiment.run()
     @property
     def iterators(self):
         return [scan.iterator() for scan in self.scans]
