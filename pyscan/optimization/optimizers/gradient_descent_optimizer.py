@@ -7,6 +7,30 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
     Minimizes objective function using gradient descent.
     Gradients are approximated using forward finite differences.
     Gradient descent is performed over one dimension at a time.
+
+    Parameters
+    ----------
+    initialization_dict : dict{string:float}
+        key:value pairs of device name strings and initialization values at which to begin the optimization routine.
+    prop : str
+        String that indicates the property of the device(s) to be changed.
+    optimizer_inputs : iterable object of str
+        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
+        Inputs for the optimizer to optimize over.
+    sample_function_output : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    input_epsilon : iterable object of float
+        Infinintesimal approximation on each input used in finite-differencing to compute the gradient.
+    learning_rate: iterable object of float
+        Scaler multiplier applied to computed gradients on each input to control the update magnitude.
+    update_epsilon: iterable object of float
+        Gradient update threshold for each input.
+        Optimization stops early if updates for all inputs are below thresholds.
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by Experiment classes, defaults to 0.
+    n_max : int, optional
+        Maximum number of iterations to run.
     """
 
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
@@ -23,8 +47,29 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         self.keep_running = np.full(self.dim_ct, True)
 
     def step_optimizer(self, index, experiment):
+        '''
+        Performs gradient descent using finite differencing.
+        Iterates over all input dimensions.
+        Returns next measurement first based on finite different approximation
+        and then based on the resulting gradient update.
+
+        Parameters
+        ----------
+        i : int
+            The index of the data array.
+        experiment : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+
+        Returns
+        -------
+        ndarray
+            Array with element containing next input value for each device.
+        '''
 
         def gd_f(f_in_prev, f_out, f_out_prev, input_epsilon, learning_rate):
+            """
+            Compute gradient update from forward finite difference
+            """
             grad = (f_out - f_out_prev) / input_epsilon
             grad_update = learning_rate * grad
             f_in_dim_next = f_in_prev - grad_update
