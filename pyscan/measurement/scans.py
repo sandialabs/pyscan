@@ -373,7 +373,7 @@ class AbstractOptimizeScan(AbstractScan):
         Returns
         -------
         ndarray
-            Array with element containing next input value for each device.
+            Array with elements containing next input value for each device.
         '''
         pass
 

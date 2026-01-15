@@ -50,7 +50,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         '''
         Performs gradient descent using finite differencing.
         Iterates over all input dimensions.
-        Returns next measurement first based on finite different approximation
+        Returns next measurement first based on finite difference approximation
         and then based on the resulting gradient update.
 
         Parameters
@@ -63,7 +63,9 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         Returns
         -------
         ndarray
-            Array with element containing next input value for each device.
+            Array with elements containing next input value for each device.
+            Same as last except for updating dimension,
+            which is modified for finite difference or gradient update.
         '''
 
         def gd_f(f_in_prev, f_out, f_out_prev, input_epsilon, learning_rate):
