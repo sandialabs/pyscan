@@ -334,14 +334,13 @@ class AbstractOptimizeScan(AbstractScan):
     '''
 
     def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
-                 dt=0., n_max=100):
+                 dt=0., n_max=None):
 
         self.init_dict = initialization_dict
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
 
-        # TODO: add iteration as a device name?
         self.device_names = list(initialization_dict.keys())
 
         # TODO: make prop multidimensional: different property for each device
@@ -354,9 +353,9 @@ class AbstractOptimizeScan(AbstractScan):
 
         self.dt = dt
 
-        self.i = 0  # TODO: why need this and index argument in iterate()
-        self.n = 1  # TODO: starts at 1 like in continuous_scan? start at zero when starting empty?
-        self.n_max = n_max  # TODO: should n_max default be None like ContinuousScan?
+        self.i = 0
+        self.n = 1
+        self.n_max = n_max
 
         self.running = True
 
@@ -392,15 +391,15 @@ class AbstractOptimizeScan(AbstractScan):
         d : int
             Delta change to be applied to index of data array.
         '''
+
         self.i = i
         self.n = i + 1
 
-        # TODO: is this needed?
         if d == 0:
             return 0
 
         self.scan_dict['iteration'] = np.append(self.scan_dict['iteration'], i)
-        expt.iteration = self.scan_dict['iteration']  # TODO: is this used?
+        expt.iteration = self.scan_dict['iteration']
 
         if i == 0:
             for dev in self.device_names:
