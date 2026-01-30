@@ -1,7 +1,7 @@
 import pyscan as ps
 import numpy as np
 import pytest
-from pathlib import PosixPath
+from pathlib import Path
 from typing import Callable
 import re
 
@@ -104,7 +104,7 @@ def test_runinfo_types_post_measure_1D(runinfo, devices):
     for key, t in [
         ('measure_function', Callable),
         ('scan0', ps.PropertyScan),
-        ('data_path', PosixPath),
+        ('data_path', Path),
         ('_pyscan_version', str),
         ('file_name', str)]:
         assert hasattr(expt.runinfo, key), 'RunInfo does not have key {}'.format(key)

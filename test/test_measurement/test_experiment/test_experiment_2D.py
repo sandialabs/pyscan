@@ -1,7 +1,7 @@
 import pyscan as ps
 import numpy as np
 import pytest
-from pathlib import PosixPath
+from pathlib import Path
 from typing import Callable
 
 
@@ -75,7 +75,7 @@ def test_runinfo_types_post_measure_2D(runinfo, devices):
         ('measure_function', Callable),
         ('scan0', ps.PropertyScan),
         ('scan1', ps.PropertyScan),
-        ('data_path', PosixPath),
+        ('data_path', Path),
         ('_pyscan_version', str),
         ('file_name', str)]:
 

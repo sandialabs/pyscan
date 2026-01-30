@@ -1,9 +1,19 @@
+## [0.8.9](https://github.com/sandialabs/pyscan/compare/v0.8.8...v0.8.9) (2025-11-18)
+
+
+### Bug Fixes
+
+* **tests:** check that data_path is Path instead of PosixPath to accommodate Windows systems in experiment runinfo type post-measurement tests ([#254](https://github.com/sandialabs/pyscan/issues/254)) ([fb70470](https://github.com/sandialabs/pyscan/commit/fb70470739d3b4de7f1ca44fa2421cb8864a0d19))
+
+
+
 ## [0.8.8](https://github.com/sandialabs/pyscan/compare/v0.8.7...v0.8.8) (2025-09-30)
 
 
 ### Bug Fixes
 
 * remove attocube import due to windows errors, added to .gitignore ([9baeba7](https://github.com/sandialabs/pyscan/commit/9baeba729ad64fd2133e3c26dc3d602c8d029e74))
+* remove attocube import due to windows errors, added to .gitignore [skip ci] ([567172f](https://github.com/sandialabs/pyscan/commit/567172f01e3ceb661b63f939e466d652f02e4593))
 
 
 
