@@ -1,6 +1,6 @@
 import numpy as np
 from itemattribute import ItemAttribute
-from .kinesis import benchtop_stepper_motor as bsm
+from thorlabs_kinesis import benchtop_stepper_motor as bsm
 from ctypes import c_char_p, c_int, c_double, c_ushort, c_ulong, c_short
 from time import sleep
 
