@@ -9,3 +9,12 @@ class ThorlabsKinesisImportException(ItemAttribute):
         msg = "Thorlabs Kinesis Drivers not found could not load this driver"
 
         raise ExternalPackageException(msg)
+
+
+class ThorlabsOPMImportException(ItemAttribute):
+
+    def __init__(self, *arg, **kwarg):
+
+        msg = "Thorlabs OPM Drivers not found could not load this driver"
+
+        raise ExternalPackageException(msg)

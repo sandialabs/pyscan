@@ -1,5 +1,5 @@
 from itemattribute import ItemAttribute
-from optical_parameter_monitor.TLPMX import TLPMX, TLPM_DEFAULT_CHANNEL
+from .optical_parameter_monitor.TLPMX import TLPMX, TLPM_DEFAULT_CHANNEL
 from ctypes import byref, create_string_buffer, c_bool, c_char_p, c_double, c_int, c_int16, c_uint32
 from dataclasses import dataclass
 # from time import sleep
