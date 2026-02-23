@@ -1,17 +1,14 @@
 from itemattribute import ItemAttribute
 from .optical_parameter_monitor.TLPMX import TLPMX, TLPM_DEFAULT_CHANNEL
+from pyscan.general.c_type_conversions import string_buffer_to_c_char, string_buffer_to_str
 from ctypes import byref, create_string_buffer, c_bool, c_char_p, c_double, c_int, c_int16, c_uint32
 from dataclasses import dataclass
-
-
-def string_buffer_to_str(sb):
-    return c_char_p(sb.raw).value.decode('ascii')
 
 
 @dataclass
 class RsrcInfo:
     model_name: str
-    serial_number: str
+    serial_number: c_char_p
     manufacturer: str
     device_available: bool
 
@@ -30,17 +27,11 @@ class ThorlabsPM16_120(ItemAttribute):
                  wavelength=532.5, power_auto_range=True, power_unit='Watt'):
 
         self._version = "0.1.0"
-        self.serial = serial
-        self.device_list = None
-        self.device_info_list = None
-        self._wavelength = None
-        self._power_auto_range = None
-        self._power_unit = None
-        self.connected_device_i = None
+        self.serial = c_char_p(bytes(serial, "utf-8"))
+        self.connected_device = None
         self.tlPM = TLPMX()
         self.build_device_list()
         self.build_device_info_list()
-        self.close()
         self.open()
         self.wavelength = wavelength
         self.power_auto_range = power_auto_range
@@ -62,26 +53,26 @@ class ThorlabsPM16_120(ItemAttribute):
         for i in range(self.device_count):
             self.tlPM.getRsrcInfo(c_int(i), modelName, serialNumber, manufacturer, deviceAvailable)
             ri_i = RsrcInfo(string_buffer_to_str(modelName),
-                            string_buffer_to_str(serialNumber),
+                            string_buffer_to_c_char(serialNumber),
                             string_buffer_to_str(manufacturer),
                             bool(deviceAvailable))
             self.device_info_list.append(ri_i)
 
     def close(self):
         self.tlPM.close()
-        self.connected_device_i = None
+        self.connected_device = None
 
     def connect_device(self, i):
-        if self.connected_device_i is not None:
+        if self.connected_device is not None:
             self.close()
         self.tlPM = TLPMX()
         self.tlPM.open(self.device_list[i], c_bool(True), c_bool(True))
-        self.connected_device_i = i
+        self.connected_device = i
 
     def open(self):
         device_opened = False
         for i, ri_i in enumerate(self.device_info_list):
-            if ri_i.serial_number == self.serial:
+            if ri_i.serial_number.value == self.serial.value:
                 self.connect_device(i)
                 device_opened = True
                 break
@@ -92,20 +83,23 @@ class ThorlabsPM16_120(ItemAttribute):
     def device_count(self):
         deviceCount = c_uint32()
         self.tlPM.findRsrc(byref(deviceCount))
-        return deviceCount.value
+        self._device_count = deviceCount.value
+        return self._device_count
 
     @property
     def calibration_message(self):
         message = create_string_buffer(1024)
         self.tlPM.getCalibrationMsg(message, TLPM_DEFAULT_CHANNEL)
-        return string_buffer_to_str(message)
+        self._calibration_message = string_buffer_to_str(message)
+        return self._calibration_message
 
     @property
     def device_list_resource_names(self):
         resource_name_list = []
         for r in self.device_list:
             resource_name_list.append(string_buffer_to_str(r))
-        return resource_name_list
+        self._resource_name_list = resource_name_list
+        return self._resource_name_list
 
     @property
     def power(self):
@@ -114,7 +108,8 @@ class ThorlabsPM16_120(ItemAttribute):
         '''
         power = c_double()
         self.tlPM.measPower(byref(power), TLPM_DEFAULT_CHANNEL)
-        return power.value
+        self._power = power.value
+        return self._power
 
     @property
     def wavelength(self):
@@ -131,10 +126,23 @@ class ThorlabsPM16_120(ItemAttribute):
         self.tlPM.setWavelength(c_double(wavelength), TLPM_DEFAULT_CHANNEL)
         self._wavelength = wavelength
 
+    def set_power_auto_range(self, power_auto_range):
+        '''
+        False: 0, True: 1
+        '''
+        if power_auto_range:
+            power_auto_range_int = 1
+        else:
+            power_auto_range_int = 0
+        self.tlPM.setPowerAutoRange(c_int16(power_auto_range_int), TLPM_DEFAULT_CHANNEL)
+
     @property
     def power_auto_range(self):
         '''
         Auto-range mode
+        Acceptable values:
+            TLPM_AUTORANGE_CURRENT_OFF (0): current auto range disabled
+            TLPM_AUTORANGE_CURRENT_ON  (1): current auto range enabled
         '''
         return self._power_auto_range
 
@@ -143,26 +151,29 @@ class ThorlabsPM16_120(ItemAttribute):
         '''
         Enable or disable auto-range mode
         '''
-        self.tlPM.setPowerAutoRange(c_int16(power_auto_range), TLPM_DEFAULT_CHANNEL)
+        self.set_power_auto_range(power_auto_range)
         self._power_auto_range = power_auto_range
 
     def set_power_unit(self, power_unit):
         '''
-        0: Watt, 1: dBm
+        Watt: 0, dBm: 1
         '''
         match power_unit:
             case 'Watt':
-                power_unit_bool = False
+                power_unit_int = 0
             case 'dBm':
-                power_unit_bool = True
+                power_unit_int = 1
             case _:
                 RuntimeError("power unit must be \'Watt\' or \'dBm\'")
-        self.tlPM.setPowerUnit(c_int16(power_unit_bool), TLPM_DEFAULT_CHANNEL)
+        self.tlPM.setPowerUnit(c_int16(power_unit_int), TLPM_DEFAULT_CHANNEL)
 
     @property
     def power_unit(self):
         '''
         Power unit in Watt or dBm
+        Acceptable values:
+            TLPM_POWER_UNIT_WATT (0): power in Watt
+            TLPM_POWER_UNIT_DBM  (1): power in dBm
         '''
         return self._power_unit
 
