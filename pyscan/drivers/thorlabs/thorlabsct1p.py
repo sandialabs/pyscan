@@ -78,7 +78,12 @@ class ThorlabsCT1P(ItemAttribute):
         return self._polling_duration
 
     @property
-    def front_pannel_locked(self):
+    def front_panel_can_lock(self):
+        self._front_panel_can_lock = ipp.IPP_CanDeviceLockFrontPanel(self.serial)
+        return self._front_panel_can_lock
+
+    @property
+    def front_panel_locked(self):
         '''
         bool
         short
@@ -87,8 +92,8 @@ class ThorlabsCT1P(ItemAttribute):
         # self._front_panel_locked = ipp.IPP_RequestFrontPanelLocked(self.serial).value
         return self._front_panel_locked
 
-    @front_pannel_locked.setter
-    def front_pannel_locked(self, front_panel_locked):
+    @front_panel_locked.setter
+    def front_panel_locked(self, front_panel_locked):
         ipp.IPP_SetFrontPanelLock(self.serial, c_bool(front_panel_locked))
         self._front_panel_locked = front_panel_locked
 
