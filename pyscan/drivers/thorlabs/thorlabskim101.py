@@ -90,7 +90,7 @@ class ThorlabsKIM101(ItemAttribute):
         return kim.KIM_GetCurrentPosition(self.serial, c_uint16(channel))
 
     def set_position(self, channel, p):
-        return kim.KIM_SetPosition(self.serial, c_uint16(channel), c_long(p))
+        return kim.KIM_MoveAbsolute(self.serial, c_uint16(channel), c_long(p))
 
     @property
     def position_1(self):
@@ -99,7 +99,8 @@ class ThorlabsKIM101(ItemAttribute):
 
     @position_1.setter
     def position_1(self, p):
-        self._position_1 = self.set_position(1, p)
+        self.set_position(1, p)
+        self._position_1 = p
         # MoveRelative
         # MoveAbsolute
 
@@ -110,7 +111,8 @@ class ThorlabsKIM101(ItemAttribute):
 
     @position_2.setter
     def position_2(self, p):
-        self._position_2 = self.set_position(2, p)
+        self.set_position(2, p)
+        self._position_2 = p
 
     @property
     def position_3(self):
@@ -119,7 +121,8 @@ class ThorlabsKIM101(ItemAttribute):
 
     @position_3.setter
     def position_3(self, p):
-        self._position_3 = self.set_position(3, p)
+        self.set_position(3, p)
+        self._position_3 = p
 
     @property
     def position_4(self):
@@ -128,4 +131,5 @@ class ThorlabsKIM101(ItemAttribute):
 
     @position_4.setter
     def position_4(self, p):
-        self._position_4 = self.set_position(4, p)
+        self.set_position(4, p)
+        self._position_4 = p

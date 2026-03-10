@@ -164,7 +164,7 @@ class ThorlabsPM16_120(ItemAttribute):
             case 'dBm':
                 power_unit_int = 1
             case _:
-                RuntimeError("power unit must be \'Watt\' or \'dBm\'")
+                raise RuntimeError("power unit must be \'Watt\' or \'dBm\'")
         self.tlPM.setPowerUnit(c_int16(power_unit_int), TLPM_DEFAULT_CHANNEL)
 
     @property
