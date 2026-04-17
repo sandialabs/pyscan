@@ -3,9 +3,42 @@ from ax.api.configs import RangeParameterConfig
 from pyscan.measurement import AbstractOptimizeScan
 
 
-class AXOptimizeScan(AbstractOptimizeScan):
+class AxOptimizeScan(AbstractOptimizeScan):
     """
-    AX Client API
+    Global optimization routine using Ax Client API.
+    Minimizes objective function using Bayesian optimization.
+
+    Parameters
+    ----------
+    device_list : iterable of str
+        List of device name strings.
+    property_list : iterable of str
+        List of strings that indicates the property of the device(s) to be changed.
+    initialization_list : iterable of str
+        List of initialization values at which to begin the optimization routine.
+    optimizer_inputs : iterable of str
+        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
+        Inputs for the optimizer to optimize over.
+    sample_function_output : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    bounds_list : iterable of 2-tuple of floats
+        List of lower and upper bound pairs for each dimension.
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
+    n_max : int, optional
+        Maximum number of iterations to run. Default is 100.
+    global_imporvement_threshold : float, optional
+        Positive threshold of improvement magnitude below which optimization is stopped. Default is 1e-2.
+    global_improvement_index_window: int, optional
+        Nonnegative number of consecutive iterations that must have improvement below threshold before optimization is stopped.
+        Default is 10.
+    global_improvement_start_index : int, optional
+        Nonnegative number of iterations to guarantee are performed.
+        If global_index_window consecutive iterations are below global_improvement_threshold,
+        but the index is lower than global_improvement_start_index, then optimization will continue.
+    extremum : {'min', 'max'}, optional
+        Determines extremum to optimize for. Set to 'min' or 'max'. Default is 'max'.
     """
 
     def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
@@ -30,8 +63,14 @@ class AXOptimizeScan(AbstractOptimizeScan):
             self.init_scan_ct = None
             self.complete_last_init_idx = None
         self.last_optim_idx = n_max - 1
+        if global_improvement_threshold <= 0.:
+            raise ValueError("global_improvement_threshold must be positive.")
         self.gi_t = global_improvement_threshold
+        if global_improvement_index_window < 0:
+            raise ValueError("global_improvement_index_window must be nonnegative.")
         self.gi_i_w = global_improvement_index_window
+        if global_improvement_start_index < 0:
+            raise ValueError("global_improvement_start_index must be nonnegative.")
         self.gi_st_i = global_improvement_start_index
         self.extremum = extremum
         parameters = [
@@ -46,15 +85,37 @@ class AXOptimizeScan(AbstractOptimizeScan):
             case 'min':
                 self.objective = f"-{self.sample_f_out}"
             case _:
-                raise ValueError('Extremum must be max or min')
+                raise ValueError('extremum must be \'max\' or \'min\'.')
         self.client.configure_optimization(objective=self.objective)
 
         self.proposed_trial_index = None
         self.gi_latest_i = None
 
     def step_optimizer(self, index, experiment):
+        """
+        Performs global optimization step using Ax Client API.
+        Compares new objective function result with previous best and determines whether optimization should continue.
+        Returns the best point so far if optimization stops.
+        Loads a pre-initialized point or the results of the last proposed trial into the client.
+        Requests the next point to sample from the client.
+
+        Parameters
+        ----------
+        index : int
+            The index of the data array.
+        experiment : AbstractExperiment
+            Experiment class specifying configuration of runinfo and devices.
+
+        Returns
+        -------
+        ndarray
+            Array with elements containing next input value for each device property.
+        """
 
         def early_stop(f_out, f_out_best, index):
+            """
+            Global early stopping routine.
+            """
             es = False
             gi_d = f_out - f_out_best
             if self.extremum == 'min':

@@ -10,29 +10,29 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
     Parameters
     ----------
-    device_list : list{string}
+    device_list : iterable of str
         List of device name strings.
-    property_list : list{str}
+    property_list : iterable of str
         List of strings that indicates the property of the device(s) to be changed.
-    initialization_list : list{float}
+    initialization_list : iterable of str
         List of initialization values at which to begin the optimization routine.
-    optimizer_inputs : iterable object of str
+    optimizer_inputs : iterable of str
         Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
         Inputs for the optimizer to optimize over.
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
         Output for the optimizer to optimize.
-    input_epsilon : iterable object of float
+    input_epsilon : iterable of float
         Infinintesimal approximation on each input used in finite-differencing to compute the gradient.
-    learning_rate: iterable object of float
+    learning_rate: iterable of float
         Scaler multiplier applied to computed gradients on each input to control the update magnitude.
-    update_epsilon: iterable object of float
+    update_epsilon: iterable of float
         Gradient update threshold for each input.
         Optimization stops early if updates for all inputs are below thresholds.
     dt : float, optional
-        Wait time in seconds after each iteration. Used by Experiment classes, defaults to 0.
+        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
     n_max : int, optional
-        Maximum number of iterations to run.
+        Maximum number of iterations to run. Default is 100.
     """
 
     def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
@@ -61,7 +61,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
         Parameters
         ----------
-        i : int
+        index : int
             The index of the data array.
         experiment : AbstractExperiment
             Experiment class specifying configuration of runinfo and devices.
@@ -69,7 +69,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         Returns
         -------
         ndarray
-            Array with elements containing next input value for each device.
+            Array with elements containing next input value for each device property.
             Same as last except for updating dimension,
             which is modified for finite difference or gradient update.
         '''

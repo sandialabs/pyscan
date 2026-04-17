@@ -1,3 +1,3 @@
 # AbstractOptimizeScan implementations
 from .gradient_descent_optimizer import GradientDescentOptimizeScan
-from .Ax_optimizer import AXOptimizeScan
+from .Ax_optimizer import AxOptimizeScan

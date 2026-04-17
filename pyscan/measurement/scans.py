@@ -317,22 +317,22 @@ class AbstractOptimizeScan(AbstractScan):
 
     Parameters
     ----------
-    device_list : list{string}
+    device_list : iterable of str
         List of device name strings.
-    property_list : list{str}
+    property_list : iterable of str
         List of strings that indicates the property of the device(s) to be changed.
-    initialization_list : list{float}
+    initialization_list : iterable of str
         List of initialization values at which to begin the optimization routine.
-    optimizer_inputs : iterable object of str
+    optimizer_inputs : iterable of str
         Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
         Inputs for the optimizer to optimize over.
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
         Output for the optimizer to optimize.
     dt : float, optional
-        Wait time in seconds after each iteration. Used by Experiment classes, defaults to 0.
+        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
     n_max : int, optional
-        Maximum number of iterations to run.
+        Maximum number of iterations to run. Default is 100.
     '''
 
     def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
@@ -373,7 +373,7 @@ class AbstractOptimizeScan(AbstractScan):
         Returns
         -------
         ndarray
-            Array with elements containing next input value for each device.
+            Array with elements containing next input value for each device property.
         '''
         pass
 
