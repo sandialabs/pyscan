@@ -29,8 +29,14 @@ def measure_up_to_3D(expt):
 
 class TestOptimizeScan(ps.AbstractOptimizeScan):
 
-    def __init__(self, init_dict, prop, opt_in, sample_f_out, n_max=100):
-        super().__init__(init_dict, prop, opt_in, sample_f_out, n_max=n_max)
+    __test__ = False  # do not search this class for tests
+
+    def __init__(self, device_list, property_list, initialization_list, opt_in,
+                 sample_f_out,
+                 n_max=100):
+        super().__init__(device_list, property_list, initialization_list, opt_in,
+                         sample_f_out,
+                         n_max=n_max)
 
     def step_optimizer(self, i, experiment):
         return [0] * len(self.opt_in)
@@ -38,12 +44,15 @@ class TestOptimizeScan(ps.AbstractOptimizeScan):
 
 @pytest.fixture
 def optimize_scan():
-    return TestOptimizeScan({'v1': 2.}, 'voltage', ('v1_readout',), 'vf', n_max=10)
+    return TestOptimizeScan(('v1',), ('voltage',), (2.,), ('v1_readout',),
+                            'vf',
+                            n_max=10)
 
 
 @pytest.mark.parametrize('key,value', [
-    ('init_dict', {'v1': 2.}),
-    ('prop', 'voltage'),
+    ('dev_l', ('v1',)),
+    ('prop_l', ('voltage',)),
+    ('init_l', (2.,)),
     ('opt_in', ('v1_readout',)),
     ('scan_dict', {'iteration': np.array([])}),
     ('sample_f_out', 'vf'),

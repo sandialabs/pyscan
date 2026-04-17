@@ -317,10 +317,12 @@ class AbstractOptimizeScan(AbstractScan):
 
     Parameters
     ----------
-    initialization_dict : dict{string:float}
-        key:value pairs of device name strings and initialization values at which to begin the optimization routine.
-    prop : str
-        String that indicates the property of the device(s) to be changed.
+    device_list : list{string}
+        List of device name strings.
+    property_list : list{str}
+        List of strings that indicates the property of the device(s) to be changed.
+    initialization_list : list{float}
+        List of initialization values at which to begin the optimization routine.
     optimizer_inputs : iterable object of str
         Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
         Inputs for the optimizer to optimize over.
@@ -333,18 +335,16 @@ class AbstractOptimizeScan(AbstractScan):
         Maximum number of iterations to run.
     '''
 
-    def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
+    def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
+                 sample_function_output,
                  dt=0., n_max=None):
 
-        self.init_dict = initialization_dict
+        self.dev_l = device_list
+        self.prop_l = property_list
+        self.init_l = initialization_list
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
-
-        self.device_names = list(initialization_dict.keys())
-
-        # TODO: make prop multidimensional: different property for each device
-        self.prop = prop
 
         self.opt_in = optimizer_inputs
 
@@ -402,13 +402,13 @@ class AbstractOptimizeScan(AbstractScan):
         expt.iteration = self.scan_dict['iteration']
 
         if i == 0:
-            for dev in self.device_names:
+            for dev, prop, init in zip(self.dev_l, self.prop_l, self.init_l):
                 # TODO: must be int or float, not np.array
-                expt.devices[dev][self.prop] = self.init_dict[dev]
+                expt.devices[dev][prop] = init
         else:
             opt_res = self.step_optimizer(i, expt)
-            for dev_idx, dev in enumerate(self.device_names):
-                expt.devices[dev][self.prop] = opt_res[dev_idx]
+            for dev, prop, res in zip(self.dev_l, self.prop_l, opt_res):
+                expt.devices[dev][prop] = res
             if not self.running:
                 expt.stop()
 

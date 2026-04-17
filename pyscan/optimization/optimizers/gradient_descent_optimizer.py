@@ -10,10 +10,12 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
     Parameters
     ----------
-    initialization_dict : dict{string:float}
-        key:value pairs of device name strings and initialization values at which to begin the optimization routine.
-    prop : str
-        String that indicates the property of the device(s) to be changed.
+    device_list : list{string}
+        List of device name strings.
+    property_list : list{str}
+        List of strings that indicates the property of the device(s) to be changed.
+    initialization_list : list{float}
+        List of initialization values at which to begin the optimization routine.
     optimizer_inputs : iterable object of str
         Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
         Inputs for the optimizer to optimize over.
@@ -33,11 +35,15 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         Maximum number of iterations to run.
     """
 
-    def __init__(self, initialization_dict, prop, optimizer_inputs, sample_function_output,
+    def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
+                 sample_function_output,
                  input_epsilon, learning_rate, update_epsilon,
                  dt=0, n_max=100):
-        super().__init__(initialization_dict, prop, optimizer_inputs, sample_function_output,
+
+        super().__init__(device_list, property_list, initialization_list, optimizer_inputs,
+                         sample_function_output,
                          dt=dt, n_max=n_max)
+
         self.dim = 0
         self.fd_step = True
         self.input_epsilon = input_epsilon

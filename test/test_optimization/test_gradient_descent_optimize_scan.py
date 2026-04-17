@@ -35,16 +35,16 @@ def measure_paraboloid_2D(expt):
 
 @pytest.fixture
 def gradient_descent_optimize_scan_early_stop():
-    return GradientDescentOptimizeScan({'v1': 2., 'v2': 1.}, 'voltage',
-                                       ('v1_readout', 'v2_readout'), 'vf',
+    return GradientDescentOptimizeScan(('v1', 'v2'), ('voltage', 'voltage'), (2., 1.), ('v1_readout', 'v2_readout'),
+                                       'vf',
                                        (1e-1, 1e-1), (1e-1, 1e-1), (1e-1, 1e-1),
                                        dt=0., n_max=100)
 
 
 @pytest.fixture
 def gradient_descent_optimize_scan_n_max():
-    return GradientDescentOptimizeScan({'v1': 2., 'v2': 1.}, 'voltage',
-                                       ('v1_readout', 'v2_readout'), 'vf',
+    return GradientDescentOptimizeScan(('v1', 'v2'), ('voltage', 'voltage'), (2., 1.), ('v1_readout', 'v2_readout'),
+                                       'vf',
                                        (1e-1, 1e-1), (1e-1, 1e-1), (1e-1, 1e-1),
                                        dt=0., n_max=10)
 
