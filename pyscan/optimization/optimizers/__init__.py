@@ -1,3 +1,4 @@
 # AbstractOptimizeScan implementations
 from .gradient_descent_optimizer import GradientDescentOptimizeScan
 from .Ax_optimizer import AxOptimizeScan
+from .gaussian_process_bayesian_optimizer import *

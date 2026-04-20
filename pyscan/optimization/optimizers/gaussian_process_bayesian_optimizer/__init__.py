@@ -1,0 +1,1 @@
+from .gaussian_process_bayesian_optimizer import GPBayesianOptimizeScan
