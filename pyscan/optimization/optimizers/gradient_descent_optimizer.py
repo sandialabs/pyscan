@@ -63,8 +63,8 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         ----------
         index : int
             The index of the data array.
-        experiment : AbstractExperiment
-            Experiment class specifying configuration of runinfo and devices.
+        experiment : Experiment
+            `Experiment` class specifying configuration of runinfo and devices.
 
         Returns
         -------

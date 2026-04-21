@@ -17,28 +17,32 @@ class AxOptimizeScan(AbstractOptimizeScan):
     initialization_list : iterable of str
         List of initialization values at which to begin the optimization routine.
     optimizer_inputs : iterable of str
-        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
+        Instrument inputs provided by the measure_function as `ItemAttributes` of the `Experiment`.
         Inputs for the optimizer to optimize over.
     sample_function_output : str
-        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Measurement output provided by the measure_function as `ItemAttributes` of the `Experiment`.
         Output for the optimizer to optimize.
-    bounds_list : iterable of 2-tuple of floats
+    bounds_list : iterable of 2-tuple of float
         List of lower and upper bound pairs for each dimension.
+    initialization_scans : iterable of iterable of float, optional
+        List of measurement inputs for additional pre-determined scans to be performed
+        after the scan specified by `intialization_list` and before the optimizer determines scan inputs.
+        Default is `None`.
     dt : float, optional
-        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
+        Wait time in seconds after each iteration. Used by `Experiment` classes. Default is `0`.
     n_max : int, optional
-        Maximum number of iterations to run. Default is 100.
+        Maximum number of iterations to run. Default is `100`.
     global_imporvement_threshold : float, optional
-        Positive threshold of improvement magnitude below which optimization is stopped. Default is 1e-2.
+        Positive threshold of improvement magnitude below which optimization is stopped. Default is `1e-2`.
     global_improvement_index_window: int, optional
         Nonnegative number of consecutive iterations that must have improvement below threshold before optimization is stopped.
-        Default is 10.
+        Default is `10`.
     global_improvement_start_index : int, optional
         Nonnegative number of iterations to guarantee are performed.
-        If global_index_window consecutive iterations are below global_improvement_threshold,
-        but the index is lower than global_improvement_start_index, then optimization will continue.
+        If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
+        but the index is lower than `global_improvement_start_index`, then optimization will continue.
     extremum : {'min', 'max'}, optional
-        Determines extremum to optimize for. Set to 'min' or 'max'. Default is 'max'.
+        Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
     def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
@@ -97,14 +101,14 @@ class AxOptimizeScan(AbstractOptimizeScan):
         Compares new objective function result with previous best and determines whether optimization should continue.
         Returns the best point so far if optimization stops.
         Loads a pre-initialized point or the results of the last proposed trial into the client.
-        Requests the next point to sample from the client.
+        Requests and returns the next point to sample from the client.
 
         Parameters
         ----------
         index : int
             The index of the data array.
-        experiment : AbstractExperiment
-            Experiment class specifying configuration of runinfo and devices.
+        experiment : Experiment
+            `Experiment` class specifying configuration of runinfo and devices.
 
         Returns
         -------

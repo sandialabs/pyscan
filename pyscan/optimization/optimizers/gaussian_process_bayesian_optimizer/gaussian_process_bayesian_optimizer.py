@@ -7,18 +7,49 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
     """
     Optimizes objective function using Gaussian process for Bayesian optimization.
     Bayesian optimization method `bayes_opt_main` predicts optimal next measurement from observed data.
+
+    Parameters
+    ----------
+    device_list : iterable of str
+        List of device name strings.
+    property_list : iterable of str
+        List of strings that indicates the property of the device(s) to be changed.
+    initialization_list : iterable of str
+        List of initialization values at which to begin the optimization routine.
+    optimizer_inputs : iterable of str
+        Instrument inputs provided by the measure_function as `ItemAttributes` of the `Experiment`.
+        Inputs for the optimizer to optimize over.
+    sample_function_output : str
+        Measurement output provided by the measure_function as `ItemAttributes` of the `Experiment`.
+        Output for the optimizer to optimize.
+    domain_range_list : iterable of 3-tuple of float
+        List of lower and upper bound pairs and increment magnitude for each dimension.
+    initialization_scans : iterable of iterable of float, optional
+        List of measurement inputs for additional pre-determined scans to be performed
+        after the scan specified by `intialization_list` and before the optimizer determines scan inputs.
+        Default is `None`.
+    dt : float, optional
+        Wait time in seconds after each iteration. Used by `Experiment` classes. Default is `0`.
+    n_max : int, optional
+        Maximum number of iterations to run. Default is `100`.
+    ei_threshold : float, optional
+        The expected improvement threshold below which optimization is stopped.
+        Default is `1e-1`.
+    extremum : {'min', 'max'}, optional
+        Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
     def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
                  sample_function_output,
-                 domain_info_list,
+                 domain_range_list,
+                 initialization_scans=None,
                  dt=0., n_max=100,
-                 initialization_scans=None, extremum='min', ei_threshold=1e-1):
+                 ei_threshold=1e-1, extremum='min'):
         super().__init__(device_list, property_list, initialization_list, optimizer_inputs,
                          sample_function_output,
                          dt=dt, n_max=n_max)
         self.last_optim_idx = n_max - 2  # stop optimizing on second-to-last index so that last index is best discovered value
-        self.domain = domain_info_list
+        self.domain = domain_range_list
         self.X_train = np.empty((1, len(initialization_list)))
         self.X_train[0] = np.array(initialization_list)
         self.y_train = None  # TODO: multidim output? np.empty((1, 1))
@@ -32,6 +63,26 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
         self.set_final_opt = False
 
     def step_optimizer(self, index, experiment):
+        """
+        Performs global optimization step using `bayes_opt_main` from `gp_bayes_opt`.
+        Calculates expected improvement and determines whether optimization should continue.
+        Returns the best point so far if optimization stops.
+        Loads the data of all previous samples into `bayes_opt_main`
+        to compute the next sample point and expected improvement.
+        Returns the next point to sample.
+
+        Parameters
+        ----------
+        index : int
+            The index of the data array.
+        experiment : Experiment
+            `Experiment` class specifying configuration of runinfo and devices.
+
+        Returns
+        -------
+        ndarray
+            Array with elements containing next input value for each device property.
+        """
 
         def postproc_extremum(y, extremum):
             match extremum:
