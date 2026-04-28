@@ -1,5 +1,36 @@
+from dataclasses import dataclass
 import numpy as np
-from pyscan.measurement.scans import AbstractOptimizeScan
+from typing import Iterable
+from pyscan.measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
+
+
+@dataclass
+class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
+    """
+    Data Class with the fields needed to describe a device property for gradient descent optimization.
+
+    Parameters
+    ----------
+    device_name : str
+        Device name.
+    property_name : str
+        Property of the device to be changed.
+    optimizer_input : str
+        Instrument input provided by the measure_function as ItemAttribute of the Experiment.
+        Input for the optimizer to optimize over.
+    initial_value : T
+        Initial value at which to begin the optimization routine.
+    input_epsilon : T
+        Infinintesimal approximation used in finite-differencing to compute the gradient.
+    learning_rate: T
+        Scaler multiplier applied to computed gradients to control the update magnitude.
+    update_epsilon: T
+        Gradient update threshold.
+        Optimization stops early if updates for all inputs are below thresholds.
+    """
+    input_epsilon: T
+    learning_rate: T
+    update_epsilon: T
 
 
 class GradientDescentOptimizeScan(AbstractOptimizeScan):
@@ -10,46 +41,29 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
     Parameters
     ----------
-    device_list : iterable of str
-        List of device name strings.
-    property_list : iterable of str
-        List of strings that indicates the property of the device(s) to be changed.
-    initialization_list : iterable of str
-        List of initialization values at which to begin the optimization routine.
-    optimizer_inputs : iterable of str
-        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
-        Inputs for the optimizer to optimize over.
+    optimize_device_property_list : iterable of GradientDescentOptimizeDeviceProperty
+        List of device Data Classes containing device name, property, initial value, optimizer input,
+        and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
         Output for the optimizer to optimize.
-    input_epsilon : iterable of float
-        Infinintesimal approximation on each input used in finite-differencing to compute the gradient.
-    learning_rate: iterable of float
-        Scaler multiplier applied to computed gradients on each input to control the update magnitude.
-    update_epsilon: iterable of float
-        Gradient update threshold for each input.
-        Optimization stops early if updates for all inputs are below thresholds.
     dt : float, optional
         Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
     n_max : int, optional
         Maximum number of iterations to run. Default is 100.
     """
 
-    def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
-                 sample_function_output,
-                 input_epsilon, learning_rate, update_epsilon,
-                 dt=0, n_max=100):
+    def __init__(self, optimize_device_property_list: Iterable[GradientDescentOptimizeDeviceProperty],
+                 sample_function_output: str,
+                 dt: float = 0, n_max: int = 100):
 
-        super().__init__(device_list, property_list, initialization_list, optimizer_inputs,
+        super().__init__(optimize_device_property_list,
                          sample_function_output,
                          dt=dt, n_max=n_max)
 
         self.dim = 0
         self.fd_step = True
-        self.input_epsilon = input_epsilon
-        self.learning_rate = learning_rate
-        self.update_epsilon = update_epsilon
-        self.dim_ct = len(optimizer_inputs)
+        self.dim_ct = len(optimize_device_property_list)
         self.keep_running = np.full(self.dim_ct, True)
 
     def step_optimizer(self, index, experiment):
@@ -84,19 +98,20 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
             return grad, f_in_dim_next
 
         if self.fd_step:
-            f_in = [experiment.__dict__[measurement][index - 1] for measurement in self.opt_in]
-            f_in[self.dim] += self.input_epsilon[self.dim]
+            f_in = [experiment.__dict__[p.optimizer_input][index - 1] for p in self.opt_dev_prop_l]
+            f_in[self.dim] += self.opt_dev_prop_l[self.dim].input_epsilon
             self.fd_step = False
             return f_in
         else:
-            f_in_prev = [experiment.__dict__[measurement][index - 2] for measurement in self.opt_in]
+            f_in_prev = [experiment.__dict__[p.optimizer_input][index - 2] for p in self.opt_dev_prop_l]
             f_out = experiment.__dict__[self.sample_f_out][index - 1]
             f_out_prev = experiment.__dict__[self.sample_f_out][index - 2]
             grad_dim, f_in_next_dim = gd_f(f_in_prev[self.dim], f_out, f_out_prev,
-                                           self.input_epsilon[self.dim], self.learning_rate[self.dim])
+                                           self.opt_dev_prop_l[self.dim].input_epsilon,
+                                           self.opt_dev_prop_l[self.dim].learning_rate)
             f_in_next = f_in_prev.copy()
             f_in_next[self.dim] = f_in_next_dim
-            self.keep_running[self.dim] = abs(grad_dim) > self.update_epsilon[self.dim]
+            self.keep_running[self.dim] = abs(grad_dim) > self.opt_dev_prop_l[self.dim].update_epsilon
             if not self.keep_running.any():
                 self.running = False
             self.fd_step = True

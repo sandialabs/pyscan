@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 import numpy as np
 from time import sleep
+from typing import Iterable, TypeVar
 from itemattribute import ItemAttribute
 from ..general.same_length import same_length
 
@@ -309,6 +311,35 @@ class AverageScan(AbstractScan):
         return range(self.n)
 
 
+T = TypeVar('T')
+# type for device property value
+# this is typically float or another floating-point type
+
+
+@dataclass
+class OptimizeDeviceProperty[T]:
+    '''
+    Data Class with the basic fields needed to describe a device property for optimization.
+    If the optimizer needs additional fields, inherit from this class to add fields.
+
+    Parameters
+    ----------
+    device_name : str
+        Device name.
+    property_name : str
+        Property of the device to be changed.
+    optimizer_input : str
+        Instrument input provided by the measure_function as ItemAttribute of the Experiment.
+        Input for the optimizer to optimize over.
+    initial_value : T
+        Initial value at which to begin the optimization routine.
+    '''
+    device_name: str
+    property_name: str
+    optimizer_input: str
+    initial_value: T
+
+
 class AbstractOptimizeScan(AbstractScan):
     '''
     Abstract class providing polymorphic interface for optimization routines to determine next measurement.
@@ -317,15 +348,9 @@ class AbstractOptimizeScan(AbstractScan):
 
     Parameters
     ----------
-    device_list : iterable of str
-        List of device name strings.
-    property_list : iterable of str
-        List of strings that indicates the property of the device(s) to be changed.
-    initialization_list : iterable of str
-        List of initialization values at which to begin the optimization routine.
-    optimizer_inputs : iterable of str
-        Instrument inputs provided by the measure_function as ItemAttributes of the Experiment.
-        Inputs for the optimizer to optimize over.
+    optimize_device_property_list : iterable of OptimizeDeviceProperty
+        List of device Data Classes containing device name, property, initial value, optimizer input,
+        and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
         Output for the optimizer to optimize.
@@ -335,18 +360,14 @@ class AbstractOptimizeScan(AbstractScan):
         Maximum number of iterations to run. Default is 100.
     '''
 
-    def __init__(self, device_list, property_list, initialization_list, optimizer_inputs,
-                 sample_function_output,
-                 dt=0., n_max=None):
+    def __init__(self, optimize_device_property_list: Iterable[OptimizeDeviceProperty],
+                 sample_function_output: str,
+                 dt: float = 0., n_max: int | None = None):
 
-        self.dev_l = device_list
-        self.prop_l = property_list
-        self.init_l = initialization_list
+        self.opt_dev_prop_l = optimize_device_property_list
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
-
-        self.opt_in = optimizer_inputs
 
         # TODO: make output multidimensional: allow optimization over multiple outputs?
         self.sample_f_out = sample_function_output
@@ -402,13 +423,13 @@ class AbstractOptimizeScan(AbstractScan):
         expt.iteration = self.scan_dict['iteration']
 
         if i == 0:
-            for dev, prop, init in zip(self.dev_l, self.prop_l, self.init_l):
+            for p in self.opt_dev_prop_l:
                 # TODO: must be int or float, not np.array
-                expt.devices[dev][prop] = init
+                expt.devices[p.device_name][p.property_name] = p.initial_value
         else:
             opt_res = self.step_optimizer(i, expt)
-            for dev, prop, res in zip(self.dev_l, self.prop_l, opt_res):
-                expt.devices[dev][prop] = res
+            for p, r in zip(self.opt_dev_prop_l, opt_res):
+                expt.devices[p.device_name][p.property_name] = r
             if not self.running:
                 expt.stop()
 
