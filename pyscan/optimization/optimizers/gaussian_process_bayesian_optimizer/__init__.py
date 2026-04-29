@@ -1,1 +1,1 @@
-from .gaussian_process_bayesian_optimizer import GPBayesianOptimizeScan
+from .gaussian_process_bayesian_optimizer import GPBayesianOptimizeDeviceProperty, GPBayesianOptimizeScan
