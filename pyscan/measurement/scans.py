@@ -1,7 +1,10 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 import numpy as np
 from time import sleep
-from typing import Iterable, TypeVar
+from typing import TypeVar, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..measurement.experiment import Experiment
 from itemattribute import ItemAttribute
 from ..general.same_length import same_length
 
@@ -320,7 +323,7 @@ T = TypeVar('T')
 class OptimizeDeviceProperty[T]:
     '''
     Data Class with the basic fields needed to describe a device property for optimization.
-    If the optimizer needs additional fields, inherit from this class to add fields.
+    If the optimizer needs additional fields, extend this class with an appropriate subclass.
 
     Parameters
     ----------
@@ -329,7 +332,7 @@ class OptimizeDeviceProperty[T]:
     property_name : str
         Property of the device to be changed.
     optimizer_input : str
-        Instrument input provided by the measure_function as ItemAttribute of the Experiment.
+        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
     initial_value : T
         Initial value at which to begin the optimization routine.
@@ -349,7 +352,7 @@ class AbstractOptimizeScan(AbstractScan):
     Parameters
     ----------
     optimize_device_property_list : iterable of OptimizeDeviceProperty
-        List of device Data Classes containing device name, property, initial value, optimizer input,
+        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -380,7 +383,7 @@ class AbstractOptimizeScan(AbstractScan):
 
         self.running = True
 
-    def step_optimizer(self, i, experiment):
+    def step_optimizer(self, i: int, experiment: 'Experiment') -> np.ndarray[T]:
         '''
         Abstract method to be implemented by AbstractOptimizeScan implementations.
 
@@ -388,8 +391,8 @@ class AbstractOptimizeScan(AbstractScan):
         ----------
         i : int
             The index of the data array.
-        experiment : AbstractExperiment
-            Experiment class specifying configuration of runinfo and devices.
+        experiment : Experiment
+            `Experiment` class specifying configuration of runinfo and devices.
 
         Returns
         -------
@@ -398,19 +401,23 @@ class AbstractOptimizeScan(AbstractScan):
         '''
         pass
 
-    def iterate(self, expt, i, d):
+    def iterate(self, expt: 'Experiment', i: int, d: int) -> int | None:
         '''
         Changes `prop` of the listed `devices` to the initial value at step 0 or optimizer recommendation at later
         steps. These new device values are also appended to `scan_dict`.
 
         Parameters
         ----------
+        expt : Experiment
+            Experiment class specifying configuration of runinfo and devices.
         i : int
             The index of the data array.
-        expt : AbstractExperiment
-            Experiment class specifying configuration of runinfo and devices.
         d : int
             Delta change to be applied to index of data array.
+
+        Returns
+        -------
+        Returns exit code 0 if `d` is 0.
         '''
 
         self.i = i
@@ -435,9 +442,14 @@ class AbstractOptimizeScan(AbstractScan):
 
         sleep(self.dt)
 
-    def iterator(self):
+    def iterator(self) -> range:
         '''
         The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
+
+        Returns
+        -------
+        range
+            The range of the maximum iterations that can be performed.
         '''
         if self.n_max is None:
             return range(1)

@@ -1,7 +1,8 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 import numpy as np
-from typing import Iterable
-from pyscan.measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
+from ...measurement.experiment import Experiment
+from ...measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
 
 
 @dataclass
@@ -16,7 +17,7 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
     property_name : str
         Property of the device to be changed.
     optimizer_input : str
-        Instrument input provided by the measure_function as ItemAttribute of the Experiment.
+        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
     initial_value : T
         Initial value at which to begin the optimization routine.
@@ -42,7 +43,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
     Parameters
     ----------
     optimize_device_property_list : iterable of GradientDescentOptimizeDeviceProperty
-        List of device Data Classes containing device name, property, initial value, optimizer input,
+        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -66,7 +67,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         self.dim_ct = len(optimize_device_property_list)
         self.keep_running = np.full(self.dim_ct, True)
 
-    def step_optimizer(self, index, experiment):
+    def step_optimizer(self, index: int, experiment: Experiment) -> np.ndarray[T]:
         '''
         Performs gradient descent using finite differencing.
         Iterates over all input dimensions.
@@ -88,9 +89,27 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
             which is modified for finite difference or gradient update.
         '''
 
-        def gd_f(f_in_prev, f_out, f_out_prev, input_epsilon, learning_rate):
+        def gd_f(f_in_prev: T, f_out: T, f_out_prev: T, input_epsilon: T, learning_rate: T) -> tuple[T, T]:
             """
-            Compute gradient update from forward finite difference
+            Compute gradient update from forward finite difference.
+
+            Parameters
+            ----------
+            f_in_prev : T
+                Previous value of this input to the `measure_function`.
+            f_out : T
+                Output of the `measure_function`.
+            f_out_prev : T
+                Previous output of the `measure_function`.
+            input_epsilon : T
+                Infinintesimal approximation used in finite-differencing to compute the gradient.
+            learning_rate : T
+                Scaler multiplier applied to computed gradients to control the update magnitude.
+
+            Returns
+            -------
+            2-tuple of T
+                The gradient and next input for the `measure_function` at the dimension of this step.
             """
             grad = (f_out - f_out_prev) / input_epsilon
             grad_update = learning_rate * grad

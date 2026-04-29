@@ -1,4 +1,4 @@
 # AbstractOptimizeScan implementations
 from .gradient_descent_optimizer import GradientDescentOptimizeDeviceProperty, GradientDescentOptimizeScan
 from .gaussian_process_bayesian_optimizer import GPBayesianOptimizeDeviceProperty, GPBayesianOptimizeScan
-from .Ax_optimizer import AxOptimizeScan
+from .Ax_optimizer import AxOptimizeDeviceProperty, AxOptimizeScan
