@@ -31,29 +31,29 @@ class TestOptimizeScan(ps.AbstractOptimizeScan):
 
     __test__ = False  # do not search this class for tests
 
-    def __init__(self, device_list, property_list, initialization_list, opt_in,
+    def __init__(self, optimize_device_property_list,
                  sample_f_out,
                  n_max=100):
-        super().__init__(device_list, property_list, initialization_list, opt_in,
+        super().__init__(optimize_device_property_list,
                          sample_f_out,
                          n_max=n_max)
 
     def step_optimizer(self, i, experiment):
-        return [0] * len(self.opt_in)
+        return [0] * len(self.opt_dev_prop_l)
 
 
 @pytest.fixture
-def optimize_scan():
-    return TestOptimizeScan(('v1',), ('voltage',), (2.,), ('v1_readout',),
-                            'vf',
-                            n_max=10)
+def v1_prop():
+    return ps.OptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.)
+
+
+@pytest.fixture
+def optimize_scan(v1_prop):
+    return TestOptimizeScan((v1_prop,), 'vf', n_max=10)
 
 
 @pytest.mark.parametrize('key,value', [
-    ('dev_l', ('v1',)),
-    ('prop_l', ('voltage',)),
-    ('init_l', (2.,)),
-    ('opt_in', ('v1_readout',)),
+    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.),)),
     ('scan_dict', {'iteration': np.array([])}),
     ('sample_f_out', 'vf'),
     ('dt', 0),

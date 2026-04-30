@@ -1,6 +1,4 @@
 import pyscan as ps
-from pyscan.optimization.functions import paraboloid_2D
-from pyscan.optimization.optimizers import GradientDescentOptimizeScan
 import pytest
 from time import sleep
 
@@ -28,25 +26,35 @@ def measure_paraboloid_2D(expt):
 
     d.v1_readout = devices.v1.voltage
     d.v2_readout = devices.v2.voltage
-    d.vf = paraboloid_2D(d.v1_readout, d.v2_readout, e0=4., e1=6.)
+    d.vf = ps.paraboloid_2D(d.v1_readout, d.v2_readout, e0=4., e1=6.)
 
     return d
 
 
 @pytest.fixture
-def gradient_descent_optimize_scan_early_stop():
-    return GradientDescentOptimizeScan(('v1', 'v2'), ('voltage', 'voltage'), (2., 1.), ('v1_readout', 'v2_readout'),
-                                       'vf',
-                                       (1e-1, 1e-1), (1e-1, 1e-1), (1e-1, 1e-1),
-                                       dt=0., n_max=100)
+def v1_prop():
+    return ps.GradientDescentOptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.,
+                                                    1e-1, 1e-1, 1e-1)
 
 
 @pytest.fixture
-def gradient_descent_optimize_scan_n_max():
-    return GradientDescentOptimizeScan(('v1', 'v2'), ('voltage', 'voltage'), (2., 1.), ('v1_readout', 'v2_readout'),
-                                       'vf',
-                                       (1e-1, 1e-1), (1e-1, 1e-1), (1e-1, 1e-1),
-                                       dt=0., n_max=10)
+def v2_prop():
+    return ps.GradientDescentOptimizeDeviceProperty('v2', 'voltage', 'v2_readout', 1.,
+                                                    1e-1, 1e-1, 1e-1)
+
+
+@pytest.fixture
+def gradient_descent_optimize_scan_early_stop(v1_prop, v2_prop):
+    return ps.GradientDescentOptimizeScan((v1_prop, v2_prop),
+                                          'vf',
+                                          dt=0., n_max=100)
+
+
+@pytest.fixture
+def gradient_descent_optimize_scan_n_max(v1_prop, v2_prop):
+    return ps.GradientDescentOptimizeScan((v1_prop, v2_prop),
+                                          'vf',
+                                          dt=0., n_max=10)
 
 
 def test_gradient_descent_optimization_early_stop(gradient_descent_optimize_scan_early_stop,
