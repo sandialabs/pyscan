@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from dataclasses import dataclass
 import numpy as np
@@ -9,22 +10,24 @@ from itemattribute import ItemAttribute
 from ..general.same_length import same_length
 
 
-class AbstractScan(ItemAttribute):
+class AbstractScan(ItemAttribute, ABC):
     '''
     Abstract class for different scan types. Inherits from `.ItemAttribute`.
     '''
 
+    @abstractmethod
     def iterate(self, index, devices):
         '''
         A function to be implemented by inheriting Scan classes.
         '''
-        pass
+        ...
 
+    @abstractmethod
     def check_same_length(self):
         '''
         A function to be implemented by inheriting Scan classes.
         '''
-        pass
+        ...
 
 
 class PropertyScan(AbstractScan):
@@ -255,6 +258,12 @@ class ContinuousScan(AbstractScan):
         if self.n == self.n_max:
             expt.stop()
 
+    def check_same_length(self):
+        '''
+        Not used
+        '''
+        return 1
+
     def iterator(self):
         '''
         The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
@@ -410,6 +419,7 @@ class AbstractOptimizeScan(AbstractScan):
 
         self.running = True
 
+    @abstractmethod
     def step_optimizer(self, i: int, experiment: 'Experiment') -> np.ndarray[T]:
         '''
         Abstract method to be implemented by AbstractOptimizeScan implementations.
@@ -427,7 +437,7 @@ class AbstractOptimizeScan(AbstractScan):
         ndarray
             Array with elements containing next input value for each device property.
         '''
-        pass
+        ...
 
     def iterate(self, expt: 'Experiment', i: int, d: int) -> int | None:
         '''
@@ -469,6 +479,12 @@ class AbstractOptimizeScan(AbstractScan):
                 expt.stop()
 
         sleep(self.dt)
+
+    def check_same_length(self):
+        '''
+        Not used
+        '''
+        return 1
 
     def iterator(self) -> range:
         '''
