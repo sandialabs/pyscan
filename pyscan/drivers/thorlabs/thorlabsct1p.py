@@ -1,6 +1,6 @@
 from itemattribute import ItemAttribute
 from .kinesis import integratedprecisionpiezo as ipp
-from pyscan.general.dimensional_analysis import rescale
+from ...general.dimensional_analysis import rescale
 from ctypes import c_char_p, c_bool, c_int, c_short
 from time import sleep
 
