@@ -52,6 +52,30 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
     n_max : int, optional
         Maximum number of iterations to run. Default is 100.
+
+    Attributes
+    ----------
+    opt_dev_prop_l : iterable of OptimizeDeviceProperty
+        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+        and any other fields needed by the optimizer.
+    sample_f_out : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    dt : float
+        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
+    n_max : int or None
+        Maximum number of iterations to run. Default is 100.
+    scan_dict : dict of string: ndarray
+        Describes and records scan sequence. For optimization scans, this records the iteration.
+    i : int
+        Index of current iteration.
+    n : int
+        Number of measurements performed, including this iteration. `i + 1`.
+    n_max : int
+        Maximum number of measurements that can be performed.
+    running : bool
+        Boolean to indicate if optimization should run the next step.
+        Set to `False` in `step_optimizer` when optimization has ended.
     """
 
     def __init__(self, optimize_device_property_list: Iterable[GradientDescentOptimizeDeviceProperty],

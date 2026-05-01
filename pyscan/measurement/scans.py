@@ -353,19 +353,46 @@ class AbstractOptimizeScan(AbstractScan):
     ----------
     optimize_device_property_list : iterable of OptimizeDeviceProperty
         Iterable of device Data Classes containing device name, property, initial value, optimizer input,
-        and any other fields needed by the optimizer
+        and any other fields needed by the optimizer.
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
         Output for the optimizer to optimize.
     dt : float, optional
         Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
-    n_max : int, optional
+    n_max : int or None, optional
         Maximum number of iterations to run. Default is 100.
+
+    Attributes
+    ----------
+    opt_dev_prop_l : iterable of OptimizeDeviceProperty
+        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+        and any other fields needed by the optimizer.
+    sample_f_out : str
+        Measurement output provided by the measure_function as ItemAttributes of the Experiment.
+        Output for the optimizer to optimize.
+    dt : float
+        Wait time in seconds after each iteration. Used by Experiment classes. Default is 0.
+    n_max : int or None
+        Maximum number of iterations to run. Default is 100.
+    scan_dict : dict of string: ndarray
+        Describes and records scan sequence. For optimization scans, this records the iteration.
+    i : int
+        Index of current iteration.
+    n : int
+        Number of measurements performed, including this iteration. `i + 1`.
+    n_max : int
+        Maximum number of measurements that can be performed.
+    running : bool
+        Boolean to indicate if optimization should run the next step.
+        Set to `False` in `step_optimizer` when optimization has ended.
     '''
 
     def __init__(self, optimize_device_property_list: Iterable[OptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int | None = None):
+        '''
+        Base constructor of abstract interface to be extended by implementations.
+        '''
 
         self.opt_dev_prop_l = optimize_device_property_list
 
@@ -386,6 +413,7 @@ class AbstractOptimizeScan(AbstractScan):
     def step_optimizer(self, i: int, experiment: 'Experiment') -> np.ndarray[T]:
         '''
         Abstract method to be implemented by AbstractOptimizeScan implementations.
+        Set `self.running` to `False` to end the optimization scan.
 
         Parameters
         ----------
