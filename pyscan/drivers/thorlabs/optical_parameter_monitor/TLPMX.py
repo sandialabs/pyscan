@@ -1,3 +1,15 @@
+"""
+From Thorlabs repo Light_Analysis_Examples:
+<https://github.com/Thorlabs/Light_Analysis_Examples>
+
+File `Light_Analysis_Examples/Python/Thorlabs PMxxx Power Meters/TLPMX_dll/TLPMX.py`:
+<https://github.com/Thorlabs/Light_Analysis_Examples/blob/main/Python/Thorlabs%20PMxxx%20Power%20Meters/TLPMX_dll/TLPMX.py>
+
+Flake8 compliance from docformatter:
+`docformatter --in-place --wrap-summaries 120 --wrap-descriptions 120 --force-wrap TLPMX.py`
+and manual cleanup.
+"""
+
 # import os
 from ctypes import cdll, c_long, byref, create_string_buffer, c_char_p, c_int, sizeof, c_voidp
 # from ctypes import c_uint32, c_uint16, c_uint8, c_bool, c_char, c_int16, c_int8, c_double, c_float, Structure
