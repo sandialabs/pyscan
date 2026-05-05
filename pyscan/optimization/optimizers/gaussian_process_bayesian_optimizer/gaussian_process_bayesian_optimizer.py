@@ -1,10 +1,10 @@
-from collections.abc import Collection, Iterable
 from dataclasses import dataclass
+from numbers import Real
 import numpy as np
 from typing import Literal
 from ....general.itertools_recipes import all_equal
 from ....measurement.experiment import Experiment
-from ....measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
+from ....measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty
 from .gp_bayes_opt import bayes_opt_main
 
 
@@ -22,31 +22,31 @@ class GPBayesianOptimizeDeviceProperty(OptimizeDeviceProperty):
     optimizer_input : str
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
-    initial_value : T
+    initial_value : Real
         Initial value at which to begin the optimization routine.
-    domain_range : 3-Collection of T
-        Collection of lower bound, upper bound, and increment magnitude for the property.
-    initialization_scans : iterable of T, optional
-        Iterable of measurement inputs for additional pre-determined scans to be performed
+    domain_range : 3-tuple of Real
+        Lower bound, upper bound, and increment magnitude for the property.
+    initialization_scans : list or tuple of Real, optional
+        Measurement inputs for additional pre-determined scans to be performed
         after the scan specified by `initial_value` and before the optimizer determines scan inputs.
         All provided instances of `GPBayesianOptimizeDeviceProperty` must provide an `initialization_scan` of the same length.
         The initialization scans are only performed if each `GPBayesianOptimizeDeviceProperty` has an `initialization_scan`
         that is not `None`.
         Default is `None`.
     """
-    domain_range: Collection[T, T, T]
-    initialization_scans: Iterable[T] | None = None
+    domain_range: tuple[Real, Real, Real]
+    initialization_scans: list[Real] | tuple[Real] | None = None
 
 
-class GPBayesianOptimizeScan(AbstractOptimizeScan):
+class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProperty]):
     """
     Optimizes objective function using Gaussian process for Bayesian optimization.
     Bayesian optimization method `bayes_opt_main` predicts optimal next measurement from observed data.
 
     Parameters
     ----------
-    optimize_device_property_list : iterable of GPBayesianOptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    optimize_device_property_list : list or tuple of GPBayesianOptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as `ItemAttributes` of the `Experiment`.
@@ -58,13 +58,13 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
     ei_threshold : float, optional
         The expected improvement threshold below which optimization is stopped.
         Default is `1e-1`.
-    extremum : {'min', 'max'}, optional
+    extremum : `{'min', 'max'}`, optional
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
 
     Attributes
     ----------
-    opt_dev_prop_l : iterable of OptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -84,9 +84,15 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
     running : bool
         Boolean to indicate if optimization should run the next step.
         Set to `False` in `step_optimizer` when optimization has ended.
+    ei_threshold : float
+        The expected improvement threshold below which optimization is stopped.
+        Default is `1e-1`.
+    extremum : `{'min', 'max'}`
+        Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
-    def __init__(self, optimize_device_property_list: Iterable[GPBayesianOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: list[GPBayesianOptimizeDeviceProperty]
+                 | tuple[GPBayesianOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int = 100,
                  ei_threshold: float = 1e-1, extremum: Literal['min', 'max'] = 'min'):
@@ -108,9 +114,9 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
             self.init_scan_ct = None
         self.extremum = extremum
         self.ei_threshold = ei_threshold
-        self.set_final_opt = False
+        self.set_final_opt = False  # Set True when opt terminates, final step sets inputs to best discovered value
 
-    def step_optimizer(self, index: int, experiment: Experiment) -> np.ndarray[T]:
+    def step_optimizer(self, index: int, experiment: Experiment) -> list[Real]:
         """
         Performs global optimization step using `bayes_opt_main` from `gp_bayes_opt`.
         Calculates expected improvement and determines whether optimization should continue.
@@ -128,11 +134,11 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
 
         Returns
         -------
-        ndarray
-            Array with elements containing next input value for each device property.
+        list of Real
+            Next input value for each device property.
         """
 
-        def postproc_extremum(y: T, extremum: str) -> T:
+        def postproc_extremum(y: Real, extremum: str) -> Real:
             match extremum:
                 case 'max':
                     return y
@@ -141,7 +147,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
                 case _:
                     raise ValueError('Extremum must be max or min')
 
-        def get_arg_opt(y: np.ndarray[T], extremum: str) -> int:
+        def get_arg_opt(y: np.ndarray[Real], extremum: str) -> int:
             match extremum:
                 case 'max':
                     return np.argmax(y)
@@ -172,11 +178,11 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan):
             if self.init_scan_ct is not None and index <= self.init_scan_ct:
                 # non-optimized measurement points to intialize Gaussian process
                 i_prev = index - 1  # init_scans are indexed 1 behind expt because 1st init from init_dict
-                f_in_next = np.asarray([p.initialization_scans[i_prev] for p in self.opt_dev_prop_l], dtype=np.float64)
-                return f_in_next
+                f_in_next = [p.initialization_scans[i_prev] for p in self.opt_dev_prop_l]
+                return f_in_next  # initialization scan could be None, constructor checks for this
             else:  # optimize next measurement
                 f_in_next, keep_running = bayes_opt_main([p.domain_range for p in self.opt_dev_prop_l],
                                                          self.X_train, self.y_train,
                                                          ei_threshold=self.ei_threshold)
                 self.set_final_opt = not keep_running or not (index < self.last_optim_idx)
-                return f_in_next.numpy().astype(np.float64)
+                return f_in_next.numpy().astype(np.float64).tolist()

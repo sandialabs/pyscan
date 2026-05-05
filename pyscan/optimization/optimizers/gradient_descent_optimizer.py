@@ -1,8 +1,8 @@
-from collections.abc import Iterable
 from dataclasses import dataclass
+from numbers import Real
 import numpy as np
 from ...measurement.experiment import Experiment
-from ...measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
+from ...measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty
 
 
 @dataclass
@@ -19,22 +19,22 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
     optimizer_input : str
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
-    initial_value : T
+    initial_value : Real
         Initial value at which to begin the optimization routine.
-    input_epsilon : T
+    input_epsilon : Real
         Infinintesimal approximation used in finite-differencing to compute the gradient.
-    learning_rate: T
+    learning_rate: Real
         Scaler multiplier applied to computed gradients to control the update magnitude.
-    update_epsilon: T
+    update_epsilon: Real
         Gradient update threshold.
         Optimization stops early if updates for all inputs are below thresholds.
     """
-    input_epsilon: T
-    learning_rate: T
-    update_epsilon: T
+    input_epsilon: Real
+    learning_rate: Real
+    update_epsilon: Real
 
 
-class GradientDescentOptimizeScan(AbstractOptimizeScan):
+class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDeviceProperty]):
     """
     Minimizes objective function using gradient descent.
     Gradients are approximated using forward finite differences.
@@ -42,8 +42,8 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
     Parameters
     ----------
-    optimize_device_property_list : iterable of GradientDescentOptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    optimize_device_property_list : list or tuple of GradientDescentOptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -55,8 +55,8 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
     Attributes
     ----------
-    opt_dev_prop_l : iterable of OptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -78,7 +78,8 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
         Set to `False` in `step_optimizer` when optimization has ended.
     """
 
-    def __init__(self, optimize_device_property_list: Iterable[GradientDescentOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: list[GradientDescentOptimizeDeviceProperty]
+                 | tuple[GradientDescentOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0, n_max: int = 100):
 
@@ -86,12 +87,12 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
                          sample_function_output,
                          dt=dt, n_max=n_max)
 
-        self.dim = 0
-        self.fd_step = True
+        self.dim = 0  # dim to be optimized on this pair of finite diff and grad steps
+        self.fd_step = True  # for each dimension, first a finite diff and then a grad step are performed
         self.dim_ct = len(optimize_device_property_list)
-        self.keep_running = np.full(self.dim_ct, True)
+        self.keep_running = np.full(self.dim_ct, True)  # stop when all gradient updates are less than epsilons
 
-    def step_optimizer(self, index: int, experiment: Experiment) -> np.ndarray[T]:
+    def step_optimizer(self, index: int, experiment: Experiment) -> list[Real]:
         '''
         Performs gradient descent using finite differencing.
         Iterates over all input dimensions.
@@ -107,32 +108,33 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan):
 
         Returns
         -------
-        ndarray
-            Array with elements containing next input value for each device property.
+        list of Real
+            Next input value for each device property.
             Same as last except for updating dimension,
             which is modified for finite difference or gradient update.
         '''
 
-        def gd_f(f_in_prev: T, f_out: T, f_out_prev: T, input_epsilon: T, learning_rate: T) -> tuple[T, T]:
+        def gd_f(f_in_prev: Real, f_out: Real, f_out_prev: Real,
+                 input_epsilon: Real, learning_rate: Real) -> tuple[Real, Real]:
             """
             Compute gradient update from forward finite difference.
 
             Parameters
             ----------
-            f_in_prev : T
+            f_in_prev : Real
                 Previous value of this input to the `measure_function`.
-            f_out : T
+            f_out : Real
                 Output of the `measure_function`.
-            f_out_prev : T
+            f_out_prev : Real
                 Previous output of the `measure_function`.
-            input_epsilon : T
+            input_epsilon : Real
                 Infinintesimal approximation used in finite-differencing to compute the gradient.
-            learning_rate : T
+            learning_rate : Real
                 Scaler multiplier applied to computed gradients to control the update magnitude.
 
             Returns
             -------
-            2-tuple of T
+            2-tuple of Real
                 The gradient and next input for the `measure_function` at the dimension of this step.
             """
             grad = (f_out - f_out_prev) / input_epsilon

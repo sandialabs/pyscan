@@ -1,12 +1,11 @@
 from ax.api.client import Client
 from ax.api.configs import RangeParameterConfig
-from collections.abc import Collection, Iterable
 from dataclasses import dataclass
-import numpy as np
+from numbers import Real
 from typing import Literal
 from ...general.itertools_recipes import all_equal
 from ...measurement.experiment import Experiment
-from ...measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty, T
+from ...measurement.scans import AbstractOptimizeScan, OptimizeDeviceProperty
 
 
 @dataclass
@@ -23,31 +22,31 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
     optimizer_input : str
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
-    initial_value : T
+    initial_value : Real
         Initial value at which to begin the optimization routine.
-    bounds : 2-Collection of T
-        Collection of lower and upper bound for the property.
-    initialization_scans : iterable of T, optional
-        Iterable of measurement inputs for additional pre-determined scans to be performed
+    bounds : 2-tuple of Real
+        Lower and upper bound for the property.
+    initialization_scans : list or tuple of Real, optional
+        Measurement inputs for additional pre-determined scans to be performed
         after the scan specified by `initial_value` and before the optimizer determines scan inputs.
         All provided instances of `AxOptimizeDeviceProperty` must provide an `initialization_scan` of the same length.
         The initialization scans are only performed if each `AxOptimizeDeviceProperty` has an `initialization_scan`
         that is not `None`.
         Default is `None`.
     """
-    bounds: Collection[T, T]
-    initialization_scans: Iterable[T] | None = None
+    bounds: tuple[Real, Real]
+    initialization_scans: list[Real] | tuple[Real] | None = None
 
 
-class AxOptimizeScan(AbstractOptimizeScan):
+class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
     """
     Global optimization routine using Ax Client API.
     Minimizes objective function using Bayesian optimization.
 
     Parameters
     ----------
-    optimize_device_property_list : iterable of AxOptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    optimize_device_property_list : list or tuple of AxOptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
         Measurement output provided by the measure_function as `ItemAttributes` of the `Experiment`.
@@ -57,21 +56,23 @@ class AxOptimizeScan(AbstractOptimizeScan):
     n_max : int, optional
         Maximum number of iterations to run. Default is `100`.
     global_imporvement_threshold : float, optional
-        Positive threshold of improvement magnitude below which optimization is stopped. Default is `1e-2`.
+        Positive threshold of improvement magnitude below which optimization is stopped.
+        Default is `1e-2`.
     global_improvement_index_window: int, optional
-        Nonnegative number of consecutive iterations that must have improvement below threshold before optimization is stopped.
+        Nonnegative number of consecutive iterations that must have improvement below threshold
+        before optimization is stopped.
         Default is `10`.
     global_improvement_start_index : int, optional
         Nonnegative number of iterations to guarantee are performed.
         If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
         but the index is lower than `global_improvement_start_index`, then optimization will continue.
-    extremum : {'min', 'max'}, optional
+    extremum : `{'min', 'max'}`, optional
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
 
     Attributes
     ----------
-    opt_dev_prop_l : iterable of OptimizeDeviceProperty
-        Iterable of device Data Classes containing device name, property, initial value, optimizer input,
+    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+        Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
         Measurement output provided by the measure_function as ItemAttributes of the Experiment.
@@ -91,12 +92,26 @@ class AxOptimizeScan(AbstractOptimizeScan):
     running : bool
         Boolean to indicate if optimization should run the next step.
         Set to `False` in `step_optimizer` when optimization has ended.
+    gi_t : float
+        Positive threshold of improvement magnitude below which optimization is stopped.
+        Default is `1e-2`.
+    gi_i_w: int
+        Nonnegative number of consecutive iterations that must have improvement below threshold
+        before optimization is stopped.
+        Default is `10`.
+    gi_st_i : int
+        Nonnegative number of iterations to guarantee are performed.
+        If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
+        but the index is lower than `global_improvement_start_index`, then optimization will continue.
+    extremum : `{'min', 'max'}`
+        Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
-    def __init__(self, optimize_device_property_list: Iterable[AxOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: list[AxOptimizeDeviceProperty]
+                 | tuple[AxOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int = 100,
-                 global_improvement_threshold: T = 1e-2,
+                 global_improvement_threshold: Real = 1e-2,
                  global_improvement_index_window: int = 10,
                  global_improvement_start_index: int = 10,
                  extremum: Literal['min', 'max'] = 'min'):
@@ -146,10 +161,11 @@ class AxOptimizeScan(AbstractOptimizeScan):
         self.proposed_trial_index = None
         self.gi_latest_i = None
 
-    def step_optimizer(self, index: int, experiment: Experiment) -> np.ndarray[T]:
+    def step_optimizer(self, index: int, experiment: Experiment) -> list[Real]:
         """
         Performs global optimization step using Ax Client API.
-        Compares new objective function result with previous best and determines whether optimization should continue.
+        Compares new objective function result with previous best and determines whether
+        optimization should continue.
         Returns the best point so far if optimization stops.
         Loads a pre-initialized point or the results of the last proposed trial into the client.
         Requests and returns the next point to sample from the client.
@@ -163,11 +179,11 @@ class AxOptimizeScan(AbstractOptimizeScan):
 
         Returns
         -------
-        ndarray
-            Array with elements containing next input value for each device property.
+        list of Real
+            Next input value for each device property.
         """
 
-        def early_stop(f_out: T, f_out_best: T, index: int) -> bool:
+        def early_stop(f_out: Real, f_out_best: Real, index: int) -> bool:
             """
             Global early stopping routine.
             """
@@ -221,16 +237,16 @@ class AxOptimizeScan(AbstractOptimizeScan):
         if self.init_scan_ct is not None \
                 and index <= self.init_scan_ct:
             # get next point from init_scans
-            f_in_next = np.array([p.initialization_scans[i_prev] for p in self.opt_dev_prop_l])
+            f_in_next = [p.initialization_scans[i_prev] for p in self.opt_dev_prop_l]
             # init_scans idx 1 behind expt for init_dict
-            return f_in_next
+            return f_in_next  # initialization scan could be None, constructor checks for this
         else:
             # get next point from Client
             trials = self.client.get_next_trials(max_trials=1)  # only 1 trial
             for trial_index, parameters in trials.items():  # only 1 item
-                f_in_next = np.array([
+                f_in_next = [
                     parameters[p.optimizer_input]
                     for p in self.opt_dev_prop_l
-                ])
+                ]
                 self.proposed_trial_index = trial_index
             return f_in_next
