@@ -553,15 +553,12 @@ def check_doc_strings(test_instrument):
     except Exception:
         assert False, "doc string found but is only one line"
 
+    lines = [s.lstrip() for s in lines]
+
     post_str = " not properly formatted or in doc string."
 
-    assert '    Parameters' in lines, "Input parameters" + post_str
-
-    assert '    Attributes\n    ----------\n    (Properties)\n' in doc_string, "Attributes" + post_str
-
-    following_lines = lines[lines.index('    Parameters'):]
-    for line in following_lines:
-        assert line.startswith('    ') or line == '', "Improper indentation of line {}".format(repr(line))
+    # Python 3.13 drops docstring leading whitespace: no-longer can check indent level
+    assert 'Parameters' in lines, "Input parameters" + post_str
 
     check_attribute_doc_strings(test_instrument)
 

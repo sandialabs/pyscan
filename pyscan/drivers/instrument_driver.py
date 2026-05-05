@@ -432,7 +432,7 @@ class InstrumentDriver(ItemAttribute):
 
         doc = self.__doc__.split('\n')
 
-        r = "    {} :".format(prop_name)
+        r = "{} :".format(prop_name)
 
         def find_match(str):
             if r in str:
@@ -452,17 +452,16 @@ class InstrumentDriver(ItemAttribute):
             if string == match:
                 break
 
-        doc_string = doc[i][4::]
+        doc_string = doc[i]
 
         for j in range(len(doc)):
             try:
                 doc[i + 1 + j]
             except:
                 break
-            if (doc[i + 1 + j][0:1] == '\n') or (len(doc[i + 1 + j][0:7].strip()) != 0):
-                # print(repr(doc[i + 1 + j]))
+            if doc[i + 1 + j][0:1] == '\n':
                 break
             else:
-                doc_string = doc_string + '\n' + doc[i + 1 + j][4::]
+                doc_string = doc_string + '\n' + doc[i + 1 + j]
 
         return doc_string
