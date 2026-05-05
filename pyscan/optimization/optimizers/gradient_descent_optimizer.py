@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from numbers import Real
 import numpy as np
@@ -42,7 +43,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
 
     Parameters
     ----------
-    optimize_device_property_list : list or tuple of GradientDescentOptimizeDeviceProperty
+    optimize_device_property_list : Sequence of GradientDescentOptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
@@ -55,7 +56,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
 
     Attributes
     ----------
-    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+    opt_dev_prop_l : Sequence of OptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
@@ -78,8 +79,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
         Set to `False` in `step_optimizer` when optimization has ended.
     """
 
-    def __init__(self, optimize_device_property_list: list[GradientDescentOptimizeDeviceProperty]
-                 | tuple[GradientDescentOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: Sequence[GradientDescentOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0, n_max: int = 100):
 

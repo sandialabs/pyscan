@@ -1,5 +1,6 @@
 from ax.api.client import Client
 from ax.api.configs import RangeParameterConfig
+from collections.abc import Sequence
 from dataclasses import dataclass
 from numbers import Real
 from typing import Literal
@@ -26,7 +27,7 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Initial value at which to begin the optimization routine.
     bounds : 2-tuple of Real
         Lower and upper bound for the property.
-    initialization_scans : list or tuple of Real, optional
+    initialization_scans : Sequence of Real, optional
         Measurement inputs for additional pre-determined scans to be performed
         after the scan specified by `initial_value` and before the optimizer determines scan inputs.
         All provided instances of `AxOptimizeDeviceProperty` must provide an `initialization_scan` of the same length.
@@ -35,7 +36,7 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Default is `None`.
     """
     bounds: tuple[Real, Real]
-    initialization_scans: list[Real] | tuple[Real] | None = None
+    initialization_scans: Sequence[Real] | None = None
 
 
 class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
@@ -45,7 +46,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
 
     Parameters
     ----------
-    optimize_device_property_list : list or tuple of AxOptimizeDeviceProperty
+    optimize_device_property_list : Sequence of AxOptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
@@ -71,7 +72,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
 
     Attributes
     ----------
-    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+    opt_dev_prop_l : Sequence of OptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
@@ -107,8 +108,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
-    def __init__(self, optimize_device_property_list: list[AxOptimizeDeviceProperty]
-                 | tuple[AxOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: Sequence[AxOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int = 100,
                  global_improvement_threshold: Real = 1e-2,

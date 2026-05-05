@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from dataclasses import dataclass
 from numbers import Real
 import numpy as np
@@ -362,7 +363,7 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
 
     Parameters
     ----------
-    optimize_device_property_list : list or tuple of OptimizeDeviceProperty
+    optimize_device_property_list : Sequence of OptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_function_output : str
@@ -375,7 +376,7 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
 
     Attributes
     ----------
-    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+    opt_dev_prop_l : Sequence of OptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
@@ -398,7 +399,7 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
         Set to `False` in `step_optimizer` when optimization has ended.
     '''
 
-    def __init__(self, optimize_device_property_list: list[ODP] | tuple[ODP],
+    def __init__(self, optimize_device_property_list: Sequence[ODP],
                  sample_function_output: str,
                  dt: float = 0., n_max: int | None = None):
         '''
@@ -422,7 +423,7 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
         self.running = True
 
     @abstractmethod
-    def step_optimizer(self, i: int, experiment: 'Experiment') -> list[Real] | tuple[Real]:
+    def step_optimizer(self, i: int, experiment: 'Experiment') -> Sequence[Real]:
         '''
         Abstract method to be implemented by AbstractOptimizeScan implementations.
         Set `self.running` to `False` to end the optimization scan.
@@ -436,7 +437,7 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
 
         Returns
         -------
-        list or tuple of Real
+        Sequence of Real
             Next input value for each device property.
         '''
         ...

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 from numbers import Real
 import numpy as np
@@ -26,7 +27,7 @@ class GPBayesianOptimizeDeviceProperty(OptimizeDeviceProperty):
         Initial value at which to begin the optimization routine.
     domain_range : 3-tuple of Real
         Lower bound, upper bound, and increment magnitude for the property.
-    initialization_scans : list or tuple of Real, optional
+    initialization_scans : Sequence of Real, optional
         Measurement inputs for additional pre-determined scans to be performed
         after the scan specified by `initial_value` and before the optimizer determines scan inputs.
         All provided instances of `GPBayesianOptimizeDeviceProperty` must provide an `initialization_scan` of the same length.
@@ -35,7 +36,7 @@ class GPBayesianOptimizeDeviceProperty(OptimizeDeviceProperty):
         Default is `None`.
     """
     domain_range: tuple[Real, Real, Real]
-    initialization_scans: list[Real] | tuple[Real] | None = None
+    initialization_scans: Sequence[Real] | None = None
 
 
 class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProperty]):
@@ -45,7 +46,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
 
     Parameters
     ----------
-    optimize_device_property_list : list or tuple of GPBayesianOptimizeDeviceProperty
+    optimize_device_property_list : Sequence of GPBayesianOptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer
     sample_function_output : str
@@ -63,7 +64,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
 
     Attributes
     ----------
-    opt_dev_prop_l : list or tuple of OptimizeDeviceProperty
+    opt_dev_prop_l : Sequence of OptimizeDeviceProperty
         Data Classes containing device name, property, initial value, optimizer input,
         and any other fields needed by the optimizer.
     sample_f_out : str
@@ -91,8 +92,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
-    def __init__(self, optimize_device_property_list: list[GPBayesianOptimizeDeviceProperty]
-                 | tuple[GPBayesianOptimizeDeviceProperty],
+    def __init__(self, optimize_device_property_list: Sequence[GPBayesianOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int = 100,
                  ei_threshold: float = 1e-1, extremum: Literal['min', 'max'] = 'min'):
