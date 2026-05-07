@@ -20,12 +20,8 @@ class BKPrecision9130B(InstrumentDriver):
         Values: [0, 1]
     voltage : float
         Range: [0, 30]
-    voltages : [float, float, float]
-        Ranges: [[0, 30], [0, 30]. [0, 5]]
     current : float
         Range: [0, 4]
-    currents : [float, float, float]
-        Ranges: [[0, 3], [0, 3], [0, 3]]
     '''
 
     def __init__(self, instrument):
@@ -59,25 +55,11 @@ class BKPrecision9130B(InstrumentDriver):
             'return_type': float})
 
         self.add_device_property({
-            'name': 'voltages',
-            'write_string': 'APPLY:VOLT {},{},{}',
-            'query_string': 'MEAS:VOLT:ALL?',
-            'ranges': [[0, 30], [0, 30], [0, 5]],
-            'return_type': lambda x: [float(q) for q in x.split(", ")]})
-
-        self.add_device_property({
             'name': 'current',
             'write_string': 'CURR {}',
             'query_string': 'CURR?',
             'range': [0, 4],
             'return_type': float})
-
-        self.add_device_property({
-            'name': 'currents',
-            'write_string': 'APPLY:CURR {},{},{}',
-            'query_string': 'MEAS:CURR:ALL?',
-            'ranges': [[0, 3], [0, 3], [0, 3]],
-            'return_type': lambda x: [float(q) for q in x.split(", ")]})
 
     def set_outputs(self, on):
 
