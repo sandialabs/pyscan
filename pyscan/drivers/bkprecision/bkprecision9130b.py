@@ -69,3 +69,43 @@ class BKPrecision9130B(InstrumentDriver):
                 self.output = 1
             else:
                 self.output = 0
+
+    def get_currents(self):
+        Is = self.query('MEAS:CURR:ALL?')
+
+        self._i1, self._i2, self._i3 = [float(q) for q in Is.split(", ")]
+
+        return self._i1, self._i2, self._i3
+
+    @property
+    def i1(self):
+        self.channel = 1
+        self._i1 = self.current
+        return self._i1
+
+    @i1.setter
+    def i1(self, new_value):
+        self.channel = 1
+        self._i1 = self.current
+
+    @property
+    def i2(self):
+        self.channel = 2
+        self._i1 = self.current
+        return self._i1
+
+    @i2.setter
+    def i2(self, new_value):
+        self.channel = 2
+        self._i2 = self.current
+
+    @property
+    def i3(self):
+        self.channel = 3
+        self._i3 = self.current
+        return self._i3
+
+    @i3.setter
+    def i3(self, new_value):
+        self.channel = 3
+        self._i3 = self.current

@@ -1,5 +1,4 @@
 from .bkprecision9130b import BKPrecision9130B
-from time import sleep
 import numpy as np
 
 
@@ -13,21 +12,37 @@ class BKHelmholtz(BKPrecision9130B):
 
     @property
     def ix(self):
-        self._ix = self.currents[0]
+        self._ix = self.i1
         return self._ix
 
     @ix.setter
     def ix(self, new_value):
-        if (new_value >= 0) and (new_value <= 4):
-            self.channel = 1
-            self.current = new_value
-            self._ix = new_value
-        else:
-            print('Current out of range 0 <= ix <= 4')
+        self.i1 = new_value
+        self._ix = new_value
+
+    @property
+    def iy(self):
+        self._iy = self.i2
+        return self._iy
+
+    @iy.setter
+    def iy(self, new_value):
+        self.i2 = new_value
+        self._iy = new_value
+
+    @property
+    def iz(self):
+        self._iz = self.i3
+        return self._iz
+
+    @iz.setter
+    def iz(self, new_value):
+        self.i3 = new_value
+        self._iz = new_value
 
     @property
     def bx(self):
-        self._bx = self.currents[0] * self.current_to_field
+        self._bx = self.ix * self.current_to_field
         return self._bx
 
     @bx.setter
@@ -35,29 +50,14 @@ class BKHelmholtz(BKPrecision9130B):
 
         if (0 <= new_value) and (new_value < 20):
             self.ix = new_value / self.current_to_field
-            sleep(1)
+            # sleep(1)
             self._bx = new_value
         else:
             print('Current out of range 0 <= bx <= 20 Gauss')
 
     @property
-    def iy(self):
-        self._iy = self.currents[1]
-        return self._iy
-
-    @iy.setter
-    def iy(self, new_value):
-
-        if (new_value >= 0) and (new_value <= 4):
-            self.channel = 2
-            self.current = new_value
-            self._iy = new_value
-        else:
-            print('Current out of range 0 <= iy <= 4')
-
-    @property
     def by(self):
-        self._by = self.currents[1] * self.current_to_field
+        self._by = self.iy * self.current_to_field
         return self._by
 
     @by.setter
@@ -65,29 +65,14 @@ class BKHelmholtz(BKPrecision9130B):
 
         if (new_value >= 0) and (new_value <= 20):
             self.iy = new_value / self.current_to_field
-            sleep(1)
+            # sleep(1)
             self._by = new_value
         else:
             print('Current out of range 0 <= by <= 20 Gauss')
 
     @property
-    def iz(self):
-        self._iz = self.currents[2]
-        return self._iz
-
-    @iz.setter
-    def iz(self, new_value):
-
-        if (new_value >= 0) and (new_value <= 4):
-            self.channel = 3
-            self.current = new_value
-            self._iz = new_value
-        else:
-            print('Current out of range 0 <= iz <= 4')
-
-    @property
     def bz(self):
-        self._bz = self.currents[2] * self.current_to_field
+        self._bz = self.iz * self.current_to_field
         return self._bz
 
     @bz.setter
@@ -95,7 +80,7 @@ class BKHelmholtz(BKPrecision9130B):
 
         if (new_value >= 0) and (new_value <= 20):
             self.iz = new_value / self.current_to_field
-            sleep(1)
+            # sleep(1)
             self._bz = new_value
         else:
             print('Current out of range 0 <= bz <= 20 Gauss')
@@ -118,11 +103,11 @@ class BKHelmholtz(BKPrecision9130B):
             by = new_value * np.sin(theta) * np.sin(phi)
 
             self.bx = bx
-            sleep(1)
+            # sleep(1)
             self.by = by
-            sleep(1)
+            # sleep(1)
             self.bz = bz
-            sleep(1)
+            # sleep(1)
 
         else:
             print('B magnetude out of range 0 <= Bmag <= 20 Gauss')
@@ -147,11 +132,11 @@ class BKHelmholtz(BKPrecision9130B):
             by = bmag * np.sin(theta) * np.sin(phi)
 
             self.bx = bx
-            sleep(1)
+            # sleep(1)
             self.by = by
-            sleep(1)
+            # sleep(1)
             self.bz = bz
-            sleep(1)
+            # sleep(1)
 
         else:
             print('B theta out of range 0 <= Bmag <= 90 degrees')
@@ -175,11 +160,11 @@ class BKHelmholtz(BKPrecision9130B):
             by = bmag * np.sin(theta) * np.sin(phi)
 
             self.bx = bx
-            sleep(1)
+            # sleep(1)
             self.by = by
-            sleep(1)
+            # sleep(1)
             self.bz = bz
-            sleep(1)
+            # sleep(1)
 
         else:
             print('B phi out of range 0 <= Bmag <= 90 degrees')
