@@ -7,11 +7,7 @@ FREQ_REGS = 1
 try:
     spinapi = ctypes.CDLL("spinapi64")
 except:
-    try:
-        spinapi = ctypes.CDLL("spinapi")
-    except:
-        print("Failed to load spinapi library.")
-        pass
+    spinapi = ctypes.CDLL("spinapi")
 
 
 def enum(**enums):
