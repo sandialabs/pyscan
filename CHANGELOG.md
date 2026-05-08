@@ -1,8 +1,18 @@
+# [0.9.0](https://github.com/sandialabs/pyscan/compare/v0.8.10...v0.9.0) (2026-05-08)
+
+
+### Features
+
+* **driver:** added in basler camera driver and api ([#259](https://github.com/sandialabs/pyscan/issues/259)) ([f9ede7d](https://github.com/sandialabs/pyscan/commit/f9ede7d26066d547e5ef619e70e22c65019a0c4b)), closes [#260](https://github.com/sandialabs/pyscan/issues/260)
+
+
+
 ## [0.8.10](https://github.com/sandialabs/pyscan/compare/v0.8.9...v0.8.10) (2026-05-08)
 
 
 ### Bug Fixes
 
+* **drivers:** fixed bkhelmholtz to work like new pyscan style, with now ranges properties' ([#258](https://github.com/sandialabs/pyscan/issues/258)) ([a91abca](https://github.com/sandialabs/pyscan/commit/a91abca9375b8f2aeb7201cacc54df597fa5838b))
 * **drivers:** fixed bkhelmholtz to work like new pyscan style, with now ranges properties' ([#258](https://github.com/sandialabs/pyscan/issues/258)) ([c3000b9](https://github.com/sandialabs/pyscan/commit/c3000b9d03689c1de72868351fa115d49f43282d))
 
 
