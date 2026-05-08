@@ -1,9 +1,19 @@
+## [0.8.10](https://github.com/sandialabs/pyscan/compare/v0.8.9...v0.8.10) (2026-05-08)
+
+
+### Bug Fixes
+
+* **drivers:** fixed bkhelmholtz to work like new pyscan style, with now ranges properties' ([#258](https://github.com/sandialabs/pyscan/issues/258)) ([c3000b9](https://github.com/sandialabs/pyscan/commit/c3000b9d03689c1de72868351fa115d49f43282d))
+
+
+
 ## [0.8.9](https://github.com/sandialabs/pyscan/compare/v0.8.8...v0.8.9) (2025-11-18)
 
 
 ### Bug Fixes
 
 * **tests:** check that data_path is Path instead of PosixPath to accommodate Windows systems in experiment runinfo type post-measurement tests ([#254](https://github.com/sandialabs/pyscan/issues/254)) ([fb70470](https://github.com/sandialabs/pyscan/commit/fb70470739d3b4de7f1ca44fa2421cb8864a0d19))
+* **tests:** check that data_path is Path instead of PosixPath to accommodate Windows systems in experiment runinfo type post-measurement tests ([#254](https://github.com/sandialabs/pyscan/issues/254)) [skip ci] ([000f7b3](https://github.com/sandialabs/pyscan/commit/000f7b3c6b83c190edc4f877370a8826be5221ba))
 
 
 
