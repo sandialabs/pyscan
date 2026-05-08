@@ -54,7 +54,8 @@ setup(
         'seabreeze',
         'pylablib',
         'pyscan-tlk',
-        'itemattribute'
+        'itemattribute',
+        'pypylon'
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
