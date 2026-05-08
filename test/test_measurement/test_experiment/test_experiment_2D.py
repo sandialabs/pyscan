@@ -45,8 +45,8 @@ def test_experiment_post_measure_2D(runinfo, devices):
         ('x1', np.array([[0., 0., 0.], [1., 1., 1.]]), np.ndarray, (2, 3)),
         ('x2', np.array(
             [[[0., 0.], [0., 0.], [0., 0.]],
-            [[1., 1.], [1., 1.], [1., 1.]]]), np.ndarray, (2, 3, 2)),
-        ('x3', np.array((list(np.zeros((3, 2, 2))), list(np.ones((3, 2, 2))))), np.ndarray, (2, 3, 2, 2))]:
+             [[1., 1.], [1., 1.], [1., 1.]]]), np.ndarray, (2, 3, 2)),
+            ('x3', np.array((list(np.zeros((3, 2, 2))), list(np.ones((3, 2, 2))))), np.ndarray, (2, 3, 2, 2))]:
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
         assert np.allclose(expt[key], value), 'Value of {} is not {}'.format(key, value)
@@ -64,7 +64,7 @@ def test_runinfo_contents_post_measure_2D(runinfo, devices):
         ('_dims', (2, 3)),
         ('_ndim', 2),
         ('_indicies', [1, 2]),
-        ('complete', True)]:
+            ('complete', True)]:
         assert expt.runinfo[key] == value, 'Value of {} is not {}'.format(key, value)
 
 
@@ -77,6 +77,6 @@ def test_runinfo_types_post_measure_2D(runinfo, devices):
         ('scan1', ps.PropertyScan),
         ('data_path', Path),
         ('_pyscan_version', str),
-        ('file_name', str)]:
+            ('file_name', str)]:
 
         assert isinstance(expt.runinfo[key], t), 'Value of {} is not {}'.format(key, t)

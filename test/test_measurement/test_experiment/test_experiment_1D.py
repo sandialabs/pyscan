@@ -47,7 +47,7 @@ def test_measure_function_returns(runinfo, devices):
     for key, value, t, shape in [
         ('x1', 0, int, ()),
         ('x2', [0, 0], list, (2,)),
-        ('x3', [[0, 0], [0, 0]], list, (2, 2))]:
+            ('x3', [[0, 0], [0, 0]], list, (2, 2))]:
         assert isinstance(d, ps.ItemAttribute), 'measure_function does not return ItemAttribute'
         assert hasattr(d, key), 'ItemAttribute does not have key {}'.format(key)
         assert d[key] == value, 'Value of {} is not {}'.format(key, value)
@@ -60,7 +60,7 @@ def test_experiment_post_measure_1D(runinfo, devices):
         ('v1_voltage', np.array([0, 0.1]), np.ndarray, (2,)),
         ('x1', np.array([0.0, 1.0]), np.ndarray, (2,)),
         ('x2', np.array([[0.0, 0.0], [1.0, 1.0]]), np.ndarray, (2, 2)),
-        ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
+            ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
         assert np.allclose(expt[key], value), 'Value of {} is not {}'.format(key, value)
@@ -75,7 +75,7 @@ def test_runinfo_post_measure_1D(runinfo, devices):
         ('v1_voltage', np.array([0, 0.1]), np.ndarray, (2,)),
         ('x1', np.array([0.0, 1.0]), np.ndarray, (2,)),
         ('x2', np.array([[0.0, 0.0], [1.0, 1.0]]), np.ndarray, (2, 2)),
-        ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
+            ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
         assert np.allclose(expt[key], value), 'Value of {} is not {}'.format(key, value)
@@ -93,7 +93,7 @@ def test_runinfo_contents_post_measure_1D(runinfo, devices):
         ('_dims', (2,)),
         ('_ndim', 1),
         ('_indicies', [1]),
-        ('complete', True)]:
+            ('complete', True)]:
         assert hasattr(expt.runinfo, key), 'RunInfo does not have key {}'.format(key)
         assert expt.runinfo[key] == value, 'Value of {} is not {}'.format(key, value)
 
@@ -106,7 +106,7 @@ def test_runinfo_types_post_measure_1D(runinfo, devices):
         ('scan0', ps.PropertyScan),
         ('data_path', Path),
         ('_pyscan_version', str),
-        ('file_name', str)]:
+            ('file_name', str)]:
         assert hasattr(expt.runinfo, key), 'RunInfo does not have key {}'.format(key)
         assert isinstance(expt.runinfo[key], t), 'Value of {} is not {}'.format(key, t)
 

@@ -1,21 +1,21 @@
 from .bkprecision9130b import BKPrecision9130B
 from time import sleep
+import numpy as np
 
 
 class BKHelmholtz(BKPrecision9130B):
 
-    def __init__(self,instrument, current_to_field=5):
-    
+    def __init__(self, instrument, current_to_field=5):
+
         super().__init__(instrument)
 
         self.current_to_field = current_to_field
-
 
     @property
     def ix(self):
         self._ix = self.currents[0]
         return self._ix
-    
+
     @ix.setter
     def ix(self, new_value):
         if (new_value >= 0) and (new_value <= 4):
@@ -29,12 +29,12 @@ class BKHelmholtz(BKPrecision9130B):
     def bx(self):
         self._bx = self.currents[0] * self.current_to_field
         return self._bx
-    
+
     @bx.setter
     def bx(self, new_value):
 
         if (0 <= new_value) and (new_value < 20):
-            self.ix = new_value/self.current_to_field
+            self.ix = new_value / self.current_to_field
             sleep(1)
             self._bx = new_value
         else:
@@ -44,7 +44,7 @@ class BKHelmholtz(BKPrecision9130B):
     def iy(self):
         self._iy = self.currents[1]
         return self._iy
-    
+
     @iy.setter
     def iy(self, new_value):
 
@@ -59,7 +59,7 @@ class BKHelmholtz(BKPrecision9130B):
     def by(self):
         self._by = self.currents[1] * self.current_to_field
         return self._by
-    
+
     @by.setter
     def by(self, new_value):
 
@@ -74,7 +74,7 @@ class BKHelmholtz(BKPrecision9130B):
     def iz(self):
         self._iz = self.currents[2]
         return self._iz
-    
+
     @iz.setter
     def iz(self, new_value):
 
@@ -89,7 +89,7 @@ class BKHelmholtz(BKPrecision9130B):
     def bz(self):
         self._bz = self.currents[2] * self.current_to_field
         return self._bz
-    
+
     @bz.setter
     def bz(self, new_value):
 
@@ -110,7 +110,7 @@ class BKHelmholtz(BKPrecision9130B):
 
         if (new_value < 20) and (new_value > 0):
 
-            theta = self.btheta * np.pi /180
+            theta = self.btheta * np.pi / 180
             phi = self.bphi * np.pi / 180
 
             bz = new_value * np.cos(theta)
@@ -129,7 +129,7 @@ class BKHelmholtz(BKPrecision9130B):
 
     @property
     def btheta(self):
-        self._btheta = np.arctan2(np.sqrt(self.bx**2 + self.by**2),  self.bz) * 180/np.pi
+        self._btheta = np.arctan2(np.sqrt(self.bx**2 + self.by**2), self.bz) * 180 / np.pi
 
         return self._btheta
 
@@ -139,7 +139,7 @@ class BKHelmholtz(BKPrecision9130B):
         if (new_value >= 0) and (new_value <= 90):
 
             phi = self.bphi * np.pi / 180
-            theta = new_value * np.pi /180
+            theta = new_value * np.pi / 180
             bmag = self.bmag
 
             bz = bmag * np.cos(theta)
@@ -167,7 +167,7 @@ class BKHelmholtz(BKPrecision9130B):
         if (new_value >= 0) and (new_value <= 90):
 
             phi = new_value * np.pi / 180
-            theta = self.btheta * np.pi /180
+            theta = self.btheta * np.pi / 180
             bmag = self.bmag
 
             bz = bmag * np.cos(theta)
