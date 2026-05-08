@@ -47,8 +47,8 @@ def test_repeat_experiment_2D(runinfo, devices):
         ('x1', np.array([[0., 0., 0.], [1., 1., 1.]]), np.ndarray, (2, 3)),
         ('x2', np.array(
             [[[0., 0.], [0., 0.], [0., 0.]],
-            [[1., 1.], [1., 1.], [1., 1.]]]), np.ndarray, (2, 3, 2)),
-        ('x3', np.array((list(np.zeros((3, 2, 2))), list(np.ones((3, 2, 2))))), np.ndarray, (2, 3, 2, 2))]:
+             [[1., 1.], [1., 1.], [1., 1.]]]), np.ndarray, (2, 3, 2)),
+            ('x3', np.array((list(np.zeros((3, 2, 2))), list(np.ones((3, 2, 2))))), np.ndarray, (2, 3, 2, 2))]:
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
         assert np.allclose(expt[key], value), 'Value of {} is not {}'.format(key, value)

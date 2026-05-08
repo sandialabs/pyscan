@@ -44,7 +44,7 @@ def test_experiment_post_measure_3D(runinfo, devices):
         ('v3_voltage', np.array([0, 0.1, 0.2, 0.3]), np.ndarray, (4,)),
         ('x1', np.array((list(np.zeros((3, 4))), list(np.ones((3, 4))))), np.ndarray, (2, 3, 4)),
         ('x2', np.array((list(np.zeros((3, 4, 2))), list(np.ones((3, 4, 2))))), np.ndarray, (2, 3, 4, 2)),
-        ('x3', np.array((list(np.zeros((3, 4, 2, 2))), list(np.ones((3, 4, 2, 2))))), np.ndarray, (2, 3, 4, 2, 2))]:
+            ('x3', np.array((list(np.zeros((3, 4, 2, 2))), list(np.ones((3, 4, 2, 2))))), np.ndarray, (2, 3, 4, 2, 2))]:
 
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
@@ -64,7 +64,7 @@ def test_runinfo_contents_post_measure_3D(runinfo, devices):
         ('_dims', (2, 3, 4)),
         ('_ndim', 3),
         ('_indicies', [1, 2, 3]),
-        ('complete', True)]:
+            ('complete', True)]:
         assert expt.runinfo[key] == value, 'Value of {} is not {}'.format(key, value)
 
 
@@ -78,5 +78,5 @@ def test_runinfo_types_post_measure_3D(runinfo, devices):
         ('scan2', ps.PropertyScan),
         ('data_path', Path),
         ('_pyscan_version', str),
-        ('file_name', str)]:
+            ('file_name', str)]:
         assert isinstance(expt.runinfo[key], t), 'Value of {} is not {}'.format(key, t)

@@ -35,7 +35,7 @@ def test_experiment_post_measure_1D(runinfo, devices):
         ('iteration', np.array([0, 1]), np.ndarray, (2,)),
         ('x1', np.array([0.0, 1.0]), np.ndarray, (2,)),
         ('x2', np.array([[0.0, 0.0], [1.0, 1.0]]), np.ndarray, (2, 2)),
-        ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
+            ('x3', np.array([[[0., 0.], [0., 0.]], [[1., 1.], [1., 1.]]]), np.ndarray, (2, 2, 2))]:
         assert hasattr(expt, key), 'Experiment does not have key {}'.format(key)
         assert isinstance(expt[key], t), 'Value of {} is not {}'.format(key, t)
         assert np.allclose(expt[key], value), 'Value of {} is not {}'.format(key, value)
