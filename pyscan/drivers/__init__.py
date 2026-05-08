@@ -7,6 +7,7 @@ from .instrument_driver import InstrumentDriver
 from .agilent import *
 from .american_magnetics import *
 # from .attocube import *
+from .basler import *
 from .bkprecision import *
 from .bluefors import *
 from .hp import *
