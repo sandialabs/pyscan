@@ -33,14 +33,16 @@ def measure_paraboloid_2D(expt):
 
 @pytest.fixture
 def v1_prop():
-    return ps.GradientDescentOptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.,
-                                                    1e-1, 1e-1, 1e-1)
+    return ps.GradientDescentOptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
+                                                    optimizer_input='v1_readout',
+                                                    input_epsilon=1e-1, learning_rate=1e-1, update_epsilon=1e-1)
 
 
 @pytest.fixture
 def v2_prop():
-    return ps.GradientDescentOptimizeDeviceProperty('v2', 'voltage', 'v2_readout', 1.,
-                                                    1e-1, 1e-1, 1e-1)
+    return ps.GradientDescentOptimizeDeviceProperty(device_name='v2', property_name='voltage', initial_value=1.,
+                                                    optimizer_input='v2_readout',
+                                                    input_epsilon=1e-1, learning_rate=1e-1, update_epsilon=1e-1)
 
 
 @pytest.fixture

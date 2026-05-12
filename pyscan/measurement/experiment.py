@@ -174,12 +174,12 @@ class Experiment(ItemAttribute):
 
         # Create and save scan arrays
         with h5py.File(save_name, 'a') as f:
-            for s in self.runinfo.scans:
+            for i, s in enumerate(self.runinfo.scans):
                 for key, values in s.scan_dict.items():
                     values = np.array(values)  # TODO: values.shape requires np.array
                     self[key] = values
-                    if key == 'iteration':
-                        f.create_dataset(key, shape=values.shape, maxshape=(None,), chunks=(100, ),)
+                    if self.runinfo.has_resizing_data and i == len(self.runinfo.scans) - 1:
+                        f.create_dataset(key, shape=values.shape, maxshape=(s.n_max,), chunks=(s.n_max,))
                     else:
                         f.create_dataset(key, shape=values.shape, maxshape=values.shape, chunks=values.shape,)
                     f[key][:] = values
@@ -237,9 +237,10 @@ class Experiment(ItemAttribute):
 
         with h5py.File(save_name, 'a') as f:
             continuous_n = self.runinfo.scans[-1].n
-            f['iteration'].resize((continuous_n,))
-            self['iteration'] = self.runinfo.scans[-1].scan_dict['iteration']
-            f['iteration'][-1] = self.runinfo.scans[-1].scan_dict['iteration'][-1]
+            for k in self.runinfo.scans[-1].scan_dict.keys():
+                f[k].resize((continuous_n,))
+                self[k] = self.runinfo.scans[-1].scan_dict[k]
+                f[k][-1] = self.runinfo.scans[-1].scan_dict[k][-1]
 
             for name in self.runinfo.measured:
                 if is_list_type(data[name]):

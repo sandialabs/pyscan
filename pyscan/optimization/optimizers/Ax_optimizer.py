@@ -1,7 +1,7 @@
 from ax.api.client import Client
 from ax.api.configs import RangeParameterConfig
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from numbers import Real
 from typing import Literal
 from ...general.itertools_recipes import all_equal
@@ -20,13 +20,14 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Device name.
     property_name : str
         Property of the device to be changed.
-    optimizer_input : str
-        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
-        Input for the optimizer to optimize over.
     initial_value : Real
         Initial value at which to begin the optimization routine.
     bounds : 2-tuple of Real
         Lower and upper bound for the property.
+    optimizer_input : str, optional
+        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
+        Input for the optimizer to optimize over.
+        Default is `None`.
     initialization_scans : Sequence of Real, optional
         Measurement inputs for additional pre-determined scans to be performed
         after the scan specified by `initial_value` and before the optimizer determines scan inputs.
@@ -36,7 +37,7 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Default is `None`.
     """
     bounds: tuple[Real, Real]
-    initialization_scans: Sequence[Real] | None = None
+    initialization_scans: Sequence[Real] | None = field(default=None, kw_only=True)
 
 
 class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
@@ -142,7 +143,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         self.gi_st_i = global_improvement_start_index
         self.extremum = extremum
         parameters = [
-            RangeParameterConfig(name=p.optimizer_input,
+            RangeParameterConfig(name=self._get_dev_prop_key(p),
                                  parameter_type="float",
                                  bounds=p.bounds)
             for p in self.opt_dev_prop_l
@@ -208,7 +209,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
                 and index <= self.complete_last_init_idx):
             # load init pts into Client
             parameters = {
-                p.optimizer_input: experiment.__dict__[p.optimizer_input][i_prev]
+                self._get_dev_prop_key(p): experiment.__dict__[self._get_dev_prop_key(p)][i_prev]
                 for p in self.opt_dev_prop_l
             }
             prev_trial_index = self.client.attach_trial(parameters=parameters)
@@ -227,7 +228,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             if index >= self.last_optim_idx or early_stop(f_out, f_out_best, index):
                 # if last optim: return best param and stop optim
                 f_in_next = [
-                    best_parameters[p.optimizer_input]
+                    best_parameters[self._get_dev_prop_key(p)]
                     for p in self.opt_dev_prop_l
                 ]
                 self.running = False
@@ -245,7 +246,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             trials = self.client.get_next_trials(max_trials=1)  # only 1 trial
             for trial_index, parameters in trials.items():  # only 1 item
                 f_in_next = [
-                    parameters[p.optimizer_input]
+                    parameters[self._get_dev_prop_key(p)]
                     for p in self.opt_dev_prop_l
                 ]
                 self.proposed_trial_index = trial_index

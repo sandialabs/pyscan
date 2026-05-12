@@ -17,9 +17,6 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
         Device name.
     property_name : str
         Property of the device to be changed.
-    optimizer_input : str
-        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
-        Input for the optimizer to optimize over.
     initial_value : Real
         Initial value at which to begin the optimization routine.
     input_epsilon : Real
@@ -29,6 +26,10 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
     update_epsilon: Real
         Gradient update threshold.
         Optimization stops early if updates for all inputs are below thresholds.
+    optimizer_input : str, optional
+        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
+        Input for the optimizer to optimize over.
+        Default is `None`.
     """
     input_epsilon: Real
     learning_rate: Real
@@ -142,13 +143,16 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
             f_in_dim_next = f_in_prev - grad_update
             return grad, f_in_dim_next
 
+        def get_f_in_i(i):
+            return [experiment.__dict__[self._get_dev_prop_key(p)][i] for p in self.opt_dev_prop_l]
+
         if self.fd_step:
-            f_in = [experiment.__dict__[p.optimizer_input][index - 1] for p in self.opt_dev_prop_l]
+            f_in = get_f_in_i(index - 1)
             f_in[self.dim] += self.opt_dev_prop_l[self.dim].input_epsilon
             self.fd_step = False
             return f_in
         else:
-            f_in_prev = [experiment.__dict__[p.optimizer_input][index - 2] for p in self.opt_dev_prop_l]
+            f_in_prev = get_f_in_i(index - 2)
             f_out = experiment.__dict__[self.sample_f_out][index - 1]
             f_out_prev = experiment.__dict__[self.sample_f_out][index - 2]
             grad_dim, f_in_next_dim = gd_f(f_in_prev[self.dim], f_out, f_out_prev,

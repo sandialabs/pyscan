@@ -44,7 +44,8 @@ class TestOptimizeScan(ps.AbstractOptimizeScan):
 
 @pytest.fixture
 def v1_prop():
-    return ps.OptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.)
+    return ps.OptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
+                                     optimizer_input='v1_readout')
 
 
 @pytest.fixture
@@ -53,7 +54,8 @@ def optimize_scan(v1_prop):
 
 
 @pytest.mark.parametrize('key,value', [
-    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty('v1', 'voltage', 'v1_readout', 2.),)),
+    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
+                                                  optimizer_input='v1_readout'),)),
     ('scan_dict', {'iteration': np.array([])}),
     ('sample_f_out', 'vf'),
     ('dt', 0),

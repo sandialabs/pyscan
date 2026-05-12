@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from numbers import Real
 import numpy as np
 from time import sleep
@@ -258,6 +258,7 @@ class ContinuousScan(AbstractScan):
         if d == 0:
             return 0
 
+        # TODO: list for append? need shape for experiment.preallocate and experiment.reallocate
         self.scan_dict['iteration'] = np.append(self.scan_dict['iteration'], i)
         expt.iteration = self.scan_dict['iteration']
 
@@ -336,6 +337,7 @@ class OptimizeDeviceProperty:
     '''
     Data Class with the basic fields needed to describe a device property for optimization.
     If the optimizer needs additional fields, extend this class with an appropriate subclass.
+    Optional fields must set `kw_only=True` to work with inheritance.
 
     Parameters
     ----------
@@ -343,16 +345,17 @@ class OptimizeDeviceProperty:
         Device name.
     property_name : str
         Property of the device to be changed.
-    optimizer_input : str
-        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
-        Input for the optimizer to optimize over.
     initial_value : Real
         Initial value at which to begin the optimization routine.
+    optimizer_input : str, optional
+        Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
+        Input for the optimizer to optimize over.
+        Default is `None`.
     '''
     device_name: str
     property_name: str
-    optimizer_input: str
     initial_value: Real
+    optimizer_input: str | None = field(default=None, kw_only=True)
 
 
 class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
@@ -410,6 +413,8 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
+        for p in optimize_device_property_list:
+            self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] = np.ndarray((0))
 
         # TODO: make output multidimensional: allow optimization over multiple outputs?
         self.sample_f_out = sample_function_output
@@ -474,10 +479,14 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
         if i == 0:
             for p in self.opt_dev_prop_l:
                 expt.devices[p.device_name][p.property_name] = p.initial_value
+                self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] \
+                    = np.append(self.scan_dict['{}_{}'.format(p.device_name, p.property_name)], p.initial_value)
         else:
             opt_res = self.step_optimizer(i, expt)
             for p, r in zip(self.opt_dev_prop_l, opt_res):
                 expt.devices[p.device_name][p.property_name] = r
+                self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] \
+                    = np.append(self.scan_dict['{}_{}'.format(p.device_name, p.property_name)], r)
             if not self.running:
                 expt.stop()
 
@@ -502,3 +511,9 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
             return range(1)
         else:
             return range(self.n_max)
+
+    def _get_dev_prop_key(self, p: OptimizeDeviceProperty) -> str:
+        if p.optimizer_input is None:
+            return '{}_{}'.format(p.device_name, p.property_name)
+        else:
+            return p.optimizer_input
