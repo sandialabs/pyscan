@@ -44,8 +44,13 @@ class TestOptimizeScan(ps.AbstractOptimizeScan):
 
 @pytest.fixture
 def v1_prop():
-    return ps.OptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
+    return ps.OptimizeDeviceProperty('v1', 'voltage', 2.,
                                      optimizer_input='v1_readout')
+
+
+@pytest.fixture
+def v1_prop_default():
+    return ps.OptimizeDeviceProperty('v1', 'voltage', 2.)
 
 
 @pytest.fixture
@@ -53,8 +58,26 @@ def optimize_scan(v1_prop):
     return TestOptimizeScan((v1_prop,), 'vf', n_max=10)
 
 
+@pytest.fixture
+def optimize_scan_default(v1_prop_default):
+    return TestOptimizeScan((v1_prop_default,), 'vf', n_max=10)
+
+
+@pytest.fixture(params=['v1_prop', 'v1_prop_default'])
+def optimize_scan_all(request):
+    return TestOptimizeScan((request.getfixturevalue(request.param),), 'vf', n_max=10)
+
+
+def compare_optimize_scan_init(opt_scan, key, value):
+    if key == 'scan_dict':
+        for key1, value1 in value.items():
+            assert np.all(opt_scan.scan_dict[key1] == value[key1]), f"Optimize scan attribute {key} != {value}"
+    else:
+        assert opt_scan[key] == value, f"Optimize scan attribute {key} != {value}"
+
+
 @pytest.mark.parametrize('key,value', [
-    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
+    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty('v1', 'voltage', 2.,
                                                   optimizer_input='v1_readout'),)),
     ('scan_dict', {'iteration': np.array([])}),
     ('sample_f_out', 'vf'),
@@ -64,15 +87,24 @@ def optimize_scan(v1_prop):
     ('n_max', 10)
 ])
 def test_optimize_scan_init(optimize_scan, key, value):
-    if key == 'scan_dict':
-        for key1, value1 in value.items():
-            assert np.all(optimize_scan.scan_dict[key1] == value[key1]), f"Optimize scan attribute {key} != {value}"
-    else:
-        assert optimize_scan[key] == value, f"Optimize scan attribute {key} != {value}"
+    compare_optimize_scan_init(optimize_scan, key, value)
 
 
-def test_optimize_scan_iterate_m1(optimize_scan, runinfo, devices):
-    runinfo.scan0 = optimize_scan
+@pytest.mark.parametrize('key,value', [
+    ('opt_dev_prop_l', (ps.OptimizeDeviceProperty('v1', 'voltage', 2.),)),
+    ('scan_dict', {'iteration': np.array([])}),
+    ('sample_f_out', 'vf'),
+    ('dt', 0),
+    ('i', 0),
+    ('n', 1),
+    ('n_max', 10)
+])
+def test_optimize_scan_init_default(optimize_scan_default, key, value):
+    compare_optimize_scan_init(optimize_scan_default, key, value)
+
+
+def test_optimize_scan_iterate_m1(optimize_scan_all, runinfo, devices):
+    runinfo.scan0 = optimize_scan_all
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 0, -1)
@@ -80,8 +112,8 @@ def test_optimize_scan_iterate_m1(optimize_scan, runinfo, devices):
     assert expt.runinfo.scan0.n == 1
 
 
-def test_optimize_scan_no_iterate(optimize_scan, runinfo, devices):
-    runinfo.scan0 = optimize_scan
+def test_optimize_scan_no_iterate(optimize_scan_all, runinfo, devices):
+    runinfo.scan0 = optimize_scan_all
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 0, 0)
@@ -89,8 +121,8 @@ def test_optimize_scan_no_iterate(optimize_scan, runinfo, devices):
     assert expt.runinfo.scan0.n == 1
 
 
-def test_optimize_scan_iterate_one(optimize_scan, runinfo, devices):
-    runinfo.scan0 = optimize_scan
+def test_optimize_scan_iterate_one(optimize_scan_all, runinfo, devices):
+    runinfo.scan0 = optimize_scan_all
     expt = ps.Experiment(runinfo, devices)
 
     runinfo.scan0.iterate(expt, 1, 1)

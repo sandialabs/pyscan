@@ -33,28 +33,41 @@ def measure_paraboloid_2D(expt):
 
 @pytest.fixture
 def v1_prop():
-    return ps.GradientDescentOptimizeDeviceProperty(device_name='v1', property_name='voltage', initial_value=2.,
-                                                    optimizer_input='v1_readout',
-                                                    input_epsilon=1e-1, learning_rate=1e-1, update_epsilon=1e-1)
+    return ps.GradientDescentOptimizeDeviceProperty('v1', 'voltage', 2., 1e-1, 1e-1, 1e-1,
+                                                    optimizer_input='v1_readout')
+
+
+@pytest.fixture
+def v1_prop_default():
+    return ps.GradientDescentOptimizeDeviceProperty('v1', 'voltage', 2., 1e-1, 1e-1, 1e-1)
 
 
 @pytest.fixture
 def v2_prop():
-    return ps.GradientDescentOptimizeDeviceProperty(device_name='v2', property_name='voltage', initial_value=1.,
-                                                    optimizer_input='v2_readout',
-                                                    input_epsilon=1e-1, learning_rate=1e-1, update_epsilon=1e-1)
+    return ps.GradientDescentOptimizeDeviceProperty('v2', 'voltage', 1., 1e-1, 1e-1, 1e-1,
+                                                    optimizer_input='v2_readout')
 
 
 @pytest.fixture
-def gradient_descent_optimize_scan_early_stop(v1_prop, v2_prop):
-    return ps.GradientDescentOptimizeScan((v1_prop, v2_prop),
+def v2_prop_default():
+    return ps.GradientDescentOptimizeDeviceProperty('v2', 'voltage', 1., 1e-1, 1e-1, 1e-1)
+
+
+@pytest.fixture(params=[('v1_prop', 'v2_prop'), ('v1_prop_default', 'v2_prop_default')])
+def dev_props(request):
+    return tuple(request.getfixturevalue(p) for p in request.param)
+
+
+@pytest.fixture
+def gradient_descent_optimize_scan_early_stop(dev_props):
+    return ps.GradientDescentOptimizeScan(dev_props,
                                           'vf',
                                           dt=0., n_max=100)
 
 
 @pytest.fixture
-def gradient_descent_optimize_scan_n_max(v1_prop, v2_prop):
-    return ps.GradientDescentOptimizeScan((v1_prop, v2_prop),
+def gradient_descent_optimize_scan_n_max(dev_props):
+    return ps.GradientDescentOptimizeScan(dev_props,
                                           'vf',
                                           dt=0., n_max=10)
 
