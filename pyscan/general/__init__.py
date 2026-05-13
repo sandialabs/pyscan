@@ -7,3 +7,6 @@ from .is_numeric_type import is_numeric_type
 from .same_length import same_length
 from .set_difference import set_difference
 from .append_stack_or_contact import append_stack_or_contact
+from .c_type_conversions import string_buffer_to_str, string_buffer_to_c_char
+from .dimensional_analysis import rescale
+from .itertools_recipes import all_equal
