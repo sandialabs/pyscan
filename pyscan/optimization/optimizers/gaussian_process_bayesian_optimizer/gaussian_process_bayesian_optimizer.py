@@ -159,7 +159,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
 
         if self.set_final_opt:  # set final output to best observed output
             arg_opt = get_arg_opt(experiment.__dict__[self.sample_f_out][:index], self.extremum)
-            opt_in_opt = [experiment.__dict__[self._get_dev_prop_key(p)][arg_opt] for p in self.opt_dev_prop_l]
+            opt_in_opt = [experiment.__dict__[p.experiment_key][arg_opt] for p in self.opt_dev_prop_l]
             self.running = False
             return opt_in_opt
 
@@ -170,7 +170,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
                 self.y_train[0] = postproc_extremum(experiment.__dict__[self.sample_f_out][0], self.extremum)
             else:  # update observed data with latest optimized measurement
                 i_prev = index - 1
-                self.X_train = np.append(self.X_train, [[experiment.__dict__[self._get_dev_prop_key(p)][i_prev]
+                self.X_train = np.append(self.X_train, [[experiment.__dict__[p.experiment_key][i_prev]
                                                          for p in self.opt_dev_prop_l]], axis=0)
                 self.y_train = np.append(self.y_train,
                                          [postproc_extremum(experiment.__dict__[self.sample_f_out][i_prev],

@@ -143,7 +143,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         self.gi_st_i = global_improvement_start_index
         self.extremum = extremum
         parameters = [
-            RangeParameterConfig(name=self._get_dev_prop_key(p),
+            RangeParameterConfig(name=p.experiment_key,
                                  parameter_type="float",
                                  bounds=p.bounds)
             for p in self.opt_dev_prop_l
@@ -209,7 +209,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
                 and index <= self.complete_last_init_idx):
             # load init pts into Client
             parameters = {
-                self._get_dev_prop_key(p): experiment.__dict__[self._get_dev_prop_key(p)][i_prev]
+                p.experiment_key: experiment.__dict__[p.experiment_key][i_prev]
                 for p in self.opt_dev_prop_l
             }
             prev_trial_index = self.client.attach_trial(parameters=parameters)
@@ -228,7 +228,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             if index >= self.last_optim_idx or early_stop(f_out, f_out_best, index):
                 # if last optim: return best param and stop optim
                 f_in_next = [
-                    best_parameters[self._get_dev_prop_key(p)]
+                    best_parameters[p.experiment_key]
                     for p in self.opt_dev_prop_l
                 ]
                 self.running = False
@@ -246,7 +246,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             trials = self.client.get_next_trials(max_trials=1)  # only 1 trial
             for trial_index, parameters in trials.items():  # only 1 item
                 f_in_next = [
-                    parameters[self._get_dev_prop_key(p)]
+                    parameters[p.experiment_key]
                     for p in self.opt_dev_prop_l
                 ]
                 self.proposed_trial_index = trial_index

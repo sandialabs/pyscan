@@ -144,7 +144,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
             return grad, f_in_dim_next
 
         def get_f_in_i(i):
-            return [experiment.__dict__[self._get_dev_prop_key(p)][i] for p in self.opt_dev_prop_l]
+            return [experiment.__dict__[p.experiment_key][i] for p in self.opt_dev_prop_l]
 
         if self.fd_step:
             f_in = get_f_in_i(index - 1)

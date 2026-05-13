@@ -351,11 +351,29 @@ class OptimizeDeviceProperty:
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
         Default is `None`.
+
+    Attributes
+    ----------
+    device_name : str
+    property_name : str
+    initial_value : Real
+    experiment_key : str
+    optimizer_input : str, optional
     '''
     device_name: str
     property_name: str
     initial_value: Real
     optimizer_input: str | None = field(default=None, kw_only=True)
+
+    @property
+    def experiment_key(self) -> str:
+        """
+        Key to look up past values in `Experiment` object.
+        """
+        if self.optimizer_input is None:
+            return '{}_{}'.format(self.device_name, self.property_name)
+        else:
+            return self.optimizer_input
 
 
 class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
@@ -511,9 +529,3 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
             return range(1)
         else:
             return range(self.n_max)
-
-    def _get_dev_prop_key(self, p: OptimizeDeviceProperty) -> str:
-        if p.optimizer_input is None:
-            return '{}_{}'.format(p.device_name, p.property_name)
-        else:
-            return p.optimizer_input
