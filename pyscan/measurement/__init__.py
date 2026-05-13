@@ -4,7 +4,7 @@ from .get_pyscan_version import get_pyscan_version
 
 # Scans/Experiments
 from .experiment import Experiment
-from .scans import PropertyScan, RepeatScan, ContinuousScan, FunctionScan, AverageScan
+from .scans import PropertyScan, RepeatScan, ContinuousScan, FunctionScan, AverageScan, AbstractOptimizeScan
 
 # Other objects
 from .run_info import RunInfo
