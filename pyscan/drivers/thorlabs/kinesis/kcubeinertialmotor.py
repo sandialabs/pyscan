@@ -131,7 +131,7 @@ KIM_GetCurrentPosition.argtypes = [POINTER(c_char), KIM_Channels]
 # Gets the operation drive parameters.
 KIM_GetDriveOPParameters = lib.KIM_GetDriveOPParameters
 KIM_GetDriveOPParameters.restype = c_short
-KIM_GetDriveOPParameters.argtypes = [POINTER(c_char), KIM_Channels, c_int16, c_int32, c_int32]
+KIM_GetDriveOPParameters.argtypes = [POINTER(c_char), KIM_Channels, POINTER(c_int16), POINTER(c_int32), POINTER(c_int32)]
 
 
 # Gets the operation drive parameters.
