@@ -137,7 +137,7 @@ KIM_GetDriveOPParameters.argtypes = [POINTER(c_char), KIM_Channels, POINTER(c_in
 # Gets the operation drive parameters.
 KIM_GetDriveOPParametersStruct = lib.KIM_GetDriveOPParametersStruct
 KIM_GetDriveOPParametersStruct.restype = c_short
-KIM_GetDriveOPParametersStruct.argtypes = [POINTER(c_char), KIM_Channels, KIM_DriveOPParameters]
+KIM_GetDriveOPParametersStruct.argtypes = [POINTER(c_char), KIM_Channels, POINTER(KIM_DriveOPParameters)]
 
 
 # Gets a feedback signal parameters.
@@ -535,7 +535,7 @@ KIM_SetDriveOPParameters.argtypes = [POINTER(c_char), KIM_Channels, c_int16, c_i
 # Sets the operation drive parameters.
 KIM_SetDriveOPParametersStruct = lib.KIM_SetDriveOPParametersStruct
 KIM_SetDriveOPParametersStruct.restype = c_short
-KIM_SetDriveOPParametersStruct.argtypes = [POINTER(c_char), KIM_Channels, KIM_DriveOPParameters]
+KIM_SetDriveOPParametersStruct.argtypes = [POINTER(c_char), KIM_Channels, POINTER(KIM_DriveOPParameters)]
 
 
 # Sets the Dual Channel Mode.

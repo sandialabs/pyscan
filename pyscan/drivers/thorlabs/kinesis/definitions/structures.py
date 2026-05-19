@@ -139,9 +139,9 @@ class FF_IOSettings(Structure):
 
 class KIM_DriveOPParameters(Structure):
     _fields_ = [
-        ("maxVoltage", c_int16),
-        ("stepAcceleration", c_int32),
-        ("stepRate", c_int32),
+        ("_maxVoltage", c_int16),
+        ("_stepRate", c_int32),
+        ("_stepAcceleration", c_int32),
     ]
 
 

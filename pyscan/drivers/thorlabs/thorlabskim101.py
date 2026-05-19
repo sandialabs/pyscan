@@ -1,5 +1,6 @@
 from itemattribute import ItemAttribute
 from .kinesis import kcubeinertialmotor as kim
+from .kinesis.definitions.structures import KIM_DriveOPParameters
 from ctypes import c_char_p, c_bool, c_int, c_uint16, c_long, c_int16, c_int32, byref
 from time import sleep
 from typing import NamedTuple
@@ -158,3 +159,13 @@ class ThorlabsKIM101(ItemAttribute):
     def set_DriveOPParameters(self, channel, max_voltage, step_rate, step_acceleration):
         kim.KIM_SetDriveOPParameters(self.serial, c_uint16(channel),
                                      c_int16(max_voltage), c_int32(step_rate), c_int32(step_acceleration))
+
+    def get_DriveOPParametersStruct(self, channel):
+        op = KIM_DriveOPParameters(1, 1, 1)
+        kim.KIM_GetDriveOPParametersStruct(self.serial, c_uint16(channel),
+                                           byref(op))
+        return op
+
+    def set_DriveOPParametersStruct(self, channel, op):
+        kim.KIM_SetDriveOPParametersStruct(self.serial, c_uint16(channel),
+                                           byref(op))
