@@ -216,7 +216,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             parameters = {
                 p.experiment_key:
                 round(experiment.__dict__[p.experiment_key][i_prev])
-                if p.type == int
+                if p.type == 'int'
                 else
                 experiment.__dict__[p.experiment_key][i_prev]
                 for p in self.opt_dev_prop_l
