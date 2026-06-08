@@ -24,6 +24,8 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Initial value at which to begin the optimization routine.
     bounds : 2-tuple of Real
         Lower and upper bound for the property.
+    type : {'float', 'int'}, optional
+        Type of the property.
     optimizer_input : str, optional
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
@@ -37,6 +39,7 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         Default is `None`.
     """
     bounds: tuple[Real, Real]
+    type: Literal['float', 'int'] = field(default='float', kw_only=True)
     initialization_scans: Sequence[Real] | None = field(default=None, kw_only=True)
 
 
@@ -68,7 +71,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         Nonnegative number of iterations to guarantee are performed.
         If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
         but the index is lower than `global_improvement_start_index`, then optimization will continue.
-    extremum : `{'min', 'max'}`, optional
+    extremum : {'min', 'max'}, optional
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
 
     Attributes
@@ -105,7 +108,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         Nonnegative number of iterations to guarantee are performed.
         If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
         but the index is lower than `global_improvement_start_index`, then optimization will continue.
-    extremum : `{'min', 'max'}`
+    extremum : {'min', 'max'}
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
@@ -144,8 +147,9 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         self.extremum = extremum
         parameters = [
             RangeParameterConfig(name=p.experiment_key,
-                                 parameter_type="float",
-                                 bounds=p.bounds)
+                                 bounds=p.bounds,
+                                 parameter_type=p.type,
+                                 )
             for p in self.opt_dev_prop_l
         ]
         self.client = Client()

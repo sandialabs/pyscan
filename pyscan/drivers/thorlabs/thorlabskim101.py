@@ -6,7 +6,7 @@ from time import sleep
 from typing import NamedTuple
 
 
-class KIM_DriveOPPParameters_Tuple(NamedTuple):
+class KIM_DriveOPParameters_Tuple(NamedTuple):
     max_voltage: c_int16
     step_rate: c_int32
     step_acceleration: c_int32
@@ -148,15 +148,25 @@ class ThorlabsKIM101(ItemAttribute):
         self._position_4 = p
 
     def get_DriveOPParameters(self, channel):
+        """
+        max voltage: [85, 125]
+        step rate: [1, 2000]
+        step accn: [1, 20000]
+        """
         max_voltage = c_int16()
         step_rate = c_int32()
         step_acceleration = c_int32()
         kim.KIM_GetDriveOPParameters(self.serial, c_uint16(channel),
                                      byref(max_voltage), byref(step_rate), byref(step_acceleration))
-        op = KIM_DriveOPPParameters_Tuple(max_voltage, step_rate, step_acceleration)
+        op = KIM_DriveOPParameters_Tuple(max_voltage, step_rate, step_acceleration)
         return op
 
     def set_DriveOPParameters(self, channel, max_voltage, step_rate, step_acceleration):
+        """
+        max voltage: [85, 125]
+        step rate: [1, 2000]
+        step accn: [1, 20000]
+        """
         kim.KIM_SetDriveOPParameters(self.serial, c_uint16(channel),
                                      c_int16(max_voltage), c_int32(step_rate), c_int32(step_acceleration))
 

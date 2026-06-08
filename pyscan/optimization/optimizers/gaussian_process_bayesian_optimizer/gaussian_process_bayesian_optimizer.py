@@ -60,7 +60,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
     ei_threshold : float, optional
         The expected improvement threshold below which optimization is stopped.
         Default is `1e-1`.
-    extremum : `{'min', 'max'}`, optional
+    extremum : {'min', 'max'}, optional
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
 
     Attributes
@@ -89,7 +89,7 @@ class GPBayesianOptimizeScan(AbstractOptimizeScan[GPBayesianOptimizeDeviceProper
     ei_threshold : float
         The expected improvement threshold below which optimization is stopped.
         Default is `1e-1`.
-    extremum : `{'min', 'max'}`
+    extremum : {'min', 'max'}
         Determines extremum to optimize for. Set to `'min'` or `'max'`. Default is `'max'`.
     """
 
