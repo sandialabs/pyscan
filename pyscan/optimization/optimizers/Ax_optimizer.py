@@ -212,8 +212,13 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             or (self.init_scan_ct is not None
                 and index <= self.complete_last_init_idx):
             # load init pts into Client
+            # TODO: should experiment save int data?
             parameters = {
-                p.experiment_key: experiment.__dict__[p.experiment_key][i_prev]
+                p.experiment_key:
+                round(experiment.__dict__[p.experiment_key][i_prev])
+                if p.type == int
+                else
+                experiment.__dict__[p.experiment_key][i_prev]
                 for p in self.opt_dev_prop_l
             }
             prev_trial_index = self.client.attach_trial(parameters=parameters)
