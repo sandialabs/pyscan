@@ -31,6 +31,7 @@ from .spin_core import *
 
 # Methods
 from .new_instrument import new_instrument
+from .linear_calibration import *
 
 # Test Devices
 from .testing.test_voltage import TestVoltage

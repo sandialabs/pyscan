@@ -1,9 +1,13 @@
 from itemattribute import ItemAttribute
 from .kinesis import kcubeinertialmotor as kim
 from .kinesis.definitions.structures import KIM_DriveOPParameters
+from ..linear_calibration import calibrate_position, position_r_to_f
 from ctypes import c_char_p, c_bool, c_int, c_uint16, c_long, c_int16, c_int32, byref
 from time import sleep
 from typing import NamedTuple
+
+type CF = float | None
+type PB = tuple[tuple[int | None, int | None]] | None
 
 
 class KIM_DriveOPParameters_Tuple(NamedTuple):
@@ -20,12 +24,20 @@ class ThorlabsKIM101(ItemAttribute):
     ----------
     serial : str
         Unit serial number. Defaults to "97103243".
+    position bounds : tuple of (tuple of (int or None) or None) or None
+        Actual
+    callibration factors : tuple of (int or None) or None
+        Resistance applied to reverse direction
     '''
 
-    def __init__(self, serial="97103243"):
+    def __init__(self, serial="97103243",
+                 position_bounds: tuple[PB, PB, PB, PB] | None = None,
+                 calibration_factors: tuple[CF, CF, CF, CF] | None = None):
         self._version = "0.1.0"
-        # TODO: dimension bounds
         self.serial = c_char_p(bytes(serial, "utf-8"))
+        self.position_bounds = position_bounds
+        self.calibration_factors = calibration_factors
+        self.calibration_offsets = [0., 0., 0., 0.]
         self.build_device_list()
         self.open()
         self.start_polling()
@@ -67,7 +79,18 @@ class ThorlabsKIM101(ItemAttribute):
         kim.KIM_EnableChannel(self.serial, c_uint16(channel))
 
     def set_zero(self, channel):
+        '''
+        p_r: actual
+        '''
         kim.KIM_ZeroPosition(self.serial, c_uint16(channel))
+
+    def set_zero_calibrated(self, channel):
+        '''
+        Synchronize p_f: ideal and p_r: actual to zero
+        '''
+        c_i = channel - 1
+        self.calibration_offsets[c_i] = 0
+        self.set_zero(channel)
 
     @property
     def polling_duration(self):
@@ -95,9 +118,36 @@ class ThorlabsKIM101(ItemAttribute):
         self._front_panel_locked = front_panel_locked
 
     def get_position(self, channel):
+        '''
+        p_r: actual
+        '''
         return kim.KIM_GetCurrentPosition(self.serial, c_uint16(channel))
 
+    def get_position_calibrated(self, channel):
+        c_i = channel - 1
+        p_r = self.get_position(channel)
+        p_f = position_r_to_f(p_r, self.calibration_offsets[c_i])
+        p_f_rd = round(p_f)
+        return p_f_rd
+
+    def check_position_bounds(self, channel, p):
+        '''
+        p_r: actual
+        '''
+        c_i = channel - 1
+        if self.position_bounds is not None \
+                and (b := self.position_bounds[c_i]) is not None:
+            lb, ub = b
+            if lb is not None and p < lb:
+                raise RuntimeError(f"exceeded lower bound on channel {channel}")
+            if ub is not None and p > ub:
+                raise RuntimeError(f"exceeded lower bound on channel {channel}")
+
     def set_position(self, channel, p):
+        '''
+        p_r: actual
+        '''
+        self.check_position_bounds(channel, p)
         kim.KIM_MoveAbsolute(self.serial, c_uint16(channel), c_long(p))
         # TODO: ensure tracking position quickly
         while self.get_position(channel) != p:
@@ -105,46 +155,59 @@ class ThorlabsKIM101(ItemAttribute):
 
         return kim.KIM_MoveAbsolute(self.serial, c_uint16(channel), c_long(p))
 
+    def set_position_calibrated(self, channel, p_f):
+        c_i = channel - 1
+        if self.calibration_factors is not None \
+                and (w := self.calibration_factors[c_i]) is not None:
+            p_f_0 = self.get_position_calibrated(channel)
+            p_r_0 = self.get_position(channel)
+            p_c, self.calibration_offsets[c_i] = calibrate_position(p_f, p_f_0, p_r_0,
+                                                                    w, self.calibration_offsets[c_i])
+            p_c_rd = round(p_c)
+            self.set_position(channel, p_c_rd)
+        else:
+            self.set_position(channel, p_f)
+
     @property
     def position_1(self):
-        self._position_1 = self.get_position(1)
+        self._position_1 = self.get_position_calibrated(1)
         return self._position_1
 
     @position_1.setter
     def position_1(self, p):
-        self.set_position(1, p)
+        self.set_position_calibrated(1, p)
         self._position_1 = p
         # MoveRelative
         # MoveAbsolute
 
     @property
     def position_2(self):
-        self._position_2 = self.get_position(2)
+        self._position_2 = self.get_position_calibrated(2)
         return self._position_2
 
     @position_2.setter
     def position_2(self, p):
-        self.set_position(2, p)
+        self.set_position_calibrated(2, p)
         self._position_2 = p
 
     @property
     def position_3(self):
-        self._position_3 = self.get_position(3)
+        self._position_3 = self.get_position_calibrated(3)
         return self._position_3
 
     @position_3.setter
     def position_3(self, p):
-        self.set_position(3, p)
+        self.set_position_calibrated(3, p)
         self._position_3 = p
 
     @property
     def position_4(self):
-        self._position_4 = self.get_position(4)
+        self._position_4 = self.get_position_calibrated(4)
         return self._position_4
 
     @position_4.setter
     def position_4(self, p):
-        self.set_position(4, p)
+        self.set_position_calibrated(4, p)
         self._position_4 = p
 
     def get_DriveOPParameters(self, channel):
