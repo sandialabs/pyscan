@@ -283,6 +283,31 @@ class Agilent33500(InstrumentDriver):
             'query_string': 'TRIG2:SOUR?',
             'values': ["IMM", "EXT", "TIM", "BUS"],
             'return_type': str})
+        
+        #Added by Denver: June 22, 2026
+        self.add_device_property({
+            'name': 'phase_deg_chan1',
+            'write_string': 'UNIT:ANGLe DEG',
+            'write_string': 'SOURce1:PHASe {}',
+            'query_string': 'SOURce1:PHASe?',
+            'range': [0, 360],
+            'return_type': float})
+        
+        self.add_device_property({
+            'name': 'phase_deg_chan2',
+            'write_string': 'UNIT:ANGLe DEG',
+            'write_string': 'SOURce2:PHASe {}',
+            'query_string': 'SOURce2:PHASe?',
+            'range': [0, 360],
+            'return_type': float})
+        
+        # self.add_device_property({
+        #     'name': 'sync_phase',
+        #     'write_string': 'UNIT:ANGLe DEG',
+        #     'write_string': 'SOURce1:PHASe {Query Source 2}',
+        #     'query_string': 'SOURce1:PHASe?',
+        #     'range': [0, 360],
+        #     'return_type': float})
 
         self.update_properties()
         self.check_errors()
@@ -295,6 +320,17 @@ class Agilent33500(InstrumentDriver):
     @frequency.setter
     def frequency(self, new_value):
         setattr(self, 'frequency_chan{}'.format(self.channel), new_value)
+    
+    #### Added by Denver: June 22, 2026
+    @property
+    def phase(self):
+        self._phase = getattr(self, 'phase_deg_chan{}'.format(self.channel))
+        return self._phase
+
+    @phase.setter
+    def phase(self, new_value):
+        setattr(self, 'phase_deg_chan{}'.format(self.channel), new_value)
+    ####
 
     @property
     def instrument_amplitude(self):
