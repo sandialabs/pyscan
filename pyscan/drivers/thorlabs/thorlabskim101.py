@@ -7,7 +7,7 @@ from time import sleep
 from typing import NamedTuple
 
 type CF = float | None
-type PB = tuple[tuple[int | None, int | None]] | None
+type PB = list[list[int | None, int | None]] | None
 
 
 class KIM_DriveOPParameters_Tuple(NamedTuple):
@@ -31,8 +31,8 @@ class ThorlabsKIM101(ItemAttribute):
     '''
 
     def __init__(self, serial="97103243",
-                 position_bounds: tuple[PB, PB, PB, PB] | None = None,
-                 calibration_factors: tuple[CF, CF, CF, CF] | None = None):
+                 position_bounds: list[PB, PB, PB, PB] | None = None,
+                 calibration_factors: list[CF, CF, CF, CF] | None = None):
         self._version = "0.1.0"
         self.serial = c_char_p(bytes(serial, "utf-8"))
         self.position_bounds = position_bounds
