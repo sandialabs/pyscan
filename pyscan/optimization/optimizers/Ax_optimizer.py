@@ -60,14 +60,14 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         Wait time in seconds after each iteration. Used by `Experiment` classes. Default is `0`.
     n_max : int, optional
         Maximum number of iterations to run. Default is `100`.
-    global_imporvement_threshold : float, optional
+    global_imporvement_threshold : float or None, optional
         Positive threshold of improvement magnitude below which optimization is stopped.
-        Default is `1e-2`.
-    global_improvement_index_window: int, optional
+        If None, then global_improvement_index_window must also be None.
+    global_improvement_index_window: int or None, optional
         Nonnegative number of consecutive iterations that must have improvement below threshold
         before optimization is stopped.
-        Default is `10`.
-    global_improvement_start_index : int, optional
+        If None, then global_impreovement_threshold must also be None.
+    global_improvement_start_index : int or None, optional
         Nonnegative number of iterations to guarantee are performed.
         If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
         but the index is lower than `global_improvement_start_index`, then optimization will continue.
@@ -97,14 +97,14 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
     running : bool
         Boolean to indicate if optimization should run the next step.
         Set to `False` in `step_optimizer` when optimization has ended.
-    gi_t : float
+    gi_t : float or None
         Positive threshold of improvement magnitude below which optimization is stopped.
         Default is `1e-2`.
-    gi_i_w: int
+    gi_i_w: int or None
         Nonnegative number of consecutive iterations that must have improvement below threshold
         before optimization is stopped.
         Default is `10`.
-    gi_st_i : int
+    gi_st_i : int or None
         Nonnegative number of iterations to guarantee are performed.
         If `global_index_window` consecutive iterations are below `global_improvement_threshold`,
         but the index is lower than `global_improvement_start_index`, then optimization will continue.
@@ -115,9 +115,9 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
     def __init__(self, optimize_device_property_list: Sequence[AxOptimizeDeviceProperty],
                  sample_function_output: str,
                  dt: float = 0., n_max: int = 100,
-                 global_improvement_threshold: Real = 1e-2,
-                 global_improvement_index_window: int = 10,
-                 global_improvement_start_index: int = 10,
+                 global_improvement_threshold: Real | None = None,
+                 global_improvement_index_window: int | None = None,
+                 global_improvement_start_index: int | None = None,
                  extremum: Literal['min', 'max'] = 'min'):
 
         super().__init__(optimize_device_property_list,
@@ -134,14 +134,18 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         else:
             self.init_scan_ct = None
             self.complete_last_init_idx = None
-        self.last_optim_idx = n_max - 1
-        if global_improvement_threshold <= 0.:
+        self.last_optim_idx = n_max - 12
+        if global_improvement_threshold is None or global_improvement_index_window is None:
+            if global_improvement_threshold is not None or global_improvement_index_window is not None:
+                raise ValueError("If either global_improvement_threshold or global_improvement_index_window is None, "
+                                 "then both must be None")
+        if global_improvement_threshold is not None and global_improvement_threshold <= 0.:
             raise ValueError("global_improvement_threshold must be positive.")
         self.gi_t = global_improvement_threshold
-        if global_improvement_index_window < 0:
+        if global_improvement_index_window is not None and global_improvement_index_window < 0:
             raise ValueError("global_improvement_index_window must be nonnegative.")
         self.gi_i_w = global_improvement_index_window
-        if global_improvement_start_index < 0:
+        if global_improvement_start_index is not None and global_improvement_start_index < 0:
             raise ValueError("global_improvement_start_index must be nonnegative.")
         self.gi_st_i = global_improvement_start_index
         self.extremum = extremum
@@ -164,7 +168,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         self.client.configure_optimization(objective=self.objective)
 
         self.proposed_trial_index = None
-        self.gi_latest_i = None
+        self.gi_latest_i = 0
 
     def step_optimizer(self, index: int, experiment: Experiment) -> list[Real]:
         """
@@ -193,18 +197,23 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
             Global early stopping routine.
             """
             es = False
-            gi_d = f_out - f_out_best
-            if self.extremum == 'min':
-                gi_d *= -1
-            delta_over_threshold = gi_d > self.gi_t
-            if delta_over_threshold:
-                self.gi_latest_i = index
-            if self.gi_latest_i is not None:
+            if self.gi_t is None or self.gi_i_w is None:
+                return es
+            else:
+                gi_d = f_out - f_out_best
+                if self.extremum == 'min':
+                    gi_d *= -1
+                delta_over_threshold = gi_d > self.gi_t
+                if delta_over_threshold:
+                    self.gi_latest_i = index
+                if self.gi_st_i is None:
+                    stop_checking_started = True
+                else:
+                    stop_checking_started = index >= self.gi_st_i
                 gi_i_d = index - self.gi_latest_i
                 index_delta_out_window = gi_i_d >= self.gi_i_w
-                stop_checking_started = index >= self.gi_st_i
                 es = index_delta_out_window and stop_checking_started
-            return es
+                return es
 
         i_prev = index - 1
 
