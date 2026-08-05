@@ -134,7 +134,7 @@ class AxOptimizeScan(AbstractOptimizeScan[AxOptimizeDeviceProperty]):
         else:
             self.init_scan_ct = None
             self.complete_last_init_idx = None
-        self.last_optim_idx = n_max - 12
+        self.last_optim_idx = n_max - 1
         if global_improvement_threshold is None or global_improvement_index_window is None:
             if global_improvement_threshold is not None or global_improvement_index_window is not None:
                 raise ValueError("If either global_improvement_threshold or global_improvement_index_window is None, "
