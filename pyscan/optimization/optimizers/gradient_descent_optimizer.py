@@ -30,6 +30,14 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
         Default is `None`.
+
+    Attributes
+    ----------
+    device_name : str
+    property_name : str
+    initial_value : Real
+    experiment_key : str
+    optimizer_input : str, optional
     """
     input_epsilon: Real
     learning_rate: Real
