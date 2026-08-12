@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from numbers import Real
 import numpy as np
 from ...measurement.experiment import Experiment
@@ -30,6 +30,8 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
         Instrument input provided by the `measure_function` as `ItemAttribute` of the `Experiment`.
         Input for the optimizer to optimize over.
         Default is `None`.
+    bounds : 2-tuple of Real, optional
+            Lower and upper bound for the property.
 
     Attributes
     ----------
@@ -38,10 +40,12 @@ class GradientDescentOptimizeDeviceProperty(OptimizeDeviceProperty):
     initial_value : Real
     experiment_key : str
     optimizer_input : str, optional
+    bounds : 2-tuple of Real, optional
     """
     input_epsilon: Real
     learning_rate: Real
     update_epsilon: Real
+    bounds: tuple[Real, Real] | None = field(default=None, kw_only=True)
 
 
 class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDeviceProperty]):
@@ -156,7 +160,9 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
 
         if self.fd_step:
             f_in = get_f_in_i(index - 1)
-            f_in[self.dim] += self.opt_dev_prop_l[self.dim].input_epsilon
+            f_in_next_dim = f_in[self.dim] + self.opt_dev_prop_l[self.dim].input_epsilon
+            f_in_next_dim = self._clamp_dev_prop(f_in_next_dim)
+            f_in[self.dim] = f_in_next_dim
             self.fd_step = False
             return f_in
         else:
@@ -166,6 +172,7 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
             grad_dim, f_in_next_dim = gd_f(f_in_prev[self.dim], f_out, f_out_prev,
                                            self.opt_dev_prop_l[self.dim].input_epsilon,
                                            self.opt_dev_prop_l[self.dim].learning_rate)
+            f_in_next_dim = self._clamp_dev_prop(f_in_next_dim)
             f_in_next = f_in_prev.copy()
             f_in_next[self.dim] = f_in_next_dim
             self.keep_running[self.dim] = abs(grad_dim) > self.opt_dev_prop_l[self.dim].update_epsilon
@@ -175,3 +182,17 @@ class GradientDescentOptimizeScan(AbstractOptimizeScan[GradientDescentOptimizeDe
             self.dim += 1
             self.dim %= self.dim_ct
             return f_in_next
+
+    def _clamp_dev_prop(self, f_in: Real):
+        bounds = self.opt_dev_prop_l[self.dim].bounds
+        if bounds is not None:
+            lb, ub = bounds
+            el = f_in < lb  # exceeds lower bound
+            eu = f_in > ub  # exceeds upper bound
+            if el or eu:
+                self.running = False
+                if el:
+                    f_in = lb
+                elif eu:
+                    f_in = ub
+        return f_in

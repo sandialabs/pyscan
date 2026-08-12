@@ -35,6 +35,14 @@ class GPBayesianOptimizeDeviceProperty(OptimizeDeviceProperty):
         The initialization scans are only performed if each `GPBayesianOptimizeDeviceProperty` has an `initialization_scan`
         that is not `None`.
         Default is `None`.
+
+    Attributes
+    ----------
+    device_name : str
+    property_name : str
+    initial_value : Real
+    experiment_key : str
+    optimizer_input : str, optional
     """
     domain_range: tuple[Real, Real, Real]
     initialization_scans: Sequence[Real] | None = field(default=None, kw_only=True)

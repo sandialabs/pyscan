@@ -37,6 +37,14 @@ class AxOptimizeDeviceProperty(OptimizeDeviceProperty):
         The initialization scans are only performed if each `AxOptimizeDeviceProperty` has an `initialization_scan`
         that is not `None`.
         Default is `None`.
+
+    Attributes
+    ----------
+    device_name : str
+    property_name : str
+    initial_value : Real
+    experiment_key : str
+    optimizer_input : str, optional
     """
     bounds: tuple[Real, Real]
     type: Literal['float', 'int'] = field(default='float', kw_only=True)
