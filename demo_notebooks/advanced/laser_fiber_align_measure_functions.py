@@ -40,12 +40,10 @@ def grad_desc(devices):
     max_grad_step = 100
     input_l = ['x1', 'y1', 'x2', 'y2']
     input_ct = len(input_l)
-    input_epsilon_l = [1e-2] * input_ct
-    learning_rate_l = [1e-2] * input_ct
-    update_epsilon_l = [1e-5] * input_ct
-
-    i_p_l = [[devices[d].voltage] for d in input_l]
-    f_p = [devices.pm16_120.power]
+    bounds_l = [(-3., 3)] * input_ct
+    input_epsilon_l = [1e-3] * input_ct
+    learning_rate_l = [1e-1] * input_ct
+    update_epsilon_l = [1e-3] * input_ct
 
     def gd_f(f_in_prev: Real, f_out: Real, f_out_prev: Real,
              input_epsilon: Real, learning_rate: Real) -> tuple[Real, Real]:
@@ -54,28 +52,54 @@ def grad_desc(devices):
         f_in_dim_next = f_in_prev - grad_update
         return grad, f_in_dim_next
 
+    def clamp_dev_prop(f_in: Real, bounds: tuple[Real, Real]):
+        running = True
+        if bounds is not None:
+            lb, ub = bounds
+            el = f_in < lb  # exceeds lower bound
+            eu = f_in > ub  # exceeds upper bound
+            if el or eu:
+                running = False
+                if el:
+                    f_in = lb
+                elif eu:
+                    f_in = ub
+        return f_in, running
+
+    i_p_l = [[devices[d].voltage] for d in input_l]
+    f_p = [devices.pm16_120.power]
+
     f_current = devices.pm16_120.power
     keep_running = [True] * input_ct
     running = True
     for _ in range(max_grad_step):
         for d_idx, d in enumerate(input_l):
             input_current_dim = devices[d].voltage
-            devices[d].voltage = input_current_dim + input_epsilon_l[d_idx]
+            f_in_dim_fd = input_current_dim + input_epsilon_l[d_idx]
+            f_in_dim_fd, running = clamp_dev_prop(f_in_dim_fd,
+                                                  bounds_l[d_idx])
+            devices[d].voltage = f_in_dim_fd
             sleep(.1)
+            if not running:
+                break
             f_fd = devices.pm16_120.power
             grad_dim, f_in_dim_next = gd_f(input_current_dim,
                                            f_current, f_fd,
                                            input_epsilon_l[d_idx],
                                            learning_rate_l[d_idx])
+            f_in_dim_next, running = clamp_dev_prop(f_in_dim_next,
+                                                    bounds_l[d_idx])
             devices[d].voltage = f_in_dim_next
             sleep(.1)
             f_current = devices.pm16_120.power
-            keep_running[d_idx] = abs(grad_dim) > update_epsilon_l[d_idx]
 
             for p_idx, p in enumerate(i_p_l):
                 p.append(devices[input_l[p_idx]].voltage)
             f_p.append(f_current)
 
+            if not running:
+                break
+            keep_running[d_idx] = abs(grad_dim) > update_epsilon_l[d_idx]
             if not any(keep_running):
                 running = False
                 break
