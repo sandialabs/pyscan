@@ -10,10 +10,9 @@ import pyscan as ps
 # instead of pre voltages and post power?
 # Configure optimize scan to report initial inputs and measurements?
 # Configure measure function to report raster inputs and measurements?
-def raster(devices):
+def raster(devices, sweep_ct=1, vis=False):
 
     input_range = ps.drange(-3, 0.01, 3)
-    sweep_ct = 1
     input_l = ['x1', 'y1', 'x2', 'y2']
 
     for _ in range(sweep_ct):
@@ -27,12 +26,15 @@ def raster(devices):
                 f_res[i] = devices.pm16_120.power
             devices[d].voltage = input_range[np.argmax(f_res)]
             sleep(1)
-            # plt.plot(voltage_range, power_res)
-            # print(np.max(power_res),
-            #       devices.x1.voltage,
-            #       devices.y1.voltage,
-            #       devices.x2.voltage,
-            #       devices.y2.voltage)
+            if vis:
+                plt.plot(input_range, f_res)
+                plt.xlabel("axis voltage")
+                plt.ylabel("laser power")
+                print(np.max(f_res),
+                      devices.x1.voltage,
+                      devices.y1.voltage,
+                      devices.x2.voltage,
+                      devices.y2.voltage)
 
 
 def grad_asc(devices):
@@ -119,3 +121,27 @@ def grad_asc(devices):
     #     plt.plot(p)
     # plt.figure()
     # plt.plot(f_p)
+
+
+def get_measure_opt(devices, x1m, y1m, x2m, y2m, lpm):
+
+    opt_meas_idx = np.argmax(lpm)
+    x1_opt_meas = x1m[opt_meas_idx]
+    y1_opt_meas = y1m[opt_meas_idx]
+    x2_opt_meas = x2m[opt_meas_idx]
+    y2_opt_meas = y2m[opt_meas_idx]
+
+    devices.x1.voltage = x1_opt_meas
+    devices.y1.voltage = y1_opt_meas
+    devices.x2.voltage = x2_opt_meas
+    devices.y2.voltage = y2_opt_meas
+    sleep(1)
+    power_opt_meas = devices.pm16_120.power
+
+    x1_opt = np.append(x1m, x1_opt_meas)
+    y1_opt = np.append(y1m, y1_opt_meas)
+    x2_opt = np.append(x2m, x2_opt_meas)
+    y2_opt = np.append(y2m, y2_opt_meas)
+    power_opt = np.append(lpm, power_opt_meas)
+
+    return x1_opt, y1_opt, x2_opt, y2_opt, power_opt
