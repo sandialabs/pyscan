@@ -41,7 +41,8 @@ def input_combined_output_plot(axs: Sequence[plt.Axes], x1, y1, x2, y2, lp):
     # axs[1].set_title("Laser Power as a Function of Optimizer Step")
 
 
-def input_separate_output_plot(axs: Sequence[plt.Axes], x1, y1, x2, y2, lp):
+def input_separate_output_plot(axs: Sequence[plt.Axes], x1, y1, x2, y2, lp,
+                               set_lpyt=True):
     axs[0].clear()
     axs[0].plot(x1)
     axs[0].set_xlabel(xl)
@@ -59,7 +60,8 @@ def input_separate_output_plot(axs: Sequence[plt.Axes], x1, y1, x2, y2, lp):
     axs[3].set_xlabel(xl)
     axs[3].set_ylabel("y2 voltage")
     axs[4].clear()
-    axs[4].set_yticks(lpyt)
+    if set_lpyt:
+        axs[4].set_yticks(lpyt)
     axs[4].plot(lp)
     axs[4].set_xlabel(xl)
     axs[4].set_ylabel(lpyl)
