@@ -90,7 +90,8 @@ class Experiment(ItemAttribute):
                 if not self.runinfo.running:
                     break
                 continue  # saving is handled here
-            elif self.runinfo.has_average_scan:
+
+            if self.runinfo.has_average_scan:
                 self.rolling_average(data)
 
             self.save_point(data)
@@ -251,13 +252,17 @@ class Experiment(ItemAttribute):
 
     def rolling_average(self, data):
         '''
-        Does a rolling average of newly measured data
+        Updates the running mean of the data at the current scan indicies with newly measured data
 
         Parameters
         ----------
         data :
             ItemAttribute instance of newly measured data point
         '''
+        # average_index is the average scan's position; its i is the number of passes already in the mean
+        n = self.runinfo.scans[self.runinfo.average_index].i
+        indicies = self.runinfo.average_indicies
+
         for key, value in data.items():
 
             # two cases: 1. self[key] is a list 2. self[key] is not a list
@@ -265,26 +270,22 @@ class Experiment(ItemAttribute):
                 if is_list_type(value):
                     value = np.array(value).astype(float)
 
-                if self.runinfo.average_index == 0:
-                    self[key][self.runinfo.average_indicies] = value
+                if n == 0:
+                    self[key][indicies] = value
                 else:
-                    self[key][self.runinfo.average_indicies] *= (
-                        self.runinfo.average_index / (self.runinfo.average_index + 1))
-                    self[key][self.runinfo.average_indicies] += (
-                        value / (self.runinfo.average_index + 1))
+                    self[key][indicies] *= n / (n + 1)
+                    self[key][indicies] += value / (n + 1)
             else:
-                if self.runinfo.average_index == 0:
+                if n == 0:
                     self[key] = value
-
                 else:
-                    self[key] *= (
-                        self.runinfo.average_index / (self.runinfo.average_index + 1))
-                    self[key] += (
-                        value / (self.runinfo.average_index + 1))
+                    self[key] *= n / (n + 1)
+                    self[key] += value / (n + 1)
 
     def save_point(self, data):
         '''
-        Saves single point of data for current scan indicies. Does not return anything.
+        Saves single point of data for current scan indicies. With an average scan, saves the running mean
+        that `rolling_average` already stored instead. Does not return anything.
         '''
 
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.file_name)
@@ -295,11 +296,11 @@ class Experiment(ItemAttribute):
         else:
             indicies = self.runinfo.indicies
 
-        for key, value in data.items():
-            if is_list_type(self[key]):
-                self[key][indicies] = value
-            else:
-                self[key] = value
+            for key, value in data.items():
+                if is_list_type(self[key]):
+                    self[key][indicies] = value
+                else:
+                    self[key] = value
 
         with h5py.File(save_name, 'a') as f:
             for key in self.runinfo.measured:
