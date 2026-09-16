@@ -12,7 +12,6 @@ from .pyscan_json_encoder import PyscanJSONEncoder
 from itemattribute import ItemAttribute
 
 from ..general.is_list_type import is_list_type
-from ..general.append_stack_or_contact import append_stack_or_contact
 from ..general.delta_product import delta_product
 
 
@@ -76,7 +75,10 @@ class Experiment(ItemAttribute):
 
         self.runinfo.running = True
 
-        for indicies, deltas in delta_product(self.runinfo.iterators, self.runinfo.has_continuous_scan):
+        # ContinuousScan.iterator() is range(1) for both n_max=1 and n_max=None, so only repeat it until stopped without n_max
+        continuous = self.runinfo.has_continuous_scan and (self.runinfo.scans[-1].n_max is None)
+
+        for indicies, deltas in delta_product(self.runinfo.iterators, continuous):
             for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
                 scan.iterate(self, i, d)
 
@@ -86,10 +88,6 @@ class Experiment(ItemAttribute):
                 self.preallocate(data)
             elif (self.runinfo.has_continuous_scan) and (deltas[-1] == 1):
                 self.reallocate(data)
-                # early terminate here
-                if not self.runinfo.running:
-                    break
-                continue  # saving is handled here
 
             if self.runinfo.has_average_scan:
                 self.rolling_average(data)
@@ -224,7 +222,9 @@ class Experiment(ItemAttribute):
 
     def reallocate(self, data):
         '''
-        Reallocates memory for continuous experiments save files and measurement attribute arrays.
+        Grows continuous experiments save files and measurement attribute arrays along the continuous scan
+        when it starts a new iteration. Like `preallocate`, arrays exclude the average scan's dimension.
+        The new entries are nan until `rolling_average` and `save_point` store the data.
 
         Parameters
         ----------
@@ -234,6 +234,12 @@ class Experiment(ItemAttribute):
         save_path = self.runinfo.data_path / '{}.hdf5'.format(self.runinfo.file_name)
         save_name = str(save_path.absolute())
 
+        # Get dimensions based off of averaging or not
+        if self.runinfo.has_average_scan:
+            scan_dims = self.runinfo.average_dims
+        else:
+            scan_dims = self.runinfo.dims
+
         with h5py.File(save_name, 'a') as f:
             continuous_n = self.runinfo.scans[-1].n
             f['iteration'].resize((continuous_n,))
@@ -241,14 +247,11 @@ class Experiment(ItemAttribute):
             f['iteration'][-1] = self.runinfo.scans[-1].scan_dict['iteration'][-1]
 
             for name in self.runinfo.measured:
-                if is_list_type(data[name]):
-                    f[name].resize(tuple((*self.runinfo.dims, *np.array(data[name]).shape)))
-                    f[name][-1] = data[name]
-                    self[name] = append_stack_or_contact(self[name], data[name])
-                else:
-                    f[name].resize(self.runinfo.dims)
-                    f[name][-1] = data[name]
-                    self[name] = append_stack_or_contact(self[name], data[name])
+                dims = (*scan_dims, *np.shape(data[name]))
+                # only the continuous scan's dimension grows, the other scans and the data keep their lengths
+                pad_width = [(0, new - old) for new, old in zip(dims, np.shape(self[name]))]
+                self[name] = np.pad(self[name], pad_width, constant_values=np.nan)
+                f[name].resize(dims)
 
     def rolling_average(self, data):
         '''

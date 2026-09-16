@@ -247,9 +247,6 @@ class ContinuousScan(AbstractScan):
 
         sleep(self.dt)
 
-        if self.n == self.n_max:
-            expt.stop()
-
     def iterator(self):
         '''
         The following iterates over n_max if n_max is specified, otherwise it iterates indefinitely.
