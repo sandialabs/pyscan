@@ -221,7 +221,7 @@ class ContinuousScan(AbstractScan):
     def __init__(self, n_max=None, dt=0):
 
         assert n_max is None or isinstance(n_max, int), "n_max must be an int or None"
-        assert n_max > 0, "n_max must be > 0 or None"
+        assert n_max is None or n_max > 0, "n_max must be > 0 or None"
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
@@ -246,9 +246,6 @@ class ContinuousScan(AbstractScan):
         expt.iteration = self.scan_dict['iteration']
 
         sleep(self.dt)
-
-        if self.n == self.n_max:
-            expt.stop()
 
     def iterator(self):
         '''

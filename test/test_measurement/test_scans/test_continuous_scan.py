@@ -44,6 +44,12 @@ def test_continuous_scan_init(key, value):
         assert continuous_scan[key] == value, f"Continuous scan attribute {key} != {value}"
 
 
+def test_continuous_scan_unlimited():
+    continuous_scan = ps.ContinuousScan()
+    assert continuous_scan.n_max is None
+    assert continuous_scan.iterator() == range(1)
+
+
 def test_continuous_scan_iterate_m1(runinfo, devices):
     runinfo.scan0 = ps.ContinuousScan(n_max=10)
     expt = ps.Experiment(runinfo, devices)
