@@ -16,9 +16,6 @@ class AbstractScan(ItemAttribute, ABC):
     Abstract class for different scan types. Inherits from `.ItemAttribute`.
     '''
 
-    # def __init__(self):
-    #     self.n_max = None
-
     @abstractmethod
     def iterate(self, index, devices):
         '''
@@ -73,7 +70,6 @@ class PropertyScan(AbstractScan):
         self.i = 0
 
         self.check_same_length()
-        # self.n_max = len(next(iter(self.scan_dict.values())))
 
     def iterate(self, expt, i, d):
         '''

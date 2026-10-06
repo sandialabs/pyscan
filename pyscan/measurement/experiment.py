@@ -1,6 +1,5 @@
 import h5py
 import json
-# import math
 import numpy as np
 
 from time import sleep
@@ -100,9 +99,6 @@ class Experiment(ItemAttribute):
             if not self.runinfo.running:
                 break
 
-        # if self.runinfo.has_optimize_scan:
-        #     self.trim_allocation()
-
         self.runinfo.complete = True
         self.runinfo.running = False
 
@@ -180,19 +176,6 @@ class Experiment(ItemAttribute):
         # get the file save path name
         save_name = self._get_save_name()
 
-        # Create and save scan arrays
-        # dev_shape = {}
-        # for i, s in enumerate(self.runinfo.scans):
-        #     for key, values in s.scan_dict.items():
-        #         if key in dev_shape:
-        #             dev_shape[key].append(s.n_max)
-        #         else:
-        #             dev_shape[key] = [s.n_max]
-        # with h5py.File(save_name, 'a') as f:
-        #     for k, v in dev_shape.items():
-        #         init_shape = np.array(self.runinfo.scans[0].scan_dict[k]).shape
-        #         max_shape = (math.prod(v),)
-        #         f.create_dataset(key, shape=init_shape, maxshape=max_shape, chunks=max_shape)
         with h5py.File(save_name, 'a') as f:
             for i, s in enumerate(self.runinfo.scans):
                 for key, values in s.scan_dict.items():
@@ -270,17 +253,6 @@ class Experiment(ItemAttribute):
                     f[name].resize(self.runinfo.dims)
                     f[name][-1] = data[name]
                     self[name] = append_stack_or_contact(self[name], data[name])
-
-    # def trim_allocation(self):
-    #     '''
-    #     For OptimizeScan, first preallocate is prod(nmax)
-    #     Trim to prod(n)
-    #     '''
-    #     save_name = self._get_save_name()
-
-    #     with h5py.File(save_name, 'a') as f:
-    #         for i in self.runinfo.optimize_indices:
-    #             pass
 
     def rolling_average(self, data):
         '''

@@ -355,13 +355,6 @@ class RunInfo(ItemAttribute):
     #     else:
     #         self._optimize_index = -1
     #     return self._optimize_index
-    # @property
-    # def optimize_indices(self):
-    #     indices = []
-    #     for i in range(self.ndim):
-    #         if isinstance(self.scans[i], AbstractOptimizeScan):
-    #             indices.append(i)
-    #     return indices
 
     # for reallocate in Experiment.run()
     @property
