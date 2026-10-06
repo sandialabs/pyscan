@@ -170,18 +170,20 @@ class RunInfo(ItemAttribute):
         return stop
 
     def check_optimize_scan(self):
+        # TODO: what errors can occur with OptimizeScan?
+        pass
         # find the scans set to optimize scan (if any) and determine the index
-        n_optimize_scans = 0
-        for scan in self.scans:
-            if isinstance(scan, AbstractOptimizeScan):
-                n_optimize_scans += 1
+        # n_optimize_scans = 0
+        # for scan in self.scans:
+        #     if isinstance(scan, AbstractOptimizeScan):
+        #         n_optimize_scans += 1
 
         # throw an error if more than one optimize scan is found
-        assert n_optimize_scans <= 1, "More than one optimize scan detected. Only one optimize scan is allowed."
+        # assert n_optimize_scans <= 1, "More than one optimize scan detected. Only one optimize scan is allowed."
 
         # if there is a optimize scan, ensure it is the highest level scan
-        if self.has_optimize_scan:
-            assert self.optimize_index == (self.ndim - 1), 'Error, optimize scan must be the last scan'
+        # if self.has_optimize_scan:
+        #     assert self.optimize_index == (self.ndim - 1), 'Error, optimize scan must be the last scan'
 
     # Regular properties
     @property
@@ -339,20 +341,27 @@ class RunInfo(ItemAttribute):
 
         return self._has_optimize_scan
 
-    @property
-    def optimize_index(self):
-        '''
-        Returns the index of the optimize scan.
-        '''
-        if self.has_optimize_scan:
-            i = 0
-            for i in range(self.ndim):
-                if isinstance(self.scans[i], AbstractOptimizeScan):
-                    return i
-                self._optimize_index = i
-        else:
-            self._optimize_index = -1
-        return self._optimize_index
+    # @property
+    # def optimize_index(self):
+    #     '''
+    #     Returns the index of the optimize scan.
+    #     '''
+    #     if self.has_optimize_scan:
+    #         i = 0
+    #         for i in range(self.ndim):
+    #             if isinstance(self.scans[i], AbstractOptimizeScan):
+    #                 return i
+    #             self._optimize_index = i
+    #     else:
+    #         self._optimize_index = -1
+    #     return self._optimize_index
+    # @property
+    # def optimize_indices(self):
+    #     indices = []
+    #     for i in range(self.ndim):
+    #         if isinstance(self.scans[i], AbstractOptimizeScan):
+    #             indices.append(i)
+    #     return indices
 
     # for reallocate in Experiment.run()
     @property
