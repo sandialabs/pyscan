@@ -65,6 +65,15 @@ class Experiment(ItemAttribute):
         self.devices = devices
         self.setup_data_dir(data_dir)
 
+        self.iter_dict = {}  # for optimizescan, continuous scan should use as well?
+
+    def _outer_scans_running(self, idx, scan_running):
+        outer_running = True
+        for i in range(idx + 1):
+            if not scan_running[i]:
+                outer_running = False
+        return outer_running
+
     def run(self):
 
         self.check_runinfo()
@@ -75,10 +84,18 @@ class Experiment(ItemAttribute):
         sleep(self.runinfo.initial_pause)
 
         self.runinfo.running = True
+        scan_running = [True for _ in self.runinfo.scans]
 
         for indicies, deltas in delta_product(self.runinfo.iterators, self.runinfo.has_continuous_scan):
-            for scan, i, d in zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1]):
-                scan.iterate(self, i, d)
+            for s_i, (scan, i, d) in enumerate(zip(self.runinfo.scans[::-1], indicies[::-1], deltas[::-1])):
+                if d == -1:  # reset, if i == 0?
+                    scan_running[s_i] = True
+                if self._outer_scans_running(s_i, scan_running):
+                    scan.iterate(self, i, d)
+                    if not scan.running:
+                        scan_running[s_i] = False
+                # elif d == 0:  # skip scan until finished
+                #     scan_running[s_i] = True
 
             data = self.runinfo.measure_function(self)
 
@@ -238,6 +255,7 @@ class Experiment(ItemAttribute):
         save_name = self._get_save_name()
 
         with h5py.File(save_name, 'a') as f:
+            # TODO: get resizing scan idx
             continuous_n = self.runinfo.scans[-1].n
             for k in self.runinfo.scans[-1].scan_dict.keys():
                 f[k].resize((continuous_n,))

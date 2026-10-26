@@ -361,6 +361,8 @@ class RunInfo(ItemAttribute):
     def has_resizing_data(self):
         return self.has_continuous_scan or self.has_optimize_scan
 
+    # TODO: get resizing scan idx
+
     # collect scan iterators for Experiment.run()
     @property
     def iterators(self):

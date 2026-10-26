@@ -420,19 +420,44 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
         Set to `False` in `step_optimizer` when optimization has ended.
     '''
 
-    def __init__(self, optimize_device_property_list: Sequence[ODP],
+    def _get_iter_key(self):
+        '''
+        scan_dict
+        '''
+        return '{}_iteration'.format(self.name)
+
+    def _get_opt_dev_prop_key(self, name: str, p: OptimizeDeviceProperty):
+        '''
+        scan_dict
+        '''
+        return '{}_{}_{}'.format(name,
+                                 p.device_name,
+                                 p.property_name)
+
+    def __init__(self, name: str,
+                 optimize_device_property_list: Sequence[ODP],
                  sample_function_output: str,
+                 init_name: str | None = None,
                  dt: float = 0., n_max: int | None = None):
         '''
         Base constructor of abstract interface to be extended by implementations.
         '''
 
+        # TODO: name scan dict entries, check unique
+        self.name = name
+        self.init_name = init_name  # TODO: init from past scan? first init from last?
         self.opt_dev_prop_l = optimize_device_property_list
 
         self.scan_dict = {}
         self.scan_dict['iteration'] = np.ndarray((0))
         for p in optimize_device_property_list:
-            self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] = np.ndarray((0))
+            iter_key = self._get_iter_key()
+            opt_dev_prop_key = self._get_opt_dev_prop_key(self.name, p)
+            if iter_key in self.scan_dict \
+                    or opt_dev_prop_key in self.scan_dict:  # TODO: cant check here? must check in Experiment instead?
+                raise RuntimeError("cannot have repeat scan_dict entries")
+            self.scan_dict[iter_key] = np.ndarray((0))
+            self.scan_dict[opt_dev_prop_key] = np.ndarray((0))
 
         # TODO: make output multidimensional: allow optimization over multiple outputs?
         self.sample_f_out = sample_function_output
@@ -485,28 +510,45 @@ class AbstractOptimizeScan[ODP: OptimizeDeviceProperty](AbstractScan):
             Returns exit code 0 if `d` is 0.
         '''
 
+        # TODO: return 0 before set i and n?
+
         self.i = i
         self.n = i + 1
 
         if d == 0:
             return 0
 
-        self.scan_dict['iteration'] = np.append(self.scan_dict['iteration'], i)
-        expt.iteration = self.scan_dict['iteration']
+        iter_key = self._get_iter_key()
+        self.scan_dict[iter_key] = np.append(self.scan_dict[iter_key], i)
+        expt.iter_dict[iter_key] = self.scan_dict[iter_key]
 
         if i == 0:
-            for p in self.opt_dev_prop_l:
-                expt.devices[p.device_name][p.property_name] = p.initial_value
-                self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] \
-                    = np.append(self.scan_dict['{}_{}'.format(p.device_name, p.property_name)], p.initial_value)
+            if self.init_name is None:
+                for p in self.opt_dev_prop_l:
+                    expt.devices[p.device_name][p.property_name] = p.initial_value
+                    opt_dev_prop_key = self._get_opt_dev_prop_key(self.name, p)
+                    self.scan_dict[opt_dev_prop_key] \
+                        = np.append(self.scan_dict[opt_dev_prop_key],
+                                    p.initial_value)
+            else:
+                for p in self.opt_dev_prop_l:
+                    init_dev_prop_key = self._get_opt_dev_prop_key(self.init_name, p)
+                    init_val = self.scan_dict[init_dev_prop_key][-1]
+                    expt.devices[p.device_name][p.property_name] = init_val
+                    opt_dev_prop_key = self._get_opt_dev_prop_key(self.name, p)
+                    self.scan_dict[opt_dev_prop_key] \
+                        = np.append(self.scan_dict[opt_dev_prop_key],
+                                    init_val)
         else:
             opt_res = self.step_optimizer(i, expt)
             for p, r in zip(self.opt_dev_prop_l, opt_res):
                 expt.devices[p.device_name][p.property_name] = r
-                self.scan_dict['{}_{}'.format(p.device_name, p.property_name)] \
-                    = np.append(self.scan_dict['{}_{}'.format(p.device_name, p.property_name)], r)
-            if not self.running:
-                expt.stop()
+                opt_dev_prop_key = self._get_opt_dev_prop_key(self.name, p)
+                self.scan_dict[opt_dev_prop_key] \
+                    = np.append(self.scan_dict[opt_dev_prop_key],
+                                r)
+            # if not self.running:
+                # expt.scan_running = False
 
         sleep(self.dt)
 
