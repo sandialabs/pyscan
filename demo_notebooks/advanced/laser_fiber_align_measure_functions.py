@@ -3,52 +3,52 @@ from numbers import Real
 import numpy as np
 from time import sleep
 
-import pyscan as ps
-
 
 # TODO: report pre and post raster voltages and power to Ax
 # instead of pre voltages and post power?
 # Configure optimize scan to report initial inputs and measurements?
 # Configure measure function to report raster inputs and measurements?
-def raster(devices, sweep_ct=1, vis=False, legend=False):
-
-    input_range = ps.drange(-3, 0.01, 3)
-    input_l = ['x1', 'y1', 'x2', 'y2']
+def raster(devices,
+           input_device_l, input_property_l,
+           input_range_l,
+           output_device, output_property,
+           sweep_ct=1, set_delay=1., inc_delay=.01,
+           vis=False, legend=False, xlabel='input', ylabel='output'):
 
     for _ in range(sweep_ct):
-        for d in input_l:
-            devices[d].voltage = input_range[0]
-            sleep(1)
-            f_res = np.zeros_like(input_range)
-            for i, v in enumerate(input_range):
-                devices[d].voltage = v
-                sleep(0.01)
-                f_res[i] = devices.pm16_120.power
-            devices[d].voltage = input_range[np.argmax(f_res)]
-            sleep(1)
+        for d, p, r in zip(input_device_l, input_property_l, input_range_l):
+            devices[d][p] = r[0]
+            sleep(set_delay)
+            f_res = np.zeros_like(r)
+            for i, v in enumerate(r):
+                devices[d][p] = v
+                sleep(inc_delay)
+                f_res[i] = devices[output_device][output_property]
+            devices[d][p] = r[np.argmax(f_res)]
+            sleep(set_delay)
             if vis:
-                plt.plot(input_range, f_res)
-                plt.xlabel("axis voltage")
-                plt.ylabel("laser power")
+                plt.plot(r, f_res)
+                plt.xlabel(xlabel)
+                plt.ylabel(ylabel)
                 if legend:
-                    plt.legend(input_l,
+                    plt.legend(input_device_l,
                                loc='center left', bbox_to_anchor=(1, 0.5))
                 print(np.max(f_res),
-                      devices.x1.voltage,
-                      devices.y1.voltage,
-                      devices.x2.voltage,
-                      devices.y2.voltage)
+                      [devices[d][p] for d, p in zip(input_device_l, input_property_l)])
 
 
-def grad_asc(devices):
+def grad_asc(devices,
+             input_device_l, input_property_l,
+             input_bounds_l, input_epsilon_l, learning_rate_l, update_epsilon_l,
+             output_device, output_property,
+             max_grad_step=100, set_delay=1., inc_delay=.1,):
 
-    max_grad_step = 100
-    input_l = ['x1', 'y1', 'x2', 'y2']
-    input_ct = len(input_l)
-    bounds_l = [(-3., 3)] * input_ct
-    input_epsilon_l = [1e-3] * input_ct
-    learning_rate_l = [1e-1] * input_ct
-    update_epsilon_l = [1e-2] * input_ct
+    # input_l = ['x1', 'y1', 'x2', 'y2']
+    input_ct = len(input_device_l)
+    # bounds_l = [(-3., 3)] * input_ct
+    # input_epsilon_l = [1e-3] * input_ct
+    # learning_rate_l = [1e-1] * input_ct
+    # update_epsilon_l = [1e-2] * input_ct
 
     def gd_f(f_in_prev: Real, f_out: Real, f_out_prev: Real,
              input_epsilon: Real, learning_rate: Real) -> tuple[Real, Real]:
@@ -74,30 +74,30 @@ def grad_asc(devices):
     # i_p_l = [[devices[d].voltage] for d in input_l]
     # f_p = [devices.pm16_120.power]
 
-    sleep(1)
-    f_current = devices.pm16_120.power
+    sleep(set_delay)
+    f_current = devices[output_device][output_property]
     keep_running = [True] * input_ct
     running = True
-    for i in range(max_grad_step):
-        for d_idx, d in enumerate(input_l):
-            input_current_dim = devices[d].voltage
+    for _ in range(max_grad_step):
+        for d_idx, (d, p) in enumerate(zip(input_device_l, input_property_l)):
+            input_current_dim = devices[d][p]
             f_in_dim_fd = input_current_dim + input_epsilon_l[d_idx]
             f_in_dim_fd, running = clamp_dev_prop(f_in_dim_fd,
-                                                  bounds_l[d_idx])
-            devices[d].voltage = f_in_dim_fd
-            sleep(.1)
+                                                  input_bounds_l[d_idx])
+            devices[d][p] = f_in_dim_fd
+            sleep(inc_delay)
             if not running:
                 break
-            f_fd = devices.pm16_120.power
+            f_fd = devices[output_device][output_property]
             grad_dim, f_in_dim_next = gd_f(input_current_dim,
                                            f_fd, f_current,
                                            input_epsilon_l[d_idx],
                                            learning_rate_l[d_idx])
             f_in_dim_next, running = clamp_dev_prop(f_in_dim_next,
-                                                    bounds_l[d_idx])
-            devices[d].voltage = f_in_dim_next
-            sleep(.1)
-            f_current = devices.pm16_120.power
+                                                    input_bounds_l[d_idx])
+            devices[d][p] = f_in_dim_next
+            sleep(inc_delay)
+            f_current = devices[output_device][output_property]
 
             # for p_idx, p in enumerate(i_p_l):
             #     p.append(devices[input_l[p_idx]].voltage)
@@ -116,7 +116,7 @@ def grad_asc(devices):
                 running = False
                 break
         if not running:
-            sleep(1)
+            sleep(set_delay)
             break
 
     # plt.figure()
