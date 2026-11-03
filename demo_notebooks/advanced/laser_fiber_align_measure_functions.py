@@ -3,6 +3,8 @@ from numbers import Real
 import numpy as np
 from time import sleep
 
+from pyscan import drange
+
 
 # TODO: report pre and post raster voltages and power to Ax
 # instead of pre voltages and post power?
@@ -35,6 +37,26 @@ def raster(devices,
                                loc='center left', bbox_to_anchor=(1, 0.5))
                 print(np.max(f_res),
                       [devices[d][p] for d, p in zip(input_device_l, input_property_l)])
+
+
+def local_raster(devices,
+                 input_device_l, input_property_l,
+                 input_range_i_l, raster_delta_l,
+                 output_device, output_property):
+    input_range_delta_l = [
+        drange(devices[dev][prop] - rasdel,
+               in_i,
+               devices[dev][prop] + rasdel)
+        for dev, prop, in_i, rasdel
+        in zip(input_device_l,
+               input_property_l,
+               input_range_i_l,
+               raster_delta_l)
+    ]
+    raster(devices,
+           input_device_l, input_property_l,
+           input_range_delta_l,
+           output_device, output_property)
 
 
 def grad_asc(devices,
